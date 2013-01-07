@@ -56,7 +56,7 @@ public partial class ");
             this.Write("\r\n\tprivate readonly ");
             
             #line 18 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.FieldType.FullName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
@@ -111,7 +111,7 @@ public partial class ");
 	bool firstInSequence = true;
 	foreach(var field in fields) {
 		if (!firstInSequence) { Write(", "); }
-		Write(field.FieldType.FullName);
+		Write(GetTypeName(field.FieldType));
 		Write(" ");
 		Write(CamelCase(field.Name));
 		firstInSequence = false;
@@ -164,7 +164,7 @@ public partial class ");
             this.Write("\r\n\tpublic ");
             
             #line 52 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.FieldType.FullName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
@@ -199,7 +199,7 @@ public partial class ");
             this.Write("(");
             
             #line 56 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.FieldType.FullName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
@@ -252,6 +252,10 @@ public partial class ");
 
 	protected static string CamelCase(string name) {
 		return name.Substring(0,1).ToLowerInvariant() + name.Substring(1);
+	}
+
+	protected static string GetTypeName(Type type) {
+		return type.FullName;
 	}
 
         

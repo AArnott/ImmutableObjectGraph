@@ -15,7 +15,7 @@ public partial class <#= this.TemplateType.Name #> {
 	foreach(var field in fields) {
 #>
 
-	private readonly <#= field.FieldType.FullName #> <#= CamelCase(field.Name) #>;
+	private readonly <#= GetTypeName(field.FieldType) #> <#= CamelCase(field.Name) #>;
 <#
 	}
 #>
@@ -30,7 +30,7 @@ public partial class <#= this.TemplateType.Name #> {
 	bool firstInSequence = true;
 	foreach(var field in fields) {
 		if (!firstInSequence) { Write(", "); }
-		Write(field.FieldType.FullName);
+		Write(GetTypeName(field.FieldType));
 		Write(" ");
 		Write(CamelCase(field.Name));
 		firstInSequence = false;
@@ -49,11 +49,11 @@ public partial class <#= this.TemplateType.Name #> {
 	foreach(var field in fields) {
 #>
 
-	public <#= field.FieldType.FullName #> <#= PascalCase(field.Name) #> {
+	public <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> {
 		get { return this.<#= CamelCase(field.Name) #>; }
 	}
 
-	public <#=  this.TemplateType.Name #> With<#= PascalCase(field.Name) #>(<#= field.FieldType.FullName #> value) {
+	public <#=  this.TemplateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
 		return new <#= this.TemplateType.Name #>(<#
 	firstInSequence = true;
 	foreach(var field2 in fields) {
@@ -81,5 +81,9 @@ public partial class <#= this.TemplateType.Name #> {
 
 	protected static string CamelCase(string name) {
 		return name.Substring(0,1).ToLowerInvariant() + name.Substring(1);
+	}
+
+	protected static string GetTypeName(Type type) {
+		return type.FullName;
 	}
 #>
