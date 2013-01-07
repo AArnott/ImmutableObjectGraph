@@ -1,6 +1,7 @@
 ﻿<#@ template debug="true" language="C#" #>
 <#@ Output Extension=".generated.cs" #>
 <#
+	this.Namespace = "ConsoleApplication9";
 	this.TemplateType = typeof(Basket);
 #>
 <#@ Include File="ImmutableObjectGraph.tt" #>

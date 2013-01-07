@@ -11,7 +11,9 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
+namespace <#= this.Namespace #> {
 <#
+	this.PushIndent("\t");
 	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
 	foreach(var templateType in templateTypes) {
 #>
@@ -51,6 +53,7 @@ public partial class <#= templateType.Name #> {
 <#
 	}
 #>
+		this.Validate();
 	}
 <#
 	foreach(var field in fields) {
@@ -61,6 +64,10 @@ public partial class <#= templateType.Name #> {
 	}
 
 	public <#=  templateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
+		if (value == this.<#= PascalCase(field.Name) #>) {
+			return this;
+		}
+
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
 	foreach(var field2 in fields) {
@@ -78,11 +85,20 @@ public partial class <#= templateType.Name #> {
 <#
 	}
 #>
+
+	/// <summary>Throws an exception if any properties have invalid values.</summary>
+	/// <exception type="ArgumentException">Thrown on invalid input.</exception>
+	protected partial void Validate();
 }
 <# } // looping over all template types
+
+	this.PopIndent();
 #>
+}
 <#+
 	public Type TemplateType { get; set; }
+
+	public string Namespace { get; set; }
 
 	protected static string PascalCase(string name) {
 		return name.Substring(0,1).ToUpperInvariant() + name.Substring(1);
