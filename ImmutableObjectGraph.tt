@@ -26,17 +26,16 @@ public partial class <#= this.TemplateType.Name #> {
 	}
 
 	/// <summary>Initializes a new instance of the <#= this.TemplateType.Name #> class.</summary>
-	public <#= this.TemplateType.Name #>(
-<#
+	public <#= this.TemplateType.Name #>(<#
 	bool firstInSequence = true;
 	foreach(var field in fields) {
-#>
-		<#=  firstInSequence ? "" : ", " #><#= field.FieldType.FullName #> <#= CamelCase(field.Name) #>
-<#
+		if (!firstInSequence) { Write(", "); }
+		Write(field.FieldType.FullName);
+		Write(" ");
+		Write(CamelCase(field.Name));
 		firstInSequence = false;
 	}
-#>
-	)
+#>)
 	{
 <#
 	foreach(var field in fields) {
@@ -55,24 +54,19 @@ public partial class <#= this.TemplateType.Name #> {
 	}
 
 	public <#=  this.TemplateType.Name #> With<#= PascalCase(field.Name) #>(<#= field.FieldType.FullName #> value) {
-		return new <#= this.TemplateType.Name #>(
-<#
+		return new <#= this.TemplateType.Name #>(<#
 	firstInSequence = true;
 	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
 		if (field == field2) {
-#>
-			<#=  firstInSequence ? "" : ", " #>value
-<#
+			Write("value");
 		} else {
-#>
-			<#=  firstInSequence ? "" : ", " #>this.<#= PascalCase(field2.Name) #>
-<#
+			Write("this." + PascalCase(field2.Name));
 		}
 
 		firstInSequence = false;
 	}
-#>
-		);
+#>);
 	}
 <#
 	}

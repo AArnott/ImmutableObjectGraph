@@ -20,10 +20,7 @@ public partial class Fruit {
 	}
 
 	/// <summary>Initializes a new instance of the Fruit class.</summary>
-	public Fruit(
-		System.String color
-		, System.Int32 skinThickness
-	)
+	public Fruit(System.String color, System.Int32 skinThickness)
 	{
 		this.color = color;
 		this.skinThickness = skinThickness;
@@ -34,10 +31,7 @@ public partial class Fruit {
 	}
 
 	public Fruit WithColor(System.String value) {
-		return new Fruit(
-			value
-			, this.SkinThickness
-		);
+		return new Fruit(value, this.SkinThickness);
 	}
 
 	public System.Int32 SkinThickness {
@@ -45,11 +39,7 @@ public partial class Fruit {
 	}
 
 	public Fruit WithSkinThickness(System.Int32 value) {
-		return new Fruit(
-			this.Color
-			, value
-		);
+		return new Fruit(this.Color, value);
 	}
 }
-
 
