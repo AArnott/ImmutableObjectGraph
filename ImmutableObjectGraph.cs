@@ -355,7 +355,7 @@ namespace ");
             #line hidden
             this.Write(");\r\n\t}\r\n\r\n\t/// <summary>Normalizes and/or validates all properties on this object" +
                     ".</summary>\r\n\t/// <exception type=\"ArgumentException\">Thrown if any properties h" +
-                    "ave disallowed values.</exception>\r\n\tprotected partial void Validate();\r\n}\r\n");
+                    "ave disallowed values.</exception>\r\n\tpartial void Validate();\r\n}\r\n");
             
             #line 131 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
  } // looping over all template types

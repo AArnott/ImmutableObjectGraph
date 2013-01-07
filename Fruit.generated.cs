@@ -66,7 +66,7 @@ namespace ConsoleApplication9 {
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
-		protected partial void Validate();
+		partial void Validate();
 	}
 	
 	public partial class Fruit {
@@ -125,7 +125,7 @@ namespace ConsoleApplication9 {
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
-		protected partial void Validate();
+		partial void Validate();
 	}
 }
 
