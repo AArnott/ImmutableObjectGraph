@@ -53,8 +53,19 @@ namespace ConsoleApplication9 {
 			return new Basket(this.Size, value);
 		}
 	
-		/// <summary>Throws an exception if any properties have invalid values.</summary>
-		/// <exception type="ArgumentException">Thrown on invalid input.</exception>
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public Basket With(
+			System.Int32 size = default(System.Int32), 
+			System.Collections.Immutable.ImmutableList<Fruit> contents = default(System.Collections.Immutable.ImmutableList<Fruit>),
+			bool resetSize = false,
+			bool resetContents = false) {
+			return new Basket(
+					resetSize ? default(System.Int32) : size,
+					resetContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : contents);
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		protected partial void Validate();
 	}
 	
@@ -101,8 +112,19 @@ namespace ConsoleApplication9 {
 			return new Fruit(this.Color, value);
 		}
 	
-		/// <summary>Throws an exception if any properties have invalid values.</summary>
-		/// <exception type="ArgumentException">Thrown on invalid input.</exception>
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public Fruit With(
+			System.String color = default(System.String), 
+			System.Int32 skinThickness = default(System.Int32),
+			bool resetColor = false,
+			bool resetSkinThickness = false) {
+			return new Fruit(
+					resetColor ? default(System.String) : color,
+					resetSkinThickness ? default(System.Int32) : skinThickness);
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		protected partial void Validate();
 	}
 }

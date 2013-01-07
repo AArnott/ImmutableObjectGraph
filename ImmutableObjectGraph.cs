@@ -264,11 +264,100 @@ namespace ");
             
             #line default
             #line hidden
-            this.Write("\r\n\t/// <summary>Throws an exception if any properties have invalid values.</summa" +
-                    "ry>\r\n\t/// <exception type=\"ArgumentException\">Thrown on invalid input.</exceptio" +
-                    "n>\r\n\tprotected partial void Validate();\r\n}\r\n");
+            this.Write("\r\n\t/// <summary>Returns a new instance of this object with any number of properti" +
+                    "es changed.</summary>\r\n\tpublic ");
             
-            #line 93 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 90 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" With(");
+            
+            #line 90 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+
+		firstInSequence = true;
+		this.PushIndent("\t\t");
+
+		// Value parameters
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(", "); }
+			WriteLine("");
+			Write(GetTypeName(field.FieldType));
+			Write(" ");
+			Write(CamelCase(field.Name));
+			Write(" = default(" + GetTypeName(field.FieldType) + ")");
+			firstInSequence = false;
+		}
+
+		// Reset parameters
+		foreach(var field in fields) {
+			WriteLine(",");
+			Write("bool ");
+			Write("reset" + PascalCase(field.Name));
+			Write(" = false");
+			firstInSequence = false;
+		}
+
+		this.PopIndent();
+
+            
+            #line default
+            #line hidden
+            this.Write(") {\r\n\t\treturn new ");
+            
+            #line 116 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("(");
+            
+            #line 116 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+
+			firstInSequence = true;
+			foreach(var field in fields) {
+				if (!firstInSequence) { Write(","); }
+				WriteLine("");
+
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\t\treset");
+            
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
+            
+            #line default
+            #line hidden
+            this.Write(" ? default(");
+            
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
+            
+            #line default
+            #line hidden
+            this.Write(") : ");
+            
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
+            
+            #line default
+            #line hidden
+            
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+
+				firstInSequence = false;
+			}
+	
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n\t}\r\n\r\n\t/// <summary>Normalizes and/or validates all properties on this object" +
+                    ".</summary>\r\n\t/// <exception type=\"ArgumentException\">Thrown if any properties h" +
+                    "ave disallowed values.</exception>\r\n\tprotected partial void Validate();\r\n}\r\n");
+            
+            #line 131 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
  } // looping over all template types
 
 	this.PopIndent();
@@ -280,7 +369,7 @@ namespace ");
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 98 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+        #line 136 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	public Type TemplateType { get; set; }
 
