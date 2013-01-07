@@ -1,0 +1,15 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.TemplateType = typeof(Fruit);
+#>
+<#@ Include File="ImmutableObjectGraph.tt" #>
+
+<#+
+	class Fruit {
+		string color;
+		int skinThickness;
+	}
+
+#>
+
