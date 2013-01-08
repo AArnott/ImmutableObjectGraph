@@ -11,6 +11,8 @@ namespace ConsoleApplication9 {
 		static void Main(string[] args) {
 			var apple = Fruit.Default
 				.With(color: "red", skinThickness: 3);
+			var greenApple = apple.With(color: "green");
+			var greenAppleWithDefaultThickness = greenApple.With(defaultSkinThickness: true);
 			var basket = Basket.Default.WithContents(ImmutableList<Fruit>.Empty.Add(apple)).WithSize(5);
 			var appleBuilder = apple.ToBuilder();
 			appleBuilder.Color = "yellow";

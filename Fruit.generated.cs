@@ -66,11 +66,11 @@ namespace ConsoleApplication9 {
 		public Basket With(
 			System.Int32 size = default(System.Int32), 
 			System.Collections.Immutable.ImmutableList<Fruit> contents = default(System.Collections.Immutable.ImmutableList<Fruit>),
-			bool resetSize = false,
-			bool resetContents = false) {
+			bool defaultSize = false,
+			bool defaultContents = false) {
 			return new Basket(
-					resetSize ? default(System.Int32) : (size != default(System.Int32) ? size : this.Size),
-					resetContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : (contents != default(System.Collections.Immutable.ImmutableList<Fruit>) ? contents : this.Contents));
+					defaultSize ? default(System.Int32) : (size != default(System.Int32) ? size : this.Size),
+					defaultContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : (contents != default(System.Collections.Immutable.ImmutableList<Fruit>) ? contents : this.Contents));
 		}
 	
 		public Builder ToBuilder() {
@@ -191,11 +191,11 @@ namespace ConsoleApplication9 {
 		public Fruit With(
 			System.String color = default(System.String), 
 			System.Int32 skinThickness = default(System.Int32),
-			bool resetColor = false,
-			bool resetSkinThickness = false) {
+			bool defaultColor = false,
+			bool defaultSkinThickness = false) {
 			return new Fruit(
-					resetColor ? default(System.String) : (color != default(System.String) ? color : this.Color),
-					resetSkinThickness ? default(System.Int32) : (skinThickness != default(System.Int32) ? skinThickness : this.SkinThickness));
+					defaultColor ? default(System.String) : (color != default(System.String) ? color : this.Color),
+					defaultSkinThickness ? default(System.Int32) : (skinThickness != default(System.Int32) ? skinThickness : this.SkinThickness));
 		}
 	
 		public Builder ToBuilder() {

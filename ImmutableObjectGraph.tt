@@ -114,7 +114,7 @@ public partial class <#= templateType.Name #> {
 		foreach(var field in fields) {
 			WriteLine(",");
 			Write("bool ");
-			Write("reset" + PascalCase(field.Name));
+			Write("default" + PascalCase(field.Name));
 			Write(" = false");
 			firstInSequence = false;
 		}
@@ -126,7 +126,7 @@ public partial class <#= templateType.Name #> {
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine("");
-#>				reset<#= PascalCase(field.Name) #> ? default(<#= GetTypeName(field.FieldType) #>) : (<#= CamelCase(field.Name) #> != default(<#= GetTypeName(field.FieldType) #>) ? <#= CamelCase(field.Name) #> : this.<#= PascalCase(field.Name) #>)<#
+#>				default<#= PascalCase(field.Name) #> ? default(<#= GetTypeName(field.FieldType) #>) : (<#= CamelCase(field.Name) #> != default(<#= GetTypeName(field.FieldType) #>) ? <#= CamelCase(field.Name) #> : this.<#= PascalCase(field.Name) #>)<#
 				firstInSequence = false;
 			}
 	#>);

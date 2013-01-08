@@ -316,7 +316,7 @@ namespace ");
 		foreach(var field in fields) {
 			WriteLine(",");
 			Write("bool ");
-			Write("reset" + PascalCase(field.Name));
+			Write("default" + PascalCase(field.Name));
 			Write(" = false");
 			firstInSequence = false;
 		}
@@ -345,7 +345,7 @@ namespace ");
             
             #line default
             #line hidden
-            this.Write("\t\t\t\treset");
+            this.Write("\t\t\t\tdefault");
             
             #line 129 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
