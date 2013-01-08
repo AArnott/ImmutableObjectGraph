@@ -8,8 +8,8 @@
     <ProjectGuid>{63930555-500F-4E7B-9F24-3D5C3D4F0573}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleApplication9</RootNamespace>
-    <AssemblyName>ConsoleApplication9</AssemblyName>
+    <RootNamespace>ImmutableObjectGraph</RootNamespace>
+    <AssemblyName>ImmutableObjectGraph</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

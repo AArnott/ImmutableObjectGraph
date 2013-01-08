@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ConsoleApplication9 {
+namespace ImmutableObjectGraph {
 	using System.Collections.Immutable;
 	using System.Reflection;
 

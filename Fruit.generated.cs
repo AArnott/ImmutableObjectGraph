@@ -8,7 +8,7 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-namespace ConsoleApplication9 {
+namespace ImmutableObjectGraph {
 	using System.Diagnostics;
 	
 	public partial class Basket {
