@@ -59,11 +59,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Fruit.tt</DependentUpon>
     </Compile>
-    <Compile Include="ImmutableObjectGraph.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ImmutableObjectGraph.tt</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -73,10 +68,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Fruit.generated.cs</LastGenOutput>
     </None>
-    <None Include="ImmutableObjectGraph.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ImmutableObjectGraph.cs</LastGenOutput>
-    </None>
+    <None Include="ImmutableObjectGraph.tt" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
