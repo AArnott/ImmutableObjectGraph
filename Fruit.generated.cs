@@ -75,10 +75,7 @@ namespace ConsoleApplication9 {
 		}
 	
 		public Builder ToBuilder() {
-			return new Builder {
-				Size = this.Size,
-				Contents = this.Contents,
-			};
+			return new Builder(this);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -86,17 +83,56 @@ namespace ConsoleApplication9 {
 		partial void Validate();
 	
 		public partial class Builder {
-			internal Builder() {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private Basket immutable;
+	
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private System.Int32 size;
+	
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private System.Collections.Immutable.ImmutableList<Fruit> contents;
+	
+			internal Builder(Basket immutable) {
+				this.immutable = immutable;
+	
+				this.size = immutable.Size;
+				this.contents = immutable.Contents;
 			}
 	
-			public System.Int32 Size { get; set; }
+			public System.Int32 Size {
+				get {
+					return this.size;
+				}
 	
-			public System.Collections.Immutable.ImmutableList<Fruit> Contents { get; set; }
+				set {
+					if (this.size != value) {
+						this.size = value;
+						this.immutable = null;
+					}
+				}
+			}
+	
+			public System.Collections.Immutable.ImmutableList<Fruit> Contents {
+				get {
+					return this.contents;
+				}
+	
+				set {
+					if (this.contents != value) {
+						this.contents = value;
+						this.immutable = null;
+					}
+				}
+			}
 	
 			public Basket ToImmutable() {
-				return Basket.Default.With(
-					this.Size,
-					this.Contents);
+				if (this.immutable == null) {
+					this.immutable = Basket.Default.With(
+						this.size,
+						this.contents);
+				}
+	
+				return this.immutable;
 			}
 		}
 	}
@@ -164,10 +200,7 @@ namespace ConsoleApplication9 {
 		}
 	
 		public Builder ToBuilder() {
-			return new Builder {
-				Color = this.Color,
-				SkinThickness = this.SkinThickness,
-			};
+			return new Builder(this);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -175,17 +208,56 @@ namespace ConsoleApplication9 {
 		partial void Validate();
 	
 		public partial class Builder {
-			internal Builder() {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private Fruit immutable;
+	
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private System.String color;
+	
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private System.Int32 skinThickness;
+	
+			internal Builder(Fruit immutable) {
+				this.immutable = immutable;
+	
+				this.color = immutable.Color;
+				this.skinThickness = immutable.SkinThickness;
 			}
 	
-			public System.String Color { get; set; }
+			public System.String Color {
+				get {
+					return this.color;
+				}
 	
-			public System.Int32 SkinThickness { get; set; }
+				set {
+					if (this.color != value) {
+						this.color = value;
+						this.immutable = null;
+					}
+				}
+			}
+	
+			public System.Int32 SkinThickness {
+				get {
+					return this.skinThickness;
+				}
+	
+				set {
+					if (this.skinThickness != value) {
+						this.skinThickness = value;
+						this.immutable = null;
+					}
+				}
+			}
 	
 			public Fruit ToImmutable() {
-				return Fruit.Default.With(
-					this.Color,
-					this.SkinThickness);
+				if (this.immutable == null) {
+					this.immutable = Fruit.Default.With(
+						this.color,
+						this.skinThickness);
+				}
+	
+				return this.immutable;
 			}
 		}
 	}

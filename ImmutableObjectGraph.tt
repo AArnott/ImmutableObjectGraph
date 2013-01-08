@@ -134,13 +134,7 @@ public partial class <#= templateType.Name #> {
 	}
 
 	public Builder ToBuilder() {
-		return new Builder {
-<#
-			foreach(var field in fields) {
-#>
-			<#= PascalCase(field.Name) #> = this.<#= PascalCase(field.Name) #>,
-<#			} #>
-		};
+		return new Builder(this);
 	}
 
 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -148,23 +142,53 @@ public partial class <#= templateType.Name #> {
 	partial void Validate();
 
 	public partial class Builder {
-		internal Builder() {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private <#= templateType.Name #> immutable;
+<#		foreach(var field in fields) { #>
+
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private <#= GetTypeName(field.FieldType) #> <#= CamelCase(field.Name) #>;
+<#		} #>
+
+		internal Builder(<#= templateType.Name #> immutable) {
+			this.immutable = immutable;
+
+<#
+			foreach(var field in fields) {
+#>
+			this.<#= CamelCase(field.Name) #> = immutable.<#= PascalCase(field.Name) #>;
+<#			} #>
 		}
 <#		foreach(var field in fields) { #>
 
-		public <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; set; }
+		public <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> {
+			get {
+				return this.<#= CamelCase(field.Name) #>;
+			}
+
+			set {
+				if (this.<#= CamelCase(field.Name) #> != value) {
+					this.<#= CamelCase(field.Name) #> = value;
+					this.immutable = null;
+				}
+			}
+		}
 <#		} #>
 
 		public <#= templateType.Name #> ToImmutable() {
-			return <#= templateType.Name #>.Default.With(<#
+			if (this.immutable == null) {
+				this.immutable = <#= templateType.Name #>.Default.With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine(""); #>
-				this.<#= PascalCase(field.Name) #><#
+					this.<#= CamelCase(field.Name) #><#
 				firstInSequence = false;
 			} #>
 );
+			}
+
+			return this.immutable;
 		}
 	}
 }
