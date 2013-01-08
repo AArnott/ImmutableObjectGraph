@@ -9,12 +9,17 @@
 // ------------------------------------------------------------------------------
 
 namespace ConsoleApplication9 {
+	using System.Diagnostics;
+
 	
 	public partial class Basket {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Basket DefaultInstance = new Basket();
 	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 size;
 	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableList<Fruit> contents;
 	
 		/// <summary>Initializes a new instance of the Basket class.</summary>
@@ -96,10 +101,13 @@ namespace ConsoleApplication9 {
 	}
 	
 	public partial class Fruit {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Fruit DefaultInstance = new Fruit();
 	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String color;
 	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 skinThickness;
 	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
