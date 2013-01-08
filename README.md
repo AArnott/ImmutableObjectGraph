@@ -37,8 +37,17 @@ appear in a type in C#.
  * Builder classes are generated to allow efficient multi-step mutation
    without producing unnecessary GC pressure.
 
+Usage
+-----
+This project is a sample. Its suggested use is to copy the
+`ImmutableObjectGraph.tt` file to your own project and include it into your own
+T4 template as demonstrated in the `Fruit.tt` file.
+
 Example
 -------
+A live example can be seen by comparing the source file `Fruit.tt` to the 
+generated output found in `Fruit.generated.cs`. Both of these files are in 
+this project.
 
 For example, the T4 transformation can take the following mutable template class:
 
