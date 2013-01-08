@@ -60,8 +60,8 @@ namespace ConsoleApplication9 {
 			bool resetSize = false,
 			bool resetContents = false) {
 			return new Basket(
-					resetSize ? default(System.Int32) : size,
-					resetContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : contents);
+					resetSize ? default(System.Int32) : (size != default(System.Int32) ? size : this.Size),
+					resetContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : (contents != default(System.Collections.Immutable.ImmutableList<Fruit>) ? contents : this.Contents));
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -119,8 +119,8 @@ namespace ConsoleApplication9 {
 			bool resetColor = false,
 			bool resetSkinThickness = false) {
 			return new Fruit(
-					resetColor ? default(System.String) : color,
-					resetSkinThickness ? default(System.Int32) : skinThickness);
+					resetColor ? default(System.String) : (color != default(System.String) ? color : this.Color),
+					resetSkinThickness ? default(System.Int32) : (skinThickness != default(System.Int32) ? skinThickness : this.SkinThickness));
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>

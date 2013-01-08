@@ -118,7 +118,7 @@ public partial class <#= templateType.Name #> {
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine("");
-#>				reset<#= PascalCase(field.Name) #> ? default(<#= GetTypeName(field.FieldType) #>) : <#= CamelCase(field.Name) #><#
+#>				reset<#= PascalCase(field.Name) #> ? default(<#= GetTypeName(field.FieldType) #>) : (<#= CamelCase(field.Name) #> != default(<#= GetTypeName(field.FieldType) #>) ? <#= CamelCase(field.Name) #> : this.<#= PascalCase(field.Name) #>)<#
 				firstInSequence = false;
 			}
 	#>);

@@ -337,13 +337,35 @@ namespace ");
             
             #line default
             #line hidden
-            this.Write(") : ");
+            this.Write(") : (");
             
             #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
             
             #line default
             #line hidden
+            this.Write(" != default(");
+            
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
+            
+            #line default
+            #line hidden
+            this.Write(") ? ");
+            
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
+            
+            #line default
+            #line hidden
+            this.Write(" : this.");
+            
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
+            
+            #line default
+            #line hidden
+            this.Write(")");
             
             #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
