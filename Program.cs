@@ -9,9 +9,9 @@ namespace ConsoleApplication9 {
 
 	class Program {
 		static void Main(string[] args) {
-			var apple = new Fruit()
+			var apple = Fruit.Default
 				.With(color: "red", skinThickness: 3);
-			var basket = new Basket().WithContents(ImmutableList<Fruit>.Empty.Add(apple)).WithSize(5);
+			var basket = Basket.Default.WithContents(ImmutableList<Fruit>.Empty.Add(apple)).WithSize(5);
 			Console.WriteLine("You have a {0} apple with {1} skin thickness", apple.Color, apple.SkinThickness);
 		}
 	}

@@ -62,9 +62,23 @@ namespace ");
             
             #line default
             #line hidden
-            this.Write(" {\r\n");
+            this.Write(" {\r\n\tprivate static readonly ");
             
             #line 22 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" DefaultInstance = new ");
+            
+            #line 22 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("();\r\n");
+            
+            #line 23 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	var fields = templateType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 	foreach(var field in fields) {
@@ -74,21 +88,21 @@ namespace ");
             #line hidden
             this.Write("\r\n\tprivate readonly ");
             
-            #line 27 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 28 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 27 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 28 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 28 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 29 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	}
 
@@ -97,35 +111,35 @@ namespace ");
             #line hidden
             this.Write("\r\n\t/// <summary>Initializes a new instance of the ");
             
-            #line 32 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 33 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
-            this.Write(" class.</summary>\r\n\tpublic ");
+            this.Write(" class.</summary>\r\n\tprivate ");
             
-            #line 33 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 34 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n\t{\r\n\t}\r\n\r\n\t/// <summary>Initializes a new instance of the ");
             
-            #line 37 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 38 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
-            this.Write(" class.</summary>\r\n\tpublic ");
+            this.Write(" class.</summary>\r\n\tprivate ");
             
-            #line 38 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 39 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 38 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 39 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	bool firstInSequence = true;
 	foreach(var field in fields) {
@@ -141,7 +155,7 @@ namespace ");
             #line hidden
             this.Write(")\r\n\t{\r\n");
             
-            #line 49 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 50 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	foreach(var field in fields) {
 
@@ -150,30 +164,37 @@ namespace ");
             #line hidden
             this.Write("\t\tthis.");
             
-            #line 52 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 53 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(" = ");
             
-            #line 52 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 53 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 53 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 54 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write("\t\tthis.Validate();\r\n\t}\r\n");
+            this.Write("\t\tthis.Validate();\r\n\t}\r\n\r\n\tpublic static ");
             
-            #line 58 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 60 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" Default {\r\n\t\tget { return DefaultInstance; }\r\n\t}\r\n");
+            
+            #line 63 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	foreach(var field in fields) {
 
@@ -182,63 +203,63 @@ namespace ");
             #line hidden
             this.Write("\r\n\tpublic ");
             
-            #line 62 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 67 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 62 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 67 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(" {\r\n\t\tget { return this.");
             
-            #line 63 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 68 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
             
             #line default
             #line hidden
             this.Write("; }\r\n\t}\r\n\r\n\tpublic ");
             
-            #line 66 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 71 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
             this.Write(" With");
             
-            #line 66 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 71 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 66 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 71 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
             this.Write(" value) {\r\n\t\tif (value == this.");
             
-            #line 67 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 72 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(") {\r\n\t\t\treturn this;\r\n\t\t}\r\n\r\n\t\treturn new ");
             
-            #line 71 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 76 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 71 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 76 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	firstInSequence = true;
 	foreach(var field2 in fields) {
@@ -257,7 +278,7 @@ namespace ");
             #line hidden
             this.Write(");\r\n\t}\r\n");
             
-            #line 85 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 90 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	}
 
@@ -267,14 +288,14 @@ namespace ");
             this.Write("\r\n\t/// <summary>Returns a new instance of this object with any number of properti" +
                     "es changed.</summary>\r\n\tpublic ");
             
-            #line 90 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 95 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
             this.Write(" With(");
             
-            #line 90 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 95 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 		firstInSequence = true;
 		this.PushIndent("\t\t");
@@ -306,14 +327,14 @@ namespace ");
             #line hidden
             this.Write(") {\r\n\t\treturn new ");
             
-            #line 116 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 116 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 			firstInSequence = true;
 			foreach(var field in fields) {
@@ -325,49 +346,49 @@ namespace ");
             #line hidden
             this.Write("\t\t\t\treset");
             
-            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 126 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(" ? default(");
             
-            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 126 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
             this.Write(") : (");
             
-            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 126 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(" != default(");
             
-            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 126 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
             this.Write(") ? ");
             
-            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 126 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CamelCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(" : this.");
             
-            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 126 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(")");
             
-            #line 121 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 126 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 				firstInSequence = false;
 			}
@@ -377,7 +398,7 @@ namespace ");
             #line hidden
             this.Write(");\r\n\t}\r\n\r\n\tpublic Builder ToBuilder() {\r\n\t\treturn new Builder {\r\n");
             
-            #line 129 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 134 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 			foreach(var field in fields) {
 
@@ -386,21 +407,21 @@ namespace ");
             #line hidden
             this.Write("\t\t\t");
             
-            #line 132 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 137 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(" = this.");
             
-            #line 132 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 137 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(",\r\n");
             
-            #line 133 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 138 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 			} 
             
             #line default
@@ -418,49 +439,49 @@ namespace ");
 
 ");
             
-            #line 145 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 150 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 		foreach(var field in fields) { 
             
             #line default
             #line hidden
             this.Write("\t\tpublic ");
             
-            #line 146 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 151 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 146 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 151 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 147 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 152 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 		} 
             
             #line default
             #line hidden
             this.Write("\r\n\t\tpublic ");
             
-            #line 149 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 154 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
-            this.Write(" ToImmutable() {\r\n\t\t\treturn new ");
+            this.Write(" ToImmutable() {\r\n\t\t\treturn ");
             
-            #line 150 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 155 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(templateType.Name));
             
             #line default
             #line hidden
-            this.Write("(");
+            this.Write(".Default.With(");
             
-            #line 150 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 155 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 			firstInSequence = true;
 			foreach(var field in fields) {
@@ -471,13 +492,13 @@ namespace ");
             #line hidden
             this.Write("\t\t\t\tthis.");
             
-            #line 155 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 160 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PascalCase(field.Name)));
             
             #line default
             #line hidden
             
-            #line 155 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 160 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 				firstInSequence = false;
 			} 
@@ -486,7 +507,7 @@ namespace ");
             #line hidden
             this.Write(");\r\n\t\t}\r\n\t}\r\n}\r\n");
             
-            #line 162 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 167 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
  } // looping over all template types
 
 	this.PopIndent();
@@ -498,7 +519,7 @@ namespace ");
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 167 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+        #line 172 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 
 	public Type TemplateType { get; set; }
 

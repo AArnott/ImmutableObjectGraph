@@ -11,22 +11,27 @@
 namespace ConsoleApplication9 {
 	
 	public partial class Basket {
+		private static readonly Basket DefaultInstance = new Basket();
 	
 		private readonly System.Int32 size;
 	
 		private readonly System.Collections.Immutable.ImmutableList<Fruit> contents;
 	
 		/// <summary>Initializes a new instance of the Basket class.</summary>
-		public Basket()
+		private Basket()
 		{
 		}
 	
 		/// <summary>Initializes a new instance of the Basket class.</summary>
-		public Basket(System.Int32 size, System.Collections.Immutable.ImmutableList<Fruit> contents)
+		private Basket(System.Int32 size, System.Collections.Immutable.ImmutableList<Fruit> contents)
 		{
 			this.size = size;
 			this.contents = contents;
 			this.Validate();
+		}
+	
+		public static Basket Default {
+			get { return DefaultInstance; }
 		}
 	
 		public System.Int32 Size {
@@ -83,7 +88,7 @@ namespace ConsoleApplication9 {
 			public System.Collections.Immutable.ImmutableList<Fruit> Contents { get; set; }
 	
 			public Basket ToImmutable() {
-				return new Basket(
+				return Basket.Default.With(
 					this.Size,
 					this.Contents);
 			}
@@ -91,22 +96,27 @@ namespace ConsoleApplication9 {
 	}
 	
 	public partial class Fruit {
+		private static readonly Fruit DefaultInstance = new Fruit();
 	
 		private readonly System.String color;
 	
 		private readonly System.Int32 skinThickness;
 	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
-		public Fruit()
+		private Fruit()
 		{
 		}
 	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
-		public Fruit(System.String color, System.Int32 skinThickness)
+		private Fruit(System.String color, System.Int32 skinThickness)
 		{
 			this.color = color;
 			this.skinThickness = skinThickness;
 			this.Validate();
+		}
+	
+		public static Fruit Default {
+			get { return DefaultInstance; }
 		}
 	
 		public System.String Color {
@@ -163,7 +173,7 @@ namespace ConsoleApplication9 {
 			public System.Int32 SkinThickness { get; set; }
 	
 			public Fruit ToImmutable() {
-				return new Fruit(
+				return Fruit.Default.With(
 					this.Color,
 					this.SkinThickness);
 			}

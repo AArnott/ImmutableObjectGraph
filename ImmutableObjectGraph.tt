@@ -19,6 +19,7 @@ namespace <#= this.Namespace #> {
 #>
 
 public partial class <#= templateType.Name #> {
+	private static readonly <#= templateType.Name #> DefaultInstance = new <#= templateType.Name #>();
 <#
 	var fields = templateType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 	foreach(var field in fields) {
@@ -30,12 +31,12 @@ public partial class <#= templateType.Name #> {
 #>
 
 	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	public <#= templateType.Name #>()
+	private <#= templateType.Name #>()
 	{
 	}
 
 	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	public <#= templateType.Name #>(<#
+	private <#= templateType.Name #>(<#
 	bool firstInSequence = true;
 	foreach(var field in fields) {
 		if (!firstInSequence) { Write(", "); }
@@ -54,6 +55,10 @@ public partial class <#= templateType.Name #> {
 	}
 #>
 		this.Validate();
+	}
+
+	public static <#= templateType.Name #> Default {
+		get { return DefaultInstance; }
 	}
 <#
 	foreach(var field in fields) {
@@ -147,7 +152,7 @@ public partial class <#= templateType.Name #> {
 <#		} #>
 
 		public <#= templateType.Name #> ToImmutable() {
-			return new <#= templateType.Name #>(<#
+			return <#= templateType.Name #>.Default.With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
