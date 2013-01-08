@@ -10,7 +10,6 @@
 
 namespace ConsoleApplication9 {
 	using System.Diagnostics;
-
 	
 	public partial class Basket {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]

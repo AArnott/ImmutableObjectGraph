@@ -13,7 +13,6 @@
 
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
-
 <#
 	this.PushIndent("\t");
 	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
