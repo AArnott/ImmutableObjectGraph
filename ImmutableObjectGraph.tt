@@ -150,8 +150,8 @@ public partial class <#= templateType.Name #> {
 	public partial class Builder {
 		internal Builder() {
 		}
-
 <#		foreach(var field in fields) { #>
+
 		public <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; set; }
 <#		} #>
 

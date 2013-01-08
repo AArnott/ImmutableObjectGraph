@@ -90,6 +90,7 @@ namespace ConsoleApplication9 {
 			}
 	
 			public System.Int32 Size { get; set; }
+	
 			public System.Collections.Immutable.ImmutableList<Fruit> Contents { get; set; }
 	
 			public Basket ToImmutable() {
@@ -178,6 +179,7 @@ namespace ConsoleApplication9 {
 			}
 	
 			public System.String Color { get; set; }
+	
 			public System.Int32 SkinThickness { get; set; }
 	
 			public Fruit ToImmutable() {

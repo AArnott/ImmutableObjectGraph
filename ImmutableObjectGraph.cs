@@ -437,15 +437,14 @@ namespace ");
 	public partial class Builder {
 		internal Builder() {
 		}
-
 ");
             
-            #line 154 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
+            #line 153 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
 		foreach(var field in fields) { 
             
             #line default
             #line hidden
-            this.Write("\t\tpublic ");
+            this.Write("\r\n\t\tpublic ");
             
             #line 155 "C:\Users\Andrew\git\ImmutableObjectGraph\ImmutableObjectGraph.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeName(field.FieldType)));
