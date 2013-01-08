@@ -124,9 +124,40 @@ public partial class <#= templateType.Name #> {
 	#>);
 	}
 
+	public Builder ToBuilder() {
+		return new Builder {
+<#
+			foreach(var field in fields) {
+#>
+			<#= PascalCase(field.Name) #> = this.<#= PascalCase(field.Name) #>,
+<#			} #>
+		};
+	}
+
 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
 	/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 	partial void Validate();
+
+	public partial class Builder {
+		internal Builder() {
+		}
+
+<#		foreach(var field in fields) { #>
+		public <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; set; }
+<#		} #>
+
+		public <#= templateType.Name #> ToImmutable() {
+			return new <#= templateType.Name #>(<#
+			firstInSequence = true;
+			foreach(var field in fields) {
+				if (!firstInSequence) { Write(","); }
+				WriteLine(""); #>
+				this.<#= PascalCase(field.Name) #><#
+				firstInSequence = false;
+			} #>
+);
+		}
+	}
 }
 <# } // looping over all template types
 

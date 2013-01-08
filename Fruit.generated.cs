@@ -64,9 +64,30 @@ namespace ConsoleApplication9 {
 					resetContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : (contents != default(System.Collections.Immutable.ImmutableList<Fruit>) ? contents : this.Contents));
 		}
 	
+		public Builder ToBuilder() {
+			return new Builder {
+				Size = this.Size,
+				Contents = this.Contents,
+			};
+		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
+	
+		public partial class Builder {
+			internal Builder() {
+			}
+	
+			public System.Int32 Size { get; set; }
+			public System.Collections.Immutable.ImmutableList<Fruit> Contents { get; set; }
+	
+			public Basket ToImmutable() {
+				return new Basket(
+					this.Size,
+					this.Contents);
+			}
+		}
 	}
 	
 	public partial class Fruit {
@@ -123,9 +144,30 @@ namespace ConsoleApplication9 {
 					resetSkinThickness ? default(System.Int32) : (skinThickness != default(System.Int32) ? skinThickness : this.SkinThickness));
 		}
 	
+		public Builder ToBuilder() {
+			return new Builder {
+				Color = this.Color,
+				SkinThickness = this.SkinThickness,
+			};
+		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
+	
+		public partial class Builder {
+			internal Builder() {
+			}
+	
+			public System.String Color { get; set; }
+			public System.Int32 SkinThickness { get; set; }
+	
+			public Fruit ToImmutable() {
+				return new Fruit(
+					this.Color,
+					this.SkinThickness);
+			}
+		}
 	}
 }
 
