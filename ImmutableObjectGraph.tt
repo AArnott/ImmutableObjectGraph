@@ -13,6 +13,26 @@
 
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
+
+    public struct WithParameter<T>
+    {
+        public readonly bool _isDefined;
+        public bool IsDefined { get { return _isDefined; } }
+
+        public readonly T _value;
+        public T Value { get { return _value; } }
+
+        public WithParameter(T value)
+        {
+            _isDefined = true;
+            _value = value;
+        }
+
+        public static implicit operator WithParameter<T>(T value)
+        {
+            return new WithParameter<T>(value);
+        }
+    }
 <#
 	this.PushIndent("\t");
 	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
@@ -103,19 +123,11 @@ public partial class <#= templateType.Name #> {
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
+			Write("WithParameter<");
 			Write(GetTypeName(field.FieldType));
-			Write(" ");
+			Write("> ");
 			Write(CamelCase(field.Name));
-			Write(" = default(" + GetTypeName(field.FieldType) + ")");
-			firstInSequence = false;
-		}
-
-		// Reset parameters
-		foreach(var field in fields) {
-			WriteLine(",");
-			Write("bool ");
-			Write("default" + PascalCase(field.Name));
-			Write(" = false");
+			Write(" = default(WithParameter<" + GetTypeName(field.FieldType) + ">)");
 			firstInSequence = false;
 		}
 
@@ -126,7 +138,7 @@ public partial class <#= templateType.Name #> {
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine("");
-#>				default<#= PascalCase(field.Name) #> ? default(<#= GetTypeName(field.FieldType) #>) : (<#= CamelCase(field.Name) #> != default(<#= GetTypeName(field.FieldType) #>) ? <#= CamelCase(field.Name) #> : this.<#= PascalCase(field.Name) #>)<#
+#>				<#= CamelCase(field.Name) #>.IsDefined ? <#= CamelCase(field.Name) #>.Value : this.<#= PascalCase(field.Name) #><#
 				firstInSequence = false;
 			}
 	#>);
