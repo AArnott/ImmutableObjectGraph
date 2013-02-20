@@ -11,23 +11,29 @@
 namespace ImmutableObjectGraph {
 	using System.Diagnostics;
 
-	public struct WithParameter<T>
-	{
-		public readonly bool _isDefined;
-		public bool IsDefined { get { return _isDefined; } }
+	/// <summary>
+	/// A wrapper around optional parameters to capture whether they were specified or omitted.
+	/// An implicit operator is defined so no one has to explicitly create this struct.
+	/// </summary>
+	public struct Optional<T> {
+		private readonly T value;
+		private readonly bool isDefined;
 
-		public readonly T _value;
-		public T Value { get { return _value; } }
-
-		private WithParameter(T value)
-		{
-			_isDefined = true;
-			_value = value;
+		private Optional(T value) {
+			this.isDefined = true;
+			this.value = value;
 		}
 
-		public static implicit operator WithParameter<T>(T value)
-		{
-			return new WithParameter<T>(value);
+		public bool IsDefined {
+			get { return this.isDefined; }
+		}
+
+		public T Value {
+			get { return this.value; }
+		}
+
+		public static implicit operator Optional<T>(T value) {
+			return new Optional<T>(value);
 		}
 	}
 	
@@ -84,8 +90,8 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Basket With(
-			WithParameter<System.Int32> size = default(WithParameter<System.Int32>), 
-			WithParameter<System.Collections.Immutable.ImmutableList<Fruit>> contents = default(WithParameter<System.Collections.Immutable.ImmutableList<Fruit>>)) {
+			Optional<System.Int32> size = default(Optional<System.Int32>), 
+			Optional<System.Collections.Immutable.ImmutableList<Fruit>> contents = default(Optional<System.Collections.Immutable.ImmutableList<Fruit>>)) {
 			return new Basket(
 					size.IsDefined ? size.Value : this.Size,
 					contents.IsDefined ? contents.Value : this.Contents);
@@ -207,8 +213,8 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Fruit With(
-			WithParameter<System.String> color = default(WithParameter<System.String>), 
-			WithParameter<System.Int32> skinThickness = default(WithParameter<System.Int32>)) {
+			Optional<System.String> color = default(Optional<System.String>), 
+			Optional<System.Int32> skinThickness = default(Optional<System.Int32>)) {
 			return new Fruit(
 					color.IsDefined ? color.Value : this.Color,
 					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness);
