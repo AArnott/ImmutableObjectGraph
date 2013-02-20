@@ -19,7 +19,7 @@ namespace ImmutableObjectGraph {
         public readonly T _value;
         public T Value { get { return _value; } }
 
-        public WithParameter(T value)
+        private WithParameter(T value)
         {
             _isDefined = true;
             _value = value;
