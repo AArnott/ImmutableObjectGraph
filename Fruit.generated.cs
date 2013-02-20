@@ -11,25 +11,25 @@
 namespace ImmutableObjectGraph {
 	using System.Diagnostics;
 
-    public struct WithParameter<T>
-    {
-        public readonly bool _isDefined;
-        public bool IsDefined { get { return _isDefined; } }
+	public struct WithParameter<T>
+	{
+		public readonly bool _isDefined;
+		public bool IsDefined { get { return _isDefined; } }
 
-        public readonly T _value;
-        public T Value { get { return _value; } }
+		public readonly T _value;
+		public T Value { get { return _value; } }
 
-        private WithParameter(T value)
-        {
-            _isDefined = true;
-            _value = value;
-        }
+		private WithParameter(T value)
+		{
+			_isDefined = true;
+			_value = value;
+		}
 
-        public static implicit operator WithParameter<T>(T value)
-        {
-            return new WithParameter<T>(value);
-        }
-    }
+		public static implicit operator WithParameter<T>(T value)
+		{
+			return new WithParameter<T>(value);
+		}
+	}
 	
 	public partial class Basket {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
