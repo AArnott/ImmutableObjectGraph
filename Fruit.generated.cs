@@ -10,6 +10,32 @@
 
 namespace ImmutableObjectGraph {
 	using System.Diagnostics;
+
+	/// <summary>
+	/// A wrapper around optional parameters to capture whether they were specified or omitted.
+	/// An implicit operator is defined so no one has to explicitly create this struct.
+	/// </summary>
+	public struct Optional<T> {
+		private readonly T value;
+		private readonly bool isDefined;
+
+		private Optional(T value) {
+			this.isDefined = true;
+			this.value = value;
+		}
+
+		public bool IsDefined {
+			get { return this.isDefined; }
+		}
+
+		public T Value {
+			get { return this.value; }
+		}
+
+		public static implicit operator Optional<T>(T value) {
+			return new Optional<T>(value);
+		}
+	}
 	
 	public partial class Basket {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -64,13 +90,11 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Basket With(
-			System.Int32 size = default(System.Int32), 
-			System.Collections.Immutable.ImmutableList<Fruit> contents = default(System.Collections.Immutable.ImmutableList<Fruit>),
-			bool defaultSize = false,
-			bool defaultContents = false) {
+			Optional<System.Int32> size = default(Optional<System.Int32>), 
+			Optional<System.Collections.Immutable.ImmutableList<Fruit>> contents = default(Optional<System.Collections.Immutable.ImmutableList<Fruit>>)) {
 			return new Basket(
-					defaultSize ? default(System.Int32) : (size != default(System.Int32) ? size : this.Size),
-					defaultContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : (contents != default(System.Collections.Immutable.ImmutableList<Fruit>) ? contents : this.Contents));
+					size.IsDefined ? size.Value : this.Size,
+					contents.IsDefined ? contents.Value : this.Contents);
 		}
 	
 		public Builder ToBuilder() {
@@ -189,13 +213,11 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Fruit With(
-			System.String color = default(System.String), 
-			System.Int32 skinThickness = default(System.Int32),
-			bool defaultColor = false,
-			bool defaultSkinThickness = false) {
+			Optional<System.String> color = default(Optional<System.String>), 
+			Optional<System.Int32> skinThickness = default(Optional<System.Int32>)) {
 			return new Fruit(
-					defaultColor ? default(System.String) : (color != default(System.String) ? color : this.Color),
-					defaultSkinThickness ? default(System.Int32) : (skinThickness != default(System.Int32) ? skinThickness : this.SkinThickness));
+					color.IsDefined ? color.Value : this.Color,
+					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness);
 		}
 	
 		public Builder ToBuilder() {
