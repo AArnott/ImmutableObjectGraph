@@ -10,6 +10,26 @@
 
 namespace ImmutableObjectGraph {
 	using System.Diagnostics;
+
+    public struct WithParameter<T>
+    {
+        public readonly bool _isDefined;
+        public bool IsDefined { get { return _isDefined; } }
+
+        public readonly T _value;
+        public T Value { get { return _value; } }
+
+        private WithParameter(T value)
+        {
+            _isDefined = true;
+            _value = value;
+        }
+
+        public static implicit operator WithParameter<T>(T value)
+        {
+            return new WithParameter<T>(value);
+        }
+    }
 	
 	public partial class Basket {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -64,13 +84,11 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Basket With(
-			System.Int32 size = default(System.Int32), 
-			System.Collections.Immutable.ImmutableList<Fruit> contents = default(System.Collections.Immutable.ImmutableList<Fruit>),
-			bool defaultSize = false,
-			bool defaultContents = false) {
+			WithParameter<System.Int32> size = default(WithParameter<System.Int32>), 
+			WithParameter<System.Collections.Immutable.ImmutableList<Fruit>> contents = default(WithParameter<System.Collections.Immutable.ImmutableList<Fruit>>)) {
 			return new Basket(
-					defaultSize ? default(System.Int32) : (size != default(System.Int32) ? size : this.Size),
-					defaultContents ? default(System.Collections.Immutable.ImmutableList<Fruit>) : (contents != default(System.Collections.Immutable.ImmutableList<Fruit>) ? contents : this.Contents));
+					size.IsDefined ? size.Value : this.Size,
+					contents.IsDefined ? contents.Value : this.Contents);
 		}
 	
 		public Builder ToBuilder() {
@@ -189,13 +207,11 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Fruit With(
-			System.String color = default(System.String), 
-			System.Int32 skinThickness = default(System.Int32),
-			bool defaultColor = false,
-			bool defaultSkinThickness = false) {
+			WithParameter<System.String> color = default(WithParameter<System.String>), 
+			WithParameter<System.Int32> skinThickness = default(WithParameter<System.Int32>)) {
 			return new Fruit(
-					defaultColor ? default(System.String) : (color != default(System.String) ? color : this.Color),
-					defaultSkinThickness ? default(System.Int32) : (skinThickness != default(System.Int32) ? skinThickness : this.SkinThickness));
+					color.IsDefined ? color.Value : this.Color,
+					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness);
 		}
 	
 		public Builder ToBuilder() {
