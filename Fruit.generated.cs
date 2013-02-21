@@ -19,7 +19,7 @@ namespace ImmutableObjectGraph {
 		private readonly T value;
 		private readonly bool isDefined;
 
-		private Optional(T value) {
+		public Optional(T value) {
 			this.isDefined = true;
 			this.value = value;
 		}
