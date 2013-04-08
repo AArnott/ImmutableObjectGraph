@@ -264,7 +264,7 @@ public partial class <#= templateType.Name #> {
 			: type.FullName;
 
 		if (collection) {
-			typeName = "System.Collections.Immutable.ImmutableList<" + typeName + ">";
+			typeName = "System.Collections.Immutable.IImmutableList<" + typeName + ">";
 		}
 
 		return typeName;
