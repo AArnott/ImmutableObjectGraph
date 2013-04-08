@@ -11,8 +11,10 @@
 		int skinThickness;
 	}
 
-	class Basket {
-		int size;
+    private struct IFruitSize {}
+
+    class Basket {
+		IFruitSize size;
 		Fruit[] contents;
 	}
 #>
