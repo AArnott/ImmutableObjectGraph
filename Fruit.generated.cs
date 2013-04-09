@@ -158,8 +158,8 @@ namespace ImmutableObjectGraph {
 			public Basket ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Basket.Default.With(
-						new Optional<System.Int32>(this.size),
-						new Optional<System.Collections.Immutable.IImmutableList<Fruit>>(this.contents));
+						Optional.For(this.size),
+						Optional.For(this.contents));
 				}
 	
 				return this.immutable;
@@ -316,9 +316,9 @@ namespace ImmutableObjectGraph {
 			public Fruit ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Fruit.Default.With(
-						new Optional<System.String>(this.color),
-						new Optional<System.Int32>(this.skinThickness),
-						new Optional<IPlant>(this.growsOn));
+						Optional.For(this.color),
+						Optional.For(this.skinThickness),
+						Optional.For(this.growsOn));
 				}
 	
 				return this.immutable;
