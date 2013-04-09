@@ -14,17 +14,19 @@ namespace ImmutableObjectGraph
         {
             var apple = Fruit.Default
                 .With(color: "red", skinThickness: 3);
-            var greenApple = apple.With(color: "green");
+
+            IPlant appleTree = new Tree("Apple tree");
+            
+            var greenApple = apple.With(color: "green", growsOn: Optional.For(appleTree));
+            greenApple = apple.With(color: "green", growsOn: (Tree)appleTree);
             var greenAppleWithDefaultThickness = greenApple.With(skinThickness: 0);
 
             ImmutableList<Fruit> immutableFruits = ImmutableList<Fruit>.Empty.Add(apple);
             IImmutableList<Fruit> fruits = immutableFruits;
-            var numericFruitSize = new NumericFruitSize(5);
-            IFruitSize size = numericFruitSize;
 
-            var basket = Basket.Default.With(contents: immutableFruits, size: numericFruitSize);
-            basket = Basket.Default.With(contents: Optional.For(fruits), size: Optional.For(size));
-            basket = Basket.Default.WithContents(fruits).WithSize(size);
+            var basket = Basket.Default.With(contents: immutableFruits, size: 5);
+            basket = Basket.Default.With(contents: Optional.For(fruits), size: 5);
+            basket = Basket.Default.WithContents(fruits).WithSize(5);
 
             var appleBuilder = apple.ToBuilder();
             appleBuilder.Color = "yellow";

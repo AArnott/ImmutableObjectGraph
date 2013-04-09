@@ -6,15 +6,16 @@
 #>
 <#@ Include File="ImmutableObjectGraph.tt" #>
 <#+
+    private interface IPlant { }
+
 	class Fruit {
 		string color;
 		int skinThickness;
+	    IPlant growsOn;
 	}
 
-    private struct IFruitSize {}
-
     class Basket {
-		IFruitSize size;
+		int size;
 		Fruit[] contents;
 	}
 #>
