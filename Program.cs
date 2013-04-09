@@ -8,10 +8,8 @@ namespace ImmutableObjectGraph
 	using System.Collections.Immutable;
 	using System.Reflection;
 
-	class Program
-	{
-		static void Main(string[] args)
-		{
+	class Program {
+		static void Main(string[] args) {
 			var apple = Fruit.Default
 				.With(color: "red", skinThickness: 3);
 
