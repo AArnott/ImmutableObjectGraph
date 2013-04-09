@@ -36,16 +36,23 @@ namespace ImmutableObjectGraph {
 			return new Optional<T>(value);
 		}
 	}
+
+    public static class Optional {
+        public static Optional<T> For<T>(T value) {
+            return value;
+        }
+    }
+
 	
 	public partial class Basket {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Basket DefaultInstance = new Basket();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Int32 size;
+		private readonly IFruitSize size;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Collections.Immutable.ImmutableList<Fruit> contents;
+		private readonly System.Collections.Immutable.IImmutableList<Fruit> contents;
 	
 		/// <summary>Initializes a new instance of the Basket class.</summary>
 		private Basket()
@@ -53,7 +60,7 @@ namespace ImmutableObjectGraph {
 		}
 	
 		/// <summary>Initializes a new instance of the Basket class.</summary>
-		private Basket(System.Int32 size, System.Collections.Immutable.ImmutableList<Fruit> contents)
+		private Basket(IFruitSize size, System.Collections.Immutable.IImmutableList<Fruit> contents)
 		{
 			this.size = size;
 			this.contents = contents;
@@ -64,11 +71,11 @@ namespace ImmutableObjectGraph {
 			get { return DefaultInstance; }
 		}
 	
-		public System.Int32 Size {
+		public IFruitSize Size {
 			get { return this.size; }
 		}
 	
-		public Basket WithSize(System.Int32 value) {
+		public Basket WithSize(IFruitSize value) {
 			if (value == this.Size) {
 				return this;
 			}
@@ -76,11 +83,11 @@ namespace ImmutableObjectGraph {
 			return new Basket(value, this.Contents);
 		}
 	
-		public System.Collections.Immutable.ImmutableList<Fruit> Contents {
+		public System.Collections.Immutable.IImmutableList<Fruit> Contents {
 			get { return this.contents; }
 		}
 	
-		public Basket WithContents(System.Collections.Immutable.ImmutableList<Fruit> value) {
+		public Basket WithContents(System.Collections.Immutable.IImmutableList<Fruit> value) {
 			if (value == this.Contents) {
 				return this;
 			}
@@ -90,8 +97,8 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Basket With(
-			Optional<System.Int32> size = default(Optional<System.Int32>), 
-			Optional<System.Collections.Immutable.ImmutableList<Fruit>> contents = default(Optional<System.Collections.Immutable.ImmutableList<Fruit>>)) {
+			Optional<IFruitSize>size = default(Optional<IFruitSize>), 
+			Optional<System.Collections.Immutable.IImmutableList<Fruit>>contents = default(Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
 			return new Basket(
 					size.IsDefined ? size.Value : this.Size,
 					contents.IsDefined ? contents.Value : this.Contents);
@@ -110,10 +117,10 @@ namespace ImmutableObjectGraph {
 			private Basket immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Int32 size;
+			private IFruitSize size;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Collections.Immutable.ImmutableList<Fruit> contents;
+			private System.Collections.Immutable.IImmutableList<Fruit> contents;
 	
 			internal Builder(Basket immutable) {
 				this.immutable = immutable;
@@ -122,7 +129,7 @@ namespace ImmutableObjectGraph {
 				this.contents = immutable.Contents;
 			}
 	
-			public System.Int32 Size {
+			public IFruitSize Size {
 				get {
 					return this.size;
 				}
@@ -135,7 +142,7 @@ namespace ImmutableObjectGraph {
 				}
 			}
 	
-			public System.Collections.Immutable.ImmutableList<Fruit> Contents {
+			public System.Collections.Immutable.IImmutableList<Fruit> Contents {
 				get {
 					return this.contents;
 				}
@@ -151,8 +158,8 @@ namespace ImmutableObjectGraph {
 			public Basket ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Basket.Default.With(
-						this.size,
-						this.contents);
+						new Optional<IFruitSize>(this.size),
+						new Optional<System.Collections.Immutable.IImmutableList<Fruit>>(this.contents));
 				}
 	
 				return this.immutable;
@@ -213,8 +220,8 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Fruit With(
-			Optional<System.String> color = default(Optional<System.String>), 
-			Optional<System.Int32> skinThickness = default(Optional<System.Int32>)) {
+			Optional<System.String>color = default(Optional<System.String>), 
+			Optional<System.Int32>skinThickness = default(Optional<System.Int32>)) {
 			return new Fruit(
 					color.IsDefined ? color.Value : this.Color,
 					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness);
@@ -274,8 +281,8 @@ namespace ImmutableObjectGraph {
 			public Fruit ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Fruit.Default.With(
-						this.color,
-						this.skinThickness);
+						new Optional<System.String>(this.color),
+						new Optional<System.Int32>(this.skinThickness));
 				}
 	
 				return this.immutable;

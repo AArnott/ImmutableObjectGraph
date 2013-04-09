@@ -1,4 +1,5 @@
 ﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
 <#@ Import Namespace="System.Reflection" #>
 <#@ Import Namespace="System.Collections.Generic" #>
 // ------------------------------------------------------------------------------
@@ -39,6 +40,13 @@ namespace <#= this.Namespace #> {
 			return new Optional<T>(value);
 		}
 	}
+
+    public static class Optional {
+        public static Optional<T> For<T>(T value) {
+            return value;
+        }
+    }
+
 <#
 	this.PushIndent("\t");
 	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
@@ -129,11 +137,9 @@ public partial class <#= templateType.Name #> {
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
-			Write("Optional<");
-			Write(GetTypeName(field.FieldType));
-			Write("> ");
+			Write(GetOptionalTypeName(field.FieldType));
 			Write(CamelCase(field.Name));
-			Write(" = default(Optional<" + GetTypeName(field.FieldType) + ">)");
+			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
 			firstInSequence = false;
 		}
 
@@ -199,7 +205,7 @@ public partial class <#= templateType.Name #> {
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine(""); #>
-					this.<#= CamelCase(field.Name) #><#
+					new <#= GetOptionalTypeName(field.FieldType) #>(this.<#= CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
 );
@@ -234,6 +240,8 @@ public partial class <#= templateType.Name #> {
 		while(pendingTypes.Count > 0)
 		{
 			var type = pendingTypes.Dequeue();
+		    if (!type.IsClass)
+		        continue;
 			if (types.Add(type)) {
 				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)) {
 					var memberType = field.FieldType;
@@ -264,9 +272,15 @@ public partial class <#= templateType.Name #> {
 			: type.FullName;
 
 		if (collection) {
-			typeName = "System.Collections.Immutable.ImmutableList<" + typeName + ">";
+			typeName = "System.Collections.Immutable.IImmutableList<" + typeName + ">";
 		}
 
 		return typeName;
 	}
+
+    protected string GetOptionalTypeName(Type type)
+    {
+        return "Optional<" + GetTypeName(type) + ">";
+    }
+
 #>
