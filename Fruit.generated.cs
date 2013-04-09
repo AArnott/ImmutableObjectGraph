@@ -97,8 +97,8 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Basket With(
-			Optional<System.Int32>size = default(Optional<System.Int32>), 
-			Optional<System.Collections.Immutable.IImmutableList<Fruit>>contents = default(Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
+			Optional<System.Int32> size = default(Optional<System.Int32>), 
+			Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
 			return new Basket(
 					size.IsDefined ? size.Value : this.Size,
 					contents.IsDefined ? contents.Value : this.Contents);
@@ -236,9 +236,9 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Fruit With(
-			Optional<System.String>color = default(Optional<System.String>), 
-			Optional<System.Int32>skinThickness = default(Optional<System.Int32>), 
-			Optional<System.ICloneable>growsOn = default(Optional<System.ICloneable>)) {
+			Optional<System.String> color = default(Optional<System.String>), 
+			Optional<System.Int32> skinThickness = default(Optional<System.Int32>), 
+			Optional<System.ICloneable> growsOn = default(Optional<System.ICloneable>)) {
 			return new Fruit(
 					color.IsDefined ? color.Value : this.Color,
 					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness,

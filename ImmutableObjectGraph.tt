@@ -138,6 +138,7 @@ public partial class <#= templateType.Name #> {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
 			Write(GetOptionalTypeName(field.FieldType));
+			Write(" ");
 			Write(CamelCase(field.Name));
 			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
 			firstInSequence = false;
