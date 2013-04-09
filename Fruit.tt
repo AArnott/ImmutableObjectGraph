@@ -10,10 +10,10 @@
 	class Fruit {
 		string color;
 		int skinThickness;
-	    ICloneable growsOn;
+		ICloneable growsOn;
 	}
 
-    class Basket {
+	class Basket {
 		int size;
 		Fruit[] contents;
 	}

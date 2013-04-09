@@ -41,11 +41,11 @@ namespace <#= this.Namespace #> {
 		}
 	}
 
-    public static class Optional {
-        public static Optional<T> For<T>(T value) {
-            return value;
-        }
-    }
+	public static class Optional {
+		public static Optional<T> For<T>(T value) {
+			return value;
+		}
+	}
 
 <#
 	this.PushIndent("\t");
@@ -105,7 +105,7 @@ public partial class <#= templateType.Name #> {
 		get { return this.<#= CamelCase(field.Name) #>; }
 	}
 
-	public <#=  templateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
+	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
 		if (value == this.<#= PascalCase(field.Name) #>) {
 			return this;
 		}
@@ -272,18 +272,18 @@ public partial class <#= templateType.Name #> {
 			: type.FullName;
 
 		if (collection) {
-		    if (UseClassCollectionType)
-		        typeName = "System.Collections.Immutable.ImmutableList<" + typeName + ">";
-		    else
-		        typeName = "System.Collections.Immutable.IImmutableList<" + typeName + ">";
+			if (UseClassCollectionType)
+				typeName = "System.Collections.Immutable.ImmutableList<" + typeName + ">";
+			else
+				typeName = "System.Collections.Immutable.IImmutableList<" + typeName + ">";
 		}
 
 		return typeName;
 	}
 
-    protected string GetOptionalTypeName(Type type)
-    {
-        return "Optional<" + GetTypeName(type) + ">";
-    }
+	protected string GetOptionalTypeName(Type type)
+	{
+		return "Optional<" + GetTypeName(type) + ">";
+	}
 
 #>

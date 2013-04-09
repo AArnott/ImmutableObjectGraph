@@ -2,18 +2,18 @@
 
 namespace ImmutableObjectGraph
 {
-    public class Tree : ICloneable
-    {
-        public string Name { get; private set; }
+	public class Tree : ICloneable
+	{
+		public string Name { get; private set; }
 
-        public Tree(string name)
-        {
-            Name = name;
-        }
+		public Tree(string name)
+		{
+			Name = name;
+		}
 
-        public object Clone()
-        {
-            return this;
-        }
-    }
+		public object Clone()
+		{
+			return this;
+		}
+	}
 }
