@@ -6,12 +6,10 @@
 #>
 <#@ Include File="ImmutableObjectGraph.tt" #>
 <#+
-    private interface IPlant { }
-
 	class Fruit {
 		string color;
 		int skinThickness;
-	    IPlant growsOn;
+	    ICloneable growsOn;
 	}
 
     class Basket {

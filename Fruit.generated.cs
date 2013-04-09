@@ -178,7 +178,7 @@ namespace ImmutableObjectGraph {
 		private readonly System.Int32 skinThickness;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly IPlant growsOn;
+		private readonly System.ICloneable growsOn;
 	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
 		private Fruit()
@@ -186,7 +186,7 @@ namespace ImmutableObjectGraph {
 		}
 	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
-		private Fruit(System.String color, System.Int32 skinThickness, IPlant growsOn)
+		private Fruit(System.String color, System.Int32 skinThickness, System.ICloneable growsOn)
 		{
 			this.color = color;
 			this.skinThickness = skinThickness;
@@ -222,11 +222,11 @@ namespace ImmutableObjectGraph {
 			return new Fruit(this.Color, value, this.GrowsOn);
 		}
 	
-		public IPlant GrowsOn {
+		public System.ICloneable GrowsOn {
 			get { return this.growsOn; }
 		}
 	
-		public Fruit WithGrowsOn(IPlant value) {
+		public Fruit WithGrowsOn(System.ICloneable value) {
 			if (value == this.GrowsOn) {
 				return this;
 			}
@@ -238,7 +238,7 @@ namespace ImmutableObjectGraph {
 		public Fruit With(
 			Optional<System.String>color = default(Optional<System.String>), 
 			Optional<System.Int32>skinThickness = default(Optional<System.Int32>), 
-			Optional<IPlant>growsOn = default(Optional<IPlant>)) {
+			Optional<System.ICloneable>growsOn = default(Optional<System.ICloneable>)) {
 			return new Fruit(
 					color.IsDefined ? color.Value : this.Color,
 					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness,
@@ -264,7 +264,7 @@ namespace ImmutableObjectGraph {
 			private System.Int32 skinThickness;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private IPlant growsOn;
+			private System.ICloneable growsOn;
 	
 			internal Builder(Fruit immutable) {
 				this.immutable = immutable;
@@ -300,7 +300,7 @@ namespace ImmutableObjectGraph {
 				}
 			}
 	
-			public IPlant GrowsOn {
+			public System.ICloneable GrowsOn {
 				get {
 					return this.growsOn;
 				}

@@ -240,8 +240,6 @@ public partial class <#= templateType.Name #> {
 		while(pendingTypes.Count > 0)
 		{
 			var type = pendingTypes.Dequeue();
-		    if (!type.IsClass)
-		        continue;
 			if (types.Add(type)) {
 				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)) {
 					var memberType = field.FieldType;

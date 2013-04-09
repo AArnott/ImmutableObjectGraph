@@ -15,7 +15,7 @@ namespace ImmutableObjectGraph
             var apple = Fruit.Default
                 .With(color: "red", skinThickness: 3);
 
-            IPlant appleTree = new Tree("Apple tree");
+            ICloneable appleTree = new Tree("Apple tree");
             
             var greenApple = apple.With(color: "green", growsOn: Optional.For(appleTree));
             greenApple = apple.With(color: "green", growsOn: (Tree)appleTree);
