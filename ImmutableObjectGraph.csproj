@@ -59,6 +59,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Fruit.tt</DependentUpon>
     </Compile>
+    <Compile Include="Tree.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
