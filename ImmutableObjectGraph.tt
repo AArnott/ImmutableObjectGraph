@@ -225,6 +225,8 @@ public partial class <#= templateType.Name #> {
 
 	public string Namespace { get; set; }
 
+	public bool UseClassCollectionType { get; set; }
+
 	protected static string PascalCase(string name) {
 		return name.Substring(0,1).ToUpperInvariant() + name.Substring(1);
 	}
@@ -270,7 +272,10 @@ public partial class <#= templateType.Name #> {
 			: type.FullName;
 
 		if (collection) {
-			typeName = "System.Collections.Immutable.IImmutableList<" + typeName + ">";
+		    if (UseClassCollectionType)
+		        typeName = "System.Collections.Immutable.ImmutableList<" + typeName + ">";
+		    else
+		        typeName = "System.Collections.Immutable.IImmutableList<" + typeName + ">";
 		}
 
 		return typeName;

@@ -3,6 +3,7 @@
 <#
 	this.Namespace = "ImmutableObjectGraph";
 	this.TemplateType = typeof(Basket);
+	this.UseClassCollectionType = false;
 #>
 <#@ Include File="ImmutableObjectGraph.tt" #>
 <#+
