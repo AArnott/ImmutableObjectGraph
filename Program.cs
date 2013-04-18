@@ -13,7 +13,7 @@ namespace ImmutableObjectGraph {
 				.With(color: "red", skinThickness: 3);
 			var greenApple = apple.With(color: "green");
 			var greenAppleWithDefaultThickness = greenApple.With(skinThickness: 0);
-			var basket = Basket.Default.WithContents(ImmutableList<Fruit>.Empty.Add(apple)).WithSize(5);
+			var basket = Basket.Default.WithContents(ImmutableList.Create(apple)).WithSize(5);
 			var appleBuilder = apple.ToBuilder();
 			appleBuilder.Color = "yellow";
 			var yellowApple = appleBuilder.ToImmutable();
