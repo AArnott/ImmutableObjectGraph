@@ -35,8 +35,12 @@ namespace Demo {
 			this.Validate();
 		}
 	
-		public static Basket Create() {
-			return DefaultInstance;
+		public static Basket Create(
+			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
+			return DefaultInstance.With(
+				size, 
+				contents);
 		}
 	
 		public System.Int32 Size {
@@ -162,8 +166,14 @@ namespace Demo {
 			this.Validate();
 		}
 	
-		public static Fruit Create() {
-			return DefaultInstance;
+		public static Fruit Create(
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.ICloneable> growsOn = default(ImmutableObjectGraph.Optional<System.ICloneable>)) {
+			return DefaultInstance.With(
+				color, 
+				skinThickness, 
+				growsOn);
 		}
 	
 		public System.String Color {

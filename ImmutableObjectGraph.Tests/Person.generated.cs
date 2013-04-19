@@ -35,8 +35,12 @@ namespace ImmutableObjectGraph {
 			this.Validate();
 		}
 	
-		public static Person Create() {
-			return DefaultInstance;
+		public static Person Create(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return DefaultInstance.With(
+				name, 
+				age);
 		}
 	
 		public System.String Name {

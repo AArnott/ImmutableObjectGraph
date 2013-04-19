@@ -26,6 +26,13 @@
 		}
 
 		[Fact]
+		public void CreateWithArguments() {
+			var billyAge10 = Person.Create(name: "billy", age: 10);
+			Assert.Equal("billy", billyAge10.Name);
+			Assert.Equal(10, billyAge10.Age);
+		}
+
+		[Fact]
 		public void SetScalarReferenceTypeProperty() {
 			var original = Person.Create();
 			var modified = original.WithName("bill");
