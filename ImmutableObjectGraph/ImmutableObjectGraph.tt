@@ -180,23 +180,31 @@ public partial class <#= templateType.Name #> {
 <#		foreach(var field in fields) { #>
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private <#= GetTypeName(field.FieldType) #> <#= CamelCase(field.Name) #>;
+		private <#= GetBuilderFieldTypeName(field.FieldType, templateTypes) #> <#= CamelCase(field.Name) #>;
 <#		} #>
 
 		internal Builder(<#= templateType.Name #> immutable) {
 			this.immutable = immutable;
 
 <#
-			foreach(var field in fields) {
+			foreach(var field in fields.Where(f => !templateTypes.Contains(f.FieldType))) {
 #>
 			this.<#= CamelCase(field.Name) #> = immutable.<#= PascalCase(field.Name) #>;
 <#			} #>
 		}
 <#		foreach(var field in fields) { #>
 
-		public <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> {
+		public <#= GetBuilderPropertyTypeName(field.FieldType, templateTypes) #> <#= PascalCase(field.Name) #> {
 			get {
+<# if (templateTypes.Contains(field.FieldType)) { #>
+				if (!this.<#= CamelCase(field.Name) #>.IsDefined) {
+					this.<#= CamelCase(field.Name) #> = this.immutable.<#= CamelCase(field.Name) #>.ToBuilder();
+				}
+
+				return this.<#= CamelCase(field.Name) #>.Value;
+<# } else { #>
 				return this.<#= CamelCase(field.Name) #>;
+<# } #>
 			}
 
 			set {
@@ -206,12 +214,16 @@ public partial class <#= templateType.Name #> {
 <#		} #>
 
 		public <#= templateType.Name #> ToImmutable() {
+<#			foreach(var templateField in fields.Where(f => templateTypes.Contains(f.FieldType))) { #>
+			var <#= CamelCase(templateField.Name) #> = this.<#= CamelCase(templateField.Name) #>.IsDefined ? (this.<#= CamelCase(templateField.Name) #>.Value != null ? this.<#= CamelCase(templateField.Name) #>.Value.ToImmutable() : null) : this.immutable.<#= CamelCase(templateField.Name) #>;
+<#			} #>
 			return this.immutable = this.immutable.With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
-				WriteLine(""); #>
-				ImmutableObjectGraph.Optional.For(this.<#= CamelCase(field.Name) #>)<#
+				WriteLine("");
+				string prefix = templateTypes.Contains(field.FieldType) ? "" : "this."; #>
+				ImmutableObjectGraph.Optional.For(<#= prefix + CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
 );
@@ -260,6 +272,22 @@ public partial class <#= templateType.Name #> {
 		}
 
 		return types;
+	}
+	
+	protected string GetBuilderPropertyTypeName(Type type, HashSet<Type> templateTypes) {
+		if (templateTypes.Contains(type)) {
+			return type.Name + ".Builder";
+		} else {
+			return GetTypeName(type);
+		}
+	}
+
+	protected string GetBuilderFieldTypeName(Type type, HashSet<Type> templateTypes) {
+		if (templateTypes.Contains(type)) {
+			return "ImmutableObjectGraph.Optional<" + type.Name + ".Builder>";
+		} else {
+			return GetTypeName(type);
+		}
 	}
 
 	protected string GetTypeName(Type type) {
