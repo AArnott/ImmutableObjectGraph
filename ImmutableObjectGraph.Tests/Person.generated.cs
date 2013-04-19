@@ -90,10 +90,17 @@ namespace ImmutableObjectGraph {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
-			return new Person(
+			if (
+				(name.IsDefined && name.Value != this.Name) || 
+				(age.IsDefined && age.Value != this.Age) || 
+				(watch.IsDefined && watch.Value != this.Watch)) {
+				return new Person(
 					name.IsDefined ? name.Value : this.Name,
 					age.IsDefined ? age.Value : this.Age,
 					watch.IsDefined ? watch.Value : this.Watch);
+			} else {
+				return this;
+			}
 		}
 	
 		public Builder ToBuilder() {
@@ -236,9 +243,15 @@ namespace ImmutableObjectGraph {
 		public Watch With(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			return new Watch(
+			if (
+				(color.IsDefined && color.Value != this.Color) || 
+				(size.IsDefined && size.Value != this.Size)) {
+				return new Watch(
 					color.IsDefined ? color.Value : this.Color,
 					size.IsDefined ? size.Value : this.Size);
+			} else {
+				return this;
+			}
 		}
 	
 		public Builder ToBuilder() {
