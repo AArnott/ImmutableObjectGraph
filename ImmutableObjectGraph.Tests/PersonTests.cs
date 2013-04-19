@@ -63,7 +63,7 @@
 		}
 
 		[Fact]
-		public void With() {
+		public void WithSetsNonDefaultValues() {
 			// Initialize
 			var billAge10 = Person.Create().With(name: "bill", age: 10);
 			Assert.Equal("bill", billAge10.Name);
@@ -82,6 +82,20 @@
 			var billyAge10 = billAge10.With(name: "billy");
 			Assert.Equal("billy", billyAge10.Name);
 			Assert.Equal(10, billyAge10.Age);
+		}
+
+		[Fact]
+		public void WithRevertsToDefaultValues() {
+			var billAge10 = Person.Create(name: "bill", age: 10);
+
+			var billAge0 = billAge10.With(age: 0);
+			Assert.Equal(0, billAge0.Age);
+			Assert.Equal("bill", billAge0.Name);
+
+			var age10 = billAge10.With(name: null);
+			Assert.Equal(10, age10.Age);
+			Assert.Equal(null, age10.Name);
+
 		}
 	}
 }
