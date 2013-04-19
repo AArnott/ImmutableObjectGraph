@@ -106,5 +106,12 @@
 			var personWithSilverWatch = personWithBlackWatch.WithWatch(silverWatch);
 			Assert.Equal(silverWatch, personWithSilverWatch.Watch);
 		}
+
+		[Fact]
+		public void WithPreservesInstanceWhenNoChangesMade() {
+			var bill = Person.Create(name: "bill");
+			Assert.Same(bill, bill.With());
+			Assert.Same(bill, bill.With(name: "bill"));
+		}
 	}
 }

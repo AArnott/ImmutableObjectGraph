@@ -11,307 +11,289 @@
 namespace ImmutableObjectGraph {
 	using System.Diagnostics;
 
-
+	
 	public partial class Person {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Person DefaultInstance = new Person();
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String name;
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 age;
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly Watch watch;
-
+	
 		/// <summary>Initializes a new instance of the Person class.</summary>
-		private Person() {
+		private Person()
+		{
 		}
-
+	
 		/// <summary>Initializes a new instance of the Person class.</summary>
-		private Person(System.String name, System.Int32 age, Watch watch) {
+		private Person(System.String name, System.Int32 age, Watch watch)
+		{
 			this.name = name;
 			this.age = age;
 			this.watch = watch;
 			this.Validate();
 		}
-
+	
 		public static Person Create(
-			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			return DefaultInstance.With(
-				name,
-				age,
+				name, 
+				age, 
 				watch);
 		}
-
+	
 		public System.String Name {
 			get { return this.name; }
 		}
-
+	
 		public Person WithName(System.String value) {
 			if (value == this.Name) {
 				return this;
 			}
-
+	
 			return new Person(value, this.Age, this.Watch);
 		}
-
+	
 		public System.Int32 Age {
 			get { return this.age; }
 		}
-
+	
 		public Person WithAge(System.Int32 value) {
 			if (value == this.Age) {
 				return this;
 			}
-
+	
 			return new Person(this.Name, value, this.Watch);
 		}
-
+	
 		public Watch Watch {
 			get { return this.watch; }
 		}
-
+	
 		public Person WithWatch(Watch value) {
 			if (value == this.Watch) {
 				return this;
 			}
-
+	
 			return new Person(this.Name, this.Age, value);
 		}
-
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Person With(
-			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
-			return new Person(
+			if (
+				(name.IsDefined && name.Value != this.Name) || 
+				(age.IsDefined && age.Value != this.Age) || 
+				(watch.IsDefined && watch.Value != this.Watch)) {
+				return new Person(
 					name.IsDefined ? name.Value : this.Name,
 					age.IsDefined ? age.Value : this.Age,
 					watch.IsDefined ? watch.Value : this.Watch);
+			} else {
+				return this;
+			}
 		}
-
+	
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
-
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
-
+	
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Person immutable;
-
-			private bool immutableInvalidated;
-
+	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private System.String name;
-
+	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private System.Int32 age;
-
+	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Watch.Builder watch;
-
+	
 			internal Builder(Person immutable) {
 				this.immutable = immutable;
-
+	
 				this.name = immutable.Name;
 				this.age = immutable.Age;
 			}
-
+	
 			public System.String Name {
 				get {
 					return this.name;
 				}
-
+	
 				set {
-					if (this.name != value) {
-						this.name = value;
-						this.immutableInvalidated = true;
-					}
+					this.name = value;
 				}
 			}
-
+	
 			public System.Int32 Age {
 				get {
 					return this.age;
 				}
-
+	
 				set {
-					if (this.age != value) {
-						this.age = value;
-						this.immutableInvalidated = true;
-					}
+					this.age = value;
 				}
 			}
-
+	
 			public Watch.Builder Watch {
 				get {
 					if (this.watch == null) {
-						this.watch = this.immutable.Watch.ToBuilder();
+						this.watch = this.immutable.watch.ToBuilder();
 					}
 
 					return this.watch;
 				}
-
+	
 				set {
-					if (this.watch != value) {
-						this.watch = value;
-						this.immutableInvalidated = true;
-					}
+					this.watch = value;
 				}
 			}
-
+	
 			public Person ToImmutable() {
-				bool invalidated = this.immutableInvalidated;
-				Watch watch;
-				if (this.watch != null) {
-					watch = this.watch.ToImmutable();
-					if (watch != this.immutable.watch) {
-						invalidated = true;
-					}
-				} else {
-					watch = this.immutable.watch;
-				}
-
-				if (invalidated) {
-					return this.immutable.With(
-						ImmutableObjectGraph.Optional.For(this.name),
-						ImmutableObjectGraph.Optional.For(this.age),
-						ImmutableObjectGraph.Optional.For(watch));
-				}
-
-				return this.immutable;
+				var watch = this.watch != null ? this.watch.ToImmutable() : this.immutable.watch;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.name),
+					ImmutableObjectGraph.Optional.For(this.age),
+					ImmutableObjectGraph.Optional.For(watch));
 			}
 		}
 	}
-
+	
 	public partial class Watch {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Watch DefaultInstance = new Watch();
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String color;
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 size;
-
+	
 		/// <summary>Initializes a new instance of the Watch class.</summary>
-		private Watch() {
+		private Watch()
+		{
 		}
-
+	
 		/// <summary>Initializes a new instance of the Watch class.</summary>
-		private Watch(System.String color, System.Int32 size) {
+		private Watch(System.String color, System.Int32 size)
+		{
 			this.color = color;
 			this.size = size;
 			this.Validate();
 		}
-
+	
 		public static Watch Create(
-			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				color,
+				color, 
 				size);
 		}
-
+	
 		public System.String Color {
 			get { return this.color; }
 		}
-
+	
 		public Watch WithColor(System.String value) {
 			if (value == this.Color) {
 				return this;
 			}
-
+	
 			return new Watch(value, this.Size);
 		}
-
+	
 		public System.Int32 Size {
 			get { return this.size; }
 		}
-
+	
 		public Watch WithSize(System.Int32 value) {
 			if (value == this.Size) {
 				return this;
 			}
-
+	
 			return new Watch(this.Color, value);
 		}
-
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Watch With(
-			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			return new Watch(
+			if (
+				(color.IsDefined && color.Value != this.Color) || 
+				(size.IsDefined && size.Value != this.Size)) {
+				return new Watch(
 					color.IsDefined ? color.Value : this.Color,
 					size.IsDefined ? size.Value : this.Size);
+			} else {
+				return this;
+			}
 		}
-
+	
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
-
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
-
+	
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Watch immutable;
-
+	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private System.String color;
-
+	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private System.Int32 size;
-
+	
 			internal Builder(Watch immutable) {
 				this.immutable = immutable;
-
+	
 				this.color = immutable.Color;
 				this.size = immutable.Size;
 			}
-
+	
 			public System.String Color {
 				get {
 					return this.color;
 				}
-
+	
 				set {
-					if (this.color != value) {
-						this.color = value;
-						this.immutable = null;
-					}
+					this.color = value;
 				}
 			}
-
+	
 			public System.Int32 Size {
 				get {
 					return this.size;
 				}
-
+	
 				set {
-					if (this.size != value) {
-						this.size = value;
-						this.immutable = null;
-					}
+					this.size = value;
 				}
 			}
-
+	
 			public Watch ToImmutable() {
-				if (this.immutable == null) {
-					this.immutable = Watch.Create().With(
-						ImmutableObjectGraph.Optional.For(this.color),
-						ImmutableObjectGraph.Optional.For(this.size));
-				}
-
-				return this.immutable;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.color),
+					ImmutableObjectGraph.Optional.For(this.size));
 			}
 		}
 	}

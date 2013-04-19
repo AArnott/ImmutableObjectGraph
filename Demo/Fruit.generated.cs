@@ -71,9 +71,15 @@ namespace Demo {
 		public Basket With(
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
-			return new Basket(
+			if (
+				(size.IsDefined && size.Value != this.Size) || 
+				(contents.IsDefined && contents.Value != this.Contents)) {
+				return new Basket(
 					size.IsDefined ? size.Value : this.Size,
 					contents.IsDefined ? contents.Value : this.Contents);
+			} else {
+				return this;
+			}
 		}
 	
 		public Builder ToBuilder() {
@@ -107,10 +113,7 @@ namespace Demo {
 				}
 	
 				set {
-					if (this.size != value) {
-						this.size = value;
-						this.immutable = null;
-					}
+					this.size = value;
 				}
 			}
 	
@@ -120,21 +123,14 @@ namespace Demo {
 				}
 	
 				set {
-					if (this.contents != value) {
-						this.contents = value;
-						this.immutable = null;
-					}
+					this.contents = value;
 				}
 			}
 	
 			public Basket ToImmutable() {
-				if (this.immutable == null) {
-					this.immutable = Basket.Create().With(
-						ImmutableObjectGraph.Optional.For(this.size),
-						ImmutableObjectGraph.Optional.For(this.contents));
-				}
-	
-				return this.immutable;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.size),
+					ImmutableObjectGraph.Optional.For(this.contents));
 			}
 		}
 	}
@@ -217,10 +213,17 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<System.ICloneable> growsOn = default(ImmutableObjectGraph.Optional<System.ICloneable>)) {
-			return new Fruit(
+			if (
+				(color.IsDefined && color.Value != this.Color) || 
+				(skinThickness.IsDefined && skinThickness.Value != this.SkinThickness) || 
+				(growsOn.IsDefined && growsOn.Value != this.GrowsOn)) {
+				return new Fruit(
 					color.IsDefined ? color.Value : this.Color,
 					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness,
 					growsOn.IsDefined ? growsOn.Value : this.GrowsOn);
+			} else {
+				return this;
+			}
 		}
 	
 		public Builder ToBuilder() {
@@ -258,10 +261,7 @@ namespace Demo {
 				}
 	
 				set {
-					if (this.color != value) {
-						this.color = value;
-						this.immutable = null;
-					}
+					this.color = value;
 				}
 			}
 	
@@ -271,10 +271,7 @@ namespace Demo {
 				}
 	
 				set {
-					if (this.skinThickness != value) {
-						this.skinThickness = value;
-						this.immutable = null;
-					}
+					this.skinThickness = value;
 				}
 			}
 	
@@ -284,22 +281,15 @@ namespace Demo {
 				}
 	
 				set {
-					if (this.growsOn != value) {
-						this.growsOn = value;
-						this.immutable = null;
-					}
+					this.growsOn = value;
 				}
 			}
 	
 			public Fruit ToImmutable() {
-				if (this.immutable == null) {
-					this.immutable = Fruit.Create().With(
-						ImmutableObjectGraph.Optional.For(this.color),
-						ImmutableObjectGraph.Optional.For(this.skinThickness),
-						ImmutableObjectGraph.Optional.For(this.growsOn));
-				}
-	
-				return this.immutable;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.color),
+					ImmutableObjectGraph.Optional.For(this.skinThickness),
+					ImmutableObjectGraph.Optional.For(this.growsOn));
 			}
 		}
 	}

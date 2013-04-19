@@ -143,15 +143,27 @@ public partial class <#= templateType.Name #> {
 
 		this.PopIndent();
 #>) {
-		return new <#= templateType.Name #>(<#
+		if (<#
 			firstInSequence = true;
 			foreach(var field in fields) {
-				if (!firstInSequence) { Write(","); }
+				if (!firstInSequence) { Write(" || "); }
 				WriteLine("");
-#>				<#= CamelCase(field.Name) #>.IsDefined ? <#= CamelCase(field.Name) #>.Value : this.<#= PascalCase(field.Name) #><#
+#>			(<#= CamelCase(field.Name) #>.IsDefined && <#= CamelCase(field.Name) #>.Value != this.<#= PascalCase(field.Name) #>)<#
 				firstInSequence = false;
 			}
-	#>);
+	#>) {
+			return new <#= templateType.Name #>(<#
+				firstInSequence = true;
+				foreach(var field in fields) {
+					if (!firstInSequence) { Write(","); }
+					WriteLine("");
+	#>				<#= CamelCase(field.Name) #>.IsDefined ? <#= CamelCase(field.Name) #>.Value : this.<#= PascalCase(field.Name) #><#
+					firstInSequence = false;
+				}
+		#>);
+		} else {
+			return this;
+		}
 	}
 
 	public Builder ToBuilder() {
@@ -188,28 +200,21 @@ public partial class <#= templateType.Name #> {
 			}
 
 			set {
-				if (this.<#= CamelCase(field.Name) #> != value) {
-					this.<#= CamelCase(field.Name) #> = value;
-					this.immutable = null;
-				}
+				this.<#= CamelCase(field.Name) #> = value;
 			}
 		}
 <#		} #>
 
 		public <#= templateType.Name #> ToImmutable() {
-			if (this.immutable == null) {
-				this.immutable = <#= templateType.Name #>.Create().With(<#
+			return this.immutable = this.immutable.With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine(""); #>
-					ImmutableObjectGraph.Optional.For(this.<#= CamelCase(field.Name) #>)<#
+				ImmutableObjectGraph.Optional.For(this.<#= CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
 );
-			}
-
-			return this.immutable;
 		}
 	}
 }

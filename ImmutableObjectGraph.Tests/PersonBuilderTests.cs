@@ -59,5 +59,17 @@
 			var modifiedPerson = personBuilder.ToImmutable();
 			Assert.Equal("Red", modifiedPerson.Watch.Color);
 		}
+
+		[Fact]
+		public void ToImmutableCalledRepeatedlyAfterChangesReusesInstance() {
+			var person = Person.Create();
+			var builder = person.ToBuilder();
+			Assert.Same(person, builder.ToImmutable());
+			builder.Name = "bill";
+			var bill1 = builder.ToImmutable();
+			var bill2 = builder.ToImmutable();
+			Assert.NotSame(person, bill1);
+			Assert.Same(bill1, bill2);
+		}
 	}
 }
