@@ -52,6 +52,18 @@
 		}
 
 		[Fact]
+		public void ToImmutableCalledRepeatedlyAfterChangesReusesInstance() {
+			var person = Person.Create();
+			var builder = person.ToBuilder();
+			Assert.Same(person, builder.ToImmutable());
+			builder.Name = "bill";
+			var bill1 = builder.ToImmutable();
+			var bill2 = builder.ToImmutable();
+			Assert.NotSame(person, bill1);
+			Assert.Same(bill1, bill2);
+		}
+
+		[Fact]
 		public void PropertiesAreAlsoBuilders() {
 			var person = Person.Create(watch: Watch.Create());
 			var personBuilder = person.ToBuilder();
@@ -62,18 +74,6 @@
 			personBuilder.Watch = null;
 			var personWithoutWatch = personBuilder.ToImmutable();
 			Assert.Null(personWithoutWatch.Watch);
-		}
-
-		[Fact]
-		public void ToImmutableCalledRepeatedlyAfterChangesReusesInstance() {
-			var person = Person.Create();
-			var builder = person.ToBuilder();
-			Assert.Same(person, builder.ToImmutable());
-			builder.Name = "bill";
-			var bill1 = builder.ToImmutable();
-			var bill2 = builder.ToImmutable();
-			Assert.NotSame(person, bill1);
-			Assert.Same(bill1, bill2);
 		}
 	}
 }
