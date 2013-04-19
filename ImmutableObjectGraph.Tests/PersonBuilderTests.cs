@@ -10,7 +10,7 @@
 	public class PersonBuilderTests {
 		[Fact]
 		public void ToBuilderReturnsSimilarObject() {
-			var person = Person.Default.With(name: "bill", age: 10);
+			var person = Person.Create().With(name: "bill", age: 10);
 
 			var personBuilder = person.ToBuilder();
 			Assert.NotNull(personBuilder);
@@ -20,7 +20,7 @@
 
 		[Fact]
 		public void ToBuilderToImmutableRoundtripReusesInstance() {
-			var person = Person.Default.With(name: "bill", age: 10);
+			var person = Person.Create().With(name: "bill", age: 10);
 			var personBuilder = person.ToBuilder();
 			var roundTripPerson = personBuilder.ToImmutable();
 			Assert.Same(person, roundTripPerson);
@@ -28,7 +28,7 @@
 
 		[Fact]
 		public void MutablePropertiesRetainChanges() {
-			var person = Person.Default.With(name: "bill", age: 10);
+			var person = Person.Create().With(name: "bill", age: 10);
 			var personBuilder = person.ToBuilder();
 
 			personBuilder.Name = "billy";
@@ -40,7 +40,7 @@
 
 		[Fact]
 		public void ToImmutableReturnsSimilarObject() {
-			var person = Person.Default.With(name: "bill", age: 10);
+			var person = Person.Create().With(name: "bill", age: 10);
 			var personBuilder = person.ToBuilder();
 
 			personBuilder.Name = "billy";

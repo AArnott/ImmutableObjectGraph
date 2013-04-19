@@ -9,8 +9,7 @@
 
 	class Program {
 		static void Main(string[] args) {
-			var apple = Fruit.Default
-				.With(color: "red", skinThickness: 3);
+			var apple = Fruit.Create(color: "red", skinThickness: 3);
 
 			ICloneable appleTree = new Tree("Apple tree");
 			
@@ -21,9 +20,9 @@
 			ImmutableList<Fruit> immutableFruits = ImmutableList.Create(apple);
 			IImmutableList<Fruit> fruits = immutableFruits;
 
-			var basket = Basket.Default.With(contents: immutableFruits, size: 5);
-			basket = Basket.Default.With(contents: Optional.For(fruits), size: 5);
-			basket = Basket.Default.WithContents(fruits).WithSize(5);
+			var basket = Basket.Create(contents: immutableFruits, size: 5);
+			basket = Basket.Create(contents: Optional.For(fruits), size: 5);
+			basket = Basket.Create().WithContents(fruits).WithSize(5);
 
 			var appleBuilder = apple.ToBuilder();
 			appleBuilder.Color = "yellow";

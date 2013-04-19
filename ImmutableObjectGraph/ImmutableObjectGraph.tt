@@ -62,8 +62,37 @@ public partial class <#= templateType.Name #> {
 		this.Validate();
 	}
 
-	public static <#= templateType.Name #> Default {
-		get { return DefaultInstance; }
+	public static <#= templateType.Name #> Create(<#
+		firstInSequence = true;
+		this.PushIndent("\t\t");
+
+		// Value parameters
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(", "); }
+			WriteLine("");
+			Write(GetOptionalTypeName(field.FieldType));
+			Write(" ");
+			Write(CamelCase(field.Name));
+			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
+			firstInSequence = false;
+		}
+
+		this.PopIndent();
+#>) {
+		return DefaultInstance.With(<#
+		firstInSequence = true;
+		this.PushIndent("\t\t\t");
+
+		// Value parameters
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(", "); }
+			WriteLine("");
+			Write(CamelCase(field.Name));
+			firstInSequence = false;
+		}
+
+		this.PopIndent();
+#>);
 	}
 <#
 	foreach(var field in fields) {
@@ -169,7 +198,7 @@ public partial class <#= templateType.Name #> {
 
 		public <#= templateType.Name #> ToImmutable() {
 			if (this.immutable == null) {
-				this.immutable = <#= templateType.Name #>.Default.With(<#
+				this.immutable = <#= templateType.Name #>.Create().With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }

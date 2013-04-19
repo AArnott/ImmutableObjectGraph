@@ -35,8 +35,12 @@ namespace Demo {
 			this.Validate();
 		}
 	
-		public static Basket Default {
-			get { return DefaultInstance; }
+		public static Basket Create(
+			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
+			return DefaultInstance.With(
+				size, 
+				contents);
 		}
 	
 		public System.Int32 Size {
@@ -125,7 +129,7 @@ namespace Demo {
 	
 			public Basket ToImmutable() {
 				if (this.immutable == null) {
-					this.immutable = Basket.Default.With(
+					this.immutable = Basket.Create().With(
 						ImmutableObjectGraph.Optional.For(this.size),
 						ImmutableObjectGraph.Optional.For(this.contents));
 				}
@@ -162,8 +166,14 @@ namespace Demo {
 			this.Validate();
 		}
 	
-		public static Fruit Default {
-			get { return DefaultInstance; }
+		public static Fruit Create(
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.ICloneable> growsOn = default(ImmutableObjectGraph.Optional<System.ICloneable>)) {
+			return DefaultInstance.With(
+				color, 
+				skinThickness, 
+				growsOn);
 		}
 	
 		public System.String Color {
@@ -283,7 +293,7 @@ namespace Demo {
 	
 			public Fruit ToImmutable() {
 				if (this.immutable == null) {
-					this.immutable = Fruit.Default.With(
+					this.immutable = Fruit.Create().With(
 						ImmutableObjectGraph.Optional.For(this.color),
 						ImmutableObjectGraph.Optional.For(this.skinThickness),
 						ImmutableObjectGraph.Optional.For(this.growsOn));

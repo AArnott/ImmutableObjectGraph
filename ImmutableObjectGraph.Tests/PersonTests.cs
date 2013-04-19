@@ -19,14 +19,22 @@
 
 		[Fact]
 		public void DefaultInstance() {
-			Assert.NotNull(Person.Default);
-			Assert.Equal(0, Person.Default.Age);
-			Assert.Equal(null, Person.Default.Name);
+			var defaultPerson = Person.Create();
+			Assert.NotNull(defaultPerson);
+			Assert.Equal(0, defaultPerson.Age);
+			Assert.Equal(null, defaultPerson.Name);
+		}
+
+		[Fact]
+		public void CreateWithArguments() {
+			var billyAge10 = Person.Create(name: "billy", age: 10);
+			Assert.Equal("billy", billyAge10.Name);
+			Assert.Equal(10, billyAge10.Age);
 		}
 
 		[Fact]
 		public void SetScalarReferenceTypeProperty() {
-			var original = Person.Default;
+			var original = Person.Create();
 			var modified = original.WithName("bill");
 			Assert.Equal("bill", modified.Name);
 			Assert.Null(original.Name);
@@ -34,7 +42,7 @@
 
 		[Fact]
 		public void SetScalarValueTypeProperty() {
-			var original = Person.Default;
+			var original = Person.Create();
 			var modified = original.WithAge(8);
 			Assert.Equal(8, modified.Age);
 			Assert.Equal(0, original.Age);
@@ -42,14 +50,14 @@
 
 		[Fact]
 		public void SetScalarReferenceTypePropertyToSameValueReturnsSameInstance() {
-			var expected = Person.Default.WithName("bill");
+			var expected = Person.Create().WithName("bill");
 			var actual = expected.WithName(expected.Name);
 			Assert.Same(expected, actual);
 		}
 
 		[Fact]
 		public void SetScalarValueTypePropertyToSameValueReturnsSameInstance() {
-			var expected = Person.Default.WithAge(8);
+			var expected = Person.Create().WithAge(8);
 			var actual = expected.WithAge(expected.Age);
 			Assert.Same(expected, actual);
 		}
@@ -57,7 +65,7 @@
 		[Fact]
 		public void With() {
 			// Initialize
-			var billAge10 = Person.Default.With(name: "bill", age: 10);
+			var billAge10 = Person.Create().With(name: "bill", age: 10);
 			Assert.Equal("bill", billAge10.Name);
 			Assert.Equal(10, billAge10.Age);
 
