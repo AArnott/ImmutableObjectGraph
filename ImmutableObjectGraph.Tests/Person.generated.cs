@@ -122,14 +122,13 @@ namespace ImmutableObjectGraph {
 			private System.Int32 age;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private Watch watch;
+			private ImmutableObjectGraph.Optional<Watch.Builder> watch;
 	
 			internal Builder(Person immutable) {
 				this.immutable = immutable;
 	
 				this.name = immutable.Name;
 				this.age = immutable.Age;
-				this.watch = immutable.Watch;
 			}
 	
 			public System.String Name {
@@ -152,9 +151,13 @@ namespace ImmutableObjectGraph {
 				}
 			}
 	
-			public Watch Watch {
+			public Watch.Builder Watch {
 				get {
-					return this.watch;
+					if (!this.watch.IsDefined) {
+						this.watch = this.immutable.watch.ToBuilder();
+					}
+	
+					return this.watch.Value;
 				}
 	
 				set {
@@ -163,10 +166,11 @@ namespace ImmutableObjectGraph {
 			}
 	
 			public Person ToImmutable() {
+				var watch = this.watch.IsDefined ? (this.watch.Value != null ? this.watch.Value.ToImmutable() : null) : this.immutable.watch;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.name),
 					ImmutableObjectGraph.Optional.For(this.age),
-					ImmutableObjectGraph.Optional.For(this.watch));
+					ImmutableObjectGraph.Optional.For(watch));
 			}
 		}
 	}

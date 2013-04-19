@@ -62,5 +62,18 @@
 			Assert.NotSame(person, bill1);
 			Assert.Same(bill1, bill2);
 		}
+
+		[Fact]
+		public void PropertiesAreAlsoBuilders() {
+			var person = Person.Create(watch: Watch.Create());
+			var personBuilder = person.ToBuilder();
+			personBuilder.Watch.Color = "Red";
+			var modifiedPerson = personBuilder.ToImmutable();
+			Assert.Equal("Red", modifiedPerson.Watch.Color);
+
+			personBuilder.Watch = null;
+			var personWithoutWatch = personBuilder.ToImmutable();
+			Assert.Null(personWithoutWatch.Watch);
+		}
 	}
 }
