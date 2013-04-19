@@ -35,8 +35,8 @@ namespace ImmutableObjectGraph {
 			this.Validate();
 		}
 	
-		public static Person Default {
-			get { return DefaultInstance; }
+		public static Person Create() {
+			return DefaultInstance;
 		}
 	
 		public System.String Name {
@@ -125,7 +125,7 @@ namespace ImmutableObjectGraph {
 	
 			public Person ToImmutable() {
 				if (this.immutable == null) {
-					this.immutable = Person.Default.With(
+					this.immutable = Person.Create().With(
 						ImmutableObjectGraph.Optional.For(this.name),
 						ImmutableObjectGraph.Optional.For(this.age));
 				}

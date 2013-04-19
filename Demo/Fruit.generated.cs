@@ -35,8 +35,8 @@ namespace Demo {
 			this.Validate();
 		}
 	
-		public static Basket Default {
-			get { return DefaultInstance; }
+		public static Basket Create() {
+			return DefaultInstance;
 		}
 	
 		public System.Int32 Size {
@@ -125,7 +125,7 @@ namespace Demo {
 	
 			public Basket ToImmutable() {
 				if (this.immutable == null) {
-					this.immutable = Basket.Default.With(
+					this.immutable = Basket.Create().With(
 						ImmutableObjectGraph.Optional.For(this.size),
 						ImmutableObjectGraph.Optional.For(this.contents));
 				}
@@ -162,8 +162,8 @@ namespace Demo {
 			this.Validate();
 		}
 	
-		public static Fruit Default {
-			get { return DefaultInstance; }
+		public static Fruit Create() {
+			return DefaultInstance;
 		}
 	
 		public System.String Color {
@@ -283,7 +283,7 @@ namespace Demo {
 	
 			public Fruit ToImmutable() {
 				if (this.immutable == null) {
-					this.immutable = Fruit.Default.With(
+					this.immutable = Fruit.Create().With(
 						ImmutableObjectGraph.Optional.For(this.color),
 						ImmutableObjectGraph.Optional.For(this.skinThickness),
 						ImmutableObjectGraph.Optional.For(this.growsOn));
