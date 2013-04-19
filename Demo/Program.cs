@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace ImmutableObjectGraph {
+namespace Demo {
 	using System.Collections.Immutable;
-	using System.Reflection;
 
 	class Program {
 		static void Main(string[] args) {
 			var apple = Fruit.Default
-				.With(color: "red", skinThickness: 3);
+			.With(color: "red", skinThickness: 3);
 			var greenApple = apple.With(color: "green");
 			var greenAppleWithDefaultThickness = greenApple.With(skinThickness: 0);
 			var basket = Basket.Default.WithContents(ImmutableList.Create(apple)).WithSize(5);

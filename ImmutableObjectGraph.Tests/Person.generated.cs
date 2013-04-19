@@ -10,32 +10,6 @@
 
 namespace ImmutableObjectGraph {
 	using System.Diagnostics;
-
-	/// <summary>
-	/// A wrapper around optional parameters to capture whether they were specified or omitted.
-	/// An implicit operator is defined so no one has to explicitly create this struct.
-	/// </summary>
-	public struct Optional<T> {
-		private readonly T value;
-		private readonly bool isDefined;
-
-		public Optional(T value) {
-			this.isDefined = true;
-			this.value = value;
-		}
-
-		public bool IsDefined {
-			get { return this.isDefined; }
-		}
-
-		public T Value {
-			get { return this.value; }
-		}
-
-		public static implicit operator Optional<T>(T value) {
-			return new Optional<T>(value);
-		}
-	}
 	
 	public partial class Person {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -90,8 +64,8 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Person With(
-			Optional<System.String> name = default(Optional<System.String>), 
-			Optional<System.Int32> age = default(Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return new Person(
 					name.IsDefined ? name.Value : this.Name,
 					age.IsDefined ? age.Value : this.Age);

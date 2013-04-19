@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A36BA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Tests", "ImmutableObjectGraph.Tests\ImmutableObjectGraph.Tests.csproj", "{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,16 @@ Global
 		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}.Release|x86.ActiveCfg = Release|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
