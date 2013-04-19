@@ -9,5 +9,11 @@
 	class Person {
 		string name;
 		int age;
+		Watch watch;
+	}
+
+	class Watch {
+		string color;
+		int size;
 	}
 #>

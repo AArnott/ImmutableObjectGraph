@@ -95,7 +95,16 @@
 			var age10 = billAge10.With(name: null);
 			Assert.Equal(10, age10.Age);
 			Assert.Equal(null, age10.Name);
+		}
 
+		[Fact]
+		public void ReferenceToOtherImmutable() {
+			var blackWatch = Watch.Create(color: "black", size: 10);
+			var personWithBlackWatch = Person.Create(watch: blackWatch);
+
+			var silverWatch = blackWatch.WithColor("silver");
+			var personWithSilverWatch = personWithBlackWatch.WithWatch(silverWatch);
+			Assert.Equal(silverWatch, personWithSilverWatch.Watch);
 		}
 	}
 }
