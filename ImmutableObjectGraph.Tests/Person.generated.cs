@@ -138,10 +138,7 @@ namespace ImmutableObjectGraph {
 				}
 	
 				set {
-					if (this.name != value) {
-						this.name = value;
-						this.immutable = null;
-					}
+					this.name = value;
 				}
 			}
 	
@@ -151,10 +148,7 @@ namespace ImmutableObjectGraph {
 				}
 	
 				set {
-					if (this.age != value) {
-						this.age = value;
-						this.immutable = null;
-					}
+					this.age = value;
 				}
 			}
 	
@@ -164,22 +158,15 @@ namespace ImmutableObjectGraph {
 				}
 	
 				set {
-					if (this.watch != value) {
-						this.watch = value;
-						this.immutable = null;
-					}
+					this.watch = value;
 				}
 			}
 	
 			public Person ToImmutable() {
-				if (this.immutable == null) {
-					this.immutable = Person.Create().With(
-						ImmutableObjectGraph.Optional.For(this.name),
-						ImmutableObjectGraph.Optional.For(this.age),
-						ImmutableObjectGraph.Optional.For(this.watch));
-				}
-	
-				return this.immutable;
+				return this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.name),
+					ImmutableObjectGraph.Optional.For(this.age),
+					ImmutableObjectGraph.Optional.For(this.watch));
 			}
 		}
 	}
@@ -285,10 +272,7 @@ namespace ImmutableObjectGraph {
 				}
 	
 				set {
-					if (this.color != value) {
-						this.color = value;
-						this.immutable = null;
-					}
+					this.color = value;
 				}
 			}
 	
@@ -298,21 +282,14 @@ namespace ImmutableObjectGraph {
 				}
 	
 				set {
-					if (this.size != value) {
-						this.size = value;
-						this.immutable = null;
-					}
+					this.size = value;
 				}
 			}
 	
 			public Watch ToImmutable() {
-				if (this.immutable == null) {
-					this.immutable = Watch.Create().With(
-						ImmutableObjectGraph.Optional.For(this.color),
-						ImmutableObjectGraph.Optional.For(this.size));
-				}
-	
-				return this.immutable;
+				return this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.color),
+					ImmutableObjectGraph.Optional.For(this.size));
 			}
 		}
 	}

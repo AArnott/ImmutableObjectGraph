@@ -200,28 +200,21 @@ public partial class <#= templateType.Name #> {
 			}
 
 			set {
-				if (this.<#= CamelCase(field.Name) #> != value) {
-					this.<#= CamelCase(field.Name) #> = value;
-					this.immutable = null;
-				}
+				this.<#= CamelCase(field.Name) #> = value;
 			}
 		}
 <#		} #>
 
 		public <#= templateType.Name #> ToImmutable() {
-			if (this.immutable == null) {
-				this.immutable = <#= templateType.Name #>.Create().With(<#
+			return this.immutable.With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine(""); #>
-					ImmutableObjectGraph.Optional.For(this.<#= CamelCase(field.Name) #>)<#
+				ImmutableObjectGraph.Optional.For(this.<#= CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
 );
-			}
-
-			return this.immutable;
 		}
 	}
 }
