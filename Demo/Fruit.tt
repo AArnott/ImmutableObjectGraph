@@ -3,12 +3,14 @@
 <#
 	this.Namespace = "Demo";
 	this.TemplateType = typeof(Basket);
+	this.UseClassCollectionType = false;
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
 	class Fruit {
 		string color;
 		int skinThickness;
+		ICloneable growsOn;
 	}
 
 	class Basket {

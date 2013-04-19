@@ -10,6 +10,7 @@
 
 namespace ImmutableObjectGraph {
 	using System.Diagnostics;
+
 	
 	public partial class Person {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -125,8 +126,8 @@ namespace ImmutableObjectGraph {
 			public Person ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Person.Default.With(
-						this.name,
-						this.age);
+						ImmutableObjectGraph.Optional.For(this.name),
+						ImmutableObjectGraph.Optional.For(this.age));
 				}
 	
 				return this.immutable;

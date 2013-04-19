@@ -10,6 +10,7 @@
 
 namespace Demo {
 	using System.Diagnostics;
+
 	
 	public partial class Basket {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -19,7 +20,7 @@ namespace Demo {
 		private readonly System.Int32 size;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Collections.Immutable.ImmutableList<Fruit> contents;
+		private readonly System.Collections.Immutable.IImmutableList<Fruit> contents;
 	
 		/// <summary>Initializes a new instance of the Basket class.</summary>
 		private Basket()
@@ -27,7 +28,7 @@ namespace Demo {
 		}
 	
 		/// <summary>Initializes a new instance of the Basket class.</summary>
-		private Basket(System.Int32 size, System.Collections.Immutable.ImmutableList<Fruit> contents)
+		private Basket(System.Int32 size, System.Collections.Immutable.IImmutableList<Fruit> contents)
 		{
 			this.size = size;
 			this.contents = contents;
@@ -50,11 +51,11 @@ namespace Demo {
 			return new Basket(value, this.Contents);
 		}
 	
-		public System.Collections.Immutable.ImmutableList<Fruit> Contents {
+		public System.Collections.Immutable.IImmutableList<Fruit> Contents {
 			get { return this.contents; }
 		}
 	
-		public Basket WithContents(System.Collections.Immutable.ImmutableList<Fruit> value) {
+		public Basket WithContents(System.Collections.Immutable.IImmutableList<Fruit> value) {
 			if (value == this.Contents) {
 				return this;
 			}
@@ -65,7 +66,7 @@ namespace Demo {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Basket With(
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Fruit>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
 			return new Basket(
 					size.IsDefined ? size.Value : this.Size,
 					contents.IsDefined ? contents.Value : this.Contents);
@@ -87,7 +88,7 @@ namespace Demo {
 			private System.Int32 size;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Collections.Immutable.ImmutableList<Fruit> contents;
+			private System.Collections.Immutable.IImmutableList<Fruit> contents;
 	
 			internal Builder(Basket immutable) {
 				this.immutable = immutable;
@@ -109,7 +110,7 @@ namespace Demo {
 				}
 			}
 	
-			public System.Collections.Immutable.ImmutableList<Fruit> Contents {
+			public System.Collections.Immutable.IImmutableList<Fruit> Contents {
 				get {
 					return this.contents;
 				}
@@ -125,8 +126,8 @@ namespace Demo {
 			public Basket ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Basket.Default.With(
-						this.size,
-						this.contents);
+						ImmutableObjectGraph.Optional.For(this.size),
+						ImmutableObjectGraph.Optional.For(this.contents));
 				}
 	
 				return this.immutable;
@@ -144,16 +145,20 @@ namespace Demo {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 skinThickness;
 	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.ICloneable growsOn;
+	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
 		private Fruit()
 		{
 		}
 	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
-		private Fruit(System.String color, System.Int32 skinThickness)
+		private Fruit(System.String color, System.Int32 skinThickness, System.ICloneable growsOn)
 		{
 			this.color = color;
 			this.skinThickness = skinThickness;
+			this.growsOn = growsOn;
 			this.Validate();
 		}
 	
@@ -170,7 +175,7 @@ namespace Demo {
 				return this;
 			}
 	
-			return new Fruit(value, this.SkinThickness);
+			return new Fruit(value, this.SkinThickness, this.GrowsOn);
 		}
 	
 		public System.Int32 SkinThickness {
@@ -182,16 +187,30 @@ namespace Demo {
 				return this;
 			}
 	
-			return new Fruit(this.Color, value);
+			return new Fruit(this.Color, value, this.GrowsOn);
+		}
+	
+		public System.ICloneable GrowsOn {
+			get { return this.growsOn; }
+		}
+	
+		public Fruit WithGrowsOn(System.ICloneable value) {
+			if (value == this.GrowsOn) {
+				return this;
+			}
+	
+			return new Fruit(this.Color, this.SkinThickness, value);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Fruit With(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.ICloneable> growsOn = default(ImmutableObjectGraph.Optional<System.ICloneable>)) {
 			return new Fruit(
 					color.IsDefined ? color.Value : this.Color,
-					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness);
+					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness,
+					growsOn.IsDefined ? growsOn.Value : this.GrowsOn);
 		}
 	
 		public Builder ToBuilder() {
@@ -212,11 +231,15 @@ namespace Demo {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private System.Int32 skinThickness;
 	
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private System.ICloneable growsOn;
+	
 			internal Builder(Fruit immutable) {
 				this.immutable = immutable;
 	
 				this.color = immutable.Color;
 				this.skinThickness = immutable.SkinThickness;
+				this.growsOn = immutable.GrowsOn;
 			}
 	
 			public System.String Color {
@@ -245,11 +268,25 @@ namespace Demo {
 				}
 			}
 	
+			public System.ICloneable GrowsOn {
+				get {
+					return this.growsOn;
+				}
+	
+				set {
+					if (this.growsOn != value) {
+						this.growsOn = value;
+						this.immutable = null;
+					}
+				}
+			}
+	
 			public Fruit ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Fruit.Default.With(
-						this.color,
-						this.skinThickness);
+						ImmutableObjectGraph.Optional.For(this.color),
+						ImmutableObjectGraph.Optional.For(this.skinThickness),
+						ImmutableObjectGraph.Optional.For(this.growsOn));
 				}
 	
 				return this.immutable;

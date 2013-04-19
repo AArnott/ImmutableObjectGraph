@@ -1,4 +1,5 @@
 ﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
 <#@ Import Namespace="System.Reflection" #>
 <#@ Import Namespace="System.Collections.Generic" #>
 // ------------------------------------------------------------------------------
@@ -13,6 +14,7 @@
 
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
+
 <#
 	this.PushIndent("\t");
 	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
@@ -71,7 +73,7 @@ public partial class <#= templateType.Name #> {
 		get { return this.<#= CamelCase(field.Name) #>; }
 	}
 
-	public <#=  templateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
+	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
 		if (value == this.<#= PascalCase(field.Name) #>) {
 			return this;
 		}
@@ -103,11 +105,10 @@ public partial class <#= templateType.Name #> {
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
-			Write("ImmutableObjectGraph.Optional<");
-			Write(GetTypeName(field.FieldType));
-			Write("> ");
+			Write(GetOptionalTypeName(field.FieldType));
+			Write(" ");
 			Write(CamelCase(field.Name));
-			Write(" = default(ImmutableObjectGraph.Optional<" + GetTypeName(field.FieldType) + ">)");
+			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
 			firstInSequence = false;
 		}
 
@@ -173,7 +174,7 @@ public partial class <#= templateType.Name #> {
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine(""); #>
-					this.<#= CamelCase(field.Name) #><#
+					ImmutableObjectGraph.Optional.For(this.<#= CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
 );
@@ -192,6 +193,8 @@ public partial class <#= templateType.Name #> {
 	public Type TemplateType { get; set; }
 
 	public string Namespace { get; set; }
+
+	public bool UseClassCollectionType { get; set; }
 
 	protected static string PascalCase(string name) {
 		return name.Substring(0,1).ToUpperInvariant() + name.Substring(1);
@@ -238,9 +241,18 @@ public partial class <#= templateType.Name #> {
 			: type.FullName;
 
 		if (collection) {
-			typeName = "System.Collections.Immutable.ImmutableList<" + typeName + ">";
+			if (UseClassCollectionType)
+				typeName = "System.Collections.Immutable.ImmutableList<" + typeName + ">";
+			else
+				typeName = "System.Collections.Immutable.IImmutableList<" + typeName + ">";
 		}
 
 		return typeName;
 	}
+
+	protected string GetOptionalTypeName(Type type)
+	{
+		return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
+	}
+
 #>
