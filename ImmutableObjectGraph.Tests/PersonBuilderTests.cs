@@ -50,5 +50,14 @@
 			Assert.Equal(personBuilder.Name, recreatedPerson.Name);
 			Assert.Equal(personBuilder.Age, recreatedPerson.Age);
 		}
+
+		[Fact]
+		public void PropertiesAreAlsoBuilders() {
+			var person = Person.Create(watch: Watch.Create());
+			var personBuilder = person.ToBuilder();
+			personBuilder.Watch.Color = "Red";
+			var modifiedPerson = personBuilder.ToImmutable();
+			Assert.Equal("Red", modifiedPerson.Watch.Color);
+		}
 	}
 }
