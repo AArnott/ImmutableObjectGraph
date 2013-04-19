@@ -8,7 +8,7 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-namespace ImmutableObjectGraph {
+namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 
 	
