@@ -163,7 +163,7 @@ namespace ImmutableObjectGraph {
 			}
 	
 			public Person ToImmutable() {
-				return this.immutable.With(
+				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.name),
 					ImmutableObjectGraph.Optional.For(this.age),
 					ImmutableObjectGraph.Optional.For(this.watch));
@@ -287,7 +287,7 @@ namespace ImmutableObjectGraph {
 			}
 	
 			public Watch ToImmutable() {
-				return this.immutable.With(
+				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.color),
 					ImmutableObjectGraph.Optional.For(this.size));
 			}

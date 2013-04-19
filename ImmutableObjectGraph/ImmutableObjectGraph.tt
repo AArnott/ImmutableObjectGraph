@@ -206,7 +206,7 @@ public partial class <#= templateType.Name #> {
 <#		} #>
 
 		public <#= templateType.Name #> ToImmutable() {
-			return this.immutable.With(<#
+			return this.immutable = this.immutable.With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
