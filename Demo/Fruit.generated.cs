@@ -8,40 +8,8 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-namespace ImmutableObjectGraph {
+namespace Demo {
 	using System.Diagnostics;
-
-	/// <summary>
-	/// A wrapper around optional parameters to capture whether they were specified or omitted.
-	/// An implicit operator is defined so no one has to explicitly create this struct.
-	/// </summary>
-	public struct Optional<T> {
-		private readonly T value;
-		private readonly bool isDefined;
-
-		public Optional(T value) {
-			this.isDefined = true;
-			this.value = value;
-		}
-
-		public bool IsDefined {
-			get { return this.isDefined; }
-		}
-
-		public T Value {
-			get { return this.value; }
-		}
-
-		public static implicit operator Optional<T>(T value) {
-			return new Optional<T>(value);
-		}
-	}
-
-	public static class Optional {
-		public static Optional<T> For<T>(T value) {
-			return value;
-		}
-	}
 
 	
 	public partial class Basket {
@@ -97,8 +65,8 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Basket With(
-			Optional<System.Int32> size = default(Optional<System.Int32>), 
-			Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
+			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
 			return new Basket(
 					size.IsDefined ? size.Value : this.Size,
 					contents.IsDefined ? contents.Value : this.Contents);
@@ -158,8 +126,8 @@ namespace ImmutableObjectGraph {
 			public Basket ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Basket.Default.With(
-						Optional.For(this.size),
-						Optional.For(this.contents));
+						ImmutableObjectGraph.Optional.For(this.size),
+						ImmutableObjectGraph.Optional.For(this.contents));
 				}
 	
 				return this.immutable;
@@ -236,9 +204,9 @@ namespace ImmutableObjectGraph {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Fruit With(
-			Optional<System.String> color = default(Optional<System.String>), 
-			Optional<System.Int32> skinThickness = default(Optional<System.Int32>), 
-			Optional<System.ICloneable> growsOn = default(Optional<System.ICloneable>)) {
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.ICloneable> growsOn = default(ImmutableObjectGraph.Optional<System.ICloneable>)) {
 			return new Fruit(
 					color.IsDefined ? color.Value : this.Color,
 					skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness,
@@ -316,9 +284,9 @@ namespace ImmutableObjectGraph {
 			public Fruit ToImmutable() {
 				if (this.immutable == null) {
 					this.immutable = Fruit.Default.With(
-						Optional.For(this.color),
-						Optional.For(this.skinThickness),
-						Optional.For(this.growsOn));
+						ImmutableObjectGraph.Optional.For(this.color),
+						ImmutableObjectGraph.Optional.For(this.skinThickness),
+						ImmutableObjectGraph.Optional.For(this.growsOn));
 				}
 	
 				return this.immutable;

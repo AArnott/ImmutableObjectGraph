@@ -1,0 +1,13 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "ImmutableObjectGraph";
+	this.TemplateType = typeof(Person);
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	class Person {
+		string name;
+		int age;
+	}
+#>

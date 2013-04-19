@@ -15,38 +15,6 @@
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
 
-	/// <summary>
-	/// A wrapper around optional parameters to capture whether they were specified or omitted.
-	/// An implicit operator is defined so no one has to explicitly create this struct.
-	/// </summary>
-	public struct Optional<T> {
-		private readonly T value;
-		private readonly bool isDefined;
-
-		public Optional(T value) {
-			this.isDefined = true;
-			this.value = value;
-		}
-
-		public bool IsDefined {
-			get { return this.isDefined; }
-		}
-
-		public T Value {
-			get { return this.value; }
-		}
-
-		public static implicit operator Optional<T>(T value) {
-			return new Optional<T>(value);
-		}
-	}
-
-	public static class Optional {
-		public static Optional<T> For<T>(T value) {
-			return value;
-		}
-	}
-
 <#
 	this.PushIndent("\t");
 	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
@@ -206,7 +174,7 @@ public partial class <#= templateType.Name #> {
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine(""); #>
-					Optional.For(this.<#= CamelCase(field.Name) #>)<#
+					ImmutableObjectGraph.Optional.For(this.<#= CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
 );
@@ -284,7 +252,7 @@ public partial class <#= templateType.Name #> {
 
 	protected string GetOptionalTypeName(Type type)
 	{
-		return "Optional<" + GetTypeName(type) + ">";
+		return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
 	}
 
 #>

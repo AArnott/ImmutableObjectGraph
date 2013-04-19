@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ImmutableObjectGraph {
+﻿namespace Demo {
+	using System;
+	using System.Collections.Generic;
 	using System.Collections.Immutable;
-	using System.Reflection;
+	using System.Linq;
+	using System.Text;
+	using System.Threading.Tasks;
+	using ImmutableObjectGraph;
 
 	class Program {
 		static void Main(string[] args) {
@@ -18,7 +18,7 @@ namespace ImmutableObjectGraph {
 			greenApple = apple.With(color: "green", growsOn: (Tree)appleTree);
 			var greenAppleWithDefaultThickness = greenApple.With(skinThickness: 0);
 
-			ImmutableList<Fruit> immutableFruits = ImmutableList<Fruit>.Empty.Add(apple);
+			ImmutableList<Fruit> immutableFruits = ImmutableList.Create(apple);
 			IImmutableList<Fruit> fruits = immutableFruits;
 
 			var basket = Basket.Default.With(contents: immutableFruits, size: 5);

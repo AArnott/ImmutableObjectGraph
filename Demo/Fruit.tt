@@ -1,11 +1,11 @@
 ﻿<#@ template debug="true" language="C#" #>
 <#@ Output Extension=".generated.cs" #>
 <#
-	this.Namespace = "ImmutableObjectGraph";
+	this.Namespace = "Demo";
 	this.TemplateType = typeof(Basket);
 	this.UseClassCollectionType = false;
 #>
-<#@ Include File="ImmutableObjectGraph.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
 	class Fruit {
 		string color;

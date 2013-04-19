@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ImmutableObjectGraph {
+namespace Demo {
 	public class Tree : ICloneable {
 		public string Name { get; private set; }
 
