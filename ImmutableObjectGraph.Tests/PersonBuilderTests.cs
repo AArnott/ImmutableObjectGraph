@@ -58,6 +58,10 @@
 			personBuilder.Watch.Color = "Red";
 			var modifiedPerson = personBuilder.ToImmutable();
 			Assert.Equal("Red", modifiedPerson.Watch.Color);
+
+			personBuilder.Watch = null;
+			var personWithoutWatch = personBuilder.ToImmutable();
+			Assert.Null(personWithoutWatch.Watch);
 		}
 
 		[Fact]
