@@ -3,7 +3,7 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 	this.TemplateType = typeof(Family);
-	this.UseClassCollectionType = false;
+	this.UseClassCollectionType = true;
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
