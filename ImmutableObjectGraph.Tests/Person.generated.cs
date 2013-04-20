@@ -14,7 +14,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial class Family {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly Family DefaultInstance = new Family();
+		private static readonly Family DefaultInstance = GetDefaultTemplate();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.IImmutableList<Person> members;
@@ -34,7 +34,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static Family Create(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>>)) {
 			return DefaultInstance.With(
-				members);
+				members.IsDefined ? members : Optional.For(DefaultInstance.members));
 		}
 	
 		public System.Collections.Immutable.IImmutableList<Person> Members {
@@ -69,6 +69,18 @@ namespace ImmutableObjectGraph.Tests {
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated Family whose fields are initialized with default values.</summary>
+		private static Family GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new Family(
+				template.Members);
+		}
+	
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Family immutable;
@@ -97,11 +109,16 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.members));
 			}
 		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.Collections.Immutable.IImmutableList<Person> Members { get; set; }
+		}
 	}
 	
 	public partial class Person {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly Person DefaultInstance = new Person();
+		private static readonly Person DefaultInstance = GetDefaultTemplate();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String name;
@@ -131,9 +148,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			return DefaultInstance.With(
-				name, 
-				age, 
-				watch);
+				name.IsDefined ? name : Optional.For(DefaultInstance.name), 
+				age.IsDefined ? age : Optional.For(DefaultInstance.age), 
+				watch.IsDefined ? watch : Optional.For(DefaultInstance.watch));
 		}
 	
 		public System.String Name {
@@ -198,6 +215,20 @@ namespace ImmutableObjectGraph.Tests {
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated Person whose fields are initialized with default values.</summary>
+		private static Person GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new Person(
+				template.Name, 
+				template.Age, 
+				template.Watch);
+		}
+	
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Person immutable;
@@ -260,11 +291,20 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(watch));
 			}
 		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Name { get; set; }
+	
+			internal System.Int32 Age { get; set; }
+	
+			internal Watch Watch { get; set; }
+		}
 	}
 	
 	public partial class Watch {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly Watch DefaultInstance = new Watch();
+		private static readonly Watch DefaultInstance = GetDefaultTemplate();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String color;
@@ -289,8 +329,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				color, 
-				size);
+				color.IsDefined ? color : Optional.For(DefaultInstance.color), 
+				size.IsDefined ? size : Optional.For(DefaultInstance.size));
 		}
 	
 		public System.String Color {
@@ -340,6 +380,19 @@ namespace ImmutableObjectGraph.Tests {
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated Watch whose fields are initialized with default values.</summary>
+		private static Watch GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new Watch(
+				template.Color, 
+				template.Size);
+		}
+	
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Watch immutable;
@@ -382,6 +435,13 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.color),
 					ImmutableObjectGraph.Optional.For(this.size));
 			}
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Color { get; set; }
+	
+			internal System.Int32 Size { get; set; }
 		}
 	}
 }

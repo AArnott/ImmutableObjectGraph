@@ -14,7 +14,7 @@ namespace Demo {
 	
 	public partial class Basket {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly Basket DefaultInstance = new Basket();
+		private static readonly Basket DefaultInstance = GetDefaultTemplate();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 size;
@@ -39,8 +39,8 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
 			return DefaultInstance.With(
-				size, 
-				contents);
+				size.IsDefined ? size : Optional.For(DefaultInstance.size), 
+				contents.IsDefined ? contents : Optional.For(DefaultInstance.contents));
 		}
 	
 		public System.Int32 Size {
@@ -90,6 +90,19 @@ namespace Demo {
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated Basket whose fields are initialized with default values.</summary>
+		private static Basket GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new Basket(
+				template.Size, 
+				template.Contents);
+		}
+	
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Basket immutable;
@@ -133,11 +146,18 @@ namespace Demo {
 					ImmutableObjectGraph.Optional.For(this.contents));
 			}
 		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.Int32 Size { get; set; }
+	
+			internal System.Collections.Immutable.IImmutableList<Fruit> Contents { get; set; }
+		}
 	}
 	
 	public partial class Fruit {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly Fruit DefaultInstance = new Fruit();
+		private static readonly Fruit DefaultInstance = GetDefaultTemplate();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String color;
@@ -167,9 +187,9 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<System.ICloneable> growsOn = default(ImmutableObjectGraph.Optional<System.ICloneable>)) {
 			return DefaultInstance.With(
-				color, 
-				skinThickness, 
-				growsOn);
+				color.IsDefined ? color : Optional.For(DefaultInstance.color), 
+				skinThickness.IsDefined ? skinThickness : Optional.For(DefaultInstance.skinThickness), 
+				growsOn.IsDefined ? growsOn : Optional.For(DefaultInstance.growsOn));
 		}
 	
 		public System.String Color {
@@ -234,6 +254,20 @@ namespace Demo {
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated Fruit whose fields are initialized with default values.</summary>
+		private static Fruit GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new Fruit(
+				template.Color, 
+				template.SkinThickness, 
+				template.GrowsOn);
+		}
+	
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Fruit immutable;
@@ -291,6 +325,15 @@ namespace Demo {
 					ImmutableObjectGraph.Optional.For(this.skinThickness),
 					ImmutableObjectGraph.Optional.For(this.growsOn));
 			}
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Color { get; set; }
+	
+			internal System.Int32 SkinThickness { get; set; }
+	
+			internal System.ICloneable GrowsOn { get; set; }
 		}
 	}
 }

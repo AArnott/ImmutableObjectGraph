@@ -23,7 +23,7 @@ namespace <#= this.Namespace #> {
 
 public partial class <#= templateType.Name #> {
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private static readonly <#= templateType.Name #> DefaultInstance = new <#= templateType.Name #>();
+	private static readonly <#= templateType.Name #> DefaultInstance = GetDefaultTemplate();
 <#
 	var fields = templateType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 	foreach(var field in fields) {
@@ -87,7 +87,7 @@ public partial class <#= templateType.Name #> {
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
-			Write(CamelCase(field.Name));
+			#><#=CamelCase(field.Name)#>.IsDefined ? <#=CamelCase(field.Name)#> : Optional.For(DefaultInstance.<#=CamelCase(field.Name)#>)<#
 			firstInSequence = false;
 		}
 
@@ -174,6 +174,31 @@ public partial class <#= templateType.Name #> {
 	/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 	partial void Validate();
 
+	/// <summary>Provides defaults for fields.</summary>
+	/// <param name="template">The struct to set default values on.</param>
+	static partial void CreateDefaultTemplate(ref Template template);
+
+	/// <summary>Returns a newly instantiated <#= templateType.Name #> whose fields are initialized with default values.</summary>
+	private static <#= templateType.Name #> GetDefaultTemplate() {
+		var template = new Template();
+		CreateDefaultTemplate(ref template);
+		return new <#= templateType.Name #>(<#
+		firstInSequence = true;
+		this.PushIndent("\t\t\t");
+
+		// Value parameters
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(", "); }
+			WriteLine("");
+			Write("template.");
+			Write(PascalCase(field.Name));
+			firstInSequence = false;
+		}
+
+		this.PopIndent();
+#>);
+	}
+
 	public partial class Builder {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private <#= templateType.Name #> immutable;
@@ -228,6 +253,17 @@ public partial class <#= templateType.Name #> {
 			} #>
 );
 		}
+	}
+
+	/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+	private struct Template {<#
+	foreach(var field in fields) {
+#>
+
+		internal <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; set; }
+<#
+	}
+#>
 	}
 }
 <# } // looping over all template types
