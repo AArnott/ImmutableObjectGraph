@@ -42,13 +42,13 @@ Usage
 -----
 This project is a sample. Its suggested use is to copy the
 `ImmutableObjectGraph.tt` file to your own project and include it into your own
-T4 template as demonstrated in the `Demo\Fruit.tt` or 
+T4 template as demonstrated in the `Demo\Message.tt` or 
 `ImmutableObjectGraph.Tests\Person.tt` files.
 
 Example
 -------
-A live example can be seen by comparing the source file `Fruit.tt` to the 
-generated output found in `Fruit.generated.cs`. Both of these files are in 
+A live example can be seen by comparing the source file `Message.tt` to the 
+generated output found in `Message.generated.cs`. Both of these files are in 
 this project.
 
 For example, the T4 transformation can take the following mutable template class:

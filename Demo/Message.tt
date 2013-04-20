@@ -1,0 +1,22 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "Demo";
+	this.TemplateType = typeof(Message);
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	class Message {
+		Contact author;
+		ImmutableList<Contact> to;
+		ImmutableList<Contact> cc;
+		ImmutableList<Contact> bcc;
+		string subject;
+		string body;
+	}
+
+	class Contact {
+		string name;
+		string email;
+	}
+#>

@@ -46,20 +46,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fruit.generated.cs">
-      <DependentUpon>Fruit.tt</DependentUpon>
+    <Compile Include="Message.generated.cs">
+      <DependentUpon>Message.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tree.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Fruit.tt">
+    <None Include="Message.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Fruit.generated.cs</LastGenOutput>
+      <LastGenOutput>Message.generated.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
