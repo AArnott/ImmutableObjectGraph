@@ -86,17 +86,19 @@ namespace ImmutableObjectGraph.Tests {
 			private Family immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Collections.Immutable.ImmutableSortedSet<Person> members;
+			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>.Builder> members;
 	
 			internal Builder(Family immutable) {
 				this.immutable = immutable;
-	
-				this.members = immutable.Members;
 			}
 	
-			public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
+			public System.Collections.Immutable.ImmutableSortedSet<Person>.Builder Members {
 				get {
-					return this.members;
+					if (!this.members.IsDefined) {
+						this.members = this.immutable.Members != null ? this.immutable.Members.ToBuilder() : null;
+					}
+
+					return this.members.Value;
 				}
 	
 				set {
@@ -105,8 +107,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			public Family ToImmutable() {
+				var members = this.members.IsDefined ? this.members.Value.ToImmutable() : this.immutable.members;
 				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.members));
+					ImmutableObjectGraph.Optional.For(members));
 			}
 		}
 	
