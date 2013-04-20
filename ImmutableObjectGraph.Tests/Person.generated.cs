@@ -90,14 +90,15 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal Builder(Family immutable) {
 				this.immutable = immutable;
+	
 			}
 	
 			public System.Collections.Immutable.ImmutableSortedSet<Person>.Builder Members {
 				get {
 					if (!this.members.IsDefined) {
-						this.members = this.immutable.Members != null ? this.immutable.Members.ToBuilder() : null;
+						this.members = this.immutable.members != null ? this.immutable.members.ToBuilder() : null;
 					}
-
+	
 					return this.members.Value;
 				}
 	
@@ -107,7 +108,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			public Family ToImmutable() {
-				var members = this.members.IsDefined ? this.members.Value.ToImmutable() : this.immutable.members;
+				var members = this.members.IsDefined ? (this.members.Value != null ? this.members.Value.ToImmutable() : null) : this.immutable.members;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(members));
 			}
@@ -275,7 +276,7 @@ namespace ImmutableObjectGraph.Tests {
 			public Watch.Builder Watch {
 				get {
 					if (!this.watch.IsDefined) {
-						this.watch = this.immutable.watch.ToBuilder();
+						this.watch = this.immutable.watch != null ? this.immutable.watch.ToBuilder() : null;
 					}
 	
 					return this.watch.Value;
