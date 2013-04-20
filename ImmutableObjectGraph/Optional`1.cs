@@ -12,6 +12,7 @@
 			this.value = value;
 		}
 
+
 		public bool IsDefined {
 			get { return this.isDefined; }
 		}
@@ -22,6 +23,10 @@
 
 		public static implicit operator Optional<T>(T value) {
 			return new Optional<T>(value);
+		}
+
+		public T GetValueOrDefault(T defaultValue) {
+			return this.IsDefined ? this.value : defaultValue;
 		}
 	}
 }
