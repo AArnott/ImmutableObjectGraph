@@ -298,10 +298,7 @@ public partial class <#= templateType.Name #> {
 			var type = pendingTypes.Dequeue();
 			if (types.Add(type)) {
 				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)) {
-					var memberType = field.FieldType;
-					if (memberType.IsArray) {
-						memberType = memberType.GetElementType();
-					}
+					var memberType = GetTypeOrCollectionMemberType(field.FieldType);
 
 					if (memberType.DeclaringType == type.DeclaringType) {
 						pendingTypes.Enqueue(memberType);
@@ -331,8 +328,9 @@ public partial class <#= templateType.Name #> {
 
 	protected string GetTypeName(Type type) {
 		bool collection = false;
-		if (type.IsArray) {
-			type = type.GetElementType();
+		Type elementType;
+		if (TryGetCollectionElementType(type, out elementType)) {
+			type = elementType;
 			collection = true;
 		}
 
@@ -349,6 +347,25 @@ public partial class <#= templateType.Name #> {
 		}
 
 		return typeName;
+	}
+
+	private static bool TryGetCollectionElementType(Type collectionType, out Type elementType) {
+		if (collectionType.IsArray) {
+			elementType = collectionType.GetElementType();
+			return true;
+		}
+
+		elementType = null;
+		return false;
+	}
+
+	private static Type GetTypeOrCollectionMemberType(Type collectionOrOtherType) {
+		Type memberType;
+		if (TryGetCollectionElementType(collectionOrOtherType, out memberType)) {
+			return memberType;
+		}
+
+		return collectionOrOtherType;
 	}
 
 	protected string GetOptionalTypeName(Type type)
