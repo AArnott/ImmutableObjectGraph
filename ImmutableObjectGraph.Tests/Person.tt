@@ -3,12 +3,11 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 	this.TemplateType = typeof(Family);
-	this.UseClassCollectionType = false;
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
 	class Family {
-		Person[] members;
+		ImmutableSortedSet<Person> members;
 	}
 
 	class Person {
