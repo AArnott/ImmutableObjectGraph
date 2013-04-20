@@ -62,7 +62,7 @@ And generate code such as:
 
     public partial class Fruit {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private static readonly Fruit DefaultInstance = new Fruit();
+        private static readonly Fruit DefaultInstance = GetDefaultTemplate();
     
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly System.String color;
@@ -83,8 +83,12 @@ And generate code such as:
             this.Validate();
         }
     
-        public static Fruit Default {
-            get { return DefaultInstance; }
+        public static Fruit Create(
+            ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
+            ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+            return DefaultInstance.With(
+                color.IsDefined ? color : ImmutableObjectGraph.Optional.For(DefaultInstance.color), 
+                skinThickness.IsDefined ? skinThickness : ImmutableObjectGraph.Optional.For(DefaultInstance.skinThickness));
         }
     
         public System.String Color {
@@ -113,13 +117,17 @@ And generate code such as:
     
         /// <summary>Returns a new instance of this object with any number of properties changed.</summary>
         public Fruit With(
-            System.String color = default(System.String), 
-            System.Int32 skinThickness = default(System.Int32),
-            bool defaultColor = false,
-            bool defaultSkinThickness = false) {
-            return new Fruit(
-                    defaultColor ? default(System.String) : (color != default(System.String) ? color : this.Color),
-                    defaultSkinThickness ? default(System.Int32) : (skinThickness != default(System.Int32) ? skinThickness : this.SkinThickness));
+            ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
+            ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+            if (
+                (color.IsDefined && color.Value != this.Color) || 
+                (skinThickness.IsDefined && skinThickness.Value != this.SkinThickness)) {
+                return new Fruit(
+                    color.IsDefined ? color.Value : this.Color,
+                    skinThickness.IsDefined ? skinThickness.Value : this.SkinThickness);
+            } else {
+                return this;
+            }
         }
     
         public Builder ToBuilder() {
@@ -129,6 +137,19 @@ And generate code such as:
         /// <summary>Normalizes and/or validates all properties on this object.</summary>
         /// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
         partial void Validate();
+    
+        /// <summary>Provides defaults for fields.</summary>
+        /// <param name="template">The struct to set default values on.</param>
+        static partial void CreateDefaultTemplate(ref Template template);
+    
+        /// <summary>Returns a newly instantiated Fruit whose fields are initialized with default values.</summary>
+        private static Fruit GetDefaultTemplate() {
+            var template = new Template();
+            CreateDefaultTemplate(ref template);
+            return new Fruit(
+                template.Color, 
+                template.SkinThickness);
+        }
     
         public partial class Builder {
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -153,10 +174,7 @@ And generate code such as:
                 }
     
                 set {
-                    if (this.color != value) {
-                        this.color = value;
-                        this.immutable = null;
-                    }
+                    this.color = value;
                 }
             }
     
@@ -166,24 +184,25 @@ And generate code such as:
                 }
     
                 set {
-                    if (this.skinThickness != value) {
-                        this.skinThickness = value;
-                        this.immutable = null;
-                    }
+                    this.skinThickness = value;
                 }
             }
     
             public Fruit ToImmutable() {
-                if (this.immutable == null) {
-                    this.immutable = Fruit.Default.With(
-                        this.color,
-                        this.skinThickness);
-                }
-    
-                return this.immutable;
+                return this.immutable = this.immutable.With(
+                    ImmutableObjectGraph.Optional.For(this.color),
+                    ImmutableObjectGraph.Optional.For(this.skinThickness));
             }
         }
+    
+        /// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+        private struct Template {
+            internal System.String Color { get; set; }
+    
+            internal System.Int32 SkinThickness { get; set; }
+        }
     }
+
 
 The integration of T4 template support in Visual Studio allows for you to
 conveniently maintain your mutable template class, and on every Save
