@@ -75,5 +75,12 @@
 			var personWithoutWatch = personBuilder.ToImmutable();
 			Assert.Null(personWithoutWatch.Watch);
 		}
+
+		[Fact]
+		public void PropertyBuildersAreNullIfImmutableIsNull() {
+			var person = Person.Create();
+			var builder = person.ToBuilder();
+			Assert.Null(builder.Watch);
+		}
 	}
 }
