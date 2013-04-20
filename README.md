@@ -17,7 +17,7 @@ These codebases for immutable objects can be quite large.
 
 To reduce the burden of writing and maintaining such codebases, the
 T4 templates found in this project generate the code for immutable objects
-for you based on a template mutable object that you supply. 
+for you based on a template mutable class that you supply. 
 
 Supported features
 ------------------
@@ -27,7 +27,8 @@ appear in a type in C#.
 
  * Only fields are supported. 
  * Field types may be value or reference types.
- * When field types are arrays, these types are converted to immutable lists.
+ * When field types are collections, immutable collections should be used that
+   support the Builder pattern.
  * When field types refer to other types also defined in the mutable template
    file, multiple immutable object types are defined in the generated file.
    In this way, an entire library of immutable classes with members that
@@ -41,7 +42,8 @@ Usage
 -----
 This project is a sample. Its suggested use is to copy the
 `ImmutableObjectGraph.tt` file to your own project and include it into your own
-T4 template as demonstrated in the `Fruit.tt` file.
+T4 template as demonstrated in the `Demo\Fruit.tt` or 
+`ImmutableObjectGraph.Tests\Person.tt` files.
 
 Example
 -------
