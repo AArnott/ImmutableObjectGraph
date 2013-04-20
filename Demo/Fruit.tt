@@ -14,6 +14,6 @@
 
 	class Basket {
 		int size;
-		IImmutableList<Fruit> contents;
+		ImmutableList<Fruit> contents;
 	}
 #>

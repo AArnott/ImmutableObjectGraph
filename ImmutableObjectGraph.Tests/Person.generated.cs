@@ -86,17 +86,20 @@ namespace ImmutableObjectGraph.Tests {
 			private Family immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Collections.Immutable.ImmutableSortedSet<Person> members;
+			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>.Builder> members;
 	
 			internal Builder(Family immutable) {
 				this.immutable = immutable;
 	
-				this.members = immutable.Members;
 			}
 	
-			public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
+			public System.Collections.Immutable.ImmutableSortedSet<Person>.Builder Members {
 				get {
-					return this.members;
+					if (!this.members.IsDefined) {
+						this.members = this.immutable.members != null ? this.immutable.members.ToBuilder() : null;
+					}
+	
+					return this.members.Value;
 				}
 	
 				set {
@@ -105,8 +108,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			public Family ToImmutable() {
+				var members = this.members.IsDefined ? (this.members.Value != null ? this.members.Value.ToImmutable() : null) : this.immutable.members;
 				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.members));
+					ImmutableObjectGraph.Optional.For(members));
 			}
 		}
 	
@@ -272,7 +276,7 @@ namespace ImmutableObjectGraph.Tests {
 			public Watch.Builder Watch {
 				get {
 					if (!this.watch.IsDefined) {
-						this.watch = this.immutable.watch.ToBuilder();
+						this.watch = this.immutable.watch != null ? this.immutable.watch.ToBuilder() : null;
 					}
 	
 					return this.watch.Value;

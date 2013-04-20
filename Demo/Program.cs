@@ -18,11 +18,11 @@
 			var greenAppleWithDefaultThickness = greenApple.With(skinThickness: 0);
 
 			ImmutableList<Fruit> immutableFruits = ImmutableList.Create(apple);
-			IImmutableList<Fruit> fruits = immutableFruits;
+			//IImmutableList<Fruit> fruits = immutableFruits;
 
 			var basket = Basket.Create(contents: immutableFruits, size: 5);
-			basket = Basket.Create(contents: Optional.For(fruits), size: 5);
-			basket = Basket.Create().WithContents(fruits).WithSize(5);
+			//basket = Basket.Create(contents: Optional.For(fruits), size: 5);
+			//basket = Basket.Create().WithContents(fruits).WithSize(5);
 
 			var appleBuilder = apple.ToBuilder();
 			appleBuilder.Color = "yellow";

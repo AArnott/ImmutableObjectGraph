@@ -216,7 +216,7 @@ public partial class <#= templateType.Name #> {
 			this.immutable = immutable;
 
 <#
-			foreach(var field in fields.Where(f => !templateTypes.Contains(f.FieldType))) {
+			foreach(var field in fields.Where(f => !templateTypes.Contains(f.FieldType) && !IsCollectionType(f.FieldType))) {
 #>
 			this.<#= CamelCase(field.Name) #> = immutable.<#= PascalCase(field.Name) #>;
 <#			} #>
@@ -225,9 +225,9 @@ public partial class <#= templateType.Name #> {
 
 		public <#= GetBuilderPropertyTypeName(field.FieldType, templateTypes) #> <#= PascalCase(field.Name) #> {
 			get {
-<# if (templateTypes.Contains(field.FieldType)) { #>
+<# if (templateTypes.Contains(field.FieldType) || IsCollectionType(field.FieldType)) { #>
 				if (!this.<#= CamelCase(field.Name) #>.IsDefined) {
-					this.<#= CamelCase(field.Name) #> = this.immutable.<#= CamelCase(field.Name) #>.ToBuilder();
+					this.<#= CamelCase(field.Name) #> = this.immutable.<#= CamelCase(field.Name) #> != null ? this.immutable.<#= CamelCase(field.Name) #>.ToBuilder() : null;
 				}
 
 				return this.<#= CamelCase(field.Name) #>.Value;
@@ -243,7 +243,7 @@ public partial class <#= templateType.Name #> {
 <#		} #>
 
 		public <#= templateType.Name #> ToImmutable() {
-<#			foreach(var templateField in fields.Where(f => templateTypes.Contains(f.FieldType))) { #>
+<#			foreach(var templateField in fields.Where(f => templateTypes.Contains(f.FieldType) || IsCollectionType(f.FieldType))) { #>
 			var <#= CamelCase(templateField.Name) #> = this.<#= CamelCase(templateField.Name) #>.IsDefined ? (this.<#= CamelCase(templateField.Name) #>.Value != null ? this.<#= CamelCase(templateField.Name) #>.Value.ToImmutable() : null) : this.immutable.<#= CamelCase(templateField.Name) #>;
 <#			} #>
 			return this.immutable = this.immutable.With(<#
@@ -251,7 +251,7 @@ public partial class <#= templateType.Name #> {
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine("");
-				string prefix = templateTypes.Contains(field.FieldType) ? "" : "this."; #>
+				string prefix = (templateTypes.Contains(field.FieldType) || IsCollectionType(field.FieldType)) ? "" : "this."; #>
 				ImmutableObjectGraph.Optional.For(<#= prefix + CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
@@ -310,16 +310,16 @@ public partial class <#= templateType.Name #> {
 	}
 	
 	protected string GetBuilderPropertyTypeName(Type type, HashSet<Type> templateTypes) {
-		if (templateTypes.Contains(type)) {
-			return type.Name + ".Builder";
+		if (templateTypes.Contains(type) || IsCollectionType(type)) {
+			return GetTypeName(type) + ".Builder";
 		} else {
 			return GetTypeName(type);
 		}
 	}
 
 	protected string GetBuilderFieldTypeName(Type type, HashSet<Type> templateTypes) {
-		if (templateTypes.Contains(type)) {
-			return "ImmutableObjectGraph.Optional<" + type.Name + ".Builder>";
+		if (templateTypes.Contains(type) || IsCollectionType(type)) {
+			return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ".Builder>";
 		} else {
 			return GetTypeName(type);
 		}
@@ -343,6 +343,22 @@ public partial class <#= templateType.Name #> {
 		}
 
 		return typeName.ToString();
+	}
+
+	private static bool IsCollectionType(Type type) {
+		if (type.IsArray) {
+			return true;
+		}
+
+		if (type.IsGenericType && type.GenericTypeArguments.Length == 1) {
+			Type readOnlyCollection = typeof(IReadOnlyCollection<>);
+			var genericReadOnlyCollection = readOnlyCollection.MakeGenericType(type.GenericTypeArguments[0]);
+			if (genericReadOnlyCollection.IsAssignableFrom(type)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private static bool TryGetCollectionElementType(Type collectionType, out Type elementType) {
