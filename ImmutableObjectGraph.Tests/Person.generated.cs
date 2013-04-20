@@ -17,7 +17,7 @@ namespace ImmutableObjectGraph.Tests {
 		private static readonly Family DefaultInstance = GetDefaultTemplate();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Collections.Immutable.ImmutableList<Person> members;
+		private readonly System.Collections.Immutable.ImmutableSortedSet<Person> members;
 	
 		/// <summary>Initializes a new instance of the Family class.</summary>
 		private Family()
@@ -25,23 +25,23 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the Family class.</summary>
-		private Family(System.Collections.Immutable.ImmutableList<Person> members)
+		private Family(System.Collections.Immutable.ImmutableSortedSet<Person> members)
 		{
 			this.members = members;
 			this.Validate();
 		}
 	
 		public static Family Create(
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Person>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
 			return DefaultInstance.With(
 				members.IsDefined ? members : ImmutableObjectGraph.Optional.For(DefaultInstance.members));
 		}
 	
-		public System.Collections.Immutable.ImmutableList<Person> Members {
+		public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
 			get { return this.members; }
 		}
 	
-		public Family WithMembers(System.Collections.Immutable.ImmutableList<Person> value) {
+		public Family WithMembers(System.Collections.Immutable.ImmutableSortedSet<Person> value) {
 			if (value == this.Members) {
 				return this;
 			}
@@ -51,7 +51,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Family With(
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Person>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
 			if (
 				(members.IsDefined && members.Value != this.Members)) {
 				return new Family(
@@ -86,7 +86,7 @@ namespace ImmutableObjectGraph.Tests {
 			private Family immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Collections.Immutable.ImmutableList<Person> members;
+			private System.Collections.Immutable.ImmutableSortedSet<Person> members;
 	
 			internal Builder(Family immutable) {
 				this.immutable = immutable;
@@ -94,7 +94,7 @@ namespace ImmutableObjectGraph.Tests {
 				this.members = immutable.Members;
 			}
 	
-			public System.Collections.Immutable.ImmutableList<Person> Members {
+			public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
 				get {
 					return this.members;
 				}
@@ -112,7 +112,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
-			internal System.Collections.Immutable.ImmutableList<Person> Members { get; set; }
+			internal System.Collections.Immutable.ImmutableSortedSet<Person> Members { get; set; }
 		}
 	}
 	

@@ -8,7 +8,13 @@
 
 	partial class Family {
 		static partial void CreateDefaultTemplate(ref Template template) {
-			template.Members = ImmutableList.Create<Person>();
+			template.Members = ImmutableSortedSet.Create<Person>(new FamilyMemberComparer());
+		}
+
+		private class FamilyMemberComparer : IComparer<Person> {
+			public int Compare(Person x, Person y) {
+				return x.Age.CompareTo(y.Age);
+			}
 		}
 	}
 }
