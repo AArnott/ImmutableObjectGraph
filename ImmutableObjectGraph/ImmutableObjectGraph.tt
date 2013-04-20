@@ -87,7 +87,7 @@ public partial class <#= templateType.Name #> {
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
-			#><#=CamelCase(field.Name)#>.IsDefined ? <#=CamelCase(field.Name)#> : Optional.For(DefaultInstance.<#=CamelCase(field.Name)#>)<#
+			#><#=CamelCase(field.Name)#>.IsDefined ? <#=CamelCase(field.Name)#> : ImmutableObjectGraph.Optional.For(DefaultInstance.<#=CamelCase(field.Name)#>)<#
 			firstInSequence = false;
 		}
 

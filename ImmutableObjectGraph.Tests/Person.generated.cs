@@ -34,7 +34,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static Family Create(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>>)) {
 			return DefaultInstance.With(
-				members.IsDefined ? members : Optional.For(DefaultInstance.members));
+				members.IsDefined ? members : ImmutableObjectGraph.Optional.For(DefaultInstance.members));
 		}
 	
 		public System.Collections.Immutable.IImmutableList<Person> Members {
@@ -148,9 +148,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			return DefaultInstance.With(
-				name.IsDefined ? name : Optional.For(DefaultInstance.name), 
-				age.IsDefined ? age : Optional.For(DefaultInstance.age), 
-				watch.IsDefined ? watch : Optional.For(DefaultInstance.watch));
+				name.IsDefined ? name : ImmutableObjectGraph.Optional.For(DefaultInstance.name), 
+				age.IsDefined ? age : ImmutableObjectGraph.Optional.For(DefaultInstance.age), 
+				watch.IsDefined ? watch : ImmutableObjectGraph.Optional.For(DefaultInstance.watch));
 		}
 	
 		public System.String Name {
@@ -329,8 +329,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				color.IsDefined ? color : Optional.For(DefaultInstance.color), 
-				size.IsDefined ? size : Optional.For(DefaultInstance.size));
+				color.IsDefined ? color : ImmutableObjectGraph.Optional.For(DefaultInstance.color), 
+				size.IsDefined ? size : ImmutableObjectGraph.Optional.For(DefaultInstance.size));
 		}
 	
 		public System.String Color {

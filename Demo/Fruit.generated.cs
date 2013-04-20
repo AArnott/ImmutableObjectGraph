@@ -39,8 +39,8 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>> contents = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Fruit>>)) {
 			return DefaultInstance.With(
-				size.IsDefined ? size : Optional.For(DefaultInstance.size), 
-				contents.IsDefined ? contents : Optional.For(DefaultInstance.contents));
+				size.IsDefined ? size : ImmutableObjectGraph.Optional.For(DefaultInstance.size), 
+				contents.IsDefined ? contents : ImmutableObjectGraph.Optional.For(DefaultInstance.contents));
 		}
 	
 		public System.Int32 Size {
@@ -187,9 +187,9 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>), 
 			ImmutableObjectGraph.Optional<System.ICloneable> growsOn = default(ImmutableObjectGraph.Optional<System.ICloneable>)) {
 			return DefaultInstance.With(
-				color.IsDefined ? color : Optional.For(DefaultInstance.color), 
-				skinThickness.IsDefined ? skinThickness : Optional.For(DefaultInstance.skinThickness), 
-				growsOn.IsDefined ? growsOn : Optional.For(DefaultInstance.growsOn));
+				color.IsDefined ? color : ImmutableObjectGraph.Optional.For(DefaultInstance.color), 
+				skinThickness.IsDefined ? skinThickness : ImmutableObjectGraph.Optional.For(DefaultInstance.skinThickness), 
+				growsOn.IsDefined ? growsOn : ImmutableObjectGraph.Optional.For(DefaultInstance.growsOn));
 		}
 	
 		public System.String Color {
