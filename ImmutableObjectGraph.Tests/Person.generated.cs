@@ -12,6 +12,93 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 
 	
+	public partial class Family {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly Family DefaultInstance = new Family();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.Collections.Immutable.IImmutableList<Person> members;
+	
+		/// <summary>Initializes a new instance of the Family class.</summary>
+		private Family()
+		{
+		}
+	
+		/// <summary>Initializes a new instance of the Family class.</summary>
+		private Family(System.Collections.Immutable.IImmutableList<Person> members)
+		{
+			this.members = members;
+			this.Validate();
+		}
+	
+		public static Family Create(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>>)) {
+			return DefaultInstance.With(
+				members);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<Person> Members {
+			get { return this.members; }
+		}
+	
+		public Family WithMembers(System.Collections.Immutable.IImmutableList<Person> value) {
+			if (value == this.Members) {
+				return this;
+			}
+	
+			return new Family(value);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public Family With(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<Person>>)) {
+			if (
+				(members.IsDefined && members.Value != this.Members)) {
+				return new Family(
+					members.IsDefined ? members.Value : this.Members);
+			} else {
+				return this;
+			}
+		}
+	
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private Family immutable;
+	
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private System.Collections.Immutable.IImmutableList<Person> members;
+	
+			internal Builder(Family immutable) {
+				this.immutable = immutable;
+	
+				this.members = immutable.Members;
+			}
+	
+			public System.Collections.Immutable.IImmutableList<Person> Members {
+				get {
+					return this.members;
+				}
+	
+				set {
+					this.members = value;
+				}
+			}
+	
+			public Family ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.members));
+			}
+		}
+	}
+	
 	public partial class Person {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Person DefaultInstance = new Person();

@@ -2,10 +2,14 @@
 <#@ Output Extension=".generated.cs" #>
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
-	this.TemplateType = typeof(Person);
+	this.TemplateType = typeof(Family);
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
+	class Family {
+		Person[] members;
+	}
+
 	class Person {
 		string name;
 		int age;

@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FamilyTests.cs" />
     <Compile Include="PersonBuilderTests.cs" />
     <Compile Include="PersonTests.cs" />
     <Compile Include="Person.generated.cs">
