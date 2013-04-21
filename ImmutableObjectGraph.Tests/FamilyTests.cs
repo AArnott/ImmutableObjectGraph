@@ -21,7 +21,7 @@
 		public void DefaultValuesCanBeOverriddenWithTypeDefaults() {
 			Assert.NotNull(Family.Create().Members); // the test is only valid if the default value is non-null
 			Assert.Null(Family.Create(members: null).Members);
-			Assert.Null(Family.Create().WithMembers(null).Members);
+			Assert.Null(Family.Create().WithMembers((ImmutableSortedSet<Person>)null).Members);
 		}
 
 		[Fact]

@@ -30,7 +30,7 @@ namespace DirectoryTree {
 		private readonly System.Collections.Immutable.ImmutableHashSet<System.String> attributes;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Collections.Immutable.ImmutableSortedSet<TreeNode> children;
+		private readonly System.Collections.Immutable.ImmutableList<TreeNode> children;
 	
 		/// <summary>Initializes a new instance of the TreeNode class.</summary>
 		private TreeNode()
@@ -38,7 +38,7 @@ namespace DirectoryTree {
 		}
 	
 		/// <summary>Initializes a new instance of the TreeNode class.</summary>
-		private TreeNode(System.String caption, System.String filePath, System.Boolean visible, System.Collections.Immutable.ImmutableHashSet<System.String> attributes, System.Collections.Immutable.ImmutableSortedSet<TreeNode> children)
+		private TreeNode(System.String caption, System.String filePath, System.Boolean visible, System.Collections.Immutable.ImmutableHashSet<System.String> attributes, System.Collections.Immutable.ImmutableList<TreeNode> children)
 		{
 			this.caption = caption;
 			this.filePath = filePath;
@@ -53,7 +53,7 @@ namespace DirectoryTree {
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>), 
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<TreeNode>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			return DefaultInstance.With(
 				caption.IsDefined ? caption : ImmutableObjectGraph.Optional.For(DefaultInstance.caption), 
 				filePath.IsDefined ? filePath : ImmutableObjectGraph.Optional.For(DefaultInstance.filePath), 
@@ -117,12 +117,36 @@ namespace DirectoryTree {
 		public TreeNode WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.ResetContents(values), this.Children);
 		}
+	
+		public TreeNode AddAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.AddRange(values), this.Children);
+		}
+	
+		public TreeNode AddAttributes(params System.String[] values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.AddRange(values), this.Children);
+		}
+	
+		public TreeNode AddAttributes(System.String value) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Add(value), this.Children);
+		}
+	
+		public TreeNode RemoveAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.RemoveRange(values), this.Children);
+		}
+	
+		public TreeNode RemoveAttributes(params System.String[] values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.RemoveRange(values), this.Children);
+		}
+	
+		public TreeNode RemoveAttributes(System.String value) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Remove(value), this.Children);
+		}
 		
-		public System.Collections.Immutable.ImmutableSortedSet<TreeNode> Children {
+		public System.Collections.Immutable.ImmutableList<TreeNode> Children {
 			get { return this.children; }
 		}
 	
-		public TreeNode WithChildren(System.Collections.Immutable.ImmutableSortedSet<TreeNode> value) {
+		public TreeNode WithChildren(System.Collections.Immutable.ImmutableList<TreeNode> value) {
 			if (value == this.Children) {
 				return this;
 			}
@@ -137,6 +161,30 @@ namespace DirectoryTree {
 		public TreeNode WithChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.ResetContents(values));
 		}
+	
+		public TreeNode AddChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.AddRange(values));
+		}
+	
+		public TreeNode AddChildren(params TreeNode[] values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.AddRange(values));
+		}
+	
+		public TreeNode AddChildren(TreeNode value) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Add(value));
+		}
+	
+		public TreeNode RemoveChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.RemoveRange(values));
+		}
+	
+		public TreeNode RemoveChildren(params TreeNode[] values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.RemoveRange(values));
+		}
+	
+		public TreeNode RemoveChildren(TreeNode value) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Remove(value));
+		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public TreeNode With(
@@ -144,7 +192,7 @@ namespace DirectoryTree {
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>), 
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<TreeNode>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			if (
 				(caption.IsDefined && caption.Value != this.Caption) || 
 				(filePath.IsDefined && filePath.Value != this.FilePath) || 
@@ -203,7 +251,7 @@ namespace DirectoryTree {
 			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>.Builder> attributes;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<TreeNode>.Builder> children;
+			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>.Builder> children;
 	
 			internal Builder(TreeNode immutable) {
 				this.immutable = immutable;
@@ -257,7 +305,7 @@ namespace DirectoryTree {
 				}
 			}
 	
-			public System.Collections.Immutable.ImmutableSortedSet<TreeNode>.Builder Children {
+			public System.Collections.Immutable.ImmutableList<TreeNode>.Builder Children {
 				get {
 					if (!this.children.IsDefined) {
 						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
@@ -293,7 +341,7 @@ namespace DirectoryTree {
 	
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; set; }
 	
-			internal System.Collections.Immutable.ImmutableSortedSet<TreeNode> Children { get; set; }
+			internal System.Collections.Immutable.ImmutableList<TreeNode> Children { get; set; }
 		}
 	}
 }

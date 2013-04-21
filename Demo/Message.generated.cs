@@ -99,6 +99,30 @@ namespace Demo {
 		public Message WithTo(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To.ResetContents(values), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
+	
+		public Message AddTo(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To.AddRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message AddTo(params Contact[] values) {
+			return new Message(this.Author, this.To.AddRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message AddTo(Contact value) {
+			return new Message(this.Author, this.To.Add(value), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message RemoveTo(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To.RemoveRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message RemoveTo(params Contact[] values) {
+			return new Message(this.Author, this.To.RemoveRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message RemoveTo(Contact value) {
+			return new Message(this.Author, this.To.Remove(value), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
 		
 		public System.Collections.Immutable.ImmutableList<Contact> Cc {
 			get { return this.cc; }
@@ -119,6 +143,30 @@ namespace Demo {
 		public Message WithCc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc.ResetContents(values), this.Bcc, this.Subject, this.Body);
 		}
+	
+		public Message AddCc(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To, this.Cc.AddRange(values), this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message AddCc(params Contact[] values) {
+			return new Message(this.Author, this.To, this.Cc.AddRange(values), this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message AddCc(Contact value) {
+			return new Message(this.Author, this.To, this.Cc.Add(value), this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message RemoveCc(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To, this.Cc.RemoveRange(values), this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message RemoveCc(params Contact[] values) {
+			return new Message(this.Author, this.To, this.Cc.RemoveRange(values), this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message RemoveCc(Contact value) {
+			return new Message(this.Author, this.To, this.Cc.Remove(value), this.Bcc, this.Subject, this.Body);
+		}
 		
 		public System.Collections.Immutable.ImmutableList<Contact> Bcc {
 			get { return this.bcc; }
@@ -138,6 +186,30 @@ namespace Demo {
 	
 		public Message WithBcc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.ResetContents(values), this.Subject, this.Body);
+		}
+	
+		public Message AddBcc(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.AddRange(values), this.Subject, this.Body);
+		}
+	
+		public Message AddBcc(params Contact[] values) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.AddRange(values), this.Subject, this.Body);
+		}
+	
+		public Message AddBcc(Contact value) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.Add(value), this.Subject, this.Body);
+		}
+	
+		public Message RemoveBcc(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.RemoveRange(values), this.Subject, this.Body);
+		}
+	
+		public Message RemoveBcc(params Contact[] values) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.RemoveRange(values), this.Subject, this.Body);
+		}
+	
+		public Message RemoveBcc(Contact value) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.Remove(value), this.Subject, this.Body);
 		}
 		
 		public System.String Subject {

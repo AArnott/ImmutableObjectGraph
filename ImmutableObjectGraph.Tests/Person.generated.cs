@@ -57,6 +57,30 @@ namespace ImmutableObjectGraph.Tests {
 		public Family WithMembers(System.Collections.Generic.IEnumerable<Person> values) {
 			return new Family(this.Members.ResetContents(values));
 		}
+	
+		public Family AddMembers(System.Collections.Generic.IEnumerable<Person> values) {
+			return new Family(this.Members.AddRange(values));
+		}
+	
+		public Family AddMembers(params Person[] values) {
+			return new Family(this.Members.AddRange(values));
+		}
+	
+		public Family AddMembers(Person value) {
+			return new Family(this.Members.Add(value));
+		}
+	
+		public Family RemoveMembers(System.Collections.Generic.IEnumerable<Person> values) {
+			return new Family(this.Members.RemoveRange(values));
+		}
+	
+		public Family RemoveMembers(params Person[] values) {
+			return new Family(this.Members.RemoveRange(values));
+		}
+	
+		public Family RemoveMembers(Person value) {
+			return new Family(this.Members.Remove(value));
+		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Family With(

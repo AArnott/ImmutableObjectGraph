@@ -11,6 +11,6 @@
 		string filePath;
 		bool visible;
 		ImmutableHashSet<string> attributes;
-		ImmutableSortedSet<TreeNode> children;
+		ImmutableList<TreeNode> children;
 	}
 #>

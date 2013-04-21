@@ -16,13 +16,20 @@
 
 			Assert.Equal("temp", root.Caption);
 			Assert.Equal("a.cs", root.Children[0].Caption);
+
+			var root2 = root.AddChildren(TreeNode.Create("b.cs", @"c:\temp\b.cs"));
+			Assert.Equal(2, root2.Children.Count);
+
+			var root3 = root2.RemoveChildren(root2.Children[0]);
+			Assert.Equal(1, root3.Children.Count);
+			Assert.Equal(root2.Children[1], root3.Children[0]);
 		}
 	}
 
 	[DebuggerDisplay("{FilePath}")]
 	partial class TreeNode {
 		static partial void CreateDefaultTemplate(ref TreeNode.Template template) {
-			template.Children = ImmutableSortedSet.Create<TreeNode>();
+			template.Children = ImmutableList.Create<TreeNode>();
 			template.Visible = true;
 			template.Attributes = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
 		}

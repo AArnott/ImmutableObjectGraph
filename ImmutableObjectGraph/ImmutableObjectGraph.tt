@@ -161,6 +161,102 @@ public partial class <#= templateType.Name #> {
 	}
 #>);
 	}
+
+	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.AddRange(values)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
+
+	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.AddRange(values)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
+
+	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(<#= GetTypeName(elementType) #> value) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.Add(value)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
+
+	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.RemoveRange(values)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
+
+	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.RemoveRange(values)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
+
+	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(<#= GetTypeName(elementType) #> value) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.Remove(value)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
 	<#}
 	}
 #>
