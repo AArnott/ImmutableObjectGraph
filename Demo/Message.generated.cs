@@ -10,6 +10,7 @@
 
 namespace Demo {
 	using System.Diagnostics;
+	using ImmutableObjectGraph;
 
 	
 	public partial class Message {
@@ -91,6 +92,14 @@ namespace Demo {
 			return new Message(this.Author, value, this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		public Message WithTo(params Contact[] values) {
+			return new Message(this.Author, this.To.ResetContents(values), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message WithTo(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To.ResetContents(values), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
+		
 		public System.Collections.Immutable.ImmutableList<Contact> Cc {
 			get { return this.cc; }
 		}
@@ -103,6 +112,14 @@ namespace Demo {
 			return new Message(this.Author, this.To, value, this.Bcc, this.Subject, this.Body);
 		}
 	
+		public Message WithCc(params Contact[] values) {
+			return new Message(this.Author, this.To, this.Cc.ResetContents(values), this.Bcc, this.Subject, this.Body);
+		}
+	
+		public Message WithCc(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To, this.Cc.ResetContents(values), this.Bcc, this.Subject, this.Body);
+		}
+		
 		public System.Collections.Immutable.ImmutableList<Contact> Bcc {
 			get { return this.bcc; }
 		}
@@ -115,6 +132,14 @@ namespace Demo {
 			return new Message(this.Author, this.To, this.Cc, value, this.Subject, this.Body);
 		}
 	
+		public Message WithBcc(params Contact[] values) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.ResetContents(values), this.Subject, this.Body);
+		}
+	
+		public Message WithBcc(System.Collections.Generic.IEnumerable<Contact> values) {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.ResetContents(values), this.Subject, this.Body);
+		}
+		
 		public System.String Subject {
 			get { return this.subject; }
 		}

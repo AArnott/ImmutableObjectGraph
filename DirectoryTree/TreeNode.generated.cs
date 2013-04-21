@@ -10,6 +10,7 @@
 
 namespace DirectoryTree {
 	using System.Diagnostics;
+	using ImmutableObjectGraph;
 
 	
 	public partial class TreeNode {
@@ -109,6 +110,14 @@ namespace DirectoryTree {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, value, this.Children);
 		}
 	
+		public TreeNode WithAttributes(params System.String[] values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.ResetContents(values), this.Children);
+		}
+	
+		public TreeNode WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.ResetContents(values), this.Children);
+		}
+		
 		public System.Collections.Immutable.ImmutableSortedSet<TreeNode> Children {
 			get { return this.children; }
 		}
@@ -121,6 +130,14 @@ namespace DirectoryTree {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, value);
 		}
 	
+		public TreeNode WithChildren(params TreeNode[] values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.ResetContents(values));
+		}
+	
+		public TreeNode WithChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.ResetContents(values));
+		}
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public TreeNode With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>), 

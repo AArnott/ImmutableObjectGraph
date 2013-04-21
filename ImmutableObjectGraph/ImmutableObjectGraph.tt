@@ -18,6 +18,7 @@
 
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
+	using ImmutableObjectGraph;
 
 <#
 	this.PushIndent("\t");
@@ -126,6 +127,41 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 <#
+	Type elementType;
+	if (TryGetCollectionElementType(field.FieldType, out elementType)) { #>
+
+	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.ResetContents(values)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
+
+	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.ResetContents(values)<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
+	<#}
 	}
 #>
 

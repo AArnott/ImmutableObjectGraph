@@ -10,6 +10,7 @@
 
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
+	using ImmutableObjectGraph;
 
 	
 	public partial class Family {
@@ -49,6 +50,14 @@ namespace ImmutableObjectGraph.Tests {
 			return new Family(value);
 		}
 	
+		public Family WithMembers(params Person[] values) {
+			return new Family(this.Members.ResetContents(values));
+		}
+	
+		public Family WithMembers(System.Collections.Generic.IEnumerable<Person> values) {
+			return new Family(this.Members.ResetContents(values));
+		}
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Family With(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {

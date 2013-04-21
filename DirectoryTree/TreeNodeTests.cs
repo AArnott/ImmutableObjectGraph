@@ -11,10 +11,9 @@
 	public class TreeNodeTests {
 		[Fact]
 		public void TreeConstruction() {
-			var rootBuilder = TreeNode.Create("temp", @"c:\temp\").ToBuilder();
-			rootBuilder.Children.Add(TreeNode.Create("a.cs", @"c:\temp\a.cs"));
+			var root = TreeNode.Create("temp", @"c:\temp\")
+				.WithChildren(TreeNode.Create("a.cs", @"c:\temp\a.cs"));
 
-			var root = rootBuilder.ToImmutable();
 			Assert.Equal("temp", root.Caption);
 			Assert.Equal("a.cs", root.Children[0].Caption);
 		}
