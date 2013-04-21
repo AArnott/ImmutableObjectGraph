@@ -67,6 +67,9 @@
 
 			var familyRemoveMany = familyAddMany.RemoveMembers(familyAdd1More.Members);
 			Assert.Equal(1, familyRemoveMany.Members.Count);
+
+			var familyCleared = familyAddMany.ClearMembers();
+			Assert.Equal(0, familyCleared.Members.Count);
 		}
 	}
 }

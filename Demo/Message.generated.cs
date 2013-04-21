@@ -123,6 +123,10 @@ namespace Demo {
 		public Message RemoveTo(Contact value) {
 			return new Message(this.Author, this.To.Remove(value), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
+	
+		public Message ClearTo() {
+			return new Message(this.Author, this.To.Clear(), this.Cc, this.Bcc, this.Subject, this.Body);
+		}
 		
 		public System.Collections.Immutable.ImmutableList<Contact> Cc {
 			get { return this.cc; }
@@ -167,6 +171,10 @@ namespace Demo {
 		public Message RemoveCc(Contact value) {
 			return new Message(this.Author, this.To, this.Cc.Remove(value), this.Bcc, this.Subject, this.Body);
 		}
+	
+		public Message ClearCc() {
+			return new Message(this.Author, this.To, this.Cc.Clear(), this.Bcc, this.Subject, this.Body);
+		}
 		
 		public System.Collections.Immutable.ImmutableList<Contact> Bcc {
 			get { return this.bcc; }
@@ -210,6 +218,10 @@ namespace Demo {
 	
 		public Message RemoveBcc(Contact value) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.Remove(value), this.Subject, this.Body);
+		}
+	
+		public Message ClearBcc() {
+			return new Message(this.Author, this.To, this.Cc, this.Bcc.Clear(), this.Subject, this.Body);
 		}
 		
 		public System.String Subject {

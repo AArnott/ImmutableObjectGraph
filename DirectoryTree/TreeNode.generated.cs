@@ -141,6 +141,10 @@ namespace DirectoryTree {
 		public TreeNode RemoveAttributes(System.String value) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Remove(value), this.Children);
 		}
+	
+		public TreeNode ClearAttributes() {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Clear(), this.Children);
+		}
 		
 		public System.Collections.Immutable.ImmutableList<TreeNode> Children {
 			get { return this.children; }
@@ -184,6 +188,10 @@ namespace DirectoryTree {
 	
 		public TreeNode RemoveChildren(TreeNode value) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Remove(value));
+		}
+	
+		public TreeNode ClearChildren() {
+			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Clear());
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>

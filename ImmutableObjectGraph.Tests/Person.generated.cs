@@ -81,6 +81,10 @@ namespace ImmutableObjectGraph.Tests {
 		public Family RemoveMembers(Person value) {
 			return new Family(this.Members.Remove(value));
 		}
+	
+		public Family ClearMembers() {
+			return new Family(this.Members.Clear());
+		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Family With(

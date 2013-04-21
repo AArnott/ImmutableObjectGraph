@@ -257,6 +257,22 @@ public partial class <#= templateType.Name #> {
 	}
 #>);
 	}
+
+	public <#= templateType.Name #> Clear<#= PascalCase(field.Name) #>() {
+		return new <#= templateType.Name #>(<#
+	firstInSequence = true;
+	foreach(var field2 in fields) {
+		if (!firstInSequence) { Write(", "); }
+		if (field == field2) {
+			#>this.<#=PascalCase(field2.Name)#>.Clear()<#
+		} else {
+			Write("this." + PascalCase(field2.Name));
+		}
+
+		firstInSequence = false;
+	}
+#>);
+	}
 	<#}
 	}
 #>
