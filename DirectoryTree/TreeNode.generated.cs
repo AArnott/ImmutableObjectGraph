@@ -155,7 +155,7 @@ namespace DirectoryTree {
 		}
 	
 		/// <summary>Clears all elements from the Attributes collection.</summary>
-		public TreeNode ClearAttributes() {
+		public TreeNode RemoveAttributes() {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Clear(), this.Children);
 		}
 		
@@ -213,7 +213,7 @@ namespace DirectoryTree {
 		}
 	
 		/// <summary>Clears all elements from the Children collection.</summary>
-		public TreeNode ClearChildren() {
+		public TreeNode RemoveChildren() {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Clear());
 		}
 		

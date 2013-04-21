@@ -92,7 +92,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Clears all elements from the Members collection.</summary>
-		public Family ClearMembers() {
+		public Family RemoveMembers() {
 			return new Family(this.Members.Clear());
 		}
 		

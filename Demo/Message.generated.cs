@@ -135,7 +135,7 @@ namespace Demo {
 		}
 	
 		/// <summary>Clears all elements from the To collection.</summary>
-		public Message ClearTo() {
+		public Message RemoveTo() {
 			return new Message(this.Author, this.To.Clear(), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 		
@@ -193,7 +193,7 @@ namespace Demo {
 		}
 	
 		/// <summary>Clears all elements from the Cc collection.</summary>
-		public Message ClearCc() {
+		public Message RemoveCc() {
 			return new Message(this.Author, this.To, this.Cc.Clear(), this.Bcc, this.Subject, this.Body);
 		}
 		
@@ -251,7 +251,7 @@ namespace Demo {
 		}
 	
 		/// <summary>Clears all elements from the Bcc collection.</summary>
-		public Message ClearBcc() {
+		public Message RemoveBcc() {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.Clear(), this.Subject, this.Body);
 		}
 		

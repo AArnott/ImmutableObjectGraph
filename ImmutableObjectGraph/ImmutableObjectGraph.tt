@@ -268,7 +268,7 @@ public partial class <#= templateType.Name #> {
 	}
 
 	/// <summary>Clears all elements from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Clear<#= PascalCase(field.Name) #>() {
+	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>() {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
 	foreach(var field2 in fields) {
