@@ -10,6 +10,7 @@
 
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
+	using ImmutableObjectGraph;
 
 	
 	public partial class Family {
@@ -41,6 +42,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.members; }
 		}
 	
+		/// <summary>Returns a new instance with the Members property set to the specified value.</summary>
 		public Family WithMembers(System.Collections.Immutable.ImmutableSortedSet<Person> value) {
 			if (value == this.Members) {
 				return this;
@@ -49,6 +51,51 @@ namespace ImmutableObjectGraph.Tests {
 			return new Family(value);
 		}
 	
+		/// <summary>Replaces the elements of the Members collection with the specified collection.</summary>
+		public Family WithMembers(params Person[] values) {
+			return new Family(this.Members.ResetContents(values));
+		}
+	
+		/// <summary>Replaces the elements of the Members collection with the specified collection.</summary>
+		public Family WithMembers(System.Collections.Generic.IEnumerable<Person> values) {
+			return new Family(this.Members.ResetContents(values));
+		}
+	
+		/// <summary>Adds the specified elements from the Members collection.</summary>
+		public Family AddMembers(System.Collections.Generic.IEnumerable<Person> values) {
+			return new Family(this.Members.AddRange(values));
+		}
+	
+		/// <summary>Adds the specified elements from the Members collection.</summary>
+		public Family AddMembers(params Person[] values) {
+			return new Family(this.Members.AddRange(values));
+		}
+	
+		/// <summary>Adds the specified element from the Members collection.</summary>
+		public Family AddMembers(Person value) {
+			return new Family(this.Members.Add(value));
+		}
+	
+		/// <summary>Removes the specified elements from the Members collection.</summary>
+		public Family RemoveMembers(System.Collections.Generic.IEnumerable<Person> values) {
+			return new Family(this.Members.RemoveRange(values));
+		}
+	
+		/// <summary>Removes the specified elements from the Members collection.</summary>
+		public Family RemoveMembers(params Person[] values) {
+			return new Family(this.Members.RemoveRange(values));
+		}
+	
+		/// <summary>Removes the specified element from the Members collection.</summary>
+		public Family RemoveMembers(Person value) {
+			return new Family(this.Members.Remove(value));
+		}
+	
+		/// <summary>Clears all elements from the Members collection.</summary>
+		public Family RemoveMembers() {
+			return new Family(this.Members.Clear());
+		}
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Family With(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
@@ -161,6 +208,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.name; }
 		}
 	
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
 		public Person WithName(System.String value) {
 			if (value == this.Name) {
 				return this;
@@ -173,6 +221,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.age; }
 		}
 	
+		/// <summary>Returns a new instance with the Age property set to the specified value.</summary>
 		public Person WithAge(System.Int32 value) {
 			if (value == this.Age) {
 				return this;
@@ -185,6 +234,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.watch; }
 		}
 	
+		/// <summary>Returns a new instance with the Watch property set to the specified value.</summary>
 		public Person WithWatch(Watch value) {
 			if (value == this.Watch) {
 				return this;
@@ -341,6 +391,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.color; }
 		}
 	
+		/// <summary>Returns a new instance with the Color property set to the specified value.</summary>
 		public Watch WithColor(System.String value) {
 			if (value == this.Color) {
 				return this;
@@ -353,6 +404,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.size; }
 		}
 	
+		/// <summary>Returns a new instance with the Size property set to the specified value.</summary>
 		public Watch WithSize(System.Int32 value) {
 			if (value == this.Size) {
 				return this;
