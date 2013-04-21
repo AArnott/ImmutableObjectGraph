@@ -1,0 +1,16 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "DirectoryTree";
+	this.TemplateType = typeof(TreeNode);
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	class TreeNode {
+		string caption;
+		string filePath;
+		bool visible;
+		ImmutableHashSet<string> attributes;
+		ImmutableSortedSet<TreeNode> children;
+	}
+#>
