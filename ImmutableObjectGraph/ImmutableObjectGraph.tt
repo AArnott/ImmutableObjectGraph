@@ -107,6 +107,7 @@ public partial class <#= templateType.Name #> {
 		get { return this.<#= CamelCase(field.Name) #>; }
 	}
 
+	/// <summary>Returns a new instance with the <#= PascalCase(field.Name) #> property set to the specified value.</summary>
 	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
 		if (value == this.<#= PascalCase(field.Name) #>) {
 			return this;
@@ -130,6 +131,7 @@ public partial class <#= templateType.Name #> {
 	Type elementType;
 	if (TryGetCollectionElementType(field.FieldType, out elementType)) { #>
 
+	/// <summary>Replaces the elements of the <#= PascalCase(field.Name) #> collection with the specified collection.</summary>
 	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -146,6 +148,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Replaces the elements of the <#= PascalCase(field.Name) #> collection with the specified collection.</summary>
 	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -162,6 +165,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Adds the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
 	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -178,6 +182,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Adds the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
 	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -194,6 +199,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Adds the specified element from the <#= PascalCase(field.Name) #> collection.</summary>
 	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(<#= GetTypeName(elementType) #> value) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -210,6 +216,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Removes the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
 	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -226,6 +233,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Removes the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
 	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -242,6 +250,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Removes the specified element from the <#= PascalCase(field.Name) #> collection.</summary>
 	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(<#= GetTypeName(elementType) #> value) {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;
@@ -258,6 +267,7 @@ public partial class <#= templateType.Name #> {
 #>);
 	}
 
+	/// <summary>Clears all elements from the <#= PascalCase(field.Name) #> collection.</summary>
 	public <#= templateType.Name #> Clear<#= PascalCase(field.Name) #>() {
 		return new <#= templateType.Name #>(<#
 	firstInSequence = true;

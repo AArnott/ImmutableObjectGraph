@@ -66,6 +66,7 @@ namespace DirectoryTree {
 			get { return this.caption; }
 		}
 	
+		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
 		public TreeNode WithCaption(System.String value) {
 			if (value == this.Caption) {
 				return this;
@@ -78,6 +79,7 @@ namespace DirectoryTree {
 			get { return this.filePath; }
 		}
 	
+		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
 		public TreeNode WithFilePath(System.String value) {
 			if (value == this.FilePath) {
 				return this;
@@ -90,6 +92,7 @@ namespace DirectoryTree {
 			get { return this.visible; }
 		}
 	
+		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
 		public TreeNode WithVisible(System.Boolean value) {
 			if (value == this.Visible) {
 				return this;
@@ -102,6 +105,7 @@ namespace DirectoryTree {
 			get { return this.attributes; }
 		}
 	
+		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
 		public TreeNode WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			if (value == this.Attributes) {
 				return this;
@@ -110,38 +114,47 @@ namespace DirectoryTree {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, value, this.Children);
 		}
 	
+		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public TreeNode WithAttributes(params System.String[] values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.ResetContents(values), this.Children);
 		}
 	
+		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public TreeNode WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.ResetContents(values), this.Children);
 		}
 	
+		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public TreeNode AddAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.AddRange(values), this.Children);
 		}
 	
+		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public TreeNode AddAttributes(params System.String[] values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.AddRange(values), this.Children);
 		}
 	
+		/// <summary>Adds the specified element from the Attributes collection.</summary>
 		public TreeNode AddAttributes(System.String value) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Add(value), this.Children);
 		}
 	
+		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public TreeNode RemoveAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.RemoveRange(values), this.Children);
 		}
 	
+		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public TreeNode RemoveAttributes(params System.String[] values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.RemoveRange(values), this.Children);
 		}
 	
+		/// <summary>Removes the specified element from the Attributes collection.</summary>
 		public TreeNode RemoveAttributes(System.String value) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Remove(value), this.Children);
 		}
 	
+		/// <summary>Clears all elements from the Attributes collection.</summary>
 		public TreeNode ClearAttributes() {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Clear(), this.Children);
 		}
@@ -150,6 +163,7 @@ namespace DirectoryTree {
 			get { return this.children; }
 		}
 	
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public TreeNode WithChildren(System.Collections.Immutable.ImmutableList<TreeNode> value) {
 			if (value == this.Children) {
 				return this;
@@ -158,38 +172,47 @@ namespace DirectoryTree {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, value);
 		}
 	
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public TreeNode WithChildren(params TreeNode[] values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.ResetContents(values));
 		}
 	
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public TreeNode WithChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.ResetContents(values));
 		}
 	
+		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public TreeNode AddChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.AddRange(values));
 		}
 	
+		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public TreeNode AddChildren(params TreeNode[] values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.AddRange(values));
 		}
 	
+		/// <summary>Adds the specified element from the Children collection.</summary>
 		public TreeNode AddChildren(TreeNode value) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Add(value));
 		}
 	
+		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public TreeNode RemoveChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.RemoveRange(values));
 		}
 	
+		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public TreeNode RemoveChildren(params TreeNode[] values) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.RemoveRange(values));
 		}
 	
+		/// <summary>Removes the specified element from the Children collection.</summary>
 		public TreeNode RemoveChildren(TreeNode value) {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Remove(value));
 		}
 	
+		/// <summary>Clears all elements from the Children collection.</summary>
 		public TreeNode ClearChildren() {
 			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Clear());
 		}

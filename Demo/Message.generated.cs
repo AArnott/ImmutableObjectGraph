@@ -72,6 +72,7 @@ namespace Demo {
 			get { return this.author; }
 		}
 	
+		/// <summary>Returns a new instance with the Author property set to the specified value.</summary>
 		public Message WithAuthor(Contact value) {
 			if (value == this.Author) {
 				return this;
@@ -84,6 +85,7 @@ namespace Demo {
 			get { return this.to; }
 		}
 	
+		/// <summary>Returns a new instance with the To property set to the specified value.</summary>
 		public Message WithTo(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.To) {
 				return this;
@@ -92,38 +94,47 @@ namespace Demo {
 			return new Message(this.Author, value, this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Replaces the elements of the To collection with the specified collection.</summary>
 		public Message WithTo(params Contact[] values) {
 			return new Message(this.Author, this.To.ResetContents(values), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Replaces the elements of the To collection with the specified collection.</summary>
 		public Message WithTo(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To.ResetContents(values), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified elements from the To collection.</summary>
 		public Message AddTo(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To.AddRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified elements from the To collection.</summary>
 		public Message AddTo(params Contact[] values) {
 			return new Message(this.Author, this.To.AddRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified element from the To collection.</summary>
 		public Message AddTo(Contact value) {
 			return new Message(this.Author, this.To.Add(value), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified elements from the To collection.</summary>
 		public Message RemoveTo(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To.RemoveRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified elements from the To collection.</summary>
 		public Message RemoveTo(params Contact[] values) {
 			return new Message(this.Author, this.To.RemoveRange(values), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified element from the To collection.</summary>
 		public Message RemoveTo(Contact value) {
 			return new Message(this.Author, this.To.Remove(value), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Clears all elements from the To collection.</summary>
 		public Message ClearTo() {
 			return new Message(this.Author, this.To.Clear(), this.Cc, this.Bcc, this.Subject, this.Body);
 		}
@@ -132,6 +143,7 @@ namespace Demo {
 			get { return this.cc; }
 		}
 	
+		/// <summary>Returns a new instance with the Cc property set to the specified value.</summary>
 		public Message WithCc(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.Cc) {
 				return this;
@@ -140,38 +152,47 @@ namespace Demo {
 			return new Message(this.Author, this.To, value, this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Replaces the elements of the Cc collection with the specified collection.</summary>
 		public Message WithCc(params Contact[] values) {
 			return new Message(this.Author, this.To, this.Cc.ResetContents(values), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Replaces the elements of the Cc collection with the specified collection.</summary>
 		public Message WithCc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc.ResetContents(values), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified elements from the Cc collection.</summary>
 		public Message AddCc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc.AddRange(values), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified elements from the Cc collection.</summary>
 		public Message AddCc(params Contact[] values) {
 			return new Message(this.Author, this.To, this.Cc.AddRange(values), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified element from the Cc collection.</summary>
 		public Message AddCc(Contact value) {
 			return new Message(this.Author, this.To, this.Cc.Add(value), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified elements from the Cc collection.</summary>
 		public Message RemoveCc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc.RemoveRange(values), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified elements from the Cc collection.</summary>
 		public Message RemoveCc(params Contact[] values) {
 			return new Message(this.Author, this.To, this.Cc.RemoveRange(values), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified element from the Cc collection.</summary>
 		public Message RemoveCc(Contact value) {
 			return new Message(this.Author, this.To, this.Cc.Remove(value), this.Bcc, this.Subject, this.Body);
 		}
 	
+		/// <summary>Clears all elements from the Cc collection.</summary>
 		public Message ClearCc() {
 			return new Message(this.Author, this.To, this.Cc.Clear(), this.Bcc, this.Subject, this.Body);
 		}
@@ -180,6 +201,7 @@ namespace Demo {
 			get { return this.bcc; }
 		}
 	
+		/// <summary>Returns a new instance with the Bcc property set to the specified value.</summary>
 		public Message WithBcc(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.Bcc) {
 				return this;
@@ -188,38 +210,47 @@ namespace Demo {
 			return new Message(this.Author, this.To, this.Cc, value, this.Subject, this.Body);
 		}
 	
+		/// <summary>Replaces the elements of the Bcc collection with the specified collection.</summary>
 		public Message WithBcc(params Contact[] values) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.ResetContents(values), this.Subject, this.Body);
 		}
 	
+		/// <summary>Replaces the elements of the Bcc collection with the specified collection.</summary>
 		public Message WithBcc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.ResetContents(values), this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified elements from the Bcc collection.</summary>
 		public Message AddBcc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.AddRange(values), this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified elements from the Bcc collection.</summary>
 		public Message AddBcc(params Contact[] values) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.AddRange(values), this.Subject, this.Body);
 		}
 	
+		/// <summary>Adds the specified element from the Bcc collection.</summary>
 		public Message AddBcc(Contact value) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.Add(value), this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified elements from the Bcc collection.</summary>
 		public Message RemoveBcc(System.Collections.Generic.IEnumerable<Contact> values) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.RemoveRange(values), this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified elements from the Bcc collection.</summary>
 		public Message RemoveBcc(params Contact[] values) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.RemoveRange(values), this.Subject, this.Body);
 		}
 	
+		/// <summary>Removes the specified element from the Bcc collection.</summary>
 		public Message RemoveBcc(Contact value) {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.Remove(value), this.Subject, this.Body);
 		}
 	
+		/// <summary>Clears all elements from the Bcc collection.</summary>
 		public Message ClearBcc() {
 			return new Message(this.Author, this.To, this.Cc, this.Bcc.Clear(), this.Subject, this.Body);
 		}
@@ -228,6 +259,7 @@ namespace Demo {
 			get { return this.subject; }
 		}
 	
+		/// <summary>Returns a new instance with the Subject property set to the specified value.</summary>
 		public Message WithSubject(System.String value) {
 			if (value == this.Subject) {
 				return this;
@@ -240,6 +272,7 @@ namespace Demo {
 			get { return this.body; }
 		}
 	
+		/// <summary>Returns a new instance with the Body property set to the specified value.</summary>
 		public Message WithBody(System.String value) {
 			if (value == this.Body) {
 				return this;
@@ -471,6 +504,7 @@ namespace Demo {
 			get { return this.name; }
 		}
 	
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
 		public Contact WithName(System.String value) {
 			if (value == this.Name) {
 				return this;
@@ -483,6 +517,7 @@ namespace Demo {
 			get { return this.email; }
 		}
 	
+		/// <summary>Returns a new instance with the Email property set to the specified value.</summary>
 		public Contact WithEmail(System.String value) {
 			if (value == this.Email) {
 				return this;
