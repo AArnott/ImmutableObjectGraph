@@ -28,13 +28,21 @@ namespace <#= this.Namespace #> {
 		// We use the recursive strategy when the templateType has exactly one collection of its own type.
 		var recursiveFields = templateType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => IsCollectionType(f.FieldType) && f.FieldType.GenericTypeArguments[0] == templateType);
 		bool recursive = recursiveFields.Count() == 1;
+		var fields = templateType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 #>
 
-public partial class <#= templateType.Name #> <# if (recursive) { #>: System.Collections.Generic.IEnumerable<<#=templateType.Name#>> <# } #>{
+public interface I<#= templateType.Name #> {
+<#
+	foreach(var field in fields) { #>
+	<#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; }
+<#	}
+#>
+}
+
+public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (recursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.Name#>><# } #> {
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 	private static readonly <#= templateType.Name #> DefaultInstance = GetDefaultTemplate();
 <#
-	var fields = templateType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 	foreach(var field in fields) {
 #>
 

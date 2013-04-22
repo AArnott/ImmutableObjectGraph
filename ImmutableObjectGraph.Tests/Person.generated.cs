@@ -13,7 +13,11 @@ namespace ImmutableObjectGraph.Tests {
 	using ImmutableObjectGraph;
 
 	
-	public partial class Family {
+	public interface IFamily {
+		System.Collections.Immutable.ImmutableSortedSet<Person> Members { get; }
+	}
+	
+	public partial class Family : IFamily {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Family DefaultInstance = GetDefaultTemplate();
 	
@@ -167,7 +171,13 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class Person {
+	public interface IPerson {
+		System.String Name { get; }
+		System.Int32 Age { get; }
+		Watch Watch { get; }
+	}
+	
+	public partial class Person : IPerson {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Person DefaultInstance = GetDefaultTemplate();
 	
@@ -356,7 +366,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class Watch {
+	public interface IWatch {
+		System.String Color { get; }
+		System.Int32 Size { get; }
+	}
+	
+	public partial class Watch : IWatch {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Watch DefaultInstance = GetDefaultTemplate();
 	

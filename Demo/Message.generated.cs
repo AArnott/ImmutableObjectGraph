@@ -13,7 +13,16 @@ namespace Demo {
 	using ImmutableObjectGraph;
 
 	
-	public partial class Message {
+	public interface IMessage {
+		Contact Author { get; }
+		System.Collections.Immutable.ImmutableList<Contact> To { get; }
+		System.Collections.Immutable.ImmutableList<Contact> Cc { get; }
+		System.Collections.Immutable.ImmutableList<Contact> Bcc { get; }
+		System.String Subject { get; }
+		System.String Body { get; }
+	}
+	
+	public partial class Message : IMessage {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Message DefaultInstance = GetDefaultTemplate();
 	
@@ -469,7 +478,12 @@ namespace Demo {
 		}
 	}
 	
-	public partial class Contact {
+	public interface IContact {
+		System.String Name { get; }
+		System.String Email { get; }
+	}
+	
+	public partial class Contact : IContact {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Contact DefaultInstance = GetDefaultTemplate();
 	

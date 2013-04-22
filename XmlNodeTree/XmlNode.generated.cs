@@ -13,7 +13,14 @@ namespace XmlNodeTree {
 	using ImmutableObjectGraph;
 
 	
-	public partial class XmlNode : System.Collections.Generic.IEnumerable<XmlNode> {
+	public interface IXmlNode {
+		System.String TagName { get; }
+		System.String TagNamespace { get; }
+		System.String TagPrefix { get; }
+		System.Collections.Immutable.ImmutableList<XmlNode> Children { get; }
+	}
+	
+	public partial class XmlNode : IXmlNode, System.Collections.Generic.IEnumerable<XmlNode> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlNode DefaultInstance = GetDefaultTemplate();
 	

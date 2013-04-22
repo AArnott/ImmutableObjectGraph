@@ -13,7 +13,15 @@ namespace DirectoryTree {
 	using ImmutableObjectGraph;
 
 	
-	public partial class TreeNode : System.Collections.Generic.IEnumerable<TreeNode> {
+	public interface ITreeNode {
+		System.String Caption { get; }
+		System.String FilePath { get; }
+		System.Boolean Visible { get; }
+		System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; }
+		System.Collections.Immutable.ImmutableList<TreeNode> Children { get; }
+	}
+	
+	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly TreeNode DefaultInstance = GetDefaultTemplate();
 	
