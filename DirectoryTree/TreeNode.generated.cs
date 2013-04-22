@@ -13,7 +13,7 @@ namespace DirectoryTree {
 	using ImmutableObjectGraph;
 
 	
-	public partial class TreeNode {
+	public partial class TreeNode : System.Collections.Generic.IEnumerable<TreeNode> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly TreeNode DefaultInstance = GetDefaultTemplate();
 	
@@ -245,7 +245,15 @@ namespace DirectoryTree {
 			return new Builder(this);
 		}
 	
-		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+	 	public System.Collections.Generic.IEnumerator<TreeNode> GetEnumerator() {
+			return this.children.GetEnumerator();
+		}
+	
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+			return this.children.GetEnumerator();
+		}
+	
+	 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	

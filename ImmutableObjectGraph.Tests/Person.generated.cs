@@ -112,7 +112,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 	
-		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+	 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
@@ -265,7 +265,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 	
-		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+	 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
@@ -432,7 +432,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 	
-		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+	 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	

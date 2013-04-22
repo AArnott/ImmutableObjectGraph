@@ -1,0 +1,15 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "XmlNodeTree";
+	this.TemplateType = typeof(XmlNode);
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	class XmlNode {
+		string tagName;
+		string tagNamespace;
+		string tagPrefix;
+		ImmutableList<XmlNode> children;
+	}
+#>
