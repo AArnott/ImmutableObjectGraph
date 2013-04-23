@@ -47,6 +47,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Empty.generated.cs">
+      <DependentUpon>Empty.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="EmptyTests.cs" />
     <Compile Include="Family.cs" />
     <Compile Include="FamilyBuilderTests.cs" />
     <Compile Include="FamilyTests.cs" />
@@ -63,6 +69,10 @@
   <ItemGroup>
     <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt">
       <Link>ImmutableObjectGraph.tt</Link>
+    </None>
+    <None Include="Empty.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Empty.generated.cs</LastGenOutput>
     </None>
     <None Include="Person.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

@@ -57,9 +57,11 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 	{
 	}
 
+<#
+	bool firstInSequence = true;
+	if (fields.Length > 0) { #>
 	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
 	private <#= templateType.Name #>(<#
-	bool firstInSequence = true;
 	foreach(var field in fields) {
 		if (!firstInSequence) { Write(", "); }
 		Write(GetTypeName(field.FieldType));
@@ -78,6 +80,7 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 #>
 		this.Validate();
 	}
+<# } #>
 
 	public static <#= templateType.Name #> Create(<#
 		firstInSequence = true;
@@ -96,7 +99,7 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 
 		this.PopIndent();
 #>) {
-		return DefaultInstance.With(<#
+		return DefaultInstance<# if (fields.Length > 0) { #>.With(<#
 		firstInSequence = true;
 		this.PushIndent("\t\t\t");
 
@@ -109,7 +112,7 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 		}
 
 		this.PopIndent();
-#>);
+#>)<# } /* if (fields.Length > 0) */ #>;
 	}
 <#
 	foreach(var field in fields) {
@@ -297,6 +300,8 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 	}
 	<#}
 	}
+
+	if (fields.Length > 0) {
 #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -339,6 +344,7 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 			return this;
 		}
 	}
+<# } /* fields.Length > 0 */ #>
 
 	public Builder ToBuilder() {
 		return new Builder(this);
@@ -426,7 +432,7 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 <#			foreach(var templateField in fields.Where(f => templateTypes.Contains(f.FieldType) || IsCollectionType(f.FieldType))) { #>
 			var <#= CamelCase(templateField.Name) #> = this.<#= CamelCase(templateField.Name) #>.IsDefined ? (this.<#= CamelCase(templateField.Name) #>.Value != null ? this.<#= CamelCase(templateField.Name) #>.Value.ToImmutable() : null) : this.immutable.<#= CamelCase(templateField.Name) #>;
 <#			} #>
-			return this.immutable = this.immutable.With(<#
+			return this.immutable = this.immutable<# if (fields.Length > 0) { #>.With(<#
 			firstInSequence = true;
 			foreach(var field in fields) {
 				if (!firstInSequence) { Write(","); }
@@ -435,7 +441,7 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 				ImmutableObjectGraph.Optional.For(<#= prefix + CamelCase(field.Name) #>)<#
 				firstInSequence = false;
 			} #>
-);
+)<# } /* if (fields.Length > 0) */ #>;
 		}
 	}
 
