@@ -2,7 +2,6 @@
 <#@ Output Extension=".generated.cs" #>
 <#
 	this.Namespace = "DirectoryTree";
-	this.TemplateType = typeof(TreeNode);
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+

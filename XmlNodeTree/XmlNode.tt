@@ -2,7 +2,6 @@
 <#@ Output Extension=".generated.cs" #>
 <#
 	this.Namespace = "XmlNodeTree";
-	this.TemplateType = typeof(XmlNode);
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+

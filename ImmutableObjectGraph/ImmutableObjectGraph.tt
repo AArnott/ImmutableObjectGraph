@@ -22,7 +22,7 @@ namespace <#= this.Namespace #> {
 
 <#
 	this.PushIndent("\t");
-	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
+	var templateTypes = DiscoverTemplateTypes();
 
 	foreach(var templateType in templateTypes) {
 		// We use the recursive strategy when the templateType has exactly one collection of its own type.
@@ -456,8 +456,6 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 #>
 }
 <#+
-	public Type TemplateType { get; set; }
-
 	public string Namespace { get; set; }
 
 	protected static string PascalCase(string name) {
@@ -468,11 +466,18 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 		return name.Substring(0,1).ToLowerInvariant() + name.Substring(1);
 	}
 
-	protected static HashSet<Type> DiscoverTemplateTypes(Type rootType) {
+	protected static HashSet<Type> DiscoverTemplateTypes() {
+		var rootType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
 		var types = new HashSet<Type>();
 		var pendingTypes = new Queue<Type>();
-		pendingTypes.Enqueue(rootType);
-		while(pendingTypes.Count > 0)
+
+		foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
+			if (nestedType.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null) {
+				pendingTypes.Enqueue(nestedType);
+			}
+		}
+
+		while (pendingTypes.Count > 0)
 		{
 			var type = pendingTypes.Dequeue();
 			if (types.Add(type)) {
@@ -481,6 +486,14 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 
 					if (memberType.DeclaringType == type.DeclaringType) {
 						pendingTypes.Enqueue(memberType);
+					}
+				}
+
+				if (type.DeclaringType != null) {
+					foreach (var siblingNestedType in type.DeclaringType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
+						if (siblingNestedType.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null) {
+							pendingTypes.Enqueue(siblingNestedType);
+						}
 					}
 				}
 			}
@@ -519,7 +532,8 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 			typeName.Length -= 2;
 			typeName.Append(">");
 		} else {
-			typeName.Append(type.DeclaringType == this.TemplateType.DeclaringType ? type.Name : type.FullName);
+			var templateDeclaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+			typeName.Append(type.DeclaringType == templateDeclaringType ? type.Name : type.FullName);
 		}
 
 		return typeName.ToString();

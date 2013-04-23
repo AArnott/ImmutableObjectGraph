@@ -2,7 +2,6 @@
 <#@ Output Extension=".generated.cs" #>
 <#
 	this.Namespace = "Demo";
-	this.TemplateType = typeof(Message);
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
