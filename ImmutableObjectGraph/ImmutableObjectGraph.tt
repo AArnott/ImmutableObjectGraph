@@ -424,7 +424,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	}
 #>
 	}
-	<# } /* !IsAbstract */ #>
+<#	} /* !IsAbstract */ #>
 }
 <# } // looping over all template types
 

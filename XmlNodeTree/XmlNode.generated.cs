@@ -305,7 +305,7 @@ namespace XmlNodeTree {
 	
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
 		}
-		}
+	}
 	
 	public interface IXmlAttribute {
 		System.String NamespaceName { get; }
@@ -478,6 +478,6 @@ namespace XmlNodeTree {
 	
 			internal System.String Value { get; set; }
 		}
-		}
+	}
 }
 
