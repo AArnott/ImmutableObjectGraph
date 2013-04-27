@@ -225,7 +225,7 @@ namespace XmlNodeTree {
 		}
 	
 	
-		public Builder ToBuilder() {
+		public new Builder ToBuilder() {
 			return new Builder(this);
 		}
 	
@@ -248,7 +248,7 @@ namespace XmlNodeTree {
 				template.Children);
 		}
 	
-		public partial class Builder : XmlNode.Builder {
+		public new partial class Builder : XmlNode.Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private XmlElement immutable;
 	
@@ -288,7 +288,7 @@ namespace XmlNodeTree {
 				}
 			}
 	
-			public XmlElement ToImmutable() {
+			public new XmlElement ToImmutable() {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.children;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.LocalName),
@@ -402,7 +402,7 @@ namespace XmlNodeTree {
 		}
 	
 	
-		public Builder ToBuilder() {
+		public new Builder ToBuilder() {
 			return new Builder(this);
 		}
 	
@@ -425,7 +425,7 @@ namespace XmlNodeTree {
 				template.Value);
 		}
 	
-		public partial class Builder : XmlNode.Builder {
+		public new partial class Builder : XmlNode.Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private XmlAttribute immutable;
 	
@@ -462,7 +462,7 @@ namespace XmlNodeTree {
 				}
 			}
 	
-			public XmlAttribute ToImmutable() {
+			public new XmlAttribute ToImmutable() {
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.LocalName),
 					ImmutableObjectGraph.Optional.For(this.NamespaceName),

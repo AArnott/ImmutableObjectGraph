@@ -301,7 +301,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 <#	} /* fields.Count > 0 */ #>
 
-	public Builder ToBuilder() {
+	public <#= templateTypes.Contains(templateType.BaseType) ? "new ": "" #>Builder ToBuilder() {
 		return new Builder(this);
 	}
 
@@ -347,7 +347,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	}
 <# } /* !IsAbstract */ #>
 
-	public partial class Builder<#
+	public <#= templateTypes.Contains(templateType.BaseType) ? "new ": "" #>partial class Builder<#
 		if (templateTypes.Contains(templateType.BaseType)) {
 			Write(" : {0}.Builder", templateType.BaseType.Name);
 		}
@@ -393,7 +393,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		}
 <#		} #>
 
-		public <#= templateType.Name #> ToImmutable() {
+		public <#= templateTypes.Contains(templateType.BaseType) ? "new ": "" #><#= templateType.Name #> ToImmutable() {
 <#			foreach(var templateField in fields.Where(f => templateTypes.Contains(f.FieldType) || IsCollectionType(f.FieldType))) { #>
 			var <#= CamelCase(templateField.Name) #> = this.<#= CamelCase(templateField.Name) #>.IsDefined ? (this.<#= CamelCase(templateField.Name) #>.Value != null ? this.<#= CamelCase(templateField.Name) #>.Value.ToImmutable() : null) : this.immutable.<#= CamelCase(templateField.Name) #>;
 <#			} #>
