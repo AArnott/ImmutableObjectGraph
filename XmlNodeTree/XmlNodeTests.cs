@@ -47,7 +47,7 @@
 		}
 	}
 
-	[DebuggerDisplay("<{TagName,nq}>")]
+	[DebuggerDisplay("<{LocalName,nq}>")]
 	partial class XmlElement {
 		static partial void CreateDefaultTemplate(ref Template template) {
 			template.Children = ImmutableList.Create<XmlNode>();

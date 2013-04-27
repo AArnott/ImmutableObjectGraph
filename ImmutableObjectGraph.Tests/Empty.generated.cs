@@ -16,12 +16,12 @@ namespace ImmutableObjectGraph.Tests {
 	public interface IEmpty {
 	}
 	
-	public partial class Empty : IEmpty {
+	public partial class Empty : System.Object, IEmpty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Empty DefaultInstance = GetDefaultTemplate();
 	
 		/// <summary>Initializes a new instance of the Empty class.</summary>
-		private Empty()
+		protected Empty()
 		{
 		}
 	
@@ -34,7 +34,8 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 	
-	 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
+	 
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
