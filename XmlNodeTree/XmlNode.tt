@@ -5,10 +5,17 @@
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
-	class XmlNode {
-		string tagName;
-		string tagNamespace;
-		string tagPrefix;
+	abstract class XmlNode {
+		string localName;
+	}
+
+	class XmlElement : XmlNode {
+		string namespaceName;
 		ImmutableList<XmlNode> children;
+	}
+
+	class XmlAttribute : XmlNode {
+		string namespaceName;
+		string value;
 	}
 #>
