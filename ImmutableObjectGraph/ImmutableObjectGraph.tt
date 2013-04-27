@@ -36,7 +36,11 @@ namespace <#= this.Namespace #> {
 		}
 #>
 
-public interface I<#= templateType.Name #> {
+public interface I<#= templateType.Name #><#
+	if (templateTypes.Contains(templateType.BaseType)) {
+		Write(" : I{0}", templateType.BaseType.Name);
+	}
+#> {
 <#
 	foreach(var field in fields) { #>
 	<#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; }

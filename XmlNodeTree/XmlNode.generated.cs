@@ -85,7 +85,7 @@ namespace XmlNodeTree {
 		}
 	}
 	
-	public interface IXmlElement {
+	public interface IXmlElement : IXmlNode {
 		System.String NamespaceName { get; }
 		System.Collections.Immutable.ImmutableList<XmlNode> Children { get; }
 	}
@@ -307,7 +307,7 @@ namespace XmlNodeTree {
 		}
 	}
 	
-	public interface IXmlAttribute {
+	public interface IXmlAttribute : IXmlNode {
 		System.String NamespaceName { get; }
 		System.String Value { get; }
 	}
