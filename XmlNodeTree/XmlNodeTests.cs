@@ -34,6 +34,17 @@
 			Assert.Equal("ln1", e2.LocalName);
 			Assert.Equal("ns1", e2.NamespaceName);
 		}
+
+		[Fact]
+		public void Polymorphism() {
+			XmlElement e = XmlElement.Create("ln1", "ns1");
+			XmlNode n = e;
+			XmlNode n2 = n.WithLocalName("newName");
+			Assert.Equal("newName", n2.LocalName);
+			XmlElement e2 = (XmlElement)n2;
+			Assert.Equal(n2.LocalName, e2.LocalName);
+			Assert.Equal(e.NamespaceName, e2.NamespaceName);
+		}
 	}
 
 	[DebuggerDisplay("<{TagName,nq}>")]
