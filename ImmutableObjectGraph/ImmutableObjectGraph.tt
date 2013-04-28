@@ -312,15 +312,26 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	if (!templateType.IsAbstract) {
 		foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
-	public <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
+
+	public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
 		return <#= derivedType.Name #>.Create(<#
 WriteArguments(templateType.AllFields);
 Write(",");
-WriteArguments(derivedType.GetFieldsBeyond(templateType), fromArgs: true);
+WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 #>);
 	}
 <#
-		}
+			foreach (var ancestor in templateType.GetNonAbstractAncestors()) { #>
+
+	public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), optional: true); #>) {
+		return base.To<#= derivedType.Name #>(<#
+WriteArguments(templateType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty);
+Write(",");
+WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
+#>);
+	}
+<#			} // foreach ancestor type
+		} // foreach derived type
 	}
 #>
 
@@ -571,17 +582,30 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), fromArgs: true);
 		return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
 	}
 
-	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, bool fromArgs = false) {
+	private enum ArgSource {
+		Property,
+		Argument,
+		OptionalArgumentOrProperty,
+	}
+
+	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property) {
 		PushIndent("\t\t\t");
 		bool firstInSequence = true;
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(","); }
 			WriteLine("");
-			if (fromArgs) {
-				Write(field.NameCamelCase);
-			} else {
-				Write("this.{0}", field.NamePascalCase);
+			switch (source) {
+				case ArgSource.Property:
+					Write("this.{0}", field.NamePascalCase);
+					break;
+				case ArgSource.Argument:
+					Write(field.NameCamelCase);
+					break;
+				case ArgSource.OptionalArgumentOrProperty:
+					Write("{0}.GetValueOrDefault(this.{1})", field.NameCamelCase, field.NamePascalCase);
+					break;
 			}
+
 			firstInSequence = false;
 		}
 
@@ -679,6 +703,14 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), fromArgs: true);
 			}
 
 			return fields;
+		}
+
+		public IEnumerable<MetaType> GetNonAbstractAncestors() {
+			for (var ancestor = this.Ancestor; ancestor != null; ancestor = ancestor.Ancestor) {
+				if (!ancestor.IsAbstract) {
+					yield return ancestor;
+				}
+			}
 		}
 
 		public override int GetHashCode() {

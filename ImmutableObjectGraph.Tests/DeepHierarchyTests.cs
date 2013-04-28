@@ -29,6 +29,12 @@
 			Assert.Equal(1, c1.Field1);
 			Assert.Equal(2, c1.Field2);
 			Assert.Equal(3, c1.Field3);
+
+			// Same thing, except this time override field2
+			c1 = bAsA.ToC1(field2: 5, field3: 3);
+			Assert.Equal(1, c1.Field1);
+			Assert.Equal(5, c1.Field2);
+			Assert.Equal(3, c1.Field3);
 		}
 
 		[Fact]

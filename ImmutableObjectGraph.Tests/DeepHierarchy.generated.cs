@@ -72,13 +72,15 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 	
-		public B ToB(
+	
+		public virtual B ToB(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return B.Create(
 				this.Field1,
 				field2);
 		}
-		public C1 ToC1(
+	
+		public virtual C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return C1.Create(
@@ -86,7 +88,8 @@ namespace ImmutableObjectGraph.Tests {
 				field2,
 				field3);
 		}
-		public C2 ToC2(
+	
+		public virtual C2 ToC2(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return C2.Create(
@@ -227,18 +230,36 @@ namespace ImmutableObjectGraph.Tests {
 			return A.Create(
 				this.Field1);
 		}
-		public C1 ToC1(
+	
+		public virtual C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return C1.Create(
 				this.Field1,
 				this.Field2,
 				field3);
 		}
-		public C2 ToC2(
+	
+		public override C1 ToC1(
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return base.ToC1(
+				field2.GetValueOrDefault(this.Field2),
+				field3);
+		}
+	
+		public virtual C2 ToC2(
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return C2.Create(
 				this.Field1,
 				this.Field2,
+				field3);
+		}
+	
+		public override C2 ToC2(
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return base.ToC2(
+				field2.GetValueOrDefault(this.Field2),
 				field3);
 		}
 	
@@ -602,6 +623,62 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.Int32 Field3 { get; set; }
 		}
+	}
+	
+	public interface IArgSource {
+	}
+	
+	public partial class ArgSource : IArgSource {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ArgSource DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ArgSource class.</summary>
+		protected ArgSource()
+		{
+		}
+	
+	
+		public static ArgSource Create() {
+			return DefaultInstance;
+		}
+	
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+	
+	
+	 
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ArgSource whose fields are initialized with default values.</summary>
+		private static ArgSource GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ArgSource();
+		}
+	
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ArgSource immutable;
+	
+			internal Builder(ArgSource immutable) {
+				this.immutable = immutable;
+	
+			}
+	
+			public ArgSource ToImmutable() {
+				return this.immutable = this.immutable;
+			}
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {	}
 	}
 }
 
