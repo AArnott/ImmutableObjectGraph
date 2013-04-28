@@ -17,7 +17,7 @@ namespace XmlNodeTree {
 		System.String LocalName { get; }
 	}
 	
-	public abstract partial class XmlNode : System.Object, IXmlNode {
+	public abstract partial class XmlNode : IXmlNode {
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String localName;
@@ -54,13 +54,28 @@ namespace XmlNodeTree {
 			return new Builder(this);
 		}
 	
+		public XmlElement ToXmlElement(
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
+			throw new System.NotImplementedException();
+		}
+		public XmlElementWithContent ToXmlElementWithContent(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			throw new System.NotImplementedException();
+		}
+		public XmlAttribute ToXmlAttribute(
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			throw new System.NotImplementedException();
+		}
+	
 	 
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private XmlNode immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String localName;
+			protected System.String localName;
 	
 			internal Builder(XmlNode immutable) {
 				this.immutable = immutable;
@@ -229,6 +244,11 @@ namespace XmlNodeTree {
 			return new Builder(this);
 		}
 	
+		public XmlElementWithContent ToXmlElementWithContent(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			throw new System.NotImplementedException();
+		}
+	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -253,10 +273,10 @@ namespace XmlNodeTree {
 			private XmlElement immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String namespaceName;
+			protected System.String namespaceName;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>.Builder> children;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>.Builder> children;
 	
 			internal Builder(XmlElement immutable) : base(immutable) {
 				this.immutable = immutable;
@@ -289,7 +309,7 @@ namespace XmlNodeTree {
 			}
 	
 			public new XmlElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.children;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.LocalName),
 					ImmutableObjectGraph.Optional.For(this.NamespaceName),
@@ -304,6 +324,173 @@ namespace XmlNodeTree {
 			internal System.String NamespaceName { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
+		}
+	}
+	
+	public interface IXmlElementWithContent : IXmlElement {
+		System.String Content { get; }
+	}
+	
+	public partial class XmlElementWithContent : XmlElement, IXmlElementWithContent {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly XmlElementWithContent DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String content;
+	
+		/// <summary>Initializes a new instance of the XmlElementWithContent class.</summary>
+		protected XmlElementWithContent()
+		{
+		}
+	
+		/// <summary>Initializes a new instance of the XmlElementWithContent class.</summary>
+		protected XmlElementWithContent(System.String localName, System.String namespaceName, System.Collections.Immutable.ImmutableList<XmlNode> children, System.String content)
+			: base(localName,namespaceName,children)
+		{
+			this.content = content;
+			this.Validate();
+		}
+	
+		public static XmlElementWithContent Create(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>), 
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return DefaultInstance.With(
+				localName.IsDefined ? localName : ImmutableObjectGraph.Optional.For(DefaultInstance.LocalName), 
+				namespaceName.IsDefined ? namespaceName : ImmutableObjectGraph.Optional.For(DefaultInstance.NamespaceName), 
+				children.IsDefined ? children : ImmutableObjectGraph.Optional.For(DefaultInstance.Children), 
+				content.IsDefined ? content : ImmutableObjectGraph.Optional.For(DefaultInstance.Content));
+		}
+	
+		public System.String Content {
+			get { return this.content; }
+		}
+		/// <summary>Returns a new instance with the LocalName property set to the specified value.</summary>
+		public new XmlElementWithContent WithLocalName(System.String value) {
+			return (XmlElementWithContent)base.WithLocalName(value);
+		}
+		/// <summary>Returns a new instance with the NamespaceName property set to the specified value.</summary>
+		public new XmlElementWithContent WithNamespaceName(System.String value) {
+			return (XmlElementWithContent)base.WithNamespaceName(value);
+		}
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new XmlElementWithContent WithChildren(System.Collections.Immutable.ImmutableList<XmlNode> value) {
+			return (XmlElementWithContent)base.WithChildren(value);
+		}
+		/// <summary>Returns a new instance with the Content property set to the specified value.</summary>
+		public XmlElementWithContent WithContent(System.String value) {
+			if (value == this.Content) {
+				return this;
+			}
+	
+			return this.With(content: value);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public override XmlElement With(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
+			return this.With(
+				localName: localName, 
+				namespaceName: namespaceName, 
+				children: children, 
+				content: default(ImmutableObjectGraph.Optional<System.String>));
+		}
+		
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public virtual XmlElementWithContent With(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>), 
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			if (
+				(localName.IsDefined && localName.Value != this.LocalName) || 
+				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
+				(children.IsDefined && children.Value != this.Children) || 
+				(content.IsDefined && content.Value != this.Content)) {
+				return new XmlElementWithContent(
+					localName.IsDefined ? localName.Value : this.LocalName,
+					namespaceName.IsDefined ? namespaceName.Value : this.NamespaceName,
+					children.IsDefined ? children.Value : this.Children,
+					content.IsDefined ? content.Value : this.Content);
+			} else {
+				return this;
+			}
+		}
+	
+	
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+	
+		public XmlElement ToXmlElement() {
+			throw new System.NotImplementedException();
+		}
+	
+	 
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated XmlElementWithContent whose fields are initialized with default values.</summary>
+		private static XmlElementWithContent GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new XmlElementWithContent(
+				template.LocalName, 
+				template.NamespaceName, 
+				template.Children, 
+				template.Content);
+		}
+	
+		public new partial class Builder : XmlElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private XmlElementWithContent immutable;
+	
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String content;
+	
+			internal Builder(XmlElementWithContent immutable) : base(immutable) {
+				this.immutable = immutable;
+	
+				this.content = immutable.Content;
+			}
+	
+			public System.String Content {
+				get {
+					return this.content;
+				}
+	
+				set {
+					this.content = value;
+				}
+			}
+	
+			public new XmlElementWithContent ToImmutable() {
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.LocalName),
+					ImmutableObjectGraph.Optional.For(this.NamespaceName),
+					ImmutableObjectGraph.Optional.For(children),
+					ImmutableObjectGraph.Optional.For(this.Content));
+			}
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String LocalName { get; set; }
+	
+			internal System.String NamespaceName { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
+	
+			internal System.String Content { get; set; }
 		}
 	}
 	
@@ -406,6 +593,7 @@ namespace XmlNodeTree {
 			return new Builder(this);
 		}
 	
+	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -430,10 +618,10 @@ namespace XmlNodeTree {
 			private XmlAttribute immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String namespaceName;
+			protected System.String namespaceName;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String value;
+			protected System.String value;
 	
 			internal Builder(XmlAttribute immutable) : base(immutable) {
 				this.immutable = immutable;

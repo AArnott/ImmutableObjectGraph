@@ -47,6 +47,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeepHierarchy.generated.cs">
+      <DependentUpon>DeepHierarchy.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="DeepHierarchyTests.cs" />
     <Compile Include="Empty.generated.cs">
       <DependentUpon>Empty.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -69,6 +75,10 @@
   <ItemGroup>
     <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt">
       <Link>ImmutableObjectGraph.tt</Link>
+    </None>
+    <None Include="DeepHierarchy.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DeepHierarchy.generated.cs</LastGenOutput>
     </None>
     <None Include="Empty.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

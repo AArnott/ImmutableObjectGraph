@@ -311,10 +311,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
-	public <#= derivedType.Name #> To<#= derivedType.Name #>(<#
-		firstInSequence = true;
-		
-#>) {
+	public <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
 		throw new System.NotImplementedException();
 	}
 <#
@@ -373,7 +370,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 <#		foreach(var field in templateType.LocalFields) { #>
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private <#= field.TypeNameForBuilderField #> <#= field.NameCamelCase #>;
+		protected <#= field.TypeNameForBuilderField #> <#= field.NameCamelCase #>;
 <#		} #>
 
 		internal Builder(<#= templateType.Name #> immutable)<#
@@ -410,8 +407,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 <#		} #>
 
 		public <#= templateType.HasAncestor ? "new ": "" #><#= templateType.Name #> ToImmutable() {
-<#			foreach(var templateField in templateType.LocalFields.Where(f => !f.IsPrimitiveType)) { #>
-			var <#= templateField.NameCamelCase #> = this.<#= templateField.NameCamelCase #>.IsDefined ? (this.<#= templateField.NameCamelCase #>.Value != null ? this.<#= templateField.NameCamelCase #>.Value.ToImmutable() : null) : this.immutable.<#= templateField.NameCamelCase #>;
+<#			foreach(var templateField in templateType.AllFields.Where(f => !f.IsPrimitiveType)) { #>
+			var <#= templateField.NameCamelCase #> = this.<#= templateField.NameCamelCase #>.IsDefined ? (this.<#= templateField.NameCamelCase #>.Value != null ? this.<#= templateField.NameCamelCase #>.Value.ToImmutable() : null) : this.immutable.<#= templateField.NamePascalCase #>;
 <#			} #>
 			return this.immutable = this.immutable<# if (templateType.LocalFields.Count > 0) { #>.With(<#
 			firstInSequence = true;
@@ -568,6 +565,24 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
 	}
 
+	private void WriteParameters(IEnumerable<MetaType.MetaField> fields, bool optional) {
+		PushIndent("\t\t");
+		bool firstInSequence = true;
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(","); }
+			WriteLine("");
+			Write(optional ? field.OptionalTypeName : field.TypeName);
+			Write(" ");
+			Write(field.NameCamelCase);
+			if (optional) {
+				Write(" = default(" + field.OptionalTypeName + ")");
+			}
+
+			firstInSequence = false;
+		}
+		PopIndent();
+	}
+
 	protected class MetaType {
 		private readonly ISet<MetaType> knownTypes;
 
@@ -633,16 +648,14 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 			get { return GetOptionalTypeName(this.Type); }
 		}
 
-		public void WriteFieldsAsParameters(Microsoft.VisualStudio.TextTemplating.TextTransformation transform, bool onlyLocalFields) {
-			bool firstInSequence = true;
-			foreach(var field in onlyLocalFields ? this.LocalFields : this.AllFields) {
-				if (!firstInSequence) { transform.Write(","); }
-				transform.WriteLine("");
-				transform.Write(field.TypeName);
-				transform.Write(" ");
-				transform.Write(field.NameCamelCase);
-				firstInSequence = false;
+		public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
+			var fields = ImmutableList.Create<MetaField>();
+			if (ancestor != this) {
+				fields = fields.AddRange(this.LocalFields)
+				               .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
 			}
+
+			return fields;
 		}
 
 		public override int GetHashCode() {

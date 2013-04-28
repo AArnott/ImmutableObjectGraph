@@ -45,10 +45,37 @@
 			Assert.Equal(n2.LocalName, e2.LocalName);
 			Assert.Equal(e.NamespaceName, e2.NamespaceName);
 		}
+
+		[Fact]
+		public void TypeConversion() {
+			XmlElement ordinaryElement = XmlElement.Create("TagName");
+			Assert.IsNotType(typeof(XmlElementWithContent), ordinaryElement);
+
+			// Switch to derived type, without extra data.
+			XmlElementWithContent elementWithContent = ordinaryElement.ToXmlElementWithContent();
+			Assert.Equal(ordinaryElement.LocalName, elementWithContent.LocalName);
+
+			// Switch to derived type, including extra data.
+			elementWithContent = ordinaryElement.ToXmlElementWithContent("SomeContent");
+			Assert.Equal(ordinaryElement.LocalName, elementWithContent.LocalName);
+			Assert.Equal("SomeContent", elementWithContent.Content);
+
+			// Switch back to base type.
+			XmlElement backAgain = elementWithContent.ToXmlElement();
+			Assert.IsNotType(typeof(XmlElementWithContent), backAgain);
+			Assert.Equal(ordinaryElement.LocalName, backAgain.LocalName);
+		}
 	}
 
 	[DebuggerDisplay("<{LocalName,nq}>")]
 	partial class XmlElement {
+		static partial void CreateDefaultTemplate(ref Template template) {
+			template.Children = ImmutableList.Create<XmlNode>();
+		}
+	}
+
+	[DebuggerDisplay("<{LocalName,nq}>{Content}</{LocalName,nq}>")]
+	partial class XmlElementWithContent {
 		static partial void CreateDefaultTemplate(ref Template template) {
 			template.Children = ImmutableList.Create<XmlNode>();
 		}
