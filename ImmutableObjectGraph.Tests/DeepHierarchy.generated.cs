@@ -74,17 +74,25 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public B ToB(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			throw new System.NotImplementedException();
+			return B.Create(
+				this.Field1,
+				field2);
 		}
 		public C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			throw new System.NotImplementedException();
+			return C1.Create(
+				this.Field1,
+				field2,
+				field3);
 		}
 		public C2 ToC2(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			throw new System.NotImplementedException();
+			return C2.Create(
+				this.Field1,
+				field2,
+				field3);
 		}
 	
 	 
@@ -221,11 +229,17 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		public C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			throw new System.NotImplementedException();
+			return C1.Create(
+				this.Field1,
+				this.Field2,
+				field3);
 		}
 		public C2 ToC2(
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			throw new System.NotImplementedException();
+			return C2.Create(
+				this.Field1,
+				this.Field2,
+				field3);
 		}
 	
 	 

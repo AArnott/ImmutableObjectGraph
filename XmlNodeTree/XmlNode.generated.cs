@@ -232,7 +232,11 @@ namespace XmlNodeTree {
 	
 		public XmlElementWithContent ToXmlElementWithContent(
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
-			throw new System.NotImplementedException();
+			return XmlElementWithContent.Create(
+				this.LocalName,
+				this.NamespaceName,
+				this.Children,
+				content);
 		}
 	
 	 

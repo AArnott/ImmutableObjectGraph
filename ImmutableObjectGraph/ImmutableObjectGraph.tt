@@ -313,7 +313,11 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
 	public <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
-		throw new System.NotImplementedException();
+		return <#= derivedType.Name #>.Create(<#
+WriteArguments(templateType.AllFields);
+Write(",");
+WriteArguments(derivedType.GetFieldsBeyond(templateType), fromArgs: true);
+#>);
 	}
 <#
 		}
@@ -567,13 +571,17 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
 	}
 
-	private void WriteArguments(IEnumerable<MetaType.MetaField> fields) {
+	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, bool fromArgs = false) {
 		PushIndent("\t\t\t");
 		bool firstInSequence = true;
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(","); }
 			WriteLine("");
-			Write("this.{0}", field.NamePascalCase);
+			if (fromArgs) {
+				Write(field.NameCamelCase);
+			} else {
+				Write("this.{0}", field.NamePascalCase);
+			}
 			firstInSequence = false;
 		}
 
