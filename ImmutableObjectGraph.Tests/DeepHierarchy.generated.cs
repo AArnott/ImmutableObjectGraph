@@ -216,7 +216,8 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public A ToA() {
-			throw new System.NotImplementedException();
+			return A.Create(
+				this.Field1);
 		}
 		public C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
@@ -371,7 +372,9 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public B ToB() {
-			throw new System.NotImplementedException();
+			return B.Create(
+				this.Field1,
+				this.Field2);
 		}
 	
 	 
@@ -522,7 +525,9 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public B ToB() {
-			throw new System.NotImplementedException();
+			return B.Create(
+				this.Field1,
+				this.Field2);
 		}
 	
 	 

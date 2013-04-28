@@ -54,20 +54,6 @@ namespace XmlNodeTree {
 			return new Builder(this);
 		}
 	
-		public XmlElement ToXmlElement(
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
-			throw new System.NotImplementedException();
-		}
-		public XmlElementWithContent ToXmlElementWithContent(
-			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
-			throw new System.NotImplementedException();
-		}
-		public XmlAttribute ToXmlAttribute(
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
-			throw new System.NotImplementedException();
-		}
 	
 	 
 		public partial class Builder {
@@ -426,7 +412,10 @@ namespace XmlNodeTree {
 		}
 	
 		public XmlElement ToXmlElement() {
-			throw new System.NotImplementedException();
+			return XmlElement.Create(
+				this.LocalName,
+				this.NamespaceName,
+				this.Children);
 		}
 	
 	 

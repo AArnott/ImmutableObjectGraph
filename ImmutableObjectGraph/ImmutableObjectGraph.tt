@@ -304,17 +304,19 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	if (templateType.HasAncestor && !templateType.Ancestor.IsAbstract) {
 #>
 	public <#= templateType.Ancestor.Name#> To<#= templateType.Ancestor.Name#>() {
-		throw new System.NotImplementedException();
+		return <#= templateType.Ancestor.Name #>.Create(<# WriteArguments(templateType.Ancestor.AllFields); #>);
 	}
 <#
 	}
 
-	foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
+	if (!templateType.IsAbstract) {
+		foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
 	public <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
 		throw new System.NotImplementedException();
 	}
 <#
+		}
 	}
 #>
 
@@ -563,6 +565,19 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	protected static string GetOptionalTypeName(Type type)
 	{
 		return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
+	}
+
+	private void WriteArguments(IEnumerable<MetaType.MetaField> fields) {
+		PushIndent("\t\t\t");
+		bool firstInSequence = true;
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(","); }
+			WriteLine("");
+			Write("this.{0}", field.NamePascalCase);
+			firstInSequence = false;
+		}
+
+		PopIndent();
 	}
 
 	private void WriteParameters(IEnumerable<MetaType.MetaField> fields, bool optional) {
