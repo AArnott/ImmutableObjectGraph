@@ -41,12 +41,13 @@ namespace DirectoryTree {
 		private readonly System.Collections.Immutable.ImmutableList<TreeNode> children;
 	
 		/// <summary>Initializes a new instance of the TreeNode class.</summary>
-		private TreeNode()
+		protected TreeNode()
 		{
 		}
 	
 		/// <summary>Initializes a new instance of the TreeNode class.</summary>
-		private TreeNode(System.String caption, System.String filePath, System.Boolean visible, System.Collections.Immutable.ImmutableHashSet<System.String> attributes, System.Collections.Immutable.ImmutableList<TreeNode> children)
+		protected TreeNode(System.String caption, System.String filePath, System.Boolean visible, System.Collections.Immutable.ImmutableHashSet<System.String> attributes, System.Collections.Immutable.ImmutableList<TreeNode> children)
+			: base()
 		{
 			this.caption = caption;
 			this.filePath = filePath;
@@ -63,170 +64,165 @@ namespace DirectoryTree {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>), 
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			return DefaultInstance.With(
-				caption.IsDefined ? caption : ImmutableObjectGraph.Optional.For(DefaultInstance.caption), 
-				filePath.IsDefined ? filePath : ImmutableObjectGraph.Optional.For(DefaultInstance.filePath), 
-				visible.IsDefined ? visible : ImmutableObjectGraph.Optional.For(DefaultInstance.visible), 
-				attributes.IsDefined ? attributes : ImmutableObjectGraph.Optional.For(DefaultInstance.attributes), 
-				children.IsDefined ? children : ImmutableObjectGraph.Optional.For(DefaultInstance.children));
+				caption.IsDefined ? caption : ImmutableObjectGraph.Optional.For(DefaultInstance.Caption), 
+				filePath.IsDefined ? filePath : ImmutableObjectGraph.Optional.For(DefaultInstance.FilePath), 
+				visible.IsDefined ? visible : ImmutableObjectGraph.Optional.For(DefaultInstance.Visible), 
+				attributes.IsDefined ? attributes : ImmutableObjectGraph.Optional.For(DefaultInstance.Attributes), 
+				children.IsDefined ? children : ImmutableObjectGraph.Optional.For(DefaultInstance.Children));
 		}
 	
 		public System.String Caption {
 			get { return this.caption; }
 		}
 	
-		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
-		public TreeNode WithCaption(System.String value) {
-			if (value == this.Caption) {
-				return this;
-			}
-	
-			return new TreeNode(value, this.FilePath, this.Visible, this.Attributes, this.Children);
-		}
-	
 		public System.String FilePath {
 			get { return this.filePath; }
-		}
-	
-		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
-		public TreeNode WithFilePath(System.String value) {
-			if (value == this.FilePath) {
-				return this;
-			}
-	
-			return new TreeNode(this.Caption, value, this.Visible, this.Attributes, this.Children);
 		}
 	
 		public System.Boolean Visible {
 			get { return this.visible; }
 		}
 	
+		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
+			get { return this.attributes; }
+		}
+	
+		public System.Collections.Immutable.ImmutableList<TreeNode> Children {
+			get { return this.children; }
+		}
+		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
+		public TreeNode WithCaption(System.String value) {
+			if (value == this.Caption) {
+				return this;
+			}
+	
+			return this.With(caption: value);
+		}
+		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
+		public TreeNode WithFilePath(System.String value) {
+			if (value == this.FilePath) {
+				return this;
+			}
+	
+			return this.With(filePath: value);
+		}
 		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
 		public TreeNode WithVisible(System.Boolean value) {
 			if (value == this.Visible) {
 				return this;
 			}
 	
-			return new TreeNode(this.Caption, this.FilePath, value, this.Attributes, this.Children);
+			return this.With(visible: value);
 		}
-	
-		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
-			get { return this.attributes; }
-		}
-	
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
 		public TreeNode WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			if (value == this.Attributes) {
 				return this;
 			}
 	
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, value, this.Children);
+			return this.With(attributes: value);
 		}
 	
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public TreeNode WithAttributes(params System.String[] values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.ResetContents(values), this.Children);
+			return this.With(attributes: this.Attributes.ResetContents(values));
 		}
 	
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public TreeNode WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.ResetContents(values), this.Children);
+			return this.With(attributes: this.Attributes.ResetContents(values));
 		}
 	
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public TreeNode AddAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.AddRange(values), this.Children);
+			return this.With(attributes: this.Attributes.AddRange(values));
 		}
 	
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public TreeNode AddAttributes(params System.String[] values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.AddRange(values), this.Children);
+			return this.With(attributes: this.Attributes.AddRange(values));
 		}
 	
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
 		public TreeNode AddAttributes(System.String value) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Add(value), this.Children);
+			return this.With(attributes: this.Attributes.Add(value));
 		}
 	
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public TreeNode RemoveAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.RemoveRange(values), this.Children);
+			return this.With(attributes: this.Attributes.RemoveRange(values));
 		}
 	
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public TreeNode RemoveAttributes(params System.String[] values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.RemoveRange(values), this.Children);
+			return this.With(attributes: this.Attributes.RemoveRange(values));
 		}
 	
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
 		public TreeNode RemoveAttributes(System.String value) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Remove(value), this.Children);
+			return this.With(attributes: this.Attributes.Remove(value));
 		}
 	
 		/// <summary>Clears all elements from the Attributes collection.</summary>
 		public TreeNode RemoveAttributes() {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes.Clear(), this.Children);
+			return this.With(attributes: this.Attributes.Clear());
 		}
-		
-		public System.Collections.Immutable.ImmutableList<TreeNode> Children {
-			get { return this.children; }
-		}
-	
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public TreeNode WithChildren(System.Collections.Immutable.ImmutableList<TreeNode> value) {
 			if (value == this.Children) {
 				return this;
 			}
 	
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, value);
+			return this.With(children: value);
 		}
 	
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public TreeNode WithChildren(params TreeNode[] values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.ResetContents(values));
+			return this.With(children: this.Children.ResetContents(values));
 		}
 	
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public TreeNode WithChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.ResetContents(values));
+			return this.With(children: this.Children.ResetContents(values));
 		}
 	
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public TreeNode AddChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.AddRange(values));
+			return this.With(children: this.Children.AddRange(values));
 		}
 	
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public TreeNode AddChildren(params TreeNode[] values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.AddRange(values));
+			return this.With(children: this.Children.AddRange(values));
 		}
 	
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public TreeNode AddChildren(TreeNode value) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Add(value));
+			return this.With(children: this.Children.Add(value));
 		}
 	
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public TreeNode RemoveChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values));
 		}
 	
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public TreeNode RemoveChildren(params TreeNode[] values) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values));
 		}
 	
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public TreeNode RemoveChildren(TreeNode value) {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Remove(value));
+			return this.With(children: this.Children.Remove(value));
 		}
 	
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public TreeNode RemoveChildren() {
-			return new TreeNode(this.Caption, this.FilePath, this.Visible, this.Attributes, this.Children.Clear());
+			return this.With(children: this.Children.Clear());
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public TreeNode With(
+		public virtual TreeNode With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>), 
 			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>), 
@@ -249,9 +245,11 @@ namespace DirectoryTree {
 			}
 		}
 	
+	
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
+	
 	
 	 	public System.Collections.Generic.IEnumerator<TreeNode> GetEnumerator() {
 			return this.children.GetEnumerator();
@@ -261,7 +259,8 @@ namespace DirectoryTree {
 			return this.children.GetEnumerator();
 		}
 	
-	 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
+	 
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
 	
@@ -370,9 +369,9 @@ namespace DirectoryTree {
 				var attributes = this.attributes.IsDefined ? (this.attributes.Value != null ? this.attributes.Value.ToImmutable() : null) : this.immutable.attributes;
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.children;
 				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.caption),
-					ImmutableObjectGraph.Optional.For(this.filePath),
-					ImmutableObjectGraph.Optional.For(this.visible),
+					ImmutableObjectGraph.Optional.For(this.Caption),
+					ImmutableObjectGraph.Optional.For(this.FilePath),
+					ImmutableObjectGraph.Optional.For(this.Visible),
 					ImmutableObjectGraph.Optional.For(attributes),
 					ImmutableObjectGraph.Optional.For(children));
 			}

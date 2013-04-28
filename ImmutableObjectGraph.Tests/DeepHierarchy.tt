@@ -5,18 +5,19 @@
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
-	class Family {
-		ImmutableSortedSet<Person> members;
+	class A {
+		int field1;
 	}
 
-	class Person {
-		string name;
-		int age;
-		Watch watch;
+	class B : A {
+		int field2;
 	}
 
-	class Watch {
-		string color;
-		int size;
+	class C1 : B {
+		int field3;
+	}
+
+	class C2 : B {
+		int field3; 
 	}
 #>

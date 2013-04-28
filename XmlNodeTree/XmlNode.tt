@@ -2,14 +2,24 @@
 <#@ Output Extension=".generated.cs" #>
 <#
 	this.Namespace = "XmlNodeTree";
-	this.TemplateType = typeof(XmlNode);
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
-	class XmlNode {
-		string tagName;
-		string tagNamespace;
-		string tagPrefix;
+	abstract class XmlNode {
+		string localName;
+	}
+
+	class XmlElement : XmlNode {
+		string namespaceName;
 		ImmutableList<XmlNode> children;
+	}
+
+	class XmlElementWithContent : XmlElement {
+		string content;
+	}
+
+	class XmlAttribute : XmlNode {
+		string namespaceName;
+		string value;
 	}
 #>

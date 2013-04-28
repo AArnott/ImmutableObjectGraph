@@ -1,6 +1,6 @@
 ﻿<#@ assembly name="System.Core" #>
 <#@ assembly name="System.Runtime" #>
-<#@ assembly name="$(ProjectDir)..\packages\Microsoft.Bcl.Immutable.1.0.8-beta\lib\net45\System.Collections.Immutable.dll" #>
+<#@ assembly name="C:\Users\Andrew\git\ImmutableObjectGraph\packages\Microsoft.Bcl.Immutable.1.0.8-beta\lib\net45\System.Collections.Immutable.dll" #>
 <#@ Import Namespace="System.Collections.Generic" #>
 <#@ Import Namespace="System.Collections.Immutable" #>
 <#@ import namespace="System.Linq" #>
@@ -22,316 +22,269 @@ namespace <#= this.Namespace #> {
 
 <#
 	this.PushIndent("\t");
-	var templateTypes = DiscoverTemplateTypes(this.TemplateType);
+	var templateTypes = DiscoverTemplateTypes();
 
 	foreach(var templateType in templateTypes) {
-		// We use the recursive strategy when the templateType has exactly one collection of its own type.
-		var recursiveFields = templateType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => IsCollectionType(f.FieldType) && f.FieldType.GenericTypeArguments[0] == templateType);
-		bool recursive = recursiveFields.Count() == 1;
-		var fields = templateType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 #>
 
-public interface I<#= templateType.Name #> {
+public interface I<#= templateType.Name #><#
+	if (templateType.HasAncestor) {
+		Write(" : I{0}", templateType.Ancestor.Name);
+	}
+#> {
 <#
-	foreach(var field in fields) { #>
-	<#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; }
+	foreach(var field in templateType.LocalFields) { #>
+	<#= field.TypeName #> <#= field.NamePascalCase #> { get; }
 <#	}
 #>
 }
 
-public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (recursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.Name#>><# } #> {
+public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.Name #> : <#= templateType.HasAncestor ? (templateType.Ancestor.Name + ", ") : "" #>I<#= templateType.Name #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.Name#>><# } #> {
+<#	if (!templateType.IsAbstract) { #>
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 	private static readonly <#= templateType.Name #> DefaultInstance = GetDefaultTemplate();
-<#
-	foreach(var field in fields) {
+<#	}
+	foreach(var field in templateType.LocalFields) {
 #>
 
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private readonly <#= GetTypeName(field.FieldType) #> <#= CamelCase(field.Name) #>;
+	private readonly <#= GetTypeName(field.FieldType) #> <#= field.NameCamelCase #>;
 <#
 	}
 #>
 
 	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	private <#= templateType.Name #>()
+	protected <#= templateType.Name #>()
 	{
 	}
 
-	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	private <#= templateType.Name #>(<#
+<#
 	bool firstInSequence = true;
-	foreach(var field in fields) {
+	if (templateType.LocalFields.Count > 0) { #>
+	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
+	protected <#= templateType.Name #>(<#
+	foreach(var field in templateType.AllFields) {
 		if (!firstInSequence) { Write(", "); }
 		Write(GetTypeName(field.FieldType));
 		Write(" ");
-		Write(CamelCase(field.Name));
+		Write(field.NameCamelCase);
+		firstInSequence = false;
+	}
+#>)
+		: base(<#
+	firstInSequence = true;
+	foreach(var field in templateType.AllFields.Where(f => f.DeclaringType != templateType)) {
+		if (!firstInSequence) Write(",");
+		Write(field.NameCamelCase);
 		firstInSequence = false;
 	}
 #>)
 	{
 <#
-	foreach(var field in fields) {
+	foreach(var field in templateType.LocalFields) {
 #>
-		this.<#= CamelCase(field.Name) #> = <#= CamelCase(field.Name) #>;
+		this.<#= field.NameCamelCase #> = <#= field.NameCamelCase #>;
 <#
 	}
+
+	if (!templateType.IsAbstract) {
 #>
 		this.Validate();
+<#	} #>
 	}
+<# }
+
+	if (!templateType.IsAbstract) { #>
 
 	public static <#= templateType.Name #> Create(<#
 		firstInSequence = true;
 		this.PushIndent("\t\t");
 
 		// Value parameters
-		foreach(var field in fields) {
+		foreach(var field in templateType.AllFields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
 			Write(GetOptionalTypeName(field.FieldType));
 			Write(" ");
-			Write(CamelCase(field.Name));
+			Write(field.NameCamelCase);
 			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
 			firstInSequence = false;
 		}
 
 		this.PopIndent();
 #>) {
-		return DefaultInstance.With(<#
+		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.With(<#
 		firstInSequence = true;
 		this.PushIndent("\t\t\t");
 
 		// Value parameters
-		foreach(var field in fields) {
+		foreach(var field in templateType.AllFields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
-			#><#=CamelCase(field.Name)#>.IsDefined ? <#=CamelCase(field.Name)#> : ImmutableObjectGraph.Optional.For(DefaultInstance.<#=CamelCase(field.Name)#>)<#
+			#><#=field.NameCamelCase#>.IsDefined ? <#=field.NameCamelCase#> : ImmutableObjectGraph.Optional.For(DefaultInstance.<#=field.NamePascalCase#>)<#
 			firstInSequence = false;
 		}
 
 		this.PopIndent();
-#>);
+#>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
 	}
 <#
-	foreach(var field in fields) {
+	} // !IsAbstract Create factory method
+
+	foreach(var field in templateType.LocalFields) {
 #>
 
-	public <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> {
-		get { return this.<#= CamelCase(field.Name) #>; }
+	public <#= GetTypeName(field.FieldType) #> <#= field.NamePascalCase #> {
+		get { return this.<#= field.NameCamelCase #>; }
 	}
+<#  } // foreach Fields
 
-	/// <summary>Returns a new instance with the <#= PascalCase(field.Name) #> property set to the specified value.</summary>
-	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(<#= GetTypeName(field.FieldType) #> value) {
-		if (value == this.<#= PascalCase(field.Name) #>) {
+	foreach(var field in templateType.AllFields) {
+		if (field.DeclaringType == templateType) { #>
+	/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
+	public <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= GetTypeName(field.FieldType) #> value) {
+		if (value == this.<#= field.NamePascalCase #>) {
 			return this;
 		}
 
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			Write("value");
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+		return this.With(<#= field.NameCamelCase #>: value);
 	}
 <#
 	Type elementType;
 	if (TryGetCollectionElementType(field.FieldType, out elementType)) { #>
 
-	/// <summary>Replaces the elements of the <#= PascalCase(field.Name) #> collection with the specified collection.</summary>
-	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.ResetContents(values)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
+	public <#= templateType.Name #> With<#= field.NamePascalCase #>(params <#= GetTypeName(elementType) #>[] values) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
 	}
 
-	/// <summary>Replaces the elements of the <#= PascalCase(field.Name) #> collection with the specified collection.</summary>
-	public <#= templateType.Name #> With<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.ResetContents(values)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
+	public <#= templateType.Name #> With<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
 	}
 
-	/// <summary>Adds the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.AddRange(values)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+	public <#= templateType.Name #> Add<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
 	}
 
-	/// <summary>Adds the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.AddRange(values)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+	public <#= templateType.Name #> Add<#= field.NamePascalCase #>(params <#= GetTypeName(elementType) #>[] values) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
 	}
 
-	/// <summary>Adds the specified element from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Add<#= PascalCase(field.Name) #>(<#= GetTypeName(elementType) #> value) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.Add(value)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
+	public <#= templateType.Name #> Add<#= field.NamePascalCase #>(<#= GetTypeName(elementType) #> value) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Add(value));
 	}
 
-	/// <summary>Removes the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.RemoveRange(values)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+	public <#= templateType.Name #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= GetTypeName(elementType) #>> values) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
 	}
 
-	/// <summary>Removes the specified elements from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(params <#= GetTypeName(elementType) #>[] values) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.RemoveRange(values)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+	public <#= templateType.Name #> Remove<#= field.NamePascalCase #>(params <#= GetTypeName(elementType) #>[] values) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
 	}
 
-	/// <summary>Removes the specified element from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>(<#= GetTypeName(elementType) #> value) {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.Remove(value)<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
-
-		firstInSequence = false;
-	}
-#>);
+	/// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
+	public <#= templateType.Name #> Remove<#= field.NamePascalCase #>(<#= GetTypeName(elementType) #> value) {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(value));
 	}
 
-	/// <summary>Clears all elements from the <#= PascalCase(field.Name) #> collection.</summary>
-	public <#= templateType.Name #> Remove<#= PascalCase(field.Name) #>() {
-		return new <#= templateType.Name #>(<#
-	firstInSequence = true;
-	foreach(var field2 in fields) {
-		if (!firstInSequence) { Write(", "); }
-		if (field == field2) {
-			#>this.<#=PascalCase(field2.Name)#>.Clear()<#
-		} else {
-			Write("this." + PascalCase(field2.Name));
-		}
+	/// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>
+	public <#= templateType.Name #> Remove<#= field.NamePascalCase #>() {
+		return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Clear());
+	}
+<#		} // if field type is a collection
+	} else { // else field appears on the base type
+#>
+	/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
+	public new <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= GetTypeName(field.FieldType) #> value) {
+		return (<#= templateType.Name #>)base.With<#= field.NamePascalCase #>(value);
+	}
+<#
+	}
+} // foreach field
 
-		firstInSequence = false;
-	}
-#>);
-	}
-	<#}
-	}
+	if (templateType.LocalFields.Count > 0) {
+		if (templateType.HasAncestor) {
 #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-	public <#= templateType.Name #> With(<#
+	public override <#= templateType.Ancestor.Name #> With(<#
 		firstInSequence = true;
 		this.PushIndent("\t\t");
 
 		// Value parameters
-		foreach(var field in fields) {
+		foreach(var field in templateType.AllFields.Where(f => f.DeclaringType != templateType)) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
 			Write(GetOptionalTypeName(field.FieldType));
 			Write(" ");
-			Write(CamelCase(field.Name));
+			Write(field.NameCamelCase);
 			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
 			firstInSequence = false;
 		}
 
 		this.PopIndent();
-#>) {
+		#>) {
+		return this.With(
+<#
+		firstInSequence = true;
+		this.PushIndent("\t\t\t");
+		foreach (var field in templateType.AllFields) {
+			if (!firstInSequence) { WriteLine(", "); }
+			Write(field.NameCamelCase);
+			Write(": ");
+			if (field.DeclaringType == templateType) {
+				Write("default(" + GetOptionalTypeName(field.FieldType) + ")");
+			} else {
+				Write(field.NameCamelCase);
+			}
+
+			firstInSequence = false;
+		}
+
+		this.PopIndent();
+#>);
+	}
+	<# } /* templateType.HasAncestor */ #>
+
+	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+	public <#= templateType.IsAbstract ? "abstract" : "virtual" #> <#= templateType.Name #> With(<#
+		firstInSequence = true;
+		this.PushIndent("\t\t");
+
+		// Value parameters
+		foreach(var field in templateType.AllFields) {
+			if (!firstInSequence) { Write(", "); }
+			WriteLine("");
+			Write(GetOptionalTypeName(field.FieldType));
+			Write(" ");
+			Write(field.NameCamelCase);
+			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
+			firstInSequence = false;
+		}
+
+		this.PopIndent();
+#>)<# if (templateType.IsAbstract) { #>;<# } else { #> {
 		if (<#
 			firstInSequence = true;
-			foreach(var field in fields) {
+			foreach(var field in templateType.AllFields) {
 				if (!firstInSequence) { Write(" || "); }
 				WriteLine("");
-#>			(<#= CamelCase(field.Name) #>.IsDefined && <#= CamelCase(field.Name) #>.Value != this.<#= PascalCase(field.Name) #>)<#
+#>			(<#= field.NameCamelCase #>.IsDefined && <#= field.NameCamelCase #>.Value != this.<#= field.NamePascalCase #>)<#
 				firstInSequence = false;
 			}
 	#>) {
 			return new <#= templateType.Name #>(<#
 				firstInSequence = true;
-				foreach(var field in fields) {
+				foreach(var field in templateType.AllFields) {
 					if (!firstInSequence) { Write(","); }
 					WriteLine("");
-	#>				<#= CamelCase(field.Name) #>.IsDefined ? <#= CamelCase(field.Name) #>.Value : this.<#= PascalCase(field.Name) #><#
+	#>				<#= field.NameCamelCase #>.IsDefined ? <#= field.NameCamelCase #>.Value : this.<#= field.NamePascalCase #><#
 					firstInSequence = false;
 				}
 		#>);
@@ -339,21 +292,61 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 			return this;
 		}
 	}
+<#		} /* if isAbstract */ #>
 
-	public Builder ToBuilder() {
+<#	} /* templateType.LocalFields.Count > 0 */ #>
+
+	public <#= templateType.HasAncestor ? "new ": "" #>Builder ToBuilder() {
 		return new Builder(this);
 	}
 
- <# if (recursive) { #>
+<#
+	if (templateType.HasAncestor && !templateType.Ancestor.IsAbstract) {
+#>
+	public <#= templateType.Ancestor.Name#> To<#= templateType.Ancestor.Name#>() {
+		return <#= templateType.Ancestor.Name #>.Create(<# WriteArguments(templateType.Ancestor.AllFields); #>);
+	}
+<#
+	}
+
+	if (!templateType.IsAbstract) {
+		foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
+#>
+
+	public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
+		return <#= derivedType.Name #>.Create(<#
+WriteArguments(templateType.AllFields);
+Write(",");
+WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
+#>);
+	}
+<#
+			foreach (var ancestor in templateType.GetNonAbstractAncestors()) { #>
+
+	public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), optional: true); #>) {
+		return base.To<#= derivedType.Name #>(<#
+WriteArguments(templateType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty);
+Write(",");
+WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
+#>);
+	}
+<#			} // foreach ancestor type
+		} // foreach derived type
+	}
+#>
+
+ <# if (templateType.IsRecursive) { #>
 	public System.Collections.Generic.IEnumerator<<#=templateType.Name#>> GetEnumerator() {
-		return this.<#=CamelCase(recursiveFields.Single().Name)#>.GetEnumerator();
+		return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
 	}
 
 	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-		return this.<#=CamelCase(recursiveFields.Single().Name)#>.GetEnumerator();
+		return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
 	}
 
- <# } #>
+ <# }
+	if (!templateType.IsAbstract) { #>
+
 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
 	/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 	partial void Validate();
@@ -371,84 +364,97 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 		this.PushIndent("\t\t\t");
 
 		// Value parameters
-		foreach(var field in fields) {
+		foreach(var field in templateType.AllFields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
 			Write("template.");
-			Write(PascalCase(field.Name));
+			Write(field.NamePascalCase);
 			firstInSequence = false;
 		}
 
 		this.PopIndent();
 #>);
 	}
+<# } /* !IsAbstract */ #>
 
-	public partial class Builder {
+	public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
+		if (templateType.HasAncestor) {
+			Write(" : {0}.Builder", templateType.Ancestor.Name);
+		}
+#> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private <#= templateType.Name #> immutable;
-<#		foreach(var field in fields) { #>
+<#		foreach(var field in templateType.LocalFields) { #>
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private <#= GetBuilderFieldTypeName(field.FieldType, templateTypes) #> <#= CamelCase(field.Name) #>;
+		protected <#= field.TypeNameForBuilderField #> <#= field.NameCamelCase #>;
 <#		} #>
 
-		internal Builder(<#= templateType.Name #> immutable) {
+		internal Builder(<#= templateType.Name #> immutable)<#
+			if (templateType.HasAncestor) {
+				Write(" : base(immutable)");
+			} #> {
 			this.immutable = immutable;
 
 <#
-			foreach(var field in fields.Where(f => !templateTypes.Contains(f.FieldType) && !IsCollectionType(f.FieldType))) {
+			foreach(var field in templateType.LocalFields.Where(f => f.IsPrimitiveType)) {
 #>
-			this.<#= CamelCase(field.Name) #> = immutable.<#= PascalCase(field.Name) #>;
+			this.<#= field.NameCamelCase #> = immutable.<#= field.NamePascalCase #>;
 <#			} #>
 		}
-<#		foreach(var field in fields) { #>
+<#		foreach(var field in templateType.LocalFields) { #>
 
-		public <#= GetBuilderPropertyTypeName(field.FieldType, templateTypes) #> <#= PascalCase(field.Name) #> {
+		public <#= field.TypeNameForBuilderProperty #> <#= field.NamePascalCase #> {
 			get {
-<# if (templateTypes.Contains(field.FieldType) || IsCollectionType(field.FieldType)) { #>
-				if (!this.<#= CamelCase(field.Name) #>.IsDefined) {
-					this.<#= CamelCase(field.Name) #> = this.immutable.<#= CamelCase(field.Name) #> != null ? this.immutable.<#= CamelCase(field.Name) #>.ToBuilder() : null;
+<# if (!field.IsPrimitiveType) { #>
+				if (!this.<#= field.NameCamelCase #>.IsDefined) {
+					this.<#= field.NameCamelCase #> = this.immutable.<#= field.NameCamelCase #> != null ? this.immutable.<#= field.NameCamelCase #>.ToBuilder() : null;
 				}
 
-				return this.<#= CamelCase(field.Name) #>.Value;
+				return this.<#= field.NameCamelCase #>.Value;
 <# } else { #>
-				return this.<#= CamelCase(field.Name) #>;
+				return this.<#= field.NameCamelCase #>;
 <# } #>
 			}
 
 			set {
-				this.<#= CamelCase(field.Name) #> = value;
+				this.<#= field.NameCamelCase #> = value;
 			}
 		}
 <#		} #>
 
-		public <#= templateType.Name #> ToImmutable() {
-<#			foreach(var templateField in fields.Where(f => templateTypes.Contains(f.FieldType) || IsCollectionType(f.FieldType))) { #>
-			var <#= CamelCase(templateField.Name) #> = this.<#= CamelCase(templateField.Name) #>.IsDefined ? (this.<#= CamelCase(templateField.Name) #>.Value != null ? this.<#= CamelCase(templateField.Name) #>.Value.ToImmutable() : null) : this.immutable.<#= CamelCase(templateField.Name) #>;
+		public <#= templateType.HasAncestor ? "new ": "" #><#= templateType.Name #> ToImmutable() {
+<#			foreach(var templateField in templateType.AllFields.Where(f => !f.IsPrimitiveType)) { #>
+			var <#= templateField.NameCamelCase #> = this.<#= templateField.NameCamelCase #>.IsDefined ? (this.<#= templateField.NameCamelCase #>.Value != null ? this.<#= templateField.NameCamelCase #>.Value.ToImmutable() : null) : this.immutable.<#= templateField.NamePascalCase #>;
 <#			} #>
-			return this.immutable = this.immutable.With(<#
+			return this.immutable = this.immutable<# if (templateType.LocalFields.Count > 0) { #>.With(<#
 			firstInSequence = true;
-			foreach(var field in fields) {
+			foreach(var field in templateType.AllFields) {
 				if (!firstInSequence) { Write(","); }
 				WriteLine("");
-				string prefix = (templateTypes.Contains(field.FieldType) || IsCollectionType(field.FieldType)) ? "" : "this."; #>
-				ImmutableObjectGraph.Optional.For(<#= prefix + CamelCase(field.Name) #>)<#
+				if (!field.IsPrimitiveType) { #>
+				ImmutableObjectGraph.Optional.For(<#= field.NameCamelCase #>)<#
+				} else { #>
+				ImmutableObjectGraph.Optional.For(this.<#= field.NamePascalCase #>)<#
+				}
 				firstInSequence = false;
 			} #>
-);
+)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
 		}
 	}
+<# if (!templateType.IsAbstract) { #>
 
 	/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 	private struct Template {<#
-	foreach(var field in fields) {
+	foreach(var field in templateType.AllFields) {
 #>
 
-		internal <#= GetTypeName(field.FieldType) #> <#= PascalCase(field.Name) #> { get; set; }
+		internal <#= GetTypeName(field.FieldType) #> <#= field.NamePascalCase #> { get; set; }
 <#
 	}
 #>
 	}
+<#	} /* !IsAbstract */ #>
 }
 <# } // looping over all template types
 
@@ -456,8 +462,6 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 #>
 }
 <#+
-	public Type TemplateType { get; set; }
-
 	public string Namespace { get; set; }
 
 	protected static string PascalCase(string name) {
@@ -468,19 +472,39 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 		return name.Substring(0,1).ToLowerInvariant() + name.Substring(1);
 	}
 
-	protected static HashSet<Type> DiscoverTemplateTypes(Type rootType) {
-		var types = new HashSet<Type>();
+	protected static HashSet<MetaType> DiscoverTemplateTypes() {
+		var rootType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+		var types = new HashSet<MetaType>();
 		var pendingTypes = new Queue<Type>();
-		pendingTypes.Enqueue(rootType);
-		while(pendingTypes.Count > 0)
+
+		Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
+							&& !t.IsEquivalentTo(typeof(MetaType))
+							&& !t.IsEquivalentTo(typeof(ArgSource));
+
+		foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
+			if (includeTypeTest(nestedType)) {
+				pendingTypes.Enqueue(nestedType);
+			}
+		}
+
+		while (pendingTypes.Count > 0)
 		{
 			var type = pendingTypes.Dequeue();
-			if (types.Add(type)) {
-				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)) {
-					var memberType = GetTypeOrCollectionMemberType(field.FieldType);
+			var metaType = new MetaType(type, types);
+			if (types.Add(metaType)) {
+				foreach(var field in metaType.LocalFields) {
+					var memberType = field.ElementType;
 
-					if (memberType.DeclaringType == type.DeclaringType) {
+					if (memberType.DeclaringType == type.DeclaringType) { // if this is a type that also appears in the T4 template
 						pendingTypes.Enqueue(memberType);
+					}
+				}
+
+				if (type.DeclaringType != null) {
+					foreach (var siblingNestedType in type.DeclaringType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
+						if (includeTypeTest(siblingNestedType)) {
+							pendingTypes.Enqueue(siblingNestedType);
+						}
 					}
 				}
 			}
@@ -488,24 +512,8 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 
 		return types;
 	}
-	
-	protected string GetBuilderPropertyTypeName(Type type, HashSet<Type> templateTypes) {
-		if (templateTypes.Contains(type) || IsCollectionType(type)) {
-			return GetTypeName(type) + ".Builder";
-		} else {
-			return GetTypeName(type);
-		}
-	}
 
-	protected string GetBuilderFieldTypeName(Type type, HashSet<Type> templateTypes) {
-		if (templateTypes.Contains(type) || IsCollectionType(type)) {
-			return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ".Builder>";
-		} else {
-			return GetTypeName(type);
-		}
-	}
-
-	protected string GetTypeName(Type type) {
+	protected static string GetTypeName(Type type) {
 		var typeName = new StringBuilder();
 
 		if (type.IsGenericType) {
@@ -519,7 +527,8 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 			typeName.Length -= 2;
 			typeName.Append(">");
 		} else {
-			typeName.Append(type.DeclaringType == this.TemplateType.DeclaringType ? type.Name : type.FullName);
+			var templateDeclaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+			typeName.Append(type.DeclaringType == templateDeclaringType ? type.Name : type.FullName);
 		}
 
 		return typeName.ToString();
@@ -569,9 +578,213 @@ public partial class <#= templateType.Name #> : I<#= templateType.Name #><# if (
 		return collectionOrOtherType;
 	}
 
-	protected string GetOptionalTypeName(Type type)
+	protected static string GetOptionalTypeName(Type type)
 	{
 		return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
+	}
+
+	private enum ArgSource {
+		Property,
+		Argument,
+		OptionalArgumentOrProperty,
+	}
+
+	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property) {
+		PushIndent("\t\t\t");
+		bool firstInSequence = true;
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(","); }
+			WriteLine("");
+			switch (source) {
+				case ArgSource.Property:
+					Write("this.{0}", field.NamePascalCase);
+					break;
+				case ArgSource.Argument:
+					Write(field.NameCamelCase);
+					break;
+				case ArgSource.OptionalArgumentOrProperty:
+					Write("{0}.GetValueOrDefault(this.{1})", field.NameCamelCase, field.NamePascalCase);
+					break;
+			}
+
+			firstInSequence = false;
+		}
+
+		PopIndent();
+	}
+
+	private void WriteParameters(IEnumerable<MetaType.MetaField> fields, bool optional) {
+		PushIndent("\t\t");
+		bool firstInSequence = true;
+		foreach(var field in fields) {
+			if (!firstInSequence) { Write(","); }
+			WriteLine("");
+			Write(optional ? field.OptionalTypeName : field.TypeName);
+			Write(" ");
+			Write(field.NameCamelCase);
+			if (optional) {
+				Write(" = default(" + field.OptionalTypeName + ")");
+			}
+
+			firstInSequence = false;
+		}
+		PopIndent();
+	}
+
+	protected class MetaType {
+		private readonly ISet<MetaType> knownTypes;
+
+		public MetaType(Type type, ISet<MetaType> knownTypes) {
+			this.Type = type;
+			this.knownTypes = knownTypes;
+		}
+
+		public Type Type { get; private set; }
+
+		public string Name {
+			get { return this.Type.Name; }
+		}
+
+		public ImmutableList<MetaField> LocalFields {
+			get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToImmutableList(); }
+		}
+
+		public ImmutableList<MetaField> AllFields {
+			get {
+				var fieldsWithBase = this.LocalFields;
+				if (this.HasAncestor) {
+					fieldsWithBase = fieldsWithBase.InsertRange(0, this.Ancestor.AllFields);
+				}
+
+				return fieldsWithBase;
+			}
+		}
+
+		public MetaField RecursiveField {
+			get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && f.ElementType == this.Type); }
+		}
+
+		public bool IsRecursive {
+			get { return this.LocalFields.Count(f => f.IsCollection && f.ElementType == this.Type) == 1; }
+		}
+
+		public MetaType Ancestor {
+			get { return this.knownTypes.FirstOrDefault(mt => mt.Type.IsEquivalentTo(this.Type.BaseType)); }
+		}
+
+		public bool HasAncestor {
+			get { return this.Ancestor != null; }
+		}
+
+		public IEnumerable<MetaType> Descendents {
+			get { return this.knownTypes.Where(t => this.Type.IsAssignableFrom(t.Type) && !this.Type.IsEquivalentTo(t.Type)); }
+		}
+
+		public bool HasDescendent {
+			get { return this.Descendents.Any(); }
+		}
+
+		public bool IsAbstract { 
+			get { return this.Type.IsAbstract; }
+		}
+
+		public string TypeName {
+			get { return this.Type.Name; }
+		}
+
+		public string OptionalTypeName {
+			get { return GetOptionalTypeName(this.Type); }
+		}
+
+		public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
+			var fields = ImmutableList.Create<MetaField>();
+			if (ancestor != this) {
+				fields = fields.AddRange(this.LocalFields)
+				               .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
+			}
+
+			return fields;
+		}
+
+		public IEnumerable<MetaType> GetNonAbstractAncestors() {
+			for (var ancestor = this.Ancestor; ancestor != null; ancestor = ancestor.Ancestor) {
+				if (!ancestor.IsAbstract) {
+					yield return ancestor;
+				}
+			}
+		}
+
+		public override int GetHashCode() {
+			return this.Type.GetHashCode();
+		}
+
+		public override bool Equals(object value) {
+			var other = value as MetaType;
+			return other != null && this.Type.IsEquivalentTo(other.Type);
+		}
+
+		public class MetaField {
+			public MetaField(FieldInfo field, MetaType declaringType) {
+				this.Field = field;
+				this.DeclaringType = declaringType;
+			}
+
+			public FieldInfo Field { get; private set; }
+
+			public Type FieldType {
+				get { return this.Field.FieldType; }
+			}
+
+			public MetaType DeclaringType { get; private set; }
+
+			public string NamePascalCase {
+				get { return PascalCase(this.Field.Name); }
+			}
+
+			public string NameCamelCase {
+				get { return CamelCase(this.Field.Name); }
+			}
+
+			public bool IsCollection {
+				get { return IsCollectionType(this.Field.FieldType); }
+			}
+
+			public bool IsPrimitiveType {
+				get { return !this.DeclaringType.knownTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) && !this.IsCollection; }
+			}
+			
+			public Type ElementType {
+				get { return GetTypeOrCollectionMemberType(this.Field.FieldType); }
+			}
+
+			public string ElementTypeName {
+				get { return GetTypeName(GetTypeOrCollectionMemberType(this.Field.FieldType)); }
+			}
+
+			public string TypeName {
+				get { return GetTypeName(this.Field.FieldType); }
+			}
+
+			public string OptionalTypeName {
+				get { return GetOptionalTypeName(this.Field.FieldType); }
+			}
+
+			public string TypeNameForBuilderField {
+				get {
+					return this.DeclaringType.knownTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) || IsCollectionType(this.FieldType)
+						? "ImmutableObjectGraph.Optional<" + this.TypeName + ".Builder>"
+						: this.TypeName;
+				}
+			}
+
+			public string TypeNameForBuilderProperty {
+				get {
+					return this.DeclaringType.knownTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) || IsCollectionType(this.FieldType)
+						? this.TypeName + ".Builder"
+						: this.TypeName;
+				}
+			}
+		}
 	}
 
 #>
