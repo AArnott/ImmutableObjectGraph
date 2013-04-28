@@ -478,7 +478,8 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		var pendingTypes = new Queue<Type>();
 
 		Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
-							&& !t.IsEquivalentTo(typeof(MetaType));
+							&& !t.IsEquivalentTo(typeof(MetaType))
+							&& !t.IsEquivalentTo(typeof(ArgSource));
 
 		foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
 			if (includeTypeTest(nestedType)) {
