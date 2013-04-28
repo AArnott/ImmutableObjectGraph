@@ -21,7 +21,7 @@ namespace DirectoryTree {
 		System.Collections.Immutable.ImmutableList<TreeNode> Children { get; }
 	}
 	
-	public partial class TreeNode : System.Object, ITreeNode, System.Collections.Generic.IEnumerable<TreeNode> {
+	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly TreeNode DefaultInstance = GetDefaultTemplate();
 	
@@ -249,6 +249,7 @@ namespace DirectoryTree {
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
+	
 	
 	 	public System.Collections.Generic.IEnumerator<TreeNode> GetEnumerator() {
 			return this.children.GetEnumerator();

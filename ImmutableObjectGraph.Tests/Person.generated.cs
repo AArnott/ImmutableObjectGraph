@@ -17,7 +17,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<Person> Members { get; }
 	}
 	
-	public partial class Family : System.Object, IFamily {
+	public partial class Family : IFamily {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Family DefaultInstance = GetDefaultTemplate();
 	
@@ -117,6 +117,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 	
+	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -179,7 +180,7 @@ namespace ImmutableObjectGraph.Tests {
 		Watch Watch { get; }
 	}
 	
-	public partial class Person : System.Object, IPerson {
+	public partial class Person : IPerson {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Person DefaultInstance = GetDefaultTemplate();
 	
@@ -275,6 +276,7 @@ namespace ImmutableObjectGraph.Tests {
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
+	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -373,7 +375,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Int32 Size { get; }
 	}
 	
-	public partial class Watch : System.Object, IWatch {
+	public partial class Watch : IWatch {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Watch DefaultInstance = GetDefaultTemplate();
 	
@@ -448,6 +450,7 @@ namespace ImmutableObjectGraph.Tests {
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
+	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>

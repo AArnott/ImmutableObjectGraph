@@ -22,7 +22,7 @@ namespace Demo {
 		System.String Body { get; }
 	}
 	
-	public partial class Message : System.Object, IMessage {
+	public partial class Message : IMessage {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Message DefaultInstance = GetDefaultTemplate();
 	
@@ -317,6 +317,7 @@ namespace Demo {
 			return new Builder(this);
 		}
 	
+	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -480,7 +481,7 @@ namespace Demo {
 		System.String Email { get; }
 	}
 	
-	public partial class Contact : System.Object, IContact {
+	public partial class Contact : IContact {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Contact DefaultInstance = GetDefaultTemplate();
 	
@@ -555,6 +556,7 @@ namespace Demo {
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
+	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>

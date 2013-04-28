@@ -16,7 +16,7 @@ namespace ImmutableObjectGraph.Tests {
 	public interface IEmpty {
 	}
 	
-	public partial class Empty : System.Object, IEmpty {
+	public partial class Empty : IEmpty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Empty DefaultInstance = GetDefaultTemplate();
 	
@@ -33,6 +33,7 @@ namespace ImmutableObjectGraph.Tests {
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
+	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
