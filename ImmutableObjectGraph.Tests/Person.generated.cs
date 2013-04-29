@@ -107,7 +107,7 @@ namespace ImmutableObjectGraph.Tests {
 			if (
 				(members.IsDefined && members.Value != this.Members)) {
 				return new Family(
-					members.IsDefined ? members.Value : this.Members);
+					members.GetValueOrDefault(this.Members));
 			} else {
 				return this;
 			}
@@ -260,17 +260,17 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Person With(
-			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			if (
 				(name.IsDefined && name.Value != this.Name) || 
 				(age.IsDefined && age.Value != this.Age) || 
 				(watch.IsDefined && watch.Value != this.Watch)) {
 				return new Person(
-					name.IsDefined ? name.Value : this.Name,
-					age.IsDefined ? age.Value : this.Age,
-					watch.IsDefined ? watch.Value : this.Watch);
+					name.GetValueOrDefault(this.Name),
+					age.GetValueOrDefault(this.Age),
+					watch.GetValueOrDefault(this.Watch));
 			} else {
 				return this;
 			}
@@ -439,14 +439,14 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Watch With(
-			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
 				(color.IsDefined && color.Value != this.Color) || 
 				(size.IsDefined && size.Value != this.Size)) {
 				return new Watch(
-					color.IsDefined ? color.Value : this.Color,
-					size.IsDefined ? size.Value : this.Size);
+					color.GetValueOrDefault(this.Color),
+					size.GetValueOrDefault(this.Size));
 			} else {
 				return this;
 			}

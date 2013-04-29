@@ -193,21 +193,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 	public <#= templateType.IsAbstract ? "abstract" : "virtual" #> <#= templateType.Name #> With(<#
-		firstInSequence = true;
-		this.PushIndent("\t\t");
-
-		// Value parameters
-		foreach(var field in templateType.AllFields) {
-			if (!firstInSequence) { Write(", "); }
-			WriteLine("");
-			Write(GetOptionalTypeName(field.FieldType));
-			Write(" ");
-			Write(field.NameCamelCase);
-			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
-			firstInSequence = false;
-		}
-
-		this.PopIndent();
+		WriteParameters(templateType.AllFields, optional: true);
 #>)<# if (templateType.IsAbstract) { #>;<# } else { #> {
 		if (<#
 			firstInSequence = true;
@@ -218,15 +204,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 				firstInSequence = false;
 			}
 	#>) {
-			return new <#= templateType.Name #>(<#
-				firstInSequence = true;
-				foreach(var field in templateType.AllFields) {
-					if (!firstInSequence) { Write(","); }
-					WriteLine("");
-	#>				<#= field.NameCamelCase #>.IsDefined ? <#= field.NameCamelCase #>.Value : this.<#= field.NamePascalCase #><#
-					firstInSequence = false;
-				}
-		#>);
+			return new <#= templateType.Name #>(<# WriteArguments(templateType.AllFields, ArgSource.OptionalArgumentOrProperty, indent: 4); #>);
 		} else {
 			return this;
 		}
@@ -546,8 +524,8 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		Missing,
 	}
 
-	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, bool namedArguments = false) {
-		PushIndent("\t\t\t");
+	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, bool namedArguments = false, int indent = 3) {
+		PushIndent(new string('\t', indent));
 		bool firstInSequence = true;
 		foreach(var field in fields) {
 			if (!firstInSequence) { Write(","); }

@@ -214,17 +214,17 @@ namespace XmlNodeTree {
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual XmlElement With(
-			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			if (
 				(localName.IsDefined && localName.Value != this.LocalName) || 
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(children.IsDefined && children.Value != this.Children)) {
 				return new XmlElement(
-					localName.IsDefined ? localName.Value : this.LocalName,
-					namespaceName.IsDefined ? namespaceName.Value : this.NamespaceName,
-					children.IsDefined ? children.Value : this.Children);
+					localName.GetValueOrDefault(this.LocalName),
+					namespaceName.GetValueOrDefault(this.NamespaceName),
+					children.GetValueOrDefault(this.Children));
 			} else {
 				return this;
 			}
@@ -411,9 +411,9 @@ namespace XmlNodeTree {
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual XmlElementWithContent With(
-			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>), 
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			if (
 				(localName.IsDefined && localName.Value != this.LocalName) || 
@@ -421,10 +421,10 @@ namespace XmlNodeTree {
 				(children.IsDefined && children.Value != this.Children) || 
 				(content.IsDefined && content.Value != this.Content)) {
 				return new XmlElementWithContent(
-					localName.IsDefined ? localName.Value : this.LocalName,
-					namespaceName.IsDefined ? namespaceName.Value : this.NamespaceName,
-					children.IsDefined ? children.Value : this.Children,
-					content.IsDefined ? content.Value : this.Content);
+					localName.GetValueOrDefault(this.LocalName),
+					namespaceName.GetValueOrDefault(this.NamespaceName),
+					children.GetValueOrDefault(this.Children),
+					content.GetValueOrDefault(this.Content));
 			} else {
 				return this;
 			}
@@ -589,17 +589,17 @@ namespace XmlNodeTree {
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual XmlAttribute With(
-			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
 			if (
 				(localName.IsDefined && localName.Value != this.LocalName) || 
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(value.IsDefined && value.Value != this.Value)) {
 				return new XmlAttribute(
-					localName.IsDefined ? localName.Value : this.LocalName,
-					namespaceName.IsDefined ? namespaceName.Value : this.NamespaceName,
-					value.IsDefined ? value.Value : this.Value);
+					localName.GetValueOrDefault(this.LocalName),
+					namespaceName.GetValueOrDefault(this.NamespaceName),
+					value.GetValueOrDefault(this.Value));
 			} else {
 				return this;
 			}

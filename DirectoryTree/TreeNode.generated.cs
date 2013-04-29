@@ -228,10 +228,10 @@ namespace DirectoryTree {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual TreeNode With(
-			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>), 
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			if (
 				(caption.IsDefined && caption.Value != this.Caption) || 
@@ -240,11 +240,11 @@ namespace DirectoryTree {
 				(attributes.IsDefined && attributes.Value != this.Attributes) || 
 				(children.IsDefined && children.Value != this.Children)) {
 				return new TreeNode(
-					caption.IsDefined ? caption.Value : this.Caption,
-					filePath.IsDefined ? filePath.Value : this.FilePath,
-					visible.IsDefined ? visible.Value : this.Visible,
-					attributes.IsDefined ? attributes.Value : this.Attributes,
-					children.IsDefined ? children.Value : this.Children);
+					caption.GetValueOrDefault(this.Caption),
+					filePath.GetValueOrDefault(this.FilePath),
+					visible.GetValueOrDefault(this.Visible),
+					attributes.GetValueOrDefault(this.Attributes),
+					children.GetValueOrDefault(this.Children));
 			} else {
 				return this;
 			}

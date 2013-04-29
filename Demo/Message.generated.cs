@@ -293,11 +293,11 @@ namespace Demo {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Message With(
-			ImmutableObjectGraph.Optional<Contact> author = default(ImmutableObjectGraph.Optional<Contact>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> to = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>), 
-			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<Contact> author = default(ImmutableObjectGraph.Optional<Contact>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> to = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
 			if (
 				(author.IsDefined && author.Value != this.Author) || 
@@ -307,12 +307,12 @@ namespace Demo {
 				(subject.IsDefined && subject.Value != this.Subject) || 
 				(body.IsDefined && body.Value != this.Body)) {
 				return new Message(
-					author.IsDefined ? author.Value : this.Author,
-					to.IsDefined ? to.Value : this.To,
-					cc.IsDefined ? cc.Value : this.Cc,
-					bcc.IsDefined ? bcc.Value : this.Bcc,
-					subject.IsDefined ? subject.Value : this.Subject,
-					body.IsDefined ? body.Value : this.Body);
+					author.GetValueOrDefault(this.Author),
+					to.GetValueOrDefault(this.To),
+					cc.GetValueOrDefault(this.Cc),
+					bcc.GetValueOrDefault(this.Bcc),
+					subject.GetValueOrDefault(this.Subject),
+					body.GetValueOrDefault(this.Body));
 			} else {
 				return this;
 			}
@@ -547,14 +547,14 @@ namespace Demo {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Contact With(
-			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
 			if (
 				(name.IsDefined && name.Value != this.Name) || 
 				(email.IsDefined && email.Value != this.Email)) {
 				return new Contact(
-					name.IsDefined ? name.Value : this.Name,
-					email.IsDefined ? email.Value : this.Email);
+					name.GetValueOrDefault(this.Name),
+					email.GetValueOrDefault(this.Email));
 			} else {
 				return this;
 			}

@@ -62,7 +62,7 @@ namespace ImmutableObjectGraph.Tests {
 			if (
 				(field1.IsDefined && field1.Value != this.Field1)) {
 				return new A(
-					field1.IsDefined ? field1.Value : this.Field1);
+					field1.GetValueOrDefault(this.Field1));
 			} else {
 				return this;
 			}
@@ -235,14 +235,14 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual B With(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
 				(field1.IsDefined && field1.Value != this.Field1) || 
 				(field2.IsDefined && field2.Value != this.Field2)) {
 				return new B(
-					field1.IsDefined ? field1.Value : this.Field1,
-					field2.IsDefined ? field2.Value : this.Field2);
+					field1.GetValueOrDefault(this.Field1),
+					field2.GetValueOrDefault(this.Field2));
 			} else {
 				return this;
 			}
@@ -431,17 +431,17 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual C1 With(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>), 
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
 				(field1.IsDefined && field1.Value != this.Field1) || 
 				(field2.IsDefined && field2.Value != this.Field2) || 
 				(field3.IsDefined && field3.Value != this.Field3)) {
 				return new C1(
-					field1.IsDefined ? field1.Value : this.Field1,
-					field2.IsDefined ? field2.Value : this.Field2,
-					field3.IsDefined ? field3.Value : this.Field3);
+					field1.GetValueOrDefault(this.Field1),
+					field2.GetValueOrDefault(this.Field2),
+					field3.GetValueOrDefault(this.Field3));
 			} else {
 				return this;
 			}
@@ -589,17 +589,17 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual C2 With(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>), 
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
 				(field1.IsDefined && field1.Value != this.Field1) || 
 				(field2.IsDefined && field2.Value != this.Field2) || 
 				(field3.IsDefined && field3.Value != this.Field3)) {
 				return new C2(
-					field1.IsDefined ? field1.Value : this.Field1,
-					field2.IsDefined ? field2.Value : this.Field2,
-					field3.IsDefined ? field3.Value : this.Field3);
+					field1.GetValueOrDefault(this.Field1),
+					field2.GetValueOrDefault(this.Field2),
+					field3.GetValueOrDefault(this.Field3));
 			} else {
 				return this;
 			}
