@@ -182,23 +182,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-	public override <#= templateType.Ancestor.Name #> With(<#
-		firstInSequence = true;
-		this.PushIndent("\t\t");
-
-		// Value parameters
-		foreach(var field in templateType.AllFields.Where(f => f.DeclaringType != templateType)) {
-			if (!firstInSequence) { Write(", "); }
-			WriteLine("");
-			Write(GetOptionalTypeName(field.FieldType));
-			Write(" ");
-			Write(field.NameCamelCase);
-			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
-			firstInSequence = false;
-		}
-
-		this.PopIndent();
-		#>) {
+	public override <#= templateType.Ancestor.Name #> With(<# WriteParameters(templateType.AllFields.Where(f => f.DeclaringType != templateType), optional: true); #>) {
 		return this.With(
 <#
 		firstInSequence = true;
