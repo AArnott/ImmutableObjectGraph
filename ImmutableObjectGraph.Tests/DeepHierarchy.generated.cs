@@ -75,6 +75,13 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public virtual B ToB(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			B that = this as B;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(B))) {
+				if ((!field2.IsDefined || field2.Value == that.Field2)) {
+					return that;
+				}
+			}
+	
 			return B.Create(
 				this.Field1,
 				field2);
@@ -83,6 +90,14 @@ namespace ImmutableObjectGraph.Tests {
 		public virtual C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C1 that = this as C1;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C1))) {
+				if ((!field2.IsDefined || field2.Value == that.Field2) && 
+				    (!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+	
 			return C1.Create(
 				this.Field1,
 				field2,
@@ -92,6 +107,14 @@ namespace ImmutableObjectGraph.Tests {
 		public virtual C2 ToC2(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C2 that = this as C2;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C2))) {
+				if ((!field2.IsDefined || field2.Value == that.Field2) && 
+				    (!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+	
 			return C2.Create(
 				this.Field1,
 				field2,
@@ -233,6 +256,13 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public virtual C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C1 that = this as C1;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C1))) {
+				if ((!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+	
 			return C1.Create(
 				this.Field1,
 				this.Field2,
@@ -249,6 +279,13 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public virtual C2 ToC2(
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C2 that = this as C2;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C2))) {
+				if ((!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+	
 			return C2.Create(
 				this.Field1,
 				this.Field2,

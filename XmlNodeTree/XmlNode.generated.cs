@@ -230,8 +230,16 @@ namespace XmlNodeTree {
 			return new Builder(this);
 		}
 	
-		public XmlElementWithContent ToXmlElementWithContent(
+	
+		public virtual XmlElementWithContent ToXmlElementWithContent(
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			XmlElementWithContent that = this as XmlElementWithContent;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(XmlElementWithContent))) {
+				if ((!content.IsDefined || content.Value == that.Content)) {
+					return that;
+				}
+			}
+	
 			return XmlElementWithContent.Create(
 				this.LocalName,
 				this.NamespaceName,

@@ -314,6 +314,23 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>
 
 	public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
+		<#= derivedType.Name #> that = this as <#= derivedType.Name #>;
+		if (that != null && this.GetType().IsEquivalentTo(typeof(<#= derivedType.Name #>))) {
+			if (<#
+			firstInSequence = true;
+			PushIndent("\t\t\t    ");
+			foreach (var field in derivedType.GetFieldsBeyond(templateType)) {
+				if (!firstInSequence) { WriteLine(" && "); }
+				Write("(!{0}.IsDefined || {0}.Value == that.{1})", field.NameCamelCase, field.NamePascalCase);
+				firstInSequence = false;
+			}
+
+			PopIndent();
+			#>) {
+				return that;
+			}
+		}
+
 		return <#= derivedType.Name #>.Create(<#
 WriteArguments(templateType.AllFields);
 Write(",");

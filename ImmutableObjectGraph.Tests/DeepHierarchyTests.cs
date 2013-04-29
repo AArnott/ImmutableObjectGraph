@@ -93,7 +93,7 @@
 		}
 
 		[Fact]
-		public void ToDerivedOnBasePreservesDefaultInstance2() {
+		public void ToDerivedOnBaseDoesNotReturnDerivedInstance() {
 			A c1AsA = C1.Create();
 			B result = c1AsA.ToB();
 			Assert.NotSame(c1AsA, result);
@@ -107,6 +107,7 @@
 
 			B nonDefaultB = B.Create(1, 2);
 			Assert.Same(nonDefaultB, nonDefaultB.ToB(nonDefaultB.Field2));
+			Assert.Same(nonDefaultB, nonDefaultB.ToB());
 		}
 	}
 }
