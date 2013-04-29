@@ -213,12 +213,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static Person Create(
-			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			System.String name,
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			return DefaultInstance.With(
-				name.GetValueOrDefault(DefaultInstance.Name), 
-				age.GetValueOrDefault(DefaultInstance.Age), 
+				name,
+				age.GetValueOrDefault(DefaultInstance.Age),
 				watch.GetValueOrDefault(DefaultInstance.Watch));
 		}
 	
@@ -409,7 +409,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				color.GetValueOrDefault(DefaultInstance.Color), 
+				color.GetValueOrDefault(DefaultInstance.Color),
 				size.GetValueOrDefault(DefaultInstance.Size));
 		}
 	

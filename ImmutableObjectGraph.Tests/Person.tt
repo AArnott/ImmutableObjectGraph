@@ -10,6 +10,7 @@
 	}
 
 	class Person {
+		[Required]
 		string name;
 		int age;
 		Watch watch;

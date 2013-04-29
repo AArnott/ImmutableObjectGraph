@@ -19,7 +19,7 @@
 
 		[Fact]
 		public void DefaultInstance() {
-			var defaultPerson = Person.Create();
+			var defaultPerson = Person.Create(null);
 			Assert.NotNull(defaultPerson);
 			Assert.Equal(0, defaultPerson.Age);
 			Assert.Equal(null, defaultPerson.Name);
@@ -34,7 +34,7 @@
 
 		[Fact]
 		public void SetScalarReferenceTypeProperty() {
-			var original = Person.Create();
+			var original = Person.Create(null);
 			var modified = original.WithName("bill");
 			Assert.Equal("bill", modified.Name);
 			Assert.Null(original.Name);
@@ -42,7 +42,7 @@
 
 		[Fact]
 		public void SetScalarValueTypeProperty() {
-			var original = Person.Create();
+			var original = Person.Create(null);
 			var modified = original.WithAge(8);
 			Assert.Equal(8, modified.Age);
 			Assert.Equal(0, original.Age);
@@ -50,14 +50,14 @@
 
 		[Fact]
 		public void SetScalarReferenceTypePropertyToSameValueReturnsSameInstance() {
-			var expected = Person.Create().WithName("bill");
+			var expected = Person.Create(null).WithName("bill");
 			var actual = expected.WithName(expected.Name);
 			Assert.Same(expected, actual);
 		}
 
 		[Fact]
 		public void SetScalarValueTypePropertyToSameValueReturnsSameInstance() {
-			var expected = Person.Create().WithAge(8);
+			var expected = Person.Create(null).WithAge(8);
 			var actual = expected.WithAge(expected.Age);
 			Assert.Same(expected, actual);
 		}
@@ -65,7 +65,7 @@
 		[Fact]
 		public void WithSetsNonDefaultValues() {
 			// Initialize
-			var billAge10 = Person.Create().With(name: "bill", age: 10);
+			var billAge10 = Person.Create(null).With(name: "bill", age: 10);
 			Assert.Equal("bill", billAge10.Name);
 			Assert.Equal(10, billAge10.Age);
 
@@ -100,7 +100,7 @@
 		[Fact]
 		public void ReferenceToOtherImmutable() {
 			var blackWatch = Watch.Create(color: "black", size: 10);
-			var personWithBlackWatch = Person.Create(watch: blackWatch);
+			var personWithBlackWatch = Person.Create(null, watch: blackWatch);
 
 			var silverWatch = blackWatch.WithColor("silver");
 			var personWithSilverWatch = personWithBlackWatch.WithWatch(silverWatch);

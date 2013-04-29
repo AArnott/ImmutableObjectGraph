@@ -10,7 +10,7 @@
 	public class PersonBuilderTests {
 		[Fact]
 		public void ToBuilderReturnsSimilarObject() {
-			var person = Person.Create().With(name: "bill", age: 10);
+			var person = Person.Create("bill", age: 10);
 
 			var personBuilder = person.ToBuilder();
 			Assert.NotNull(personBuilder);
@@ -20,7 +20,7 @@
 
 		[Fact]
 		public void ToBuilderToImmutableRoundtripReusesInstance() {
-			var person = Person.Create().With(name: "bill", age: 10);
+			var person = Person.Create("bill", age: 10);
 			var personBuilder = person.ToBuilder();
 			var roundTripPerson = personBuilder.ToImmutable();
 			Assert.Same(person, roundTripPerson);
@@ -28,7 +28,7 @@
 
 		[Fact]
 		public void MutablePropertiesRetainChanges() {
-			var person = Person.Create().With(name: "bill", age: 10);
+			var person = Person.Create("bill", age: 10);
 			var personBuilder = person.ToBuilder();
 
 			personBuilder.Name = "billy";
@@ -40,7 +40,7 @@
 
 		[Fact]
 		public void ToImmutableReturnsSimilarObject() {
-			var person = Person.Create().With(name: "bill", age: 10);
+			var person = Person.Create("bill", age: 10);
 			var personBuilder = person.ToBuilder();
 
 			personBuilder.Name = "billy";
@@ -53,7 +53,7 @@
 
 		[Fact]
 		public void ToImmutableCalledRepeatedlyAfterChangesReusesInstance() {
-			var person = Person.Create();
+			var person = Person.Create(null);
 			var builder = person.ToBuilder();
 			Assert.Same(person, builder.ToImmutable());
 			builder.Name = "bill";
@@ -65,7 +65,7 @@
 
 		[Fact]
 		public void PropertiesAreAlsoBuilders() {
-			var person = Person.Create(watch: Watch.Create());
+			var person = Person.Create("bill", watch: Watch.Create());
 			var personBuilder = person.ToBuilder();
 			personBuilder.Watch.Color = "Red";
 			var modifiedPerson = personBuilder.ToImmutable();
@@ -78,7 +78,7 @@
 
 		[Fact]
 		public void PropertyBuildersAreNullIfImmutableIsNull() {
-			var person = Person.Create();
+			var person = Person.Create("bill");
 			var builder = person.ToBuilder();
 			Assert.Null(builder.Watch);
 		}

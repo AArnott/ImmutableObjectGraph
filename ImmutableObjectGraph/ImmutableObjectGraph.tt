@@ -1,6 +1,8 @@
 ﻿<#@ assembly name="System.Core" #>
 <#@ assembly name="System.Runtime" #>
-<#@ assembly name="C:\Users\Andrew\git\ImmutableObjectGraph\packages\Microsoft.Bcl.Immutable.1.0.8-beta\lib\net45\System.Collections.Immutable.dll" #>
+<#@ assembly name="$(ProjectDir)..\packages\Microsoft.Bcl.Immutable.1.0.8-beta\lib\net45\System.Collections.Immutable.dll" #>
+<#@ assembly name="$(ProjectDir)bin\debug\ImmutableObjectGraph.dll" #>
+<#@ Import Namespace="ImmutableObjectGraph" #>
 <#@ Import Namespace="System.Collections.Generic" #>
 <#@ Import Namespace="System.Collections.Immutable" #>
 <#@ import namespace="System.Linq" #>
@@ -62,7 +64,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	bool firstInSequence = true;
 	if (templateType.LocalFields.Count > 0) { #>
 	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	protected <#= templateType.Name #>(<# WriteParameters(templateType.AllFields, optional: false); #>)
+	protected <#= templateType.Name #>(<# WriteParameters(templateType.AllFields, ParameterStyle.Required); #>)
 		: base(<# WriteArguments(templateType.AllFields.Where(f => f.DeclaringType != templateType), ArgSource.Argument); #>)
 	{
 <#
@@ -81,20 +83,9 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	if (!templateType.IsAbstract) { #>
 
-	public static <#= templateType.Name #> Create(<# WriteParameters(templateType.AllFields, optional: true); #>) {
+	public static <#= templateType.Name #> Create(<# WriteParameters(templateType.AllFields, ParameterStyle.OptionalOrRequired); #>) {
 		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.With(<#
-		firstInSequence = true;
-		this.PushIndent("\t\t\t");
-
-		// Value parameters
-		foreach(var field in templateType.AllFields) {
-			if (!firstInSequence) { Write(", "); }
-			WriteLine("");
-			#><#=field.NameCamelCase#>.GetValueOrDefault(DefaultInstance.<#=field.NamePascalCase#>)<#
-			firstInSequence = false;
-		}
-
-		this.PopIndent();
+		WriteArguments(templateType.AllFields, ArgSource.OptionalArgumentOrTemplate);
 #>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
 	}
 <#
@@ -182,7 +173,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-	public override <#= templateType.Ancestor.Name #> With(<# WriteParameters(templateType.Ancestor.AllFields, optional: true); #>) {
+	public override <#= templateType.Ancestor.Name #> With(<# WriteParameters(templateType.Ancestor.AllFields, ParameterStyle.Optional); #>) {
 		return this.With(<#
 			WriteArguments(templateType.Ancestor.AllFields, ArgSource.Argument);
 			Write(",");
@@ -193,7 +184,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 	public <#= templateType.IsAbstract ? "abstract" : "virtual" #> <#= templateType.Name #> With(<#
-		WriteParameters(templateType.AllFields, optional: true);
+		WriteParameters(templateType.AllFields, ParameterStyle.Optional);
 #>)<# if (templateType.IsAbstract) { #>;<# } else { #> {
 		if (<#
 			firstInSequence = true;
@@ -230,7 +221,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
 
-	public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), optional: true); #>) {
+	public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), ParameterStyle.Optional); #>) {
 		<#= derivedType.Name #> that = this as <#= derivedType.Name #>;
 		if (that != null && this.GetType().IsEquivalentTo(typeof(<#= derivedType.Name #>))) {
 			if (<#
@@ -257,7 +248,7 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 <#
 			foreach (var ancestor in templateType.GetNonAbstractAncestors()) { #>
 
-	public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), optional: true); #>) {
+	public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.Optional); #>) {
 		return base.To<#= derivedType.Name #>(<#
 WriteArguments(templateType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty);
 Write(",");
@@ -413,7 +404,8 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 
 		Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
 							&& !t.IsEquivalentTo(typeof(MetaType))
-							&& !t.IsEquivalentTo(typeof(ArgSource));
+							&& !t.IsEquivalentTo(typeof(ArgSource))
+							&& !t.IsEquivalentTo(typeof(ParameterStyle));
 
 		foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
 			if (includeTypeTest(nestedType)) {
@@ -521,6 +513,7 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		Property,
 		Argument,
 		OptionalArgumentOrProperty,
+		OptionalArgumentOrTemplate,
 		Missing,
 	}
 
@@ -528,13 +521,14 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		PushIndent(new string('\t', indent));
 		bool firstInSequence = true;
 		foreach(var field in fields) {
+			ArgSource fieldSource = (source == ArgSource.OptionalArgumentOrTemplate && field.IsRequired) ? ArgSource.Argument : source;
 			if (!firstInSequence) { Write(","); }
 			WriteLine("");
 			if (namedArguments) {
 				Write("{0}: ", field.NameCamelCase);
 			}
 
-			switch (source) {
+			switch (fieldSource) {
 				case ArgSource.Property:
 					Write("this.{0}", field.NamePascalCase);
 					break;
@@ -543,6 +537,9 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 					break;
 				case ArgSource.OptionalArgumentOrProperty:
 					Write("{0}.GetValueOrDefault(this.{1})", field.NameCamelCase, field.NamePascalCase);
+					break;
+				case ArgSource.OptionalArgumentOrTemplate:
+					Write("{0}.GetValueOrDefault(DefaultInstance.{1})", field.NameCamelCase, field.NamePascalCase);
 					break;
 				case ArgSource.Missing:
 					Write("default({0})", field.OptionalTypeName);
@@ -555,16 +552,23 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		PopIndent();
 	}
 
-	private void WriteParameters(IEnumerable<MetaType.MetaField> fields, bool optional) {
+	private enum ParameterStyle {
+		Required,
+		Optional,
+		OptionalOrRequired,
+	}
+
+	private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style) {
 		PushIndent("\t\t");
 		bool firstInSequence = true;
 		foreach(var field in fields) {
+			bool fieldOptional = style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !field.IsRequired);
 			if (!firstInSequence) { Write(","); }
 			WriteLine("");
-			Write(optional ? field.OptionalTypeName : field.TypeName);
+			Write(fieldOptional ? field.OptionalTypeName : field.TypeName);
 			Write(" ");
 			Write(field.NameCamelCase);
-			if (optional) {
+			if (fieldOptional) {
 				Write(" = default(" + field.OptionalTypeName + ")");
 			}
 
@@ -685,6 +689,10 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 
 			public string NameCamelCase {
 				get { return CamelCase(this.Field.Name); }
+			}
+
+			public bool IsRequired {
+				get { return this.Field.GetCustomAttribute<RequiredAttribute>() != null; }
 			}
 
 			public bool IsCollection {

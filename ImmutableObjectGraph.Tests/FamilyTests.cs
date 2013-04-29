@@ -28,7 +28,7 @@
 		public void DefaultValuesCanBeOverriddenWithOtherValue() {
 			Assert.NotNull(Family.Create().Members); // the test is only valid if the default value is non-null
 
-			var otherMembers = ImmutableSortedSet.Create(Person.Create());
+			var otherMembers = ImmutableSortedSet.Create(Person.Create("bill"));
 			Assert.Same(otherMembers, Family.Create(members: otherMembers).Members);
 			Assert.Same(otherMembers, Family.Create().WithMembers(otherMembers).Members);
 		}
@@ -38,7 +38,7 @@
 			var members = ImmutableSortedSet.Create<Person>();
 			var family = Family.Create(members: members);
 			Assert.Same(members, family.Members);
-			var newMembers = family.Members.Add(Person.Create());
+			var newMembers = family.Members.Add(Person.Create("bill"));
 			Assert.Same(members, family.Members);
 			Assert.NotSame(newMembers, members);
 
