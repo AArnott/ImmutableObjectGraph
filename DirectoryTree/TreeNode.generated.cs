@@ -46,7 +46,12 @@ namespace DirectoryTree {
 		}
 	
 		/// <summary>Initializes a new instance of the TreeNode class.</summary>
-		protected TreeNode(System.String caption, System.String filePath, System.Boolean visible, System.Collections.Immutable.ImmutableHashSet<System.String> attributes, System.Collections.Immutable.ImmutableList<TreeNode> children)
+		protected TreeNode(
+			System.String caption,
+			System.String filePath,
+			System.Boolean visible,
+			System.Collections.Immutable.ImmutableHashSet<System.String> attributes,
+			System.Collections.Immutable.ImmutableList<TreeNode> children)
 			: base()
 		{
 			this.caption = caption;
@@ -58,17 +63,17 @@ namespace DirectoryTree {
 		}
 	
 		public static TreeNode Create(
-			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>), 
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			return DefaultInstance.With(
-				caption.IsDefined ? caption : ImmutableObjectGraph.Optional.For(DefaultInstance.Caption), 
-				filePath.IsDefined ? filePath : ImmutableObjectGraph.Optional.For(DefaultInstance.FilePath), 
-				visible.IsDefined ? visible : ImmutableObjectGraph.Optional.For(DefaultInstance.Visible), 
-				attributes.IsDefined ? attributes : ImmutableObjectGraph.Optional.For(DefaultInstance.Attributes), 
-				children.IsDefined ? children : ImmutableObjectGraph.Optional.For(DefaultInstance.Children));
+				caption.GetValueOrDefault(DefaultInstance.Caption), 
+				filePath.GetValueOrDefault(DefaultInstance.FilePath), 
+				visible.GetValueOrDefault(DefaultInstance.Visible), 
+				attributes.GetValueOrDefault(DefaultInstance.Attributes), 
+				children.GetValueOrDefault(DefaultInstance.Children));
 		}
 	
 		public System.String Caption {
@@ -285,19 +290,19 @@ namespace DirectoryTree {
 			private TreeNode immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String caption;
+			protected System.String caption;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String filePath;
+			protected System.String filePath;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Boolean visible;
+			protected System.Boolean visible;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>.Builder> attributes;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>.Builder> attributes;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>.Builder> children;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>.Builder> children;
 	
 			internal Builder(TreeNode immutable) {
 				this.immutable = immutable;
@@ -366,8 +371,8 @@ namespace DirectoryTree {
 			}
 	
 			public TreeNode ToImmutable() {
-				var attributes = this.attributes.IsDefined ? (this.attributes.Value != null ? this.attributes.Value.ToImmutable() : null) : this.immutable.attributes;
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.children;
+				var attributes = this.attributes.IsDefined ? (this.attributes.Value != null ? this.attributes.Value.ToImmutable() : null) : this.immutable.Attributes;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.Caption),
 					ImmutableObjectGraph.Optional.For(this.FilePath),

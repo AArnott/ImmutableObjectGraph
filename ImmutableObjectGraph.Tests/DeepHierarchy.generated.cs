@@ -30,7 +30,8 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the A class.</summary>
-		protected A(System.Int32 field1)
+		protected A(
+			System.Int32 field1)
 			: base()
 		{
 			this.field1 = field1;
@@ -40,7 +41,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static A Create(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.IsDefined ? field1 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field1));
+				field1.GetValueOrDefault(DefaultInstance.Field1));
 		}
 	
 		public System.Int32 Field1 {
@@ -190,19 +191,22 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the B class.</summary>
-		protected B(System.Int32 field1, System.Int32 field2)
-			: base(field1)
+		protected B(
+			System.Int32 field1,
+			System.Int32 field2)
+			: base(
+				field1)
 		{
 			this.field2 = field2;
 			this.Validate();
 		}
 	
 		public static B Create(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.IsDefined ? field1 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field1), 
-				field2.IsDefined ? field2 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field2));
+				field1.GetValueOrDefault(DefaultInstance.Field1), 
+				field2.GetValueOrDefault(DefaultInstance.Field2));
 		}
 	
 		public System.Int32 Field2 {
@@ -373,21 +377,26 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the C1 class.</summary>
-		protected C1(System.Int32 field1, System.Int32 field2, System.Int32 field3)
-			: base(field1,field2)
+		protected C1(
+			System.Int32 field1,
+			System.Int32 field2,
+			System.Int32 field3)
+			: base(
+				field1,
+				field2)
 		{
 			this.field3 = field3;
 			this.Validate();
 		}
 	
 		public static C1 Create(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>), 
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.IsDefined ? field1 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field1), 
-				field2.IsDefined ? field2 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field2), 
-				field3.IsDefined ? field3 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field3));
+				field1.GetValueOrDefault(DefaultInstance.Field1), 
+				field2.GetValueOrDefault(DefaultInstance.Field2), 
+				field3.GetValueOrDefault(DefaultInstance.Field3));
 		}
 	
 		public System.Int32 Field3 {
@@ -526,21 +535,26 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the C2 class.</summary>
-		protected C2(System.Int32 field1, System.Int32 field2, System.Int32 field3)
-			: base(field1,field2)
+		protected C2(
+			System.Int32 field1,
+			System.Int32 field2,
+			System.Int32 field3)
+			: base(
+				field1,
+				field2)
 		{
 			this.field3 = field3;
 			this.Validate();
 		}
 	
 		public static C2 Create(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>), 
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.IsDefined ? field1 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field1), 
-				field2.IsDefined ? field2 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field2), 
-				field3.IsDefined ? field3 : ImmutableObjectGraph.Optional.For(DefaultInstance.Field3));
+				field1.GetValueOrDefault(DefaultInstance.Field1), 
+				field2.GetValueOrDefault(DefaultInstance.Field2), 
+				field3.GetValueOrDefault(DefaultInstance.Field3));
 		}
 	
 		public System.Int32 Field3 {

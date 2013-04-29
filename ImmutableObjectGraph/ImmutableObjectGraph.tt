@@ -62,23 +62,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	bool firstInSequence = true;
 	if (templateType.LocalFields.Count > 0) { #>
 	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	protected <#= templateType.Name #>(<#
-	foreach(var field in templateType.AllFields) {
-		if (!firstInSequence) { Write(", "); }
-		Write(GetTypeName(field.FieldType));
-		Write(" ");
-		Write(field.NameCamelCase);
-		firstInSequence = false;
-	}
-#>)
-		: base(<#
-	firstInSequence = true;
-	foreach(var field in templateType.AllFields.Where(f => f.DeclaringType != templateType)) {
-		if (!firstInSequence) Write(",");
-		Write(field.NameCamelCase);
-		firstInSequence = false;
-	}
-#>)
+	protected <#= templateType.Name #>(<# WriteParameters(templateType.AllFields, optional: false); #>)
+		: base(<# WriteArguments(templateType.AllFields.Where(f => f.DeclaringType != templateType), ArgSource.Argument); #>)
 	{
 <#
 	foreach(var field in templateType.LocalFields) {
@@ -96,23 +81,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	if (!templateType.IsAbstract) { #>
 
-	public static <#= templateType.Name #> Create(<#
-		firstInSequence = true;
-		this.PushIndent("\t\t");
-
-		// Value parameters
-		foreach(var field in templateType.AllFields) {
-			if (!firstInSequence) { Write(", "); }
-			WriteLine("");
-			Write(GetOptionalTypeName(field.FieldType));
-			Write(" ");
-			Write(field.NameCamelCase);
-			Write(" = default(" + GetOptionalTypeName(field.FieldType) + ")");
-			firstInSequence = false;
-		}
-
-		this.PopIndent();
-#>) {
+	public static <#= templateType.Name #> Create(<# WriteParameters(templateType.AllFields, optional: true); #>) {
 		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.With(<#
 		firstInSequence = true;
 		this.PushIndent("\t\t\t");
@@ -121,7 +90,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		foreach(var field in templateType.AllFields) {
 			if (!firstInSequence) { Write(", "); }
 			WriteLine("");
-			#><#=field.NameCamelCase#>.IsDefined ? <#=field.NameCamelCase#> : ImmutableObjectGraph.Optional.For(DefaultInstance.<#=field.NamePascalCase#>)<#
+			#><#=field.NameCamelCase#>.GetValueOrDefault(DefaultInstance.<#=field.NamePascalCase#>)<#
 			firstInSequence = false;
 		}
 

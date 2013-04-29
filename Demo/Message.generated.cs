@@ -50,7 +50,13 @@ namespace Demo {
 		}
 	
 		/// <summary>Initializes a new instance of the Message class.</summary>
-		protected Message(Contact author, System.Collections.Immutable.ImmutableList<Contact> to, System.Collections.Immutable.ImmutableList<Contact> cc, System.Collections.Immutable.ImmutableList<Contact> bcc, System.String subject, System.String body)
+		protected Message(
+			Contact author,
+			System.Collections.Immutable.ImmutableList<Contact> to,
+			System.Collections.Immutable.ImmutableList<Contact> cc,
+			System.Collections.Immutable.ImmutableList<Contact> bcc,
+			System.String subject,
+			System.String body)
 			: base()
 		{
 			this.author = author;
@@ -63,19 +69,19 @@ namespace Demo {
 		}
 	
 		public static Message Create(
-			ImmutableObjectGraph.Optional<Contact> author = default(ImmutableObjectGraph.Optional<Contact>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> to = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>), 
-			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<Contact> author = default(ImmutableObjectGraph.Optional<Contact>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> to = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				author.IsDefined ? author : ImmutableObjectGraph.Optional.For(DefaultInstance.Author), 
-				to.IsDefined ? to : ImmutableObjectGraph.Optional.For(DefaultInstance.To), 
-				cc.IsDefined ? cc : ImmutableObjectGraph.Optional.For(DefaultInstance.Cc), 
-				bcc.IsDefined ? bcc : ImmutableObjectGraph.Optional.For(DefaultInstance.Bcc), 
-				subject.IsDefined ? subject : ImmutableObjectGraph.Optional.For(DefaultInstance.Subject), 
-				body.IsDefined ? body : ImmutableObjectGraph.Optional.For(DefaultInstance.Body));
+				author.GetValueOrDefault(DefaultInstance.Author), 
+				to.GetValueOrDefault(DefaultInstance.To), 
+				cc.GetValueOrDefault(DefaultInstance.Cc), 
+				bcc.GetValueOrDefault(DefaultInstance.Bcc), 
+				subject.GetValueOrDefault(DefaultInstance.Subject), 
+				body.GetValueOrDefault(DefaultInstance.Body));
 		}
 	
 		public Contact Author {
@@ -345,22 +351,22 @@ namespace Demo {
 			private Message immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<Contact.Builder> author;
+			protected ImmutableObjectGraph.Optional<Contact.Builder> author;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>.Builder> to;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>.Builder> to;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>.Builder> cc;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>.Builder> cc;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>.Builder> bcc;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>.Builder> bcc;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String subject;
+			protected System.String subject;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String body;
+			protected System.String body;
 	
 			internal Builder(Message immutable) {
 				this.immutable = immutable;
@@ -446,10 +452,10 @@ namespace Demo {
 			}
 	
 			public Message ToImmutable() {
-				var author = this.author.IsDefined ? (this.author.Value != null ? this.author.Value.ToImmutable() : null) : this.immutable.author;
-				var to = this.to.IsDefined ? (this.to.Value != null ? this.to.Value.ToImmutable() : null) : this.immutable.to;
-				var cc = this.cc.IsDefined ? (this.cc.Value != null ? this.cc.Value.ToImmutable() : null) : this.immutable.cc;
-				var bcc = this.bcc.IsDefined ? (this.bcc.Value != null ? this.bcc.Value.ToImmutable() : null) : this.immutable.bcc;
+				var author = this.author.IsDefined ? (this.author.Value != null ? this.author.Value.ToImmutable() : null) : this.immutable.Author;
+				var to = this.to.IsDefined ? (this.to.Value != null ? this.to.Value.ToImmutable() : null) : this.immutable.To;
+				var cc = this.cc.IsDefined ? (this.cc.Value != null ? this.cc.Value.ToImmutable() : null) : this.immutable.Cc;
+				var bcc = this.bcc.IsDefined ? (this.bcc.Value != null ? this.bcc.Value.ToImmutable() : null) : this.immutable.Bcc;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(author),
 					ImmutableObjectGraph.Optional.For(to),
@@ -497,7 +503,9 @@ namespace Demo {
 		}
 	
 		/// <summary>Initializes a new instance of the Contact class.</summary>
-		protected Contact(System.String name, System.String email)
+		protected Contact(
+			System.String name,
+			System.String email)
 			: base()
 		{
 			this.name = name;
@@ -506,11 +514,11 @@ namespace Demo {
 		}
 	
 		public static Contact Create(
-			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				name.IsDefined ? name : ImmutableObjectGraph.Optional.For(DefaultInstance.Name), 
-				email.IsDefined ? email : ImmutableObjectGraph.Optional.For(DefaultInstance.Email));
+				name.GetValueOrDefault(DefaultInstance.Name), 
+				email.GetValueOrDefault(DefaultInstance.Email));
 		}
 	
 		public System.String Name {
@@ -581,10 +589,10 @@ namespace Demo {
 			private Contact immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String name;
+			protected System.String name;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String email;
+			protected System.String email;
 	
 			internal Builder(Contact immutable) {
 				this.immutable = immutable;

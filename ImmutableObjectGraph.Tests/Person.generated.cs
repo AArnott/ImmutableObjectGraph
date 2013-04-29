@@ -30,7 +30,8 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the Family class.</summary>
-		protected Family(System.Collections.Immutable.ImmutableSortedSet<Person> members)
+		protected Family(
+			System.Collections.Immutable.ImmutableSortedSet<Person> members)
 			: base()
 		{
 			this.members = members;
@@ -40,7 +41,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static Family Create(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
 			return DefaultInstance.With(
-				members.IsDefined ? members : ImmutableObjectGraph.Optional.For(DefaultInstance.Members));
+				members.GetValueOrDefault(DefaultInstance.Members));
 		}
 	
 		public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
@@ -140,7 +141,7 @@ namespace ImmutableObjectGraph.Tests {
 			private Family immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>.Builder> members;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>.Builder> members;
 	
 			internal Builder(Family immutable) {
 				this.immutable = immutable;
@@ -162,7 +163,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			public Family ToImmutable() {
-				var members = this.members.IsDefined ? (this.members.Value != null ? this.members.Value.ToImmutable() : null) : this.immutable.members;
+				var members = this.members.IsDefined ? (this.members.Value != null ? this.members.Value.ToImmutable() : null) : this.immutable.Members;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(members));
 			}
@@ -199,7 +200,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the Person class.</summary>
-		protected Person(System.String name, System.Int32 age, Watch watch)
+		protected Person(
+			System.String name,
+			System.Int32 age,
+			Watch watch)
 			: base()
 		{
 			this.name = name;
@@ -209,13 +213,13 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static Person Create(
-			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>), 
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			return DefaultInstance.With(
-				name.IsDefined ? name : ImmutableObjectGraph.Optional.For(DefaultInstance.Name), 
-				age.IsDefined ? age : ImmutableObjectGraph.Optional.For(DefaultInstance.Age), 
-				watch.IsDefined ? watch : ImmutableObjectGraph.Optional.For(DefaultInstance.Watch));
+				name.GetValueOrDefault(DefaultInstance.Name), 
+				age.GetValueOrDefault(DefaultInstance.Age), 
+				watch.GetValueOrDefault(DefaultInstance.Watch));
 		}
 	
 		public System.String Name {
@@ -302,13 +306,13 @@ namespace ImmutableObjectGraph.Tests {
 			private Person immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String name;
+			protected System.String name;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Int32 age;
+			protected System.Int32 age;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ImmutableObjectGraph.Optional<Watch.Builder> watch;
+			protected ImmutableObjectGraph.Optional<Watch.Builder> watch;
 	
 			internal Builder(Person immutable) {
 				this.immutable = immutable;
@@ -352,7 +356,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			public Person ToImmutable() {
-				var watch = this.watch.IsDefined ? (this.watch.Value != null ? this.watch.Value.ToImmutable() : null) : this.immutable.watch;
+				var watch = this.watch.IsDefined ? (this.watch.Value != null ? this.watch.Value.ToImmutable() : null) : this.immutable.Watch;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.Name),
 					ImmutableObjectGraph.Optional.For(this.Age),
@@ -391,7 +395,9 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Initializes a new instance of the Watch class.</summary>
-		protected Watch(System.String color, System.Int32 size)
+		protected Watch(
+			System.String color,
+			System.Int32 size)
 			: base()
 		{
 			this.color = color;
@@ -400,11 +406,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static Watch Create(
-			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				color.IsDefined ? color : ImmutableObjectGraph.Optional.For(DefaultInstance.Color), 
-				size.IsDefined ? size : ImmutableObjectGraph.Optional.For(DefaultInstance.Size));
+				color.GetValueOrDefault(DefaultInstance.Color), 
+				size.GetValueOrDefault(DefaultInstance.Size));
 		}
 	
 		public System.String Color {
@@ -475,10 +481,10 @@ namespace ImmutableObjectGraph.Tests {
 			private Watch immutable;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.String color;
+			protected System.String color;
 	
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private System.Int32 size;
+			protected System.Int32 size;
 	
 			internal Builder(Watch immutable) {
 				this.immutable = immutable;

@@ -28,7 +28,8 @@ namespace XmlNodeTree {
 		}
 	
 		/// <summary>Initializes a new instance of the XmlNode class.</summary>
-		protected XmlNode(System.String localName)
+		protected XmlNode(
+			System.String localName)
 			: base()
 		{
 			this.localName = localName;
@@ -107,8 +108,12 @@ namespace XmlNodeTree {
 		}
 	
 		/// <summary>Initializes a new instance of the XmlElement class.</summary>
-		protected XmlElement(System.String localName, System.String namespaceName, System.Collections.Immutable.ImmutableList<XmlNode> children)
-			: base(localName)
+		protected XmlElement(
+			System.String localName,
+			System.String namespaceName,
+			System.Collections.Immutable.ImmutableList<XmlNode> children)
+			: base(
+				localName)
 		{
 			this.namespaceName = namespaceName;
 			this.children = children;
@@ -116,13 +121,13 @@ namespace XmlNodeTree {
 		}
 	
 		public static XmlElement Create(
-			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			return DefaultInstance.With(
-				localName.IsDefined ? localName : ImmutableObjectGraph.Optional.For(DefaultInstance.LocalName), 
-				namespaceName.IsDefined ? namespaceName : ImmutableObjectGraph.Optional.For(DefaultInstance.NamespaceName), 
-				children.IsDefined ? children : ImmutableObjectGraph.Optional.For(DefaultInstance.Children));
+				localName.GetValueOrDefault(DefaultInstance.LocalName), 
+				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName), 
+				children.GetValueOrDefault(DefaultInstance.Children));
 		}
 	
 		public System.String NamespaceName {
@@ -342,23 +347,30 @@ namespace XmlNodeTree {
 		}
 	
 		/// <summary>Initializes a new instance of the XmlElementWithContent class.</summary>
-		protected XmlElementWithContent(System.String localName, System.String namespaceName, System.Collections.Immutable.ImmutableList<XmlNode> children, System.String content)
-			: base(localName,namespaceName,children)
+		protected XmlElementWithContent(
+			System.String localName,
+			System.String namespaceName,
+			System.Collections.Immutable.ImmutableList<XmlNode> children,
+			System.String content)
+			: base(
+				localName,
+				namespaceName,
+				children)
 		{
 			this.content = content;
 			this.Validate();
 		}
 	
 		public static XmlElementWithContent Create(
-			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>), 
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				localName.IsDefined ? localName : ImmutableObjectGraph.Optional.For(DefaultInstance.LocalName), 
-				namespaceName.IsDefined ? namespaceName : ImmutableObjectGraph.Optional.For(DefaultInstance.NamespaceName), 
-				children.IsDefined ? children : ImmutableObjectGraph.Optional.For(DefaultInstance.Children), 
-				content.IsDefined ? content : ImmutableObjectGraph.Optional.For(DefaultInstance.Content));
+				localName.GetValueOrDefault(DefaultInstance.LocalName), 
+				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName), 
+				children.GetValueOrDefault(DefaultInstance.Children), 
+				content.GetValueOrDefault(DefaultInstance.Content));
 		}
 	
 		public System.String Content {
@@ -516,8 +528,12 @@ namespace XmlNodeTree {
 		}
 	
 		/// <summary>Initializes a new instance of the XmlAttribute class.</summary>
-		protected XmlAttribute(System.String localName, System.String namespaceName, System.String value)
-			: base(localName)
+		protected XmlAttribute(
+			System.String localName,
+			System.String namespaceName,
+			System.String value)
+			: base(
+				localName)
 		{
 			this.namespaceName = namespaceName;
 			this.value = value;
@@ -525,13 +541,13 @@ namespace XmlNodeTree {
 		}
 	
 		public static XmlAttribute Create(
-			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>), 
-			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>), 
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				localName.IsDefined ? localName : ImmutableObjectGraph.Optional.For(DefaultInstance.LocalName), 
-				namespaceName.IsDefined ? namespaceName : ImmutableObjectGraph.Optional.For(DefaultInstance.NamespaceName), 
-				value.IsDefined ? value : ImmutableObjectGraph.Optional.For(DefaultInstance.Value));
+				localName.GetValueOrDefault(DefaultInstance.LocalName), 
+				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName), 
+				value.GetValueOrDefault(DefaultInstance.Value));
 		}
 	
 		public System.String NamespaceName {
