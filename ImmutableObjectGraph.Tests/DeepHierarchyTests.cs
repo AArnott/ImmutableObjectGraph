@@ -99,5 +99,14 @@
 			Assert.NotSame(c1AsA, result);
 			Assert.IsType<B>(result); // should not retain C1 as its type
 		}
+
+		[Fact]
+		public void ToSameTypeReturnsThis() {
+			B b = B.Create();
+			Assert.Same(b, b.ToB());
+
+			B nonDefaultB = B.Create(1, 2);
+			Assert.Same(nonDefaultB, nonDefaultB.ToB(nonDefaultB.Field2));
+		}
 	}
 }
