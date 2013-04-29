@@ -69,5 +69,35 @@
 			Assert.Equal(2, c2.Field2);
 			Assert.Equal(4, c2.Field3);
 		}
+
+		[Fact]
+		public void ToDerivedOnBasePreservesDefaultInstance() {
+			A bAsA = B.Create();
+			B result = bAsA.ToB();
+			Assert.Same(bAsA, result);
+		}
+
+		[Fact]
+		public void ToDerivedOnBasePreserveInstanceWithSameValues() {
+			A bAsA = B.Create(1, 2);
+			B result = bAsA.ToB(2);
+			Assert.Same(bAsA, result);
+		}
+
+		[Fact]
+		public void ToDerivedOnBaseCreatesNewInstanceWithDifferentValues() {
+			A bAsA = B.Create(1, 2);
+			B result = bAsA.ToB(3);
+			Assert.NotSame(bAsA, result);
+			Assert.Equal(3, result.Field2);
+		}
+
+		[Fact]
+		public void ToDerivedOnBasePreservesDefaultInstance2() {
+			A c1AsA = C1.Create();
+			B result = c1AsA.ToB();
+			Assert.NotSame(c1AsA, result);
+			Assert.IsType<B>(result); // should not retain C1 as its type
+		}
 	}
 }
