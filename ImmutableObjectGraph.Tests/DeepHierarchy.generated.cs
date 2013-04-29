@@ -229,7 +229,7 @@ namespace ImmutableObjectGraph.Tests {
 		public override A With(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
-				field1: field1, 
+				field1,
 				field2: default(ImmutableObjectGraph.Optional<System.Int32>));
 		}
 		
@@ -424,8 +424,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
-				field1: field1, 
-				field2: field2, 
+				field1,
+				field2,
 				field3: default(ImmutableObjectGraph.Optional<System.Int32>));
 		}
 		
@@ -582,8 +582,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
-				field1: field1, 
-				field2: field2, 
+				field1,
+				field2,
 				field3: default(ImmutableObjectGraph.Optional<System.Int32>));
 		}
 		

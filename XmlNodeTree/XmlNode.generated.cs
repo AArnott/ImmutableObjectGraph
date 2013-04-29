@@ -207,8 +207,8 @@ namespace XmlNodeTree {
 		public override XmlNode With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.With(
-				localName: localName, 
-				namespaceName: default(ImmutableObjectGraph.Optional<System.String>), 
+				localName,
+				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
 				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>));
 		}
 		
@@ -403,9 +403,9 @@ namespace XmlNodeTree {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			return this.With(
-				localName: localName, 
-				namespaceName: namespaceName, 
-				children: children, 
+				localName,
+				namespaceName,
+				children,
 				content: default(ImmutableObjectGraph.Optional<System.String>));
 		}
 		
@@ -582,8 +582,8 @@ namespace XmlNodeTree {
 		public override XmlNode With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.With(
-				localName: localName, 
-				namespaceName: default(ImmutableObjectGraph.Optional<System.String>), 
+				localName,
+				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
 				value: default(ImmutableObjectGraph.Optional<System.String>));
 		}
 		
