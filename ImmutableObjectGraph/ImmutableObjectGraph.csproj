@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ImmutableObjectGraph.Discovery.tt" />
     <None Include="ImmutableObjectGraph.Builders.tt" />
     <None Include="ImmutableObjectGraph.CollectionHelpers.tt" />
     <None Include="ImmutableObjectGraph.tt" />

@@ -1,0 +1,355 @@
+﻿<#+
+protected static string PascalCase(string name) {
+	return name.Substring(0,1).ToUpperInvariant() + name.Substring(1);
+}
+
+protected static string CamelCase(string name) {
+	return name.Substring(0,1).ToLowerInvariant() + name.Substring(1);
+}
+
+protected static HashSet<MetaType> DiscoverTemplateTypes() {
+	var rootType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+	var types = new HashSet<MetaType>();
+	var pendingTypes = new Queue<Type>();
+
+	Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
+						&& !t.IsEquivalentTo(typeof(MetaType))
+						&& !t.IsEquivalentTo(typeof(ArgSource))
+						&& !t.IsEquivalentTo(typeof(ParameterStyle));
+
+	foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
+		if (includeTypeTest(nestedType)) {
+			pendingTypes.Enqueue(nestedType);
+		}
+	}
+
+	while (pendingTypes.Count > 0)
+	{
+		var type = pendingTypes.Dequeue();
+		var metaType = new MetaType(type, types);
+		if (types.Add(metaType)) {
+			foreach(var field in metaType.LocalFields) {
+				var memberType = field.ElementType;
+
+				if (memberType.DeclaringType == type.DeclaringType) { // if this is a type that also appears in the T4 template
+					pendingTypes.Enqueue(memberType);
+				}
+			}
+
+			if (type.DeclaringType != null) {
+				foreach (var siblingNestedType in type.DeclaringType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
+					if (includeTypeTest(siblingNestedType)) {
+						pendingTypes.Enqueue(siblingNestedType);
+					}
+				}
+			}
+		}
+	}
+
+	return types;
+}
+
+protected static string GetTypeName(Type type) {
+	var typeName = new StringBuilder();
+
+	if (type.IsGenericType) {
+		typeName.Append(type.FullName.Substring(0, type.FullName.IndexOf('`')));
+		typeName.Append("<");
+		foreach (Type typeArgument in type.GenericTypeArguments) {
+			typeName.Append(GetTypeName(typeArgument));
+			typeName.Append(", ");
+		}
+
+		typeName.Length -= 2;
+		typeName.Append(">");
+	} else {
+		var templateDeclaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+		typeName.Append(type.DeclaringType == templateDeclaringType ? type.Name : type.FullName);
+	}
+
+	return typeName.ToString();
+}
+
+private static bool IsCollectionType(Type type) {
+	if (type.IsArray) {
+		return true;
+	}
+
+	if (type.IsGenericType && type.GenericTypeArguments.Length == 1) {
+		Type readOnlyCollection = typeof(IReadOnlyCollection<>);
+		var genericReadOnlyCollection = readOnlyCollection.MakeGenericType(type.GenericTypeArguments[0]);
+		if (genericReadOnlyCollection.IsAssignableFrom(type)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+private static bool TryGetCollectionElementType(Type collectionType, out Type elementType) {
+	if (collectionType.IsArray) {
+		elementType = collectionType.GetElementType();
+		return true;
+	}
+
+	if (collectionType.IsGenericType && collectionType.GenericTypeArguments.Length == 1) {
+		Type readOnlyCollection = typeof(IReadOnlyCollection<>);
+		var genericReadOnlyCollection = readOnlyCollection.MakeGenericType(collectionType.GenericTypeArguments[0]);
+		if (genericReadOnlyCollection.IsAssignableFrom(collectionType)) {
+			elementType = collectionType.GenericTypeArguments[0];
+			return true;
+		}
+	}
+
+	elementType = null;
+	return false;
+}
+
+private static Type GetTypeOrCollectionMemberType(Type collectionOrOtherType) {
+	Type memberType;
+	if (TryGetCollectionElementType(collectionOrOtherType, out memberType)) {
+		return memberType;
+	}
+
+	return collectionOrOtherType;
+}
+
+protected static string GetOptionalTypeName(Type type)
+{
+	return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
+}
+
+private enum ArgSource {
+	Property,
+	Argument,
+	OptionalArgumentOrProperty,
+	OptionalArgumentOrTemplate,
+	Missing,
+}
+
+private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3) {
+	PushIndent(new string('\t', indent));
+	bool firstInSequence = true;
+	foreach(var field in fields) {
+		ArgSource fieldSource = (source == ArgSource.OptionalArgumentOrTemplate && field.IsRequired) ? ArgSource.Argument : source;
+		if (!firstInSequence) { Write(","); }
+		WriteLine("");
+		Write("{0}: ", field.NameCamelCase); // named arguments are important because the order can vary (due to required fields, etc.)
+
+		switch (fieldSource) {
+			case ArgSource.Property:
+				Write("this.{0}", field.NamePascalCase);
+				break;
+			case ArgSource.Argument:
+				Write(field.NameCamelCase);
+				break;
+			case ArgSource.OptionalArgumentOrProperty:
+				Write("{0}.GetValueOrDefault(this.{1})", field.NameCamelCase, field.NamePascalCase);
+				break;
+			case ArgSource.OptionalArgumentOrTemplate:
+				Write("{0}.GetValueOrDefault(DefaultInstance.{1})", field.NameCamelCase, field.NamePascalCase);
+				break;
+			case ArgSource.Missing:
+				Write("default({0})", field.OptionalTypeName);
+				break;
+		}
+
+		firstInSequence = false;
+	}
+
+	PopIndent();
+}
+
+private enum ParameterStyle {
+	Required,
+	Optional,
+	OptionalOrRequired,
+}
+
+private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style) {
+	PushIndent("\t\t");
+	bool firstInSequence = true;
+	if (style == ParameterStyle.OptionalOrRequired) {
+		fields = SortRequiredFieldsFirst(fields);
+	}
+
+	foreach(var field in fields) {
+		bool fieldOptional = style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !field.IsRequired);
+		if (!firstInSequence) { Write(","); }
+		WriteLine("");
+		Write(fieldOptional ? field.OptionalTypeName : field.TypeName);
+		Write(" ");
+		Write(field.NameCamelCase);
+		if (fieldOptional) {
+			Write(" = default(" + field.OptionalTypeName + ")");
+		}
+
+		firstInSequence = false;
+	}
+	PopIndent();
+}
+	
+private static IEnumerable<MetaType.MetaField> SortRequiredFieldsFirst(IEnumerable<MetaType.MetaField> fields) {
+	return fields.Where(f => f.IsRequired).Concat(fields.Where(f => !f.IsRequired));
+}
+
+protected class MetaType {
+	private readonly ISet<MetaType> knownTypes;
+
+	public MetaType(Type type, ISet<MetaType> knownTypes) {
+		this.Type = type;
+		this.knownTypes = knownTypes;
+	}
+
+	public Type Type { get; private set; }
+
+	public string Name {
+		get { return this.Type.Name; }
+	}
+
+	public ImmutableList<MetaField> LocalFields {
+		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToImmutableList(); }
+	}
+
+	public ImmutableList<MetaField> AllFields {
+		get {
+			var fieldsWithBase = this.LocalFields;
+			if (this.HasAncestor) {
+				fieldsWithBase = fieldsWithBase.InsertRange(0, this.Ancestor.AllFields);
+			}
+
+			return fieldsWithBase;
+		}
+	}
+
+	public MetaField RecursiveField {
+		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && f.ElementType == this.Type); }
+	}
+
+	public bool IsRecursive {
+		get { return this.LocalFields.Count(f => f.IsCollection && f.ElementType == this.Type) == 1; }
+	}
+
+	public MetaType Ancestor {
+		get { return this.knownTypes.FirstOrDefault(mt => mt.Type.IsEquivalentTo(this.Type.BaseType)); }
+	}
+
+	public bool HasAncestor {
+		get { return this.Ancestor != null; }
+	}
+
+	public IEnumerable<MetaType> Descendents {
+		get { return this.knownTypes.Where(t => this.Type.IsAssignableFrom(t.Type) && !this.Type.IsEquivalentTo(t.Type)); }
+	}
+
+	public bool HasDescendent {
+		get { return this.Descendents.Any(); }
+	}
+
+	public bool IsAbstract { 
+		get { return this.Type.IsAbstract; }
+	}
+
+	public string TypeName {
+		get { return this.Type.Name; }
+	}
+
+	public string OptionalTypeName {
+		get { return GetOptionalTypeName(this.Type); }
+	}
+
+	public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
+		var fields = ImmutableList.Create<MetaField>();
+		if (ancestor != this) {
+			fields = fields.AddRange(this.LocalFields)
+				            .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
+		}
+
+		return fields;
+	}
+
+	public IEnumerable<MetaType> GetNonAbstractAncestors() {
+		for (var ancestor = this.Ancestor; ancestor != null; ancestor = ancestor.Ancestor) {
+			if (!ancestor.IsAbstract) {
+				yield return ancestor;
+			}
+		}
+	}
+
+	public override int GetHashCode() {
+		return this.Type.GetHashCode();
+	}
+
+	public override bool Equals(object value) {
+		var other = value as MetaType;
+		return other != null && this.Type.IsEquivalentTo(other.Type);
+	}
+
+	public class MetaField {
+		public MetaField(FieldInfo field, MetaType declaringType) {
+			this.Field = field;
+			this.DeclaringType = declaringType;
+		}
+
+		public FieldInfo Field { get; private set; }
+
+		public Type FieldType {
+			get { return this.Field.FieldType; }
+		}
+
+		public MetaType DeclaringType { get; private set; }
+
+		public string NamePascalCase {
+			get { return PascalCase(this.Field.Name); }
+		}
+
+		public string NameCamelCase {
+			get { return CamelCase(this.Field.Name); }
+		}
+
+		public bool IsRequired {
+			get { return this.Field.GetCustomAttribute<RequiredAttribute>() != null; }
+		}
+
+		public bool IsCollection {
+			get { return IsCollectionType(this.Field.FieldType); }
+		}
+
+		public bool IsPrimitiveType {
+			get { return !this.DeclaringType.knownTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) && !this.IsCollection; }
+		}
+			
+		public Type ElementType {
+			get { return GetTypeOrCollectionMemberType(this.Field.FieldType); }
+		}
+
+		public string ElementTypeName {
+			get { return GetTypeName(GetTypeOrCollectionMemberType(this.Field.FieldType)); }
+		}
+
+		public string TypeName {
+			get { return GetTypeName(this.Field.FieldType); }
+		}
+
+		public string OptionalTypeName {
+			get { return GetOptionalTypeName(this.Field.FieldType); }
+		}
+
+		public string TypeNameForBuilderField {
+			get {
+				return this.DeclaringType.knownTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) || IsCollectionType(this.FieldType)
+					? "ImmutableObjectGraph.Optional<" + this.TypeName + ".Builder>"
+					: this.TypeName;
+			}
+		}
+
+		public string TypeNameForBuilderProperty {
+			get {
+				return this.DeclaringType.knownTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) || IsCollectionType(this.FieldType)
+					? this.TypeName + ".Builder"
+					: this.TypeName;
+			}
+		}
+	}
+}
+#>
