@@ -76,12 +76,12 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				author.GetValueOrDefault(DefaultInstance.Author), 
-				to.GetValueOrDefault(DefaultInstance.To), 
-				cc.GetValueOrDefault(DefaultInstance.Cc), 
-				bcc.GetValueOrDefault(DefaultInstance.Bcc), 
-				subject.GetValueOrDefault(DefaultInstance.Subject), 
-				body.GetValueOrDefault(DefaultInstance.Body));
+				author: author.GetValueOrDefault(DefaultInstance.Author),
+				to: to.GetValueOrDefault(DefaultInstance.To),
+				cc: cc.GetValueOrDefault(DefaultInstance.Cc),
+				bcc: bcc.GetValueOrDefault(DefaultInstance.Bcc),
+				subject: subject.GetValueOrDefault(DefaultInstance.Subject),
+				body: body.GetValueOrDefault(DefaultInstance.Body));
 		}
 	
 		public Contact Author {
@@ -307,12 +307,12 @@ namespace Demo {
 				(subject.IsDefined && subject.Value != this.Subject) || 
 				(body.IsDefined && body.Value != this.Body)) {
 				return new Message(
-					author.GetValueOrDefault(this.Author),
-					to.GetValueOrDefault(this.To),
-					cc.GetValueOrDefault(this.Cc),
-					bcc.GetValueOrDefault(this.Bcc),
-					subject.GetValueOrDefault(this.Subject),
-					body.GetValueOrDefault(this.Body));
+					author: author.GetValueOrDefault(this.Author),
+					to: to.GetValueOrDefault(this.To),
+					cc: cc.GetValueOrDefault(this.Cc),
+					bcc: bcc.GetValueOrDefault(this.Bcc),
+					subject: subject.GetValueOrDefault(this.Subject),
+					body: body.GetValueOrDefault(this.Body));
 			} else {
 				return this;
 			}
@@ -517,8 +517,8 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				name.GetValueOrDefault(DefaultInstance.Name), 
-				email.GetValueOrDefault(DefaultInstance.Email));
+				name: name.GetValueOrDefault(DefaultInstance.Name),
+				email: email.GetValueOrDefault(DefaultInstance.Email));
 		}
 	
 		public System.String Name {
@@ -553,8 +553,8 @@ namespace Demo {
 				(name.IsDefined && name.Value != this.Name) || 
 				(email.IsDefined && email.Value != this.Email)) {
 				return new Contact(
-					name.GetValueOrDefault(this.Name),
-					email.GetValueOrDefault(this.Email));
+					name: name.GetValueOrDefault(this.Name),
+					email: email.GetValueOrDefault(this.Email));
 			} else {
 				return this;
 			}

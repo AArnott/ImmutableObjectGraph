@@ -177,7 +177,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		return this.With(<#
 			WriteArguments(templateType.Ancestor.AllFields, ArgSource.Argument);
 			Write(",");
-			WriteArguments(templateType.LocalFields, ArgSource.Missing, namedArguments: true);
+			WriteArguments(templateType.LocalFields, ArgSource.Missing);
 #>);
 	}
 	<# } /* templateType.HasAncestor */ #>
@@ -221,7 +221,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
 
-	public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), ParameterStyle.Optional); #>) {
+	public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), ParameterStyle.OptionalOrRequired); #>) {
 		<#= derivedType.Name #> that = this as <#= derivedType.Name #>;
 		if (that != null && this.GetType().IsEquivalentTo(typeof(<#= derivedType.Name #>))) {
 			if (<#
@@ -229,7 +229,12 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 			PushIndent("\t\t\t    ");
 			foreach (var field in derivedType.GetFieldsBeyond(templateType)) {
 				if (!firstInSequence) { WriteLine(" && "); }
-				Write("(!{0}.IsDefined || {0}.Value == that.{1})", field.NameCamelCase, field.NamePascalCase);
+				if (field.IsRequired) {
+					Write("({0} == that.{1})", field.NameCamelCase, field.NamePascalCase);
+				} else {
+					Write("(!{0}.IsDefined || {0}.Value == that.{1})", field.NameCamelCase, field.NamePascalCase);
+				}
+
 				firstInSequence = false;
 			}
 
@@ -248,7 +253,7 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 <#
 			foreach (var ancestor in templateType.GetNonAbstractAncestors()) { #>
 
-	public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.Optional); #>) {
+	public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired); #>) {
 		return base.To<#= derivedType.Name #>(<#
 WriteArguments(templateType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty);
 Write(",");
@@ -517,16 +522,14 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		Missing,
 	}
 
-	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, bool namedArguments = false, int indent = 3) {
+	private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3) {
 		PushIndent(new string('\t', indent));
 		bool firstInSequence = true;
 		foreach(var field in fields) {
 			ArgSource fieldSource = (source == ArgSource.OptionalArgumentOrTemplate && field.IsRequired) ? ArgSource.Argument : source;
 			if (!firstInSequence) { Write(","); }
 			WriteLine("");
-			if (namedArguments) {
-				Write("{0}: ", field.NameCamelCase);
-			}
+			Write("{0}: ", field.NameCamelCase); // named arguments are important because the order can vary (due to required fields, etc.)
 
 			switch (fieldSource) {
 				case ArgSource.Property:
@@ -561,6 +564,10 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 	private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style) {
 		PushIndent("\t\t");
 		bool firstInSequence = true;
+		if (style == ParameterStyle.OptionalOrRequired) {
+			fields = SortRequiredFieldsFirst(fields);
+		}
+
 		foreach(var field in fields) {
 			bool fieldOptional = style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !field.IsRequired);
 			if (!firstInSequence) { Write(","); }
@@ -575,6 +582,10 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 			firstInSequence = false;
 		}
 		PopIndent();
+	}
+	
+	private static IEnumerable<MetaType.MetaField> SortRequiredFieldsFirst(IEnumerable<MetaType.MetaField> fields) {
+		return fields.Where(f => f.IsRequired).Concat(fields.Where(f => !f.IsRequired));
 	}
 
 	protected class MetaType {
@@ -592,11 +603,7 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		}
 
 		public ImmutableList<MetaField> LocalFields {
-			get {
-				var fields = this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this));
-				var result = fields.Where(f => f.IsRequired).Concat(fields.Where(f => !f.IsRequired)).ToImmutableList();
-				return result;
-			}
+			get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToImmutableList(); }
 		}
 
 		public ImmutableList<MetaField> AllFields {

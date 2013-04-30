@@ -13,7 +13,7 @@
 
 	class ReqAndHierL2 : ReqAndHierL1 {
 		string l2Field1;
-		//[Required]
+		[Required]
 		string l2Field2;
 	}
 #>

@@ -41,7 +41,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static Family Create(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
 			return DefaultInstance.With(
-				members.GetValueOrDefault(DefaultInstance.Members));
+				members: members.GetValueOrDefault(DefaultInstance.Members));
 		}
 	
 		public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
@@ -107,7 +107,7 @@ namespace ImmutableObjectGraph.Tests {
 			if (
 				(members.IsDefined && members.Value != this.Members)) {
 				return new Family(
-					members.GetValueOrDefault(this.Members));
+					members: members.GetValueOrDefault(this.Members));
 			} else {
 				return this;
 			}
@@ -217,9 +217,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			return DefaultInstance.With(
-				name,
-				age.GetValueOrDefault(DefaultInstance.Age),
-				watch.GetValueOrDefault(DefaultInstance.Watch));
+				name: name,
+				age: age.GetValueOrDefault(DefaultInstance.Age),
+				watch: watch.GetValueOrDefault(DefaultInstance.Watch));
 		}
 	
 		public System.String Name {
@@ -268,9 +268,9 @@ namespace ImmutableObjectGraph.Tests {
 				(age.IsDefined && age.Value != this.Age) || 
 				(watch.IsDefined && watch.Value != this.Watch)) {
 				return new Person(
-					name.GetValueOrDefault(this.Name),
-					age.GetValueOrDefault(this.Age),
-					watch.GetValueOrDefault(this.Watch));
+					name: name.GetValueOrDefault(this.Name),
+					age: age.GetValueOrDefault(this.Age),
+					watch: watch.GetValueOrDefault(this.Watch));
 			} else {
 				return this;
 			}
@@ -409,8 +409,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				color.GetValueOrDefault(DefaultInstance.Color),
-				size.GetValueOrDefault(DefaultInstance.Size));
+				color: color.GetValueOrDefault(DefaultInstance.Color),
+				size: size.GetValueOrDefault(DefaultInstance.Size));
 		}
 	
 		public System.String Color {
@@ -445,8 +445,8 @@ namespace ImmutableObjectGraph.Tests {
 				(color.IsDefined && color.Value != this.Color) || 
 				(size.IsDefined && size.Value != this.Size)) {
 				return new Watch(
-					color.GetValueOrDefault(this.Color),
-					size.GetValueOrDefault(this.Size));
+					color: color.GetValueOrDefault(this.Color),
+					size: size.GetValueOrDefault(this.Size));
 			} else {
 				return this;
 			}

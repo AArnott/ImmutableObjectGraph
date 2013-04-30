@@ -69,11 +69,11 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			return DefaultInstance.With(
-				caption.GetValueOrDefault(DefaultInstance.Caption),
-				filePath.GetValueOrDefault(DefaultInstance.FilePath),
-				visible.GetValueOrDefault(DefaultInstance.Visible),
-				attributes.GetValueOrDefault(DefaultInstance.Attributes),
-				children.GetValueOrDefault(DefaultInstance.Children));
+				caption: caption.GetValueOrDefault(DefaultInstance.Caption),
+				filePath: filePath.GetValueOrDefault(DefaultInstance.FilePath),
+				visible: visible.GetValueOrDefault(DefaultInstance.Visible),
+				attributes: attributes.GetValueOrDefault(DefaultInstance.Attributes),
+				children: children.GetValueOrDefault(DefaultInstance.Children));
 		}
 	
 		public System.String Caption {
@@ -240,11 +240,11 @@ namespace ImmutableObjectGraph.Tests {
 				(attributes.IsDefined && attributes.Value != this.Attributes) || 
 				(children.IsDefined && children.Value != this.Children)) {
 				return new TreeNode(
-					caption.GetValueOrDefault(this.Caption),
-					filePath.GetValueOrDefault(this.FilePath),
-					visible.GetValueOrDefault(this.Visible),
-					attributes.GetValueOrDefault(this.Attributes),
-					children.GetValueOrDefault(this.Children));
+					caption: caption.GetValueOrDefault(this.Caption),
+					filePath: filePath.GetValueOrDefault(this.FilePath),
+					visible: visible.GetValueOrDefault(this.Visible),
+					attributes: attributes.GetValueOrDefault(this.Attributes),
+					children: children.GetValueOrDefault(this.Children));
 			} else {
 				return this;
 			}

@@ -113,7 +113,7 @@ namespace ImmutableObjectGraph.Tests {
 			System.String namespaceName,
 			System.Collections.Immutable.ImmutableList<XmlNode> children)
 			: base(
-				localName)
+				localName: localName)
 		{
 			this.namespaceName = namespaceName;
 			this.children = children;
@@ -125,9 +125,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			return DefaultInstance.With(
-				localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				children.GetValueOrDefault(DefaultInstance.Children));
+				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
+				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
+				children: children.GetValueOrDefault(DefaultInstance.Children));
 		}
 	
 		public System.String NamespaceName {
@@ -207,7 +207,7 @@ namespace ImmutableObjectGraph.Tests {
 		public override XmlNode With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.With(
-				localName,
+				localName: localName,
 				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
 				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>));
 		}
@@ -222,9 +222,9 @@ namespace ImmutableObjectGraph.Tests {
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(children.IsDefined && children.Value != this.Children)) {
 				return new XmlElement(
-					localName.GetValueOrDefault(this.LocalName),
-					namespaceName.GetValueOrDefault(this.NamespaceName),
-					children.GetValueOrDefault(this.Children));
+					localName: localName.GetValueOrDefault(this.LocalName),
+					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
+					children: children.GetValueOrDefault(this.Children));
 			} else {
 				return this;
 			}
@@ -246,10 +246,10 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			return XmlElementWithContent.Create(
-				this.LocalName,
-				this.NamespaceName,
-				this.Children,
-				content);
+				localName: this.LocalName,
+				namespaceName: this.NamespaceName,
+				children: this.Children,
+				content: content);
 		}
 	
 	 
@@ -353,9 +353,9 @@ namespace ImmutableObjectGraph.Tests {
 			System.Collections.Immutable.ImmutableList<XmlNode> children,
 			System.String content)
 			: base(
-				localName,
-				namespaceName,
-				children)
+				localName: localName,
+				namespaceName: namespaceName,
+				children: children)
 		{
 			this.content = content;
 			this.Validate();
@@ -367,10 +367,10 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				children.GetValueOrDefault(DefaultInstance.Children),
-				content.GetValueOrDefault(DefaultInstance.Content));
+				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
+				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
+				children: children.GetValueOrDefault(DefaultInstance.Children),
+				content: content.GetValueOrDefault(DefaultInstance.Content));
 		}
 	
 		public System.String Content {
@@ -403,9 +403,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			return this.With(
-				localName,
-				namespaceName,
-				children,
+				localName: localName,
+				namespaceName: namespaceName,
+				children: children,
 				content: default(ImmutableObjectGraph.Optional<System.String>));
 		}
 		
@@ -421,10 +421,10 @@ namespace ImmutableObjectGraph.Tests {
 				(children.IsDefined && children.Value != this.Children) || 
 				(content.IsDefined && content.Value != this.Content)) {
 				return new XmlElementWithContent(
-					localName.GetValueOrDefault(this.LocalName),
-					namespaceName.GetValueOrDefault(this.NamespaceName),
-					children.GetValueOrDefault(this.Children),
-					content.GetValueOrDefault(this.Content));
+					localName: localName.GetValueOrDefault(this.LocalName),
+					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
+					children: children.GetValueOrDefault(this.Children),
+					content: content.GetValueOrDefault(this.Content));
 			} else {
 				return this;
 			}
@@ -437,9 +437,9 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public XmlElement ToXmlElement() {
 			return XmlElement.Create(
-				this.LocalName,
-				this.NamespaceName,
-				this.Children);
+				localName: this.LocalName,
+				namespaceName: this.NamespaceName,
+				children: this.Children);
 		}
 	
 	 
@@ -533,7 +533,7 @@ namespace ImmutableObjectGraph.Tests {
 			System.String namespaceName,
 			System.String value)
 			: base(
-				localName)
+				localName: localName)
 		{
 			this.namespaceName = namespaceName;
 			this.value = value;
@@ -545,9 +545,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				value.GetValueOrDefault(DefaultInstance.Value));
+				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
+				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
+				value: value.GetValueOrDefault(DefaultInstance.Value));
 		}
 	
 		public System.String NamespaceName {
@@ -582,7 +582,7 @@ namespace ImmutableObjectGraph.Tests {
 		public override XmlNode With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.With(
-				localName,
+				localName: localName,
 				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
 				value: default(ImmutableObjectGraph.Optional<System.String>));
 		}
@@ -597,9 +597,9 @@ namespace ImmutableObjectGraph.Tests {
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(value.IsDefined && value.Value != this.Value)) {
 				return new XmlAttribute(
-					localName.GetValueOrDefault(this.LocalName),
-					namespaceName.GetValueOrDefault(this.NamespaceName),
-					value.GetValueOrDefault(this.Value));
+					localName: localName.GetValueOrDefault(this.LocalName),
+					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
+					value: value.GetValueOrDefault(this.Value));
 			} else {
 				return this;
 			}

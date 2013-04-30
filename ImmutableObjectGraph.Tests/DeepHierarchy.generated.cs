@@ -41,7 +41,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static A Create(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.GetValueOrDefault(DefaultInstance.Field1));
+				field1: field1.GetValueOrDefault(DefaultInstance.Field1));
 		}
 	
 		public System.Int32 Field1 {
@@ -62,7 +62,7 @@ namespace ImmutableObjectGraph.Tests {
 			if (
 				(field1.IsDefined && field1.Value != this.Field1)) {
 				return new A(
-					field1.GetValueOrDefault(this.Field1));
+					field1: field1.GetValueOrDefault(this.Field1));
 			} else {
 				return this;
 			}
@@ -84,8 +84,8 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			return B.Create(
-				this.Field1,
-				field2);
+				field1: this.Field1,
+				field2: field2);
 		}
 	
 		public virtual C1 ToC1(
@@ -100,9 +100,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			return C1.Create(
-				this.Field1,
-				field2,
-				field3);
+				field1: this.Field1,
+				field2: field2,
+				field3: field3);
 		}
 	
 		public virtual C2 ToC2(
@@ -117,9 +117,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			return C2.Create(
-				this.Field1,
-				field2,
-				field3);
+				field1: this.Field1,
+				field2: field2,
+				field3: field3);
 		}
 	
 	 
@@ -195,7 +195,7 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 field1,
 			System.Int32 field2)
 			: base(
-				field1)
+				field1: field1)
 		{
 			this.field2 = field2;
 			this.Validate();
@@ -205,8 +205,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.GetValueOrDefault(DefaultInstance.Field1), 
-				field2.GetValueOrDefault(DefaultInstance.Field2));
+				field1: field1.GetValueOrDefault(DefaultInstance.Field1),
+				field2: field2.GetValueOrDefault(DefaultInstance.Field2));
 		}
 	
 		public System.Int32 Field2 {
@@ -229,7 +229,7 @@ namespace ImmutableObjectGraph.Tests {
 		public override A With(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
-				field1,
+				field1: field1,
 				field2: default(ImmutableObjectGraph.Optional<System.Int32>));
 		}
 		
@@ -241,8 +241,8 @@ namespace ImmutableObjectGraph.Tests {
 				(field1.IsDefined && field1.Value != this.Field1) || 
 				(field2.IsDefined && field2.Value != this.Field2)) {
 				return new B(
-					field1.GetValueOrDefault(this.Field1),
-					field2.GetValueOrDefault(this.Field2));
+					field1: field1.GetValueOrDefault(this.Field1),
+					field2: field2.GetValueOrDefault(this.Field2));
 			} else {
 				return this;
 			}
@@ -255,7 +255,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public A ToA() {
 			return A.Create(
-				this.Field1);
+				field1: this.Field1);
 		}
 	
 		public virtual C1 ToC1(
@@ -268,17 +268,17 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			return C1.Create(
-				this.Field1,
-				this.Field2,
-				field3);
+				field1: this.Field1,
+				field2: this.Field2,
+				field3: field3);
 		}
 	
 		public override C1 ToC1(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return base.ToC1(
-				field2.GetValueOrDefault(this.Field2),
-				field3);
+				field2: field2.GetValueOrDefault(this.Field2),
+				field3: field3);
 		}
 	
 		public virtual C2 ToC2(
@@ -291,17 +291,17 @@ namespace ImmutableObjectGraph.Tests {
 			}
 	
 			return C2.Create(
-				this.Field1,
-				this.Field2,
-				field3);
+				field1: this.Field1,
+				field2: this.Field2,
+				field3: field3);
 		}
 	
 		public override C2 ToC2(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return base.ToC2(
-				field2.GetValueOrDefault(this.Field2),
-				field3);
+				field2: field2.GetValueOrDefault(this.Field2),
+				field3: field3);
 		}
 	
 	 
@@ -382,8 +382,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 field2,
 			System.Int32 field3)
 			: base(
-				field1,
-				field2)
+				field1: field1,
+				field2: field2)
 		{
 			this.field3 = field3;
 			this.Validate();
@@ -394,9 +394,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.GetValueOrDefault(DefaultInstance.Field1), 
-				field2.GetValueOrDefault(DefaultInstance.Field2), 
-				field3.GetValueOrDefault(DefaultInstance.Field3));
+				field1: field1.GetValueOrDefault(DefaultInstance.Field1),
+				field2: field2.GetValueOrDefault(DefaultInstance.Field2),
+				field3: field3.GetValueOrDefault(DefaultInstance.Field3));
 		}
 	
 		public System.Int32 Field3 {
@@ -424,8 +424,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
-				field1,
-				field2,
+				field1: field1,
+				field2: field2,
 				field3: default(ImmutableObjectGraph.Optional<System.Int32>));
 		}
 		
@@ -439,9 +439,9 @@ namespace ImmutableObjectGraph.Tests {
 				(field2.IsDefined && field2.Value != this.Field2) || 
 				(field3.IsDefined && field3.Value != this.Field3)) {
 				return new C1(
-					field1.GetValueOrDefault(this.Field1),
-					field2.GetValueOrDefault(this.Field2),
-					field3.GetValueOrDefault(this.Field3));
+					field1: field1.GetValueOrDefault(this.Field1),
+					field2: field2.GetValueOrDefault(this.Field2),
+					field3: field3.GetValueOrDefault(this.Field3));
 			} else {
 				return this;
 			}
@@ -454,8 +454,8 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public B ToB() {
 			return B.Create(
-				this.Field1,
-				this.Field2);
+				field1: this.Field1,
+				field2: this.Field2);
 		}
 	
 	 
@@ -540,8 +540,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 field2,
 			System.Int32 field3)
 			: base(
-				field1,
-				field2)
+				field1: field1,
+				field2: field2)
 		{
 			this.field3 = field3;
 			this.Validate();
@@ -552,9 +552,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return DefaultInstance.With(
-				field1.GetValueOrDefault(DefaultInstance.Field1), 
-				field2.GetValueOrDefault(DefaultInstance.Field2), 
-				field3.GetValueOrDefault(DefaultInstance.Field3));
+				field1: field1.GetValueOrDefault(DefaultInstance.Field1),
+				field2: field2.GetValueOrDefault(DefaultInstance.Field2),
+				field3: field3.GetValueOrDefault(DefaultInstance.Field3));
 		}
 	
 		public System.Int32 Field3 {
@@ -582,8 +582,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
-				field1,
-				field2,
+				field1: field1,
+				field2: field2,
 				field3: default(ImmutableObjectGraph.Optional<System.Int32>));
 		}
 		
@@ -597,9 +597,9 @@ namespace ImmutableObjectGraph.Tests {
 				(field2.IsDefined && field2.Value != this.Field2) || 
 				(field3.IsDefined && field3.Value != this.Field3)) {
 				return new C2(
-					field1.GetValueOrDefault(this.Field1),
-					field2.GetValueOrDefault(this.Field2),
-					field3.GetValueOrDefault(this.Field3));
+					field1: field1.GetValueOrDefault(this.Field1),
+					field2: field2.GetValueOrDefault(this.Field2),
+					field3: field3.GetValueOrDefault(this.Field3));
 			} else {
 				return this;
 			}
@@ -612,8 +612,8 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public B ToB() {
 			return B.Create(
-				this.Field1,
-				this.Field2);
+				field1: this.Field1,
+				field2: this.Field2);
 		}
 	
 	 
