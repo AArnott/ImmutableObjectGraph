@@ -8,7 +8,7 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-namespace DirectoryTree {
+namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
 
@@ -69,10 +69,10 @@ namespace DirectoryTree {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			return DefaultInstance.With(
-				caption.GetValueOrDefault(DefaultInstance.Caption), 
-				filePath.GetValueOrDefault(DefaultInstance.FilePath), 
-				visible.GetValueOrDefault(DefaultInstance.Visible), 
-				attributes.GetValueOrDefault(DefaultInstance.Attributes), 
+				caption.GetValueOrDefault(DefaultInstance.Caption),
+				filePath.GetValueOrDefault(DefaultInstance.FilePath),
+				visible.GetValueOrDefault(DefaultInstance.Visible),
+				attributes.GetValueOrDefault(DefaultInstance.Attributes),
 				children.GetValueOrDefault(DefaultInstance.Children));
 		}
 	

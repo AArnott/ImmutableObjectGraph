@@ -71,6 +71,18 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TreeNode.generated.cs">
+      <DependentUpon>TreeNode.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="TreeNodeTests.cs" />
+    <Compile Include="XmlNode.generated.cs">
+      <DependentUpon>XmlNode.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="XmlNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt">
@@ -89,6 +101,14 @@
       <LastGenOutput>Person.generated.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
+    <None Include="TreeNode.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TreeNode.generated.cs</LastGenOutput>
+    </None>
+    <None Include="XmlNode.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>XmlNode.generated.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

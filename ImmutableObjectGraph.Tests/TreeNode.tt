@@ -1,7 +1,7 @@
 ﻿<#@ template debug="true" language="C#" #>
 <#@ Output Extension=".generated.cs" #>
 <#
-	this.Namespace = "DirectoryTree";
+	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+

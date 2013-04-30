@@ -109,10 +109,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectoryTree\DirectoryTree.csproj">
-      <Project>{9b3944b6-f11a-40df-9598-cae7bb9c1a7b}</Project>
-      <Name>DirectoryTree</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph.Tests\ImmutableObjectGraph.Tests.csproj">
       <Project>{193f0d66-b1d2-4acb-9bdc-6341a3f90153}</Project>
       <Name>ImmutableObjectGraph.Tests</Name>
@@ -120,10 +116,6 @@
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
       <Name>ImmutableObjectGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XmlNodeTree\XmlNodeTree.csproj">
-      <Project>{96f73b9d-3916-42d1-b6e3-4faf96d1f8f0}</Project>
-      <Name>XmlNodeTree</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

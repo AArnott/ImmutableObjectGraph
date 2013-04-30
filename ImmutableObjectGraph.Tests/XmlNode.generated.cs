@@ -8,7 +8,7 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-namespace XmlNodeTree {
+namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
 
@@ -125,8 +125,8 @@ namespace XmlNodeTree {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			return DefaultInstance.With(
-				localName.GetValueOrDefault(DefaultInstance.LocalName), 
-				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName), 
+				localName.GetValueOrDefault(DefaultInstance.LocalName),
+				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
 				children.GetValueOrDefault(DefaultInstance.Children));
 		}
 	
@@ -367,9 +367,9 @@ namespace XmlNodeTree {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				localName.GetValueOrDefault(DefaultInstance.LocalName), 
-				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName), 
-				children.GetValueOrDefault(DefaultInstance.Children), 
+				localName.GetValueOrDefault(DefaultInstance.LocalName),
+				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
+				children.GetValueOrDefault(DefaultInstance.Children),
 				content.GetValueOrDefault(DefaultInstance.Content));
 		}
 	
@@ -545,8 +545,8 @@ namespace XmlNodeTree {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return DefaultInstance.With(
-				localName.GetValueOrDefault(DefaultInstance.LocalName), 
-				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName), 
+				localName.GetValueOrDefault(DefaultInstance.LocalName),
+				namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
 				value.GetValueOrDefault(DefaultInstance.Value));
 		}
 	
