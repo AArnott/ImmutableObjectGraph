@@ -592,7 +592,11 @@ WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		}
 
 		public ImmutableList<MetaField> LocalFields {
-			get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToImmutableList(); }
+			get {
+				var fields = this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this));
+				var result = fields.Where(f => f.IsRequired).Concat(fields.Where(f => !f.IsRequired)).ToImmutableList();
+				return result;
+			}
 		}
 
 		public ImmutableList<MetaField> AllFields {
