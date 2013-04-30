@@ -51,41 +51,45 @@ namespace ImmutableObjectGraph.Tests {
 		public abstract XmlNode With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>));
 	
+	
+	 
+		
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
-	
-	
-	 
+		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private XmlNode immutable;
-	
+		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String localName;
-	
+		
 			internal Builder(XmlNode immutable) {
 				this.immutable = immutable;
-	
+		
 				this.localName = immutable.LocalName;
 			}
-	
+		
 			public System.String LocalName {
 				get {
 					return this.localName;
 				}
-	
+		
 				set {
 					this.localName = value;
 				}
 			}
-	
+		
 			public XmlNode ToImmutable() {
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.LocalName));
 			}
 		}
+		
+	
 	}
+	
 	
 	public interface IXmlElement : IXmlNode {
 		System.String NamespaceName { get; }
@@ -157,51 +161,52 @@ namespace ImmutableObjectGraph.Tests {
 	
 			return this.With(children: value);
 		}
-	
+		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public XmlElement WithChildren(params XmlNode[] values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
-	
+		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public XmlElement WithChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
-	
+		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public XmlElement AddChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
-	
+		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public XmlElement AddChildren(params XmlNode[] values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
-	
+		
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public XmlElement AddChildren(XmlNode value) {
 			return this.With(children: this.Children.Add(value));
 		}
-	
+		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public XmlElement RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
 			return this.With(children: this.Children.RemoveRange(values));
 		}
-	
+		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public XmlElement RemoveChildren(params XmlNode[] values) {
 			return this.With(children: this.Children.RemoveRange(values));
 		}
-	
+		
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public XmlElement RemoveChildren(XmlNode value) {
 			return this.With(children: this.Children.Remove(value));
 		}
-	
+		
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public XmlElement RemoveChildren() {
 			return this.With(children: this.Children.Clear());
 		}
+		
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public override XmlNode With(
@@ -230,10 +235,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
 	
 	
 		public virtual XmlElementWithContent ToXmlElementWithContent(
@@ -271,54 +272,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Children);
 		}
 	
-		public new partial class Builder : XmlNode.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private XmlElement immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String namespaceName;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>.Builder> children;
-	
-			internal Builder(XmlElement immutable) : base(immutable) {
-				this.immutable = immutable;
-	
-				this.namespaceName = immutable.NamespaceName;
-			}
-	
-			public System.String NamespaceName {
-				get {
-					return this.namespaceName;
-				}
-	
-				set {
-					this.namespaceName = value;
-				}
-			}
-	
-			public System.Collections.Immutable.ImmutableList<XmlNode>.Builder Children {
-				get {
-					if (!this.children.IsDefined) {
-						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
-					}
-	
-					return this.children.Value;
-				}
-	
-				set {
-					this.children = value;
-				}
-			}
-	
-			public new XmlElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.LocalName),
-					ImmutableObjectGraph.Optional.For(this.NamespaceName),
-					ImmutableObjectGraph.Optional.For(children));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -328,7 +281,63 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : XmlNode.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private XmlElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String namespaceName;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>.Builder> children;
+		
+			internal Builder(XmlElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.namespaceName = immutable.NamespaceName;
+			}
+		
+			public System.String NamespaceName {
+				get {
+					return this.namespaceName;
+				}
+		
+				set {
+					this.namespaceName = value;
+				}
+			}
+		
+			public System.Collections.Immutable.ImmutableList<XmlNode>.Builder Children {
+				get {
+					if (!this.children.IsDefined) {
+						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
+					}
+		
+					return this.children.Value;
+				}
+		
+				set {
+					this.children = value;
+				}
+			}
+		
+			public new XmlElement ToImmutable() {
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.LocalName),
+					ImmutableObjectGraph.Optional.For(this.NamespaceName),
+					ImmutableObjectGraph.Optional.For(children));
+			}
+		}
+		
+	
 	}
+	
 	
 	public interface IXmlElementWithContent : IXmlElement {
 		System.String Content { get; }
@@ -388,6 +397,52 @@ namespace ImmutableObjectGraph.Tests {
 		public new XmlElementWithContent WithChildren(System.Collections.Immutable.ImmutableList<XmlNode> value) {
 			return (XmlElementWithContent)base.WithChildren(value);
 		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public XmlElementWithContent WithChildren(params XmlNode[] values) {
+			return this.With(children: this.Children.ResetContents(values));
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public XmlElementWithContent WithChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+			return this.With(children: this.Children.ResetContents(values));
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public XmlElementWithContent AddChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+			return this.With(children: this.Children.AddRange(values));
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public XmlElementWithContent AddChildren(params XmlNode[] values) {
+			return this.With(children: this.Children.AddRange(values));
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public XmlElementWithContent AddChildren(XmlNode value) {
+			return this.With(children: this.Children.Add(value));
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public XmlElementWithContent RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+			return this.With(children: this.Children.RemoveRange(values));
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public XmlElementWithContent RemoveChildren(params XmlNode[] values) {
+			return this.With(children: this.Children.RemoveRange(values));
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public XmlElementWithContent RemoveChildren(XmlNode value) {
+			return this.With(children: this.Children.Remove(value));
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public XmlElementWithContent RemoveChildren() {
+			return this.With(children: this.Children.Clear());
+		}
+		
 		/// <summary>Returns a new instance with the Content property set to the specified value.</summary>
 		public XmlElementWithContent WithContent(System.String value) {
 			if (value == this.Content) {
@@ -431,10 +486,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 		public XmlElement ToXmlElement() {
 			return XmlElement.Create(
 				localName: this.LocalName,
@@ -462,38 +513,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Content);
 		}
 	
-		public new partial class Builder : XmlElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private XmlElementWithContent immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String content;
-	
-			internal Builder(XmlElementWithContent immutable) : base(immutable) {
-				this.immutable = immutable;
-	
-				this.content = immutable.Content;
-			}
-	
-			public System.String Content {
-				get {
-					return this.content;
-				}
-	
-				set {
-					this.content = value;
-				}
-			}
-	
-			public new XmlElementWithContent ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.LocalName),
-					ImmutableObjectGraph.Optional.For(this.NamespaceName),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.Content));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -505,7 +524,47 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.String Content { get; set; }
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : XmlElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private XmlElementWithContent immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String content;
+		
+			internal Builder(XmlElementWithContent immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.content = immutable.Content;
+			}
+		
+			public System.String Content {
+				get {
+					return this.content;
+				}
+		
+				set {
+					this.content = value;
+				}
+			}
+		
+			public new XmlElementWithContent ToImmutable() {
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.LocalName),
+					ImmutableObjectGraph.Optional.For(this.NamespaceName),
+					ImmutableObjectGraph.Optional.For(children),
+					ImmutableObjectGraph.Optional.For(this.Content));
+			}
+		}
+		
+	
 	}
+	
 	
 	public interface IXmlAttribute : IXmlNode {
 		System.String NamespaceName { get; }
@@ -606,10 +665,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -630,50 +685,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Value);
 		}
 	
-		public new partial class Builder : XmlNode.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private XmlAttribute immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String namespaceName;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String value;
-	
-			internal Builder(XmlAttribute immutable) : base(immutable) {
-				this.immutable = immutable;
-	
-				this.namespaceName = immutable.NamespaceName;
-				this.value = immutable.Value;
-			}
-	
-			public System.String NamespaceName {
-				get {
-					return this.namespaceName;
-				}
-	
-				set {
-					this.namespaceName = value;
-				}
-			}
-	
-			public System.String Value {
-				get {
-					return this.value;
-				}
-	
-				set {
-					this.value = value;
-				}
-			}
-	
-			public new XmlAttribute ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.LocalName),
-					ImmutableObjectGraph.Optional.For(this.NamespaceName),
-					ImmutableObjectGraph.Optional.For(this.Value));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -683,6 +694,59 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.String Value { get; set; }
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : XmlNode.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private XmlAttribute immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String namespaceName;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String value;
+		
+			internal Builder(XmlAttribute immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.namespaceName = immutable.NamespaceName;
+				this.value = immutable.Value;
+			}
+		
+			public System.String NamespaceName {
+				get {
+					return this.namespaceName;
+				}
+		
+				set {
+					this.namespaceName = value;
+				}
+			}
+		
+			public System.String Value {
+				get {
+					return this.value;
+				}
+		
+				set {
+					this.value = value;
+				}
+			}
+		
+			public new XmlAttribute ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.LocalName),
+					ImmutableObjectGraph.Optional.For(this.NamespaceName),
+					ImmutableObjectGraph.Optional.For(this.Value));
+			}
+		}
+		
+	
 	}
+	
 }
+
 

@@ -69,10 +69,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 	
 		public virtual B ToB(
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
@@ -139,40 +135,48 @@ namespace ImmutableObjectGraph.Tests {
 				template.Field1);
 		}
 	
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private A immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field1;
-	
-			internal Builder(A immutable) {
-				this.immutable = immutable;
-	
-				this.field1 = immutable.Field1;
-			}
-	
-			public System.Int32 Field1 {
-				get {
-					return this.field1;
-				}
-	
-				set {
-					this.field1 = value;
-				}
-			}
-	
-			public A ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.Int32 Field1 { get; set; }
 		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private A immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Int32 field1;
+		
+			internal Builder(A immutable) {
+				this.immutable = immutable;
+		
+				this.field1 = immutable.Field1;
+			}
+		
+			public System.Int32 Field1 {
+				get {
+					return this.field1;
+				}
+		
+				set {
+					this.field1 = value;
+				}
+			}
+		
+			public A ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Field1));
+			}
+		}
+		
+	
 	}
+	
 	
 	public interface IB : IA {
 		System.Int32 Field2 { get; }
@@ -249,10 +253,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 		public A ToA() {
 			return A.Create(
 				field1: this.Field1);
@@ -322,35 +322,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Field2);
 		}
 	
-		public new partial class Builder : A.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private B immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field2;
-	
-			internal Builder(B immutable) : base(immutable) {
-				this.immutable = immutable;
-	
-				this.field2 = immutable.Field2;
-			}
-	
-			public System.Int32 Field2 {
-				get {
-					return this.field2;
-				}
-	
-				set {
-					this.field2 = value;
-				}
-			}
-	
-			public new B ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1),
-					ImmutableObjectGraph.Optional.For(this.Field2));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -358,7 +329,44 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.Int32 Field2 { get; set; }
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : A.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private B immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Int32 field2;
+		
+			internal Builder(B immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.field2 = immutable.Field2;
+			}
+		
+			public System.Int32 Field2 {
+				get {
+					return this.field2;
+				}
+		
+				set {
+					this.field2 = value;
+				}
+			}
+		
+			public new B ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Field1),
+					ImmutableObjectGraph.Optional.For(this.Field2));
+			}
+		}
+		
+	
 	}
+	
 	
 	public interface IC1 : IB {
 		System.Int32 Field3 { get; }
@@ -448,10 +456,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 		public B ToB() {
 			return B.Create(
 				field1: this.Field1,
@@ -477,36 +481,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Field3);
 		}
 	
-		public new partial class Builder : B.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private C1 immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field3;
-	
-			internal Builder(C1 immutable) : base(immutable) {
-				this.immutable = immutable;
-	
-				this.field3 = immutable.Field3;
-			}
-	
-			public System.Int32 Field3 {
-				get {
-					return this.field3;
-				}
-	
-				set {
-					this.field3 = value;
-				}
-			}
-	
-			public new C1 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1),
-					ImmutableObjectGraph.Optional.For(this.Field2),
-					ImmutableObjectGraph.Optional.For(this.Field3));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -516,7 +490,45 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.Int32 Field3 { get; set; }
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : B.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private C1 immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Int32 field3;
+		
+			internal Builder(C1 immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.field3 = immutable.Field3;
+			}
+		
+			public System.Int32 Field3 {
+				get {
+					return this.field3;
+				}
+		
+				set {
+					this.field3 = value;
+				}
+			}
+		
+			public new C1 ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Field1),
+					ImmutableObjectGraph.Optional.For(this.Field2),
+					ImmutableObjectGraph.Optional.For(this.Field3));
+			}
+		}
+		
+	
 	}
+	
 	
 	public interface IC2 : IB {
 		System.Int32 Field3 { get; }
@@ -606,10 +618,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 		public B ToB() {
 			return B.Create(
 				field1: this.Field1,
@@ -635,36 +643,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Field3);
 		}
 	
-		public new partial class Builder : B.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private C2 immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field3;
-	
-			internal Builder(C2 immutable) : base(immutable) {
-				this.immutable = immutable;
-	
-				this.field3 = immutable.Field3;
-			}
-	
-			public System.Int32 Field3 {
-				get {
-					return this.field3;
-				}
-	
-				set {
-					this.field3 = value;
-				}
-			}
-	
-			public new C2 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1),
-					ImmutableObjectGraph.Optional.For(this.Field2),
-					ImmutableObjectGraph.Optional.For(this.Field3));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -674,6 +652,45 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.Int32 Field3 { get; set; }
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : B.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private C2 immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Int32 field3;
+		
+			internal Builder(C2 immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.field3 = immutable.Field3;
+			}
+		
+			public System.Int32 Field3 {
+				get {
+					return this.field3;
+				}
+		
+				set {
+					this.field3 = value;
+				}
+			}
+		
+			public new C2 ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Field1),
+					ImmutableObjectGraph.Optional.For(this.Field2),
+					ImmutableObjectGraph.Optional.For(this.Field3));
+			}
+		}
+		
+	
 	}
+	
 }
+
 

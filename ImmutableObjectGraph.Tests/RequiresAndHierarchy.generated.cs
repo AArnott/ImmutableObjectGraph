@@ -92,10 +92,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 	
 		public virtual ReqAndHierL2 ToReqAndHierL2(
 			System.String l2Field2,
@@ -133,49 +129,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.L1Field2);
 		}
 	
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ReqAndHierL1 immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l1Field1;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l1Field2;
-	
-			internal Builder(ReqAndHierL1 immutable) {
-				this.immutable = immutable;
-	
-				this.l1Field1 = immutable.L1Field1;
-				this.l1Field2 = immutable.L1Field2;
-			}
-	
-			public System.String L1Field1 {
-				get {
-					return this.l1Field1;
-				}
-	
-				set {
-					this.l1Field1 = value;
-				}
-			}
-	
-			public System.String L1Field2 {
-				get {
-					return this.l1Field2;
-				}
-	
-				set {
-					this.l1Field2 = value;
-				}
-			}
-	
-			public ReqAndHierL1 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.L1Field1),
-					ImmutableObjectGraph.Optional.For(this.L1Field2));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -183,7 +136,58 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.String L1Field2 { get; set; }
 		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ReqAndHierL1 immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String l1Field1;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String l1Field2;
+		
+			internal Builder(ReqAndHierL1 immutable) {
+				this.immutable = immutable;
+		
+				this.l1Field1 = immutable.L1Field1;
+				this.l1Field2 = immutable.L1Field2;
+			}
+		
+			public System.String L1Field1 {
+				get {
+					return this.l1Field1;
+				}
+		
+				set {
+					this.l1Field1 = value;
+				}
+			}
+		
+			public System.String L1Field2 {
+				get {
+					return this.l1Field2;
+				}
+		
+				set {
+					this.l1Field2 = value;
+				}
+			}
+		
+			public ReqAndHierL1 ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.L1Field1),
+					ImmutableObjectGraph.Optional.For(this.L1Field2));
+			}
+		}
+		
+	
 	}
+	
 	
 	public interface IReqAndHierL2 : IReqAndHierL1 {
 		System.String L2Field1 { get; }
@@ -297,10 +301,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 		public ReqAndHierL1 ToReqAndHierL1() {
 			return ReqAndHierL1.Create(
 				l1Field1: this.L1Field1,
@@ -327,51 +327,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.L2Field2);
 		}
 	
-		public new partial class Builder : ReqAndHierL1.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ReqAndHierL2 immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l2Field1;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l2Field2;
-	
-			internal Builder(ReqAndHierL2 immutable) : base(immutable) {
-				this.immutable = immutable;
-	
-				this.l2Field1 = immutable.L2Field1;
-				this.l2Field2 = immutable.L2Field2;
-			}
-	
-			public System.String L2Field1 {
-				get {
-					return this.l2Field1;
-				}
-	
-				set {
-					this.l2Field1 = value;
-				}
-			}
-	
-			public System.String L2Field2 {
-				get {
-					return this.l2Field2;
-				}
-	
-				set {
-					this.l2Field2 = value;
-				}
-			}
-	
-			public new ReqAndHierL2 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.L1Field1),
-					ImmutableObjectGraph.Optional.For(this.L1Field2),
-					ImmutableObjectGraph.Optional.For(this.L2Field1),
-					ImmutableObjectGraph.Optional.For(this.L2Field2));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -383,6 +338,60 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.String L2Field2 { get; set; }
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ReqAndHierL1.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ReqAndHierL2 immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String l2Field1;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String l2Field2;
+		
+			internal Builder(ReqAndHierL2 immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.l2Field1 = immutable.L2Field1;
+				this.l2Field2 = immutable.L2Field2;
+			}
+		
+			public System.String L2Field1 {
+				get {
+					return this.l2Field1;
+				}
+		
+				set {
+					this.l2Field1 = value;
+				}
+			}
+		
+			public System.String L2Field2 {
+				get {
+					return this.l2Field2;
+				}
+		
+				set {
+					this.l2Field2 = value;
+				}
+			}
+		
+			public new ReqAndHierL2 ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.L1Field1),
+					ImmutableObjectGraph.Optional.For(this.L1Field2),
+					ImmutableObjectGraph.Optional.For(this.L2Field1),
+					ImmutableObjectGraph.Optional.For(this.L2Field2));
+			}
+		}
+		
+	
 	}
+	
 }
+
 

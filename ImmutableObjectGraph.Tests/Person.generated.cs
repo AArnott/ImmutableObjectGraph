@@ -115,10 +115,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -137,43 +133,49 @@ namespace ImmutableObjectGraph.Tests {
 				template.Members);
 		}
 	
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.Collections.Immutable.ImmutableSortedSet<Person> Members { get; set; }
+		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Family immutable;
-	
+		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>.Builder> members;
-	
+		
 			internal Builder(Family immutable) {
 				this.immutable = immutable;
-	
+		
 			}
-	
+		
 			public System.Collections.Immutable.ImmutableSortedSet<Person>.Builder Members {
 				get {
 					if (!this.members.IsDefined) {
 						this.members = this.immutable.members != null ? this.immutable.members.ToBuilder() : null;
 					}
-	
+		
 					return this.members.Value;
 				}
-	
+		
 				set {
 					this.members = value;
 				}
 			}
-	
+		
 			public Family ToImmutable() {
 				var members = this.members.IsDefined ? (this.members.Value != null ? this.members.Value.ToImmutable() : null) : this.immutable.Members;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(members));
 			}
 		}
-	
-		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
-		private struct Template {
-			internal System.Collections.Immutable.ImmutableSortedSet<Person> Members { get; set; }
-		}
+		
 	
 	}
 	
@@ -280,10 +282,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -304,68 +302,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Watch);
 		}
 	
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private Person immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String name;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 age;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<Watch.Builder> watch;
-	
-			internal Builder(Person immutable) {
-				this.immutable = immutable;
-	
-				this.name = immutable.Name;
-				this.age = immutable.Age;
-			}
-	
-			public System.String Name {
-				get {
-					return this.name;
-				}
-	
-				set {
-					this.name = value;
-				}
-			}
-	
-			public System.Int32 Age {
-				get {
-					return this.age;
-				}
-	
-				set {
-					this.age = value;
-				}
-			}
-	
-			public Watch.Builder Watch {
-				get {
-					if (!this.watch.IsDefined) {
-						this.watch = this.immutable.watch != null ? this.immutable.watch.ToBuilder() : null;
-					}
-	
-					return this.watch.Value;
-				}
-	
-				set {
-					this.watch = value;
-				}
-			}
-	
-			public Person ToImmutable() {
-				var watch = this.watch.IsDefined ? (this.watch.Value != null ? this.watch.Value.ToImmutable() : null) : this.immutable.Watch;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Name),
-					ImmutableObjectGraph.Optional.For(this.Age),
-					ImmutableObjectGraph.Optional.For(watch));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -375,6 +311,74 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal Watch Watch { get; set; }
 		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private Person immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String name;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Int32 age;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<Watch.Builder> watch;
+		
+			internal Builder(Person immutable) {
+				this.immutable = immutable;
+		
+				this.name = immutable.Name;
+				this.age = immutable.Age;
+			}
+		
+			public System.String Name {
+				get {
+					return this.name;
+				}
+		
+				set {
+					this.name = value;
+				}
+			}
+		
+			public System.Int32 Age {
+				get {
+					return this.age;
+				}
+		
+				set {
+					this.age = value;
+				}
+			}
+		
+			public Watch.Builder Watch {
+				get {
+					if (!this.watch.IsDefined) {
+						this.watch = this.immutable.watch != null ? this.immutable.watch.ToBuilder() : null;
+					}
+		
+					return this.watch.Value;
+				}
+		
+				set {
+					this.watch = value;
+				}
+			}
+		
+			public Person ToImmutable() {
+				var watch = this.watch.IsDefined ? (this.watch.Value != null ? this.watch.Value.ToImmutable() : null) : this.immutable.Watch;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Name),
+					ImmutableObjectGraph.Optional.For(this.Age),
+					ImmutableObjectGraph.Optional.For(watch));
+			}
+		}
+		
 	
 	}
 	
@@ -458,10 +462,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -481,49 +481,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Size);
 		}
 	
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private Watch immutable;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String color;
-	
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 size;
-	
-			internal Builder(Watch immutable) {
-				this.immutable = immutable;
-	
-				this.color = immutable.Color;
-				this.size = immutable.Size;
-			}
-	
-			public System.String Color {
-				get {
-					return this.color;
-				}
-	
-				set {
-					this.color = value;
-				}
-			}
-	
-			public System.Int32 Size {
-				get {
-					return this.size;
-				}
-	
-				set {
-					this.size = value;
-				}
-			}
-	
-			public Watch ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Color),
-					ImmutableObjectGraph.Optional.For(this.Size));
-			}
-		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -531,6 +488,55 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.Int32 Size { get; set; }
 		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private Watch immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String color;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Int32 size;
+		
+			internal Builder(Watch immutable) {
+				this.immutable = immutable;
+		
+				this.color = immutable.Color;
+				this.size = immutable.Size;
+			}
+		
+			public System.String Color {
+				get {
+					return this.color;
+				}
+		
+				set {
+					this.color = value;
+				}
+			}
+		
+			public System.Int32 Size {
+				get {
+					return this.size;
+				}
+		
+				set {
+					this.size = value;
+				}
+			}
+		
+			public Watch ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Color),
+					ImmutableObjectGraph.Optional.For(this.Size));
+			}
+		}
+		
 	
 	}
 	

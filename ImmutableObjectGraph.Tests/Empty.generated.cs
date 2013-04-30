@@ -30,10 +30,6 @@ namespace ImmutableObjectGraph.Tests {
 			return DefaultInstance;
 		}
 	
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-	
 	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -51,22 +47,31 @@ namespace ImmutableObjectGraph.Tests {
 			return new Empty();
 		}
 	
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {	}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Empty immutable;
-	
+		
 			internal Builder(Empty immutable) {
 				this.immutable = immutable;
-	
+		
 			}
-	
+		
 			public Empty ToImmutable() {
 				return this.immutable = this.immutable;
 			}
 		}
+		
 	
-		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
-		private struct Template {	}
 	}
+	
 }
+
 
