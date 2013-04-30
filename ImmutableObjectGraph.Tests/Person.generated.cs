@@ -55,51 +55,52 @@ namespace ImmutableObjectGraph.Tests {
 	
 			return this.With(members: value);
 		}
-	
+		
 		/// <summary>Replaces the elements of the Members collection with the specified collection.</summary>
 		public Family WithMembers(params Person[] values) {
 			return this.With(members: this.Members.ResetContents(values));
 		}
-	
+		
 		/// <summary>Replaces the elements of the Members collection with the specified collection.</summary>
 		public Family WithMembers(System.Collections.Generic.IEnumerable<Person> values) {
 			return this.With(members: this.Members.ResetContents(values));
 		}
-	
+		
 		/// <summary>Adds the specified elements from the Members collection.</summary>
 		public Family AddMembers(System.Collections.Generic.IEnumerable<Person> values) {
 			return this.With(members: this.Members.AddRange(values));
 		}
-	
+		
 		/// <summary>Adds the specified elements from the Members collection.</summary>
 		public Family AddMembers(params Person[] values) {
 			return this.With(members: this.Members.AddRange(values));
 		}
-	
+		
 		/// <summary>Adds the specified element from the Members collection.</summary>
 		public Family AddMembers(Person value) {
 			return this.With(members: this.Members.Add(value));
 		}
-	
+		
 		/// <summary>Removes the specified elements from the Members collection.</summary>
 		public Family RemoveMembers(System.Collections.Generic.IEnumerable<Person> values) {
 			return this.With(members: this.Members.RemoveRange(values));
 		}
-	
+		
 		/// <summary>Removes the specified elements from the Members collection.</summary>
 		public Family RemoveMembers(params Person[] values) {
 			return this.With(members: this.Members.RemoveRange(values));
 		}
-	
+		
 		/// <summary>Removes the specified element from the Members collection.</summary>
 		public Family RemoveMembers(Person value) {
 			return this.With(members: this.Members.Remove(value));
 		}
-	
+		
 		/// <summary>Clears all elements from the Members collection.</summary>
 		public Family RemoveMembers() {
 			return this.With(members: this.Members.Clear());
 		}
+		
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Family With(
@@ -173,7 +174,9 @@ namespace ImmutableObjectGraph.Tests {
 		private struct Template {
 			internal System.Collections.Immutable.ImmutableSortedSet<Person> Members { get; set; }
 		}
+	
 	}
+	
 	
 	public interface IPerson {
 		System.String Name { get; }
@@ -372,7 +375,9 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal Watch Watch { get; set; }
 		}
+	
 	}
+	
 	
 	public interface IWatch {
 		System.String Color { get; }
@@ -526,6 +531,9 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal System.Int32 Size { get; set; }
 		}
+	
 	}
+	
 }
+
 

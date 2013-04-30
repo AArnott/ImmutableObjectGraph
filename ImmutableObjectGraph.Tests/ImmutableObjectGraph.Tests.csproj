@@ -91,6 +91,9 @@
     <Compile Include="XmlNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt">
+      <Link>ImmutableObjectGraph.CollectionHelpers.tt</Link>
+    </None>
     <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt">
       <Link>ImmutableObjectGraph.tt</Link>
     </None>
