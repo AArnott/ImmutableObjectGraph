@@ -424,6 +424,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; set; }
 		}
 		
+		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
+			throw new System.NotImplementedException();
+		}
+		
 		public new Builder ToBuilder() {
 			return new Builder(this);
 		}

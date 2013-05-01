@@ -1,0 +1,12 @@
+﻿<#
+this.HandleType += (templateType) => { 
+	if (templateType.IsRecursive) {
+#>
+
+public <#= templateType.Name #> ReplaceDescendent(<#= templateType.RecursiveType.Name #> current, <#= templateType.RecursiveType.Name #> replacement) {
+	throw new System.NotImplementedException();
+}
+<#
+	}
+}; // event handler
+#>

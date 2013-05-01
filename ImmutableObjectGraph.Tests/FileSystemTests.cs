@@ -34,6 +34,15 @@
 		public void NonRecursiveFiles() {
 			Assert.False(FileSystemFile.Create("a") is System.Collections.IEnumerable);
 		}
+
+		[Fact]
+		public void ReplaceDescendentUpdatesProperty() {
+			var leafToModify = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			var updatedLeaf = leafToModify.WithPathSegment("e.cs");
+			var updatedTree = this.root.ReplaceDescendent(leafToModify, updatedLeaf);
+			var leafFromUpdatedTree = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
+		}
 	}
 
 	[DebuggerDisplay("{FullPath}")]
