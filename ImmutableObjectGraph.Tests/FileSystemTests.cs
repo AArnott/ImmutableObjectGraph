@@ -52,6 +52,16 @@
 			var leafFromUpdatedTree = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
 			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
 		}
+
+		[Fact]
+		public void ReplaceDescendentChangesType() {
+			var leafToModify = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			var updatedLeaf = leafToModify.ToFileSystemDirectory().WithPathSegment("f");
+			var updatedTree = this.root.ReplaceDescendent(leafToModify, updatedLeaf);
+			var leafFromUpdatedTree = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			Assert.IsType<FileSystemDirectory>(leafFromUpdatedTree);
+			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
+		}
 	}
 
 	[DebuggerDisplay("{FullPath}")]
