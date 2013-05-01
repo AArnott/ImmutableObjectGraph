@@ -45,7 +45,7 @@
 		}
 
 		static partial void CreateDefaultTemplate(ref FileSystemDirectory.Template template) {
-			template.Children = ImmutableHashSet.Create<FileSystemEntry>(SiblingComparer.Instance);
+			template.Children = ImmutableSortedSet.Create<FileSystemEntry>(SiblingComparer.Instance);
 		}
 	}
 
@@ -57,18 +57,14 @@
 			}
 		}
 
-		public class SiblingComparer : IEqualityComparer<FileSystemEntry> {
+		public class SiblingComparer : IComparer<FileSystemEntry> {
 			public static SiblingComparer Instance = new SiblingComparer();
 
 			private SiblingComparer() {
 			}
 
-			public bool Equals(FileSystemEntry x, FileSystemEntry y) {
-				return StringComparer.OrdinalIgnoreCase.Equals(x.PathSegment, y.PathSegment);
-			}
-
-			public int GetHashCode(FileSystemEntry obj) {
-				return StringComparer.OrdinalIgnoreCase.GetHashCode(obj.PathSegment);
+			public int Compare(FileSystemEntry x, FileSystemEntry y) {
+				return StringComparer.OrdinalIgnoreCase.Compare(x.PathSegment, y.PathSegment);
 			}
 		}
 	}

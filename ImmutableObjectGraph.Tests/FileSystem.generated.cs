@@ -271,7 +271,7 @@ namespace ImmutableObjectGraph.Tests {
 	}
 	
 	public interface IFileSystemDirectory : IFileSystemEntry {
-		System.Collections.Immutable.ImmutableHashSet<FileSystemEntry> Children { get; }
+		System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; }
 	}
 	
 	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntry> {
@@ -279,7 +279,7 @@ namespace ImmutableObjectGraph.Tests {
 		private static readonly FileSystemDirectory DefaultInstance = GetDefaultTemplate();
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Collections.Immutable.ImmutableHashSet<FileSystemEntry> children;
+		private readonly System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children;
 	
 		/// <summary>Initializes a new instance of the FileSystemDirectory class.</summary>
 		protected FileSystemDirectory()
@@ -289,7 +289,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the FileSystemDirectory class.</summary>
 		protected FileSystemDirectory(
 			System.String pathSegment,
-			System.Collections.Immutable.ImmutableHashSet<FileSystemEntry> children)
+			System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children)
 			: base(
 				pathSegment: pathSegment)
 		{
@@ -299,13 +299,13 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static FileSystemDirectory Create(
 			System.String pathSegment,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<FileSystemEntry>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			return DefaultInstance.With(
 				pathSegment: pathSegment,
 				children: children.GetValueOrDefault(DefaultInstance.Children));
 		}
 	
-		public System.Collections.Immutable.ImmutableHashSet<FileSystemEntry> Children {
+		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
 			get { return this.children; }
 		}
 		
@@ -315,7 +315,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public FileSystemDirectory WithChildren(System.Collections.Immutable.ImmutableHashSet<FileSystemEntry> value) {
+		public FileSystemDirectory WithChildren(System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> value) {
 			if (value == this.Children) {
 				return this;
 			}
@@ -374,13 +374,13 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.With(
 				pathSegment: pathSegment,
-				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<FileSystemEntry>>));
+				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual FileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<FileSystemEntry>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			if (
 				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
 				(children.IsDefined && children.Value != this.Children)) {
@@ -421,7 +421,7 @@ namespace ImmutableObjectGraph.Tests {
 		private struct Template {
 			internal System.String PathSegment { get; set; }
 	
-			internal System.Collections.Immutable.ImmutableHashSet<FileSystemEntry> Children { get; set; }
+			internal System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; set; }
 		}
 		
 		public new Builder ToBuilder() {
@@ -433,14 +433,14 @@ namespace ImmutableObjectGraph.Tests {
 			private FileSystemDirectory immutable;
 		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<FileSystemEntry>.Builder> children;
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>.Builder> children;
 		
 			internal Builder(FileSystemDirectory immutable) : base(immutable) {
 				this.immutable = immutable;
 		
 			}
 		
-			public System.Collections.Immutable.ImmutableHashSet<FileSystemEntry>.Builder Children {
+			public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>.Builder Children {
 				get {
 					if (!this.children.IsDefined) {
 						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
