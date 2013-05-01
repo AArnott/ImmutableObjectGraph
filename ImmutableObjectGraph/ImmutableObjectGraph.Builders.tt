@@ -71,7 +71,6 @@ public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 )<# } /* if (templateType.LocalFields.Count > 0) */ #>;
 	}
 }
-
 <#
 }; // event handler
 #>

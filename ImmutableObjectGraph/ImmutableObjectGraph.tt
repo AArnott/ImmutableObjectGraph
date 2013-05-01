@@ -26,7 +26,6 @@
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
-
 <#
 	this.PushIndent("\t");
 	var templateTypes = DiscoverTemplateTypes();
@@ -141,10 +140,10 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		}
 	}
 <#		} /* if isAbstract */ #>
-
 <#	} /* templateType.LocalFields.Count > 0 */ #>
 
- <# if (templateType.IsRecursive) { #>
+<# if (templateType.IsRecursive) { #>
+
 	public System.Collections.Generic.IEnumerator<<#=templateType.Name#>> GetEnumerator() {
 		return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
 	}
@@ -152,10 +151,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 		return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
 	}
-
- <# }
+<# }
 	if (!templateType.IsAbstract) { #>
-
 	/// <summary>Normalizes and/or validates all properties on this object.</summary>
 	/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 	partial void Validate();
@@ -184,9 +181,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		this.PopIndent();
 #>);
 	}
-<# } /* !IsAbstract */ #>
-
-<# if (!templateType.IsAbstract) { #>
+<# } /* !IsAbstract */
+if (!templateType.IsAbstract) { #>
 
 	/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 	private struct Template {<#
@@ -202,9 +198,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	this.OnHandleType(templateType);
 #>
-
 }
-
 <#
 	} // looping over all template types
 
