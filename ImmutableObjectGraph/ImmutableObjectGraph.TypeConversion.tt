@@ -9,8 +9,7 @@ public <#= templateType.Ancestor.Name#> To<#= templateType.Ancestor.Name#>() {
 <#
 	}
 
-	if (!templateType.IsAbstract) {
-		foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
+	foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
 
 public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), ParameterStyle.OptionalOrRequired, indent: 1); #>) {
@@ -43,7 +42,7 @@ public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParamet
 		#>);
 }
 <#
-		foreach (var ancestor in templateType.GetNonAbstractAncestors()) { #>
+		foreach (var ancestor in templateType.Ancestors) { #>
 
 public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired); #>) {
 	return base.To<#= derivedType.Name #>(<#
@@ -53,8 +52,7 @@ public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParame
 		#>);
 }
 <#
-			} // foreach ancestor type
-		} // foreach derived type
-	}
+		} // foreach ancestor type
+	} // foreach derived type
 }; // event handler
 #>

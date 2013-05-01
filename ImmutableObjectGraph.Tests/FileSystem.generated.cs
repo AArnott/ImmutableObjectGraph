@@ -51,6 +51,34 @@ namespace ImmutableObjectGraph.Tests {
 		public abstract FileSystemEntry With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
 		
+		public virtual FileSystemFile ToFileSystemFile(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			FileSystemFile that = this as FileSystemFile;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(FileSystemFile))) {
+				if ((!attributes.IsDefined || attributes.Value == that.Attributes)) {
+					return that;
+				}
+			}
+		
+			return FileSystemFile.Create(
+				pathSegment: this.PathSegment,
+				attributes: attributes);
+		}
+		
+		public virtual FileSystemDirectory ToFileSystemDirectory(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
+			FileSystemDirectory that = this as FileSystemDirectory;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(FileSystemDirectory))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return FileSystemDirectory.Create(
+				pathSegment: this.PathSegment,
+				children: children);
+		}
+		
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}

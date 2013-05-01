@@ -11,7 +11,6 @@
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
-
 	
 	public interface IEmpty {
 	}
@@ -30,7 +29,6 @@ namespace ImmutableObjectGraph.Tests {
 			return DefaultInstance;
 		}
 	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -45,7 +43,6 @@ namespace ImmutableObjectGraph.Tests {
 			CreateDefaultTemplate(ref template);
 			return new Empty();
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {	}
@@ -67,10 +64,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this.immutable = this.immutable;
 			}
 		}
-		
-	
 	}
-	
 }
 
 

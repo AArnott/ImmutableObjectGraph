@@ -11,7 +11,6 @@
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
-
 	
 	public interface IA {
 		System.Int32 Field1 { get; }
@@ -69,8 +68,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -86,7 +83,6 @@ namespace ImmutableObjectGraph.Tests {
 			return new A(
 				template.Field1);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -173,10 +169,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Field1));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IB : IA {
 		System.Int32 Field2 { get; }
@@ -254,8 +247,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -272,7 +263,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Field1, 
 				template.Field2);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -365,10 +355,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Field2));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IC1 : IB {
 		System.Int32 Field3 { get; }
@@ -460,8 +447,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -479,7 +464,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Field2, 
 				template.Field3);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -530,10 +514,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Field3));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IC2 : IB {
 		System.Int32 Field3 { get; }
@@ -625,8 +606,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -644,7 +623,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Field2, 
 				template.Field3);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -695,10 +673,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Field3));
 			}
 		}
-		
-	
 	}
-	
 }
 
 

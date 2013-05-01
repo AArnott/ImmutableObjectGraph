@@ -11,7 +11,6 @@
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
-
 	
 	public interface IReqAndHierL1 {
 		System.String L1Field1 { get; }
@@ -93,8 +92,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -111,7 +108,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.L1Field1, 
 				template.L1Field2);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -185,10 +181,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.L1Field2));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IReqAndHierL2 : IReqAndHierL1 {
 		System.String L2Field1 { get; }
@@ -305,8 +298,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -325,7 +316,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.L2Field1, 
 				template.L2Field2);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -393,10 +383,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.L2Field2));
 			}
 		}
-		
-	
 	}
-	
 }
 
 

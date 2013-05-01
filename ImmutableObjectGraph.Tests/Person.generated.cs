@@ -11,7 +11,6 @@
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
-
 	
 	public interface IFamily {
 		System.Collections.Immutable.ImmutableSortedSet<Person> Members { get; }
@@ -115,8 +114,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -132,7 +129,6 @@ namespace ImmutableObjectGraph.Tests {
 			return new Family(
 				template.Members);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -175,10 +171,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(members));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IPerson {
 		System.String Name { get; }
@@ -284,8 +277,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -303,7 +294,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Age, 
 				template.Watch);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -380,10 +370,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(watch));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IWatch {
 		System.String Color { get; }
@@ -465,8 +452,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -483,7 +468,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Color, 
 				template.Size);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -539,10 +523,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Size));
 			}
 		}
-		
-	
 	}
-	
 }
 
 

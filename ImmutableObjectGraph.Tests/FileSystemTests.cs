@@ -34,6 +34,15 @@
 		public void NonRecursiveFiles() {
 			Assert.False(FileSystemFile.Create("a") is System.Collections.IEnumerable);
 		}
+
+		[Fact]
+		public void TypeConversion() {
+			FileSystemFile file = FileSystemFile.Create("a");
+			FileSystemDirectory folder = file.ToFileSystemDirectory();
+			Assert.Equal(file.PathSegment, folder.PathSegment);
+			FileSystemFile fileAgain = folder.ToFileSystemFile();
+			Assert.Equal(file.PathSegment, fileAgain.PathSegment);
+		}
 	}
 
 	[DebuggerDisplay("{FullPath}")]
