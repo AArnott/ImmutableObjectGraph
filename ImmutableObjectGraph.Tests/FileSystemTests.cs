@@ -18,8 +18,11 @@
 
 			var rootWithChildren = root.AddChildren(
 				FileSystemFile.Create("a.cs"),
-				FileSystemFile.Create("b.cs"));
-			Assert.Equal(2, rootWithChildren.Count());  // use Linq to exercise enumerator
+				FileSystemFile.Create("b.cs"),
+				FileSystemDirectory.Create("c")
+					.AddChildren(FileSystemFile.Create("d.cs")));
+			Assert.Equal(3, rootWithChildren.Count());  // use Linq to exercise enumerator
+			Assert.Equal(1, rootWithChildren.OfType<FileSystemDirectory>().Single().Count());
 		}
 
 		[Fact]
