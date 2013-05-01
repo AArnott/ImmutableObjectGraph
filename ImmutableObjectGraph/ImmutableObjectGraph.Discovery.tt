@@ -223,11 +223,15 @@ protected class MetaType {
 	}
 
 	public MetaField RecursiveField {
-		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && f.ElementType == this.Type); }
+		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)); }
+	}
+
+	public MetaType RecursiveType {
+		get { return this.RecursiveField != null ? this.FindMetaType(this.RecursiveField.ElementType) : null; }
 	}
 
 	public bool IsRecursive {
-		get { return this.LocalFields.Count(f => f.IsCollection && f.ElementType == this.Type) == 1; }
+		get { return this.LocalFields.Count(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)) == 1; }
 	}
 
 	public MetaType Ancestor {
@@ -258,6 +262,17 @@ protected class MetaType {
 		get { return GetOptionalTypeName(this.Type); }
 	}
 
+	protected MetaType RootAncestorOrThisType {
+		get {
+			MetaType current = this;
+			while (current.Ancestor != null) {
+				current = current.Ancestor;
+			}
+
+			return current;
+		}
+	}
+
 	public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
 		var fields = ImmutableList.Create<MetaField>();
 		if (ancestor != this) {
@@ -283,6 +298,10 @@ protected class MetaType {
 	public override bool Equals(object value) {
 		var other = value as MetaType;
 		return other != null && this.Type.IsEquivalentTo(other.Type);
+	}
+
+	protected MetaType FindMetaType(Type type) {
+		return this.knownTypes.SingleOrDefault(mt => mt.Type.IsEquivalentTo(type));
 	}
 
 	public class MetaField {
