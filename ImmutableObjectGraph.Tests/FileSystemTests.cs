@@ -10,19 +10,24 @@
 	using Xunit;
 
 	public class FileSystemTests {
-		[Fact]
-		public void RecursiveDirectories() {
-			var root = FileSystemDirectory.Create("c:");
-			Assert.True(root is IEnumerable<FileSystemEntry>);
-			Assert.Equal(0, root.Count()); // using Linq exercises the enumerable
+		private FileSystemDirectory root;
 
-			var rootWithChildren = root.AddChildren(
+		public FileSystemTests() {
+			this.root = FileSystemDirectory.Create("c:").AddChildren(
 				FileSystemFile.Create("a.cs"),
 				FileSystemFile.Create("b.cs"),
-				FileSystemDirectory.Create("c")
-					.AddChildren(FileSystemFile.Create("d.cs")));
-			Assert.Equal(3, rootWithChildren.Count());  // use Linq to exercise enumerator
-			Assert.Equal(1, rootWithChildren.OfType<FileSystemDirectory>().Single().Count());
+				FileSystemDirectory.Create("c").AddChildren(
+					FileSystemFile.Create("d.cs")));
+		}
+
+		[Fact]
+		public void RecursiveDirectories() {
+			var emptyRoot = FileSystemDirectory.Create("c:");
+			Assert.True(emptyRoot is IEnumerable<FileSystemEntry>);
+			Assert.Equal(0, emptyRoot.Count()); // using Linq exercises the enumerable
+
+			Assert.Equal(3, this.root.Count());  // use Linq to exercise enumerator
+			Assert.Equal(1, this.root.OfType<FileSystemDirectory>().Single().Count());
 		}
 
 		[Fact]
