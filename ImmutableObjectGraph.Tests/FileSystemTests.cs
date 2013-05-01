@@ -13,8 +13,8 @@
 		[Fact]
 		public void RecursiveDirectories() {
 			var root = FileSystemDirectory.Create("c:");
-			Assert.True(root is System.Collections.IEnumerable);
-			Assert.Equal(0, root.Count()); // using Linq implicitly proves it is enumerable
+			Assert.True(root is IEnumerable<FileSystemEntry>);
+			Assert.Equal(0, root.Count()); // using Linq exercises the enumerable
 
 			var rootWithChildren = root.AddChildren(
 				FileSystemFile.Create("a.cs"),
