@@ -47,6 +47,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystem.generated.cs">
+      <DependentUpon>FileSystem.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="FileSystemTests.cs" />
     <Compile Include="RequiresAndHierarchy.generated.cs">
       <DependentUpon>RequiresAndHierarchy.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -96,6 +102,10 @@
     </None>
     <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt">
       <Link>ImmutableObjectGraph.tt</Link>
+    </None>
+    <None Include="FileSystem.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FileSystem.generated.cs</LastGenOutput>
     </None>
     <None Include="RequiresAndHierarchy.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

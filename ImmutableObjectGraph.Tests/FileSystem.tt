@@ -1,0 +1,20 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "ImmutableObjectGraph.Tests";
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	abstract class FileSystemEntry {
+		[Required]
+		string pathSegment;
+	}
+
+	class FileSystemFile : FileSystemEntry {
+		ImmutableHashSet<string> attributes;
+	}
+
+	class FileSystemDirectory : FileSystemEntry {
+		ImmutableHashSet<FileSystemEntry> children;
+	}
+#>
