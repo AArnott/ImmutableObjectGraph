@@ -13,7 +13,12 @@
 		[Fact]
 		public void RecursiveDirectories() {
 			var root = FileSystemDirectory.Create("c:");
-			//Assert.Equal(0, root.Count());
+			Assert.Equal(0, root.Count()); // using Linq implicitly proves it is enumerable
+
+			var rootWithChildren = root.AddChildren(
+				FileSystemFile.Create("a.cs"),
+				FileSystemFile.Create("b.cs"));
+			Assert.Equal(2, rootWithChildren.Count());
 		}
 	}
 

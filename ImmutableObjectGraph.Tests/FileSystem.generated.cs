@@ -274,7 +274,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableHashSet<FileSystemEntry> Children { get; }
 	}
 	
-	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory {
+	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntry> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly FileSystemDirectory DefaultInstance = GetDefaultTemplate();
 	
@@ -392,6 +392,14 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
+	
+		public System.Collections.Generic.IEnumerator<FileSystemEntry> GetEnumerator() {
+			return this.children.GetEnumerator();
+		}
+	
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+			return this.children.GetEnumerator();
+		}
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();

@@ -45,7 +45,7 @@ public interface I<#= templateType.Name #><#
 #>
 }
 
-public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.Name #> : <#= templateType.HasAncestor ? (templateType.Ancestor.Name + ", ") : "" #>I<#= templateType.Name #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.Name#>><# } #> {
+public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.Name #> : <#= templateType.HasAncestor ? (templateType.Ancestor.Name + ", ") : "" #>I<#= templateType.Name #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.RecursiveType.Name#>><# } #> {
 <#	if (!templateType.IsAbstract) { #>
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 	private static readonly <#= templateType.Name #> DefaultInstance = GetDefaultTemplate();
@@ -144,7 +144,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 <# if (templateType.IsRecursive) { #>
 
-	public System.Collections.Generic.IEnumerator<<#=templateType.Name#>> GetEnumerator() {
+	public System.Collections.Generic.IEnumerator<<#=templateType.RecursiveType.Name#>> GetEnumerator() {
 		return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
 	}
 
