@@ -11,7 +11,6 @@
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
-
 	
 	public interface IXmlNode {
 		System.String LocalName { get; }
@@ -51,8 +50,60 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public abstract XmlNode With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>));
-	
-	 
+		
+		public virtual XmlElement ToXmlElement(
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
+			XmlElement that = this as XmlElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(XmlElement))) {
+				if ((!namespaceName.IsDefined || namespaceName.Value == that.NamespaceName) && 
+				    (!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return XmlElement.Create(
+				localName: this.LocalName,
+				namespaceName: namespaceName,
+				children: children);
+		}
+		
+		public virtual XmlElementWithContent ToXmlElementWithContent(
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			XmlElementWithContent that = this as XmlElementWithContent;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(XmlElementWithContent))) {
+				if ((!namespaceName.IsDefined || namespaceName.Value == that.NamespaceName) && 
+				    (!children.IsDefined || children.Value == that.Children) && 
+				    (!content.IsDefined || content.Value == that.Content)) {
+					return that;
+				}
+			}
+		
+			return XmlElementWithContent.Create(
+				localName: this.LocalName,
+				namespaceName: namespaceName,
+				children: children,
+				content: content);
+		}
+		
+		public virtual XmlAttribute ToXmlAttribute(
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			XmlAttribute that = this as XmlAttribute;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(XmlAttribute))) {
+				if ((!namespaceName.IsDefined || namespaceName.Value == that.NamespaceName) && 
+				    (!value.IsDefined || value.Value == that.Value)) {
+					return that;
+				}
+			}
+		
+			return XmlAttribute.Create(
+				localName: this.LocalName,
+				namespaceName: namespaceName,
+				value: value);
+		}
 		
 		public Builder ToBuilder() {
 			return new Builder(this);
@@ -86,17 +137,14 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.LocalName));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IXmlElement : IXmlNode {
 		System.String NamespaceName { get; }
 		System.Collections.Immutable.ImmutableList<XmlNode> Children { get; }
 	}
 	
-	public partial class XmlElement : XmlNode, IXmlElement {
+	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlElement DefaultInstance = GetDefaultTemplate();
 	
@@ -239,7 +287,13 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-	 
+		public System.Collections.Generic.IEnumerator<XmlNode> GetEnumerator() {
+			return this.children.GetEnumerator();
+		}
+	
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+			return this.children.GetEnumerator();
+		}
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -257,7 +311,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.NamespaceName, 
 				template.Children);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -282,6 +335,16 @@ namespace ImmutableObjectGraph.Tests {
 				namespaceName: this.NamespaceName,
 				children: this.Children,
 				content: content);
+		}
+		
+		public override XmlElementWithContent ToXmlElementWithContent(
+				ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+				ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return base.ToXmlElementWithContent(
+					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
+					children: children.GetValueOrDefault(this.Children),
+					content: content);
 		}
 		
 		public new Builder ToBuilder() {
@@ -336,10 +399,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(children));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IXmlElementWithContent : IXmlElement {
 		System.String Content { get; }
@@ -491,8 +551,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -511,7 +569,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Children, 
 				template.Content);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -567,10 +624,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Content));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IXmlAttribute : IXmlNode {
 		System.String NamespaceName { get; }
@@ -673,8 +727,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -692,7 +744,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.NamespaceName, 
 				template.Value);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -751,10 +802,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Value));
 			}
 		}
-		
-	
 	}
-	
 }
 
 

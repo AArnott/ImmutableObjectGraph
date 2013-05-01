@@ -233,6 +233,14 @@ protected class MetaType {
 	public bool IsRecursive {
 		get { return this.LocalFields.Count(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)) == 1; }
 	}
+	
+	public IEnumerable<MetaType> Ancestors {
+		get {
+			for (var ancestor = this.Ancestor; ancestor != null; ancestor = ancestor.Ancestor) {
+				yield return ancestor;
+			}
+		}
+	}
 
 	public MetaType Ancestor {
 		get { return this.knownTypes.FirstOrDefault(mt => mt.Type.IsEquivalentTo(this.Type.BaseType)); }
@@ -281,14 +289,6 @@ protected class MetaType {
 		}
 
 		return fields;
-	}
-
-	public IEnumerable<MetaType> GetNonAbstractAncestors() {
-		for (var ancestor = this.Ancestor; ancestor != null; ancestor = ancestor.Ancestor) {
-			if (!ancestor.IsAbstract) {
-				yield return ancestor;
-			}
-		}
 	}
 
 	public override int GetHashCode() {

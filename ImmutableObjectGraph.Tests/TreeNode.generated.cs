@@ -11,7 +11,6 @@
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using ImmutableObjectGraph;
-
 	
 	public interface ITreeNode {
 		System.String Caption { get; }
@@ -258,15 +257,13 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-	 	public System.Collections.Generic.IEnumerator<TreeNode> GetEnumerator() {
+		public System.Collections.Generic.IEnumerator<TreeNode> GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
 	
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -286,7 +283,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.Attributes, 
 				template.Children);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -401,10 +397,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(children));
 			}
 		}
-		
-	
 	}
-	
 }
 
 
