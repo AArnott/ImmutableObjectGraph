@@ -9,6 +9,7 @@
 <#@ Import Namespace="System.Reflection" #>
 <#@ import namespace="System.Text" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt" #>
 // ------------------------------------------------------------------------------
@@ -103,27 +104,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 <#  } // foreach Fields
 
 	foreach(var field in templateType.AllFields) {
-		if (field.DeclaringType == templateType) { #>
-	/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
-	public <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= GetTypeName(field.FieldType) #> value) {
-		if (value == this.<#= field.NamePascalCase #>) {
-			return this;
-		}
-
-		return this.With(<#= field.NameCamelCase #>: value);
+		this.OnHandleField(templateType, field);
 	}
-<#
-	} else { // else field appears on the base type
-#>
-	/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
-	public new <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= GetTypeName(field.FieldType) #> value) {
-		return (<#= templateType.Name #>)base.With<#= field.NamePascalCase #>(value);
-	}
-<#
-	}
-
-	this.OnHandleField(templateType, field);
-} // foreach field
 
 	if (templateType.LocalFields.Count > 0) {
 		if (templateType.HasAncestor) {

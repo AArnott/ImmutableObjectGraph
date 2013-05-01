@@ -95,36 +95,40 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Collections.Immutable.ImmutableList<TreeNode> Children {
 			get { return this.children; }
 		}
+		
 		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
 		public TreeNode WithCaption(System.String value) {
 			if (value == this.Caption) {
 				return this;
 			}
-	
+		
 			return this.With(caption: value);
 		}
+		
 		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
 		public TreeNode WithFilePath(System.String value) {
 			if (value == this.FilePath) {
 				return this;
 			}
-	
+		
 			return this.With(filePath: value);
 		}
+		
 		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
 		public TreeNode WithVisible(System.Boolean value) {
 			if (value == this.Visible) {
 				return this;
 			}
-	
+		
 			return this.With(visible: value);
 		}
+		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
 		public TreeNode WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			if (value == this.Attributes) {
 				return this;
 			}
-	
+		
 			return this.With(attributes: value);
 		}
 		
@@ -173,12 +177,13 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(attributes: this.Attributes.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public TreeNode WithChildren(System.Collections.Immutable.ImmutableList<TreeNode> value) {
 			if (value == this.Children) {
 				return this;
 			}
-	
+		
 			return this.With(children: value);
 		}
 		

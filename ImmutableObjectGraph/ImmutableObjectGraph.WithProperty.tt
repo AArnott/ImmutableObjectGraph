@@ -1,0 +1,25 @@
+﻿<#
+this.HandleField += (templateType, field) => { 
+	if (field.DeclaringType == templateType) { // field is declared locally
+#>
+
+/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
+public <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= GetTypeName(field.FieldType) #> value) {
+	if (value == this.<#= field.NamePascalCase #>) {
+		return this;
+	}
+
+	return this.With(<#= field.NameCamelCase #>: value);
+}
+<#
+	} else { // else field is declared on a base type
+#>
+
+/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
+public new <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= GetTypeName(field.FieldType) #> value) {
+	return (<#= templateType.Name #>)base.With<#= field.NamePascalCase #>(value);
+}
+<#
+	}
+}; // event handler
+#>

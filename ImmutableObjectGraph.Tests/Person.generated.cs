@@ -47,12 +47,13 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
 			get { return this.members; }
 		}
+		
 		/// <summary>Returns a new instance with the Members property set to the specified value.</summary>
 		public Family WithMembers(System.Collections.Immutable.ImmutableSortedSet<Person> value) {
 			if (value == this.Members) {
 				return this;
 			}
-	
+		
 			return this.With(members: value);
 		}
 		
@@ -238,28 +239,31 @@ namespace ImmutableObjectGraph.Tests {
 		public Watch Watch {
 			get { return this.watch; }
 		}
+		
 		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
 		public Person WithName(System.String value) {
 			if (value == this.Name) {
 				return this;
 			}
-	
+		
 			return this.With(name: value);
 		}
+		
 		/// <summary>Returns a new instance with the Age property set to the specified value.</summary>
 		public Person WithAge(System.Int32 value) {
 			if (value == this.Age) {
 				return this;
 			}
-	
+		
 			return this.With(age: value);
 		}
+		
 		/// <summary>Returns a new instance with the Watch property set to the specified value.</summary>
 		public Person WithWatch(Watch value) {
 			if (value == this.Watch) {
 				return this;
 			}
-	
+		
 			return this.With(watch: value);
 		}
 	
@@ -429,20 +433,22 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Int32 Size {
 			get { return this.size; }
 		}
+		
 		/// <summary>Returns a new instance with the Color property set to the specified value.</summary>
 		public Watch WithColor(System.String value) {
 			if (value == this.Color) {
 				return this;
 			}
-	
+		
 			return this.With(color: value);
 		}
+		
 		/// <summary>Returns a new instance with the Size property set to the specified value.</summary>
 		public Watch WithSize(System.Int32 value) {
 			if (value == this.Size) {
 				return this;
 			}
-	
+		
 			return this.With(size: value);
 		}
 	

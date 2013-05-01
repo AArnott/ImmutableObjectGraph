@@ -59,20 +59,22 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String L1Field2 {
 			get { return this.l1Field2; }
 		}
+		
 		/// <summary>Returns a new instance with the L1Field1 property set to the specified value.</summary>
 		public ReqAndHierL1 WithL1Field1(System.String value) {
 			if (value == this.L1Field1) {
 				return this;
 			}
-	
+		
 			return this.With(l1Field1: value);
 		}
+		
 		/// <summary>Returns a new instance with the L1Field2 property set to the specified value.</summary>
 		public ReqAndHierL1 WithL1Field2(System.String value) {
 			if (value == this.L1Field2) {
 				return this;
 			}
-	
+		
 			return this.With(l1Field2: value);
 		}
 	
@@ -243,28 +245,32 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String L2Field2 {
 			get { return this.l2Field2; }
 		}
+		
 		/// <summary>Returns a new instance with the L1Field1 property set to the specified value.</summary>
 		public new ReqAndHierL2 WithL1Field1(System.String value) {
 			return (ReqAndHierL2)base.WithL1Field1(value);
 		}
+		
 		/// <summary>Returns a new instance with the L1Field2 property set to the specified value.</summary>
 		public new ReqAndHierL2 WithL1Field2(System.String value) {
 			return (ReqAndHierL2)base.WithL1Field2(value);
 		}
+		
 		/// <summary>Returns a new instance with the L2Field1 property set to the specified value.</summary>
 		public ReqAndHierL2 WithL2Field1(System.String value) {
 			if (value == this.L2Field1) {
 				return this;
 			}
-	
+		
 			return this.With(l2Field1: value);
 		}
+		
 		/// <summary>Returns a new instance with the L2Field2 property set to the specified value.</summary>
 		public ReqAndHierL2 WithL2Field2(System.String value) {
 			if (value == this.L2Field2) {
 				return this;
 			}
-	
+		
 			return this.With(l2Field2: value);
 		}
 	

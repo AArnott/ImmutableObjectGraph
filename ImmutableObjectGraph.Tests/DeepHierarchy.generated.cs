@@ -47,12 +47,13 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Int32 Field1 {
 			get { return this.field1; }
 		}
+		
 		/// <summary>Returns a new instance with the Field1 property set to the specified value.</summary>
 		public A WithField1(System.Int32 value) {
 			if (value == this.Field1) {
 				return this;
 			}
-	
+		
 			return this.With(field1: value);
 		}
 	
@@ -216,16 +217,18 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Int32 Field2 {
 			get { return this.field2; }
 		}
+		
 		/// <summary>Returns a new instance with the Field1 property set to the specified value.</summary>
 		public new B WithField1(System.Int32 value) {
 			return (B)base.WithField1(value);
 		}
+		
 		/// <summary>Returns a new instance with the Field2 property set to the specified value.</summary>
 		public B WithField2(System.Int32 value) {
 			if (value == this.Field2) {
 				return this;
 			}
-	
+		
 			return this.With(field2: value);
 		}
 	
@@ -410,20 +413,23 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Int32 Field3 {
 			get { return this.field3; }
 		}
+		
 		/// <summary>Returns a new instance with the Field1 property set to the specified value.</summary>
 		public new C1 WithField1(System.Int32 value) {
 			return (C1)base.WithField1(value);
 		}
+		
 		/// <summary>Returns a new instance with the Field2 property set to the specified value.</summary>
 		public new C1 WithField2(System.Int32 value) {
 			return (C1)base.WithField2(value);
 		}
+		
 		/// <summary>Returns a new instance with the Field3 property set to the specified value.</summary>
 		public C1 WithField3(System.Int32 value) {
 			if (value == this.Field3) {
 				return this;
 			}
-	
+		
 			return this.With(field3: value);
 		}
 	
@@ -572,20 +578,23 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Int32 Field3 {
 			get { return this.field3; }
 		}
+		
 		/// <summary>Returns a new instance with the Field1 property set to the specified value.</summary>
 		public new C2 WithField1(System.Int32 value) {
 			return (C2)base.WithField1(value);
 		}
+		
 		/// <summary>Returns a new instance with the Field2 property set to the specified value.</summary>
 		public new C2 WithField2(System.Int32 value) {
 			return (C2)base.WithField2(value);
 		}
+		
 		/// <summary>Returns a new instance with the Field3 property set to the specified value.</summary>
 		public C2 WithField3(System.Int32 value) {
 			if (value == this.Field3) {
 				return this;
 			}
-	
+		
 			return this.With(field3: value);
 		}
 	

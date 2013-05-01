@@ -38,12 +38,13 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String LocalName {
 			get { return this.localName; }
 		}
+		
 		/// <summary>Returns a new instance with the LocalName property set to the specified value.</summary>
 		public XmlNode WithLocalName(System.String value) {
 			if (value == this.LocalName) {
 				return this;
 			}
-	
+		
 			return this.With(localName: value);
 		}
 	
@@ -141,24 +142,27 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Collections.Immutable.ImmutableList<XmlNode> Children {
 			get { return this.children; }
 		}
+		
 		/// <summary>Returns a new instance with the LocalName property set to the specified value.</summary>
 		public new XmlElement WithLocalName(System.String value) {
 			return (XmlElement)base.WithLocalName(value);
 		}
+		
 		/// <summary>Returns a new instance with the NamespaceName property set to the specified value.</summary>
 		public XmlElement WithNamespaceName(System.String value) {
 			if (value == this.NamespaceName) {
 				return this;
 			}
-	
+		
 			return this.With(namespaceName: value);
 		}
+		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public XmlElement WithChildren(System.Collections.Immutable.ImmutableList<XmlNode> value) {
 			if (value == this.Children) {
 				return this;
 			}
-	
+		
 			return this.With(children: value);
 		}
 		
@@ -385,14 +389,17 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Content {
 			get { return this.content; }
 		}
+		
 		/// <summary>Returns a new instance with the LocalName property set to the specified value.</summary>
 		public new XmlElementWithContent WithLocalName(System.String value) {
 			return (XmlElementWithContent)base.WithLocalName(value);
 		}
+		
 		/// <summary>Returns a new instance with the NamespaceName property set to the specified value.</summary>
 		public new XmlElementWithContent WithNamespaceName(System.String value) {
 			return (XmlElementWithContent)base.WithNamespaceName(value);
 		}
+		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public new XmlElementWithContent WithChildren(System.Collections.Immutable.ImmutableList<XmlNode> value) {
 			return (XmlElementWithContent)base.WithChildren(value);
@@ -443,12 +450,13 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(children: this.Children.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Content property set to the specified value.</summary>
 		public XmlElementWithContent WithContent(System.String value) {
 			if (value == this.Content) {
 				return this;
 			}
-	
+		
 			return this.With(content: value);
 		}
 	
@@ -616,24 +624,27 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Value {
 			get { return this.value; }
 		}
+		
 		/// <summary>Returns a new instance with the LocalName property set to the specified value.</summary>
 		public new XmlAttribute WithLocalName(System.String value) {
 			return (XmlAttribute)base.WithLocalName(value);
 		}
+		
 		/// <summary>Returns a new instance with the NamespaceName property set to the specified value.</summary>
 		public XmlAttribute WithNamespaceName(System.String value) {
 			if (value == this.NamespaceName) {
 				return this;
 			}
-	
+		
 			return this.With(namespaceName: value);
 		}
+		
 		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
 		public XmlAttribute WithValue(System.String value) {
 			if (value == this.Value) {
 				return this;
 			}
-	
+		
 			return this.With(value: value);
 		}
 	
