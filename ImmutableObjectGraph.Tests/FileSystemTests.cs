@@ -63,6 +63,12 @@
 			Assert.IsType<FileSystemDirectory>(leafFromUpdatedTree);
 			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
 		}
+
+		[Fact]
+		public void ReplaceDescendentNotFound() {
+			var newRoot = this.root.ReplaceDescendent(FileSystemFile.Create("nonexistent"), FileSystemFile.Create("replacement"));
+			Assert.Same(this.root, newRoot); // no change should have been made.
+		}
 	}
 
 	[DebuggerDisplay("{FullPath}")]
