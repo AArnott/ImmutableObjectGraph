@@ -26,6 +26,7 @@
 
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
 <#
 	this.PushIndent("\t");

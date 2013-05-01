@@ -4,7 +4,21 @@ this.HandleType += (templateType) => {
 #>
 
 public <#= templateType.Name #> ReplaceDescendent(<#= templateType.RecursiveType.Name #> current, <#= templateType.RecursiveType.Name #> replacement) {
-	throw new System.NotImplementedException();
+	var newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(current, replacement);
+	if (this.<#= templateType.RecursiveField.NamePascalCase #> != newChildren) {
+		return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
+	}
+	
+	foreach (var child in this.OfType<<#= templateType.RecursiveField.DeclaringType.TypeName #>>())
+	{
+		var newChild = child.ReplaceDescendent(current, replacement);
+		if (newChild != child) {
+			newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(child, newChild);
+			return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
+		}
+	}
+		
+	return this;
 }
 <#
 	}
