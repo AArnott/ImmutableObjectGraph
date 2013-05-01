@@ -166,8 +166,8 @@ private enum ParameterStyle {
 	OptionalOrRequired,
 }
 
-private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style) {
-	PushIndent("\t\t");
+private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style, int indent = 2) {
+	PushIndent(new string('\t', indent));
 	bool firstInSequence = true;
 	if (style == ParameterStyle.OptionalOrRequired) {
 		fields = SortRequiredFieldsFirst(fields);

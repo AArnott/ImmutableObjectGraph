@@ -70,55 +70,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-	
-		public virtual B ToB(
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			B that = this as B;
-			if (that != null && this.GetType().IsEquivalentTo(typeof(B))) {
-				if ((!field2.IsDefined || field2.Value == that.Field2)) {
-					return that;
-				}
-			}
-	
-			return B.Create(
-				field1: this.Field1,
-				field2: field2);
-		}
-	
-		public virtual C1 ToC1(
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			C1 that = this as C1;
-			if (that != null && this.GetType().IsEquivalentTo(typeof(C1))) {
-				if ((!field2.IsDefined || field2.Value == that.Field2) && 
-				    (!field3.IsDefined || field3.Value == that.Field3)) {
-					return that;
-				}
-			}
-	
-			return C1.Create(
-				field1: this.Field1,
-				field2: field2,
-				field3: field3);
-		}
-	
-		public virtual C2 ToC2(
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			C2 that = this as C2;
-			if (that != null && this.GetType().IsEquivalentTo(typeof(C2))) {
-				if ((!field2.IsDefined || field2.Value == that.Field2) && 
-				    (!field3.IsDefined || field3.Value == that.Field3)) {
-					return that;
-				}
-			}
-	
-			return C2.Create(
-				field1: this.Field1,
-				field2: field2,
-				field3: field3);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -140,6 +91,54 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.Int32 Field1 { get; set; }
+		}
+		
+		public virtual B ToB(
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			B that = this as B;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(B))) {
+				if ((!field2.IsDefined || field2.Value == that.Field2)) {
+					return that;
+				}
+			}
+		
+			return B.Create(
+				field1: this.Field1,
+				field2: field2);
+		}
+		
+		public virtual C1 ToC1(
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C1 that = this as C1;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C1))) {
+				if ((!field2.IsDefined || field2.Value == that.Field2) && 
+				    (!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+		
+			return C1.Create(
+				field1: this.Field1,
+				field2: field2,
+				field3: field3);
+		}
+		
+		public virtual C2 ToC2(
+			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C2 that = this as C2;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C2))) {
+				if ((!field2.IsDefined || field2.Value == that.Field2) && 
+				    (!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+		
+			return C2.Create(
+				field1: this.Field1,
+				field2: field2,
+				field3: field3);
 		}
 		
 		public Builder ToBuilder() {
@@ -256,57 +255,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public A ToA() {
-			return A.Create(
-				field1: this.Field1);
-		}
-	
-		public virtual C1 ToC1(
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			C1 that = this as C1;
-			if (that != null && this.GetType().IsEquivalentTo(typeof(C1))) {
-				if ((!field3.IsDefined || field3.Value == that.Field3)) {
-					return that;
-				}
-			}
-	
-			return C1.Create(
-				field1: this.Field1,
-				field2: this.Field2,
-				field3: field3);
-		}
-	
-		public override C1 ToC1(
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			return base.ToC1(
-				field2: field2.GetValueOrDefault(this.Field2),
-				field3: field3);
-		}
-	
-		public virtual C2 ToC2(
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			C2 that = this as C2;
-			if (that != null && this.GetType().IsEquivalentTo(typeof(C2))) {
-				if ((!field3.IsDefined || field3.Value == that.Field3)) {
-					return that;
-				}
-			}
-	
-			return C2.Create(
-				field1: this.Field1,
-				field2: this.Field2,
-				field3: field3);
-		}
-	
-		public override C2 ToC2(
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			return base.ToC2(
-				field2: field2.GetValueOrDefault(this.Field2),
-				field3: field3);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -331,6 +279,57 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Int32 Field1 { get; set; }
 	
 			internal System.Int32 Field2 { get; set; }
+		}
+		
+		public A ToA() {
+			return A.Create(
+				field1: this.Field1);
+		}
+		
+		public virtual C1 ToC1(
+			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C1 that = this as C1;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C1))) {
+				if ((!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+		
+			return C1.Create(
+				field1: this.Field1,
+				field2: this.Field2,
+				field3: field3);
+		}
+		
+		public override C1 ToC1(
+				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return base.ToC1(
+					field2: field2.GetValueOrDefault(this.Field2),
+					field3: field3);
+		}
+		
+		public virtual C2 ToC2(
+			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			C2 that = this as C2;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(C2))) {
+				if ((!field3.IsDefined || field3.Value == that.Field3)) {
+					return that;
+				}
+			}
+		
+			return C2.Create(
+				field1: this.Field1,
+				field2: this.Field2,
+				field3: field3);
+		}
+		
+		public override C2 ToC2(
+				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return base.ToC2(
+					field2: field2.GetValueOrDefault(this.Field2),
+					field3: field3);
 		}
 		
 		public new Builder ToBuilder() {
@@ -462,12 +461,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public B ToB() {
-			return B.Create(
-				field1: this.Field1,
-				field2: this.Field2);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -495,6 +488,12 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Int32 Field2 { get; set; }
 	
 			internal System.Int32 Field3 { get; set; }
+		}
+		
+		public B ToB() {
+			return B.Create(
+				field1: this.Field1,
+				field2: this.Field2);
 		}
 		
 		public new Builder ToBuilder() {
@@ -627,12 +626,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public B ToB() {
-			return B.Create(
-				field1: this.Field1,
-				field2: this.Field2);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -660,6 +653,12 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Int32 Field2 { get; set; }
 	
 			internal System.Int32 Field3 { get; set; }
+		}
+		
+		public B ToB() {
+			return B.Create(
+				field1: this.Field1,
+				field2: this.Field2);
 		}
 		
 		public new Builder ToBuilder() {

@@ -52,7 +52,6 @@ namespace ImmutableObjectGraph.Tests {
 		public abstract XmlNode With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>));
 	
-	
 	 
 		
 		public Builder ToBuilder() {
@@ -240,23 +239,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-	
-		public virtual XmlElementWithContent ToXmlElementWithContent(
-			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
-			XmlElementWithContent that = this as XmlElementWithContent;
-			if (that != null && this.GetType().IsEquivalentTo(typeof(XmlElementWithContent))) {
-				if ((!content.IsDefined || content.Value == that.Content)) {
-					return that;
-				}
-			}
-	
-			return XmlElementWithContent.Create(
-				localName: this.LocalName,
-				namespaceName: this.NamespaceName,
-				children: this.Children,
-				content: content);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -284,6 +266,22 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String NamespaceName { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
+		}
+		
+		public virtual XmlElementWithContent ToXmlElementWithContent(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			XmlElementWithContent that = this as XmlElementWithContent;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(XmlElementWithContent))) {
+				if ((!content.IsDefined || content.Value == that.Content)) {
+					return that;
+				}
+			}
+		
+			return XmlElementWithContent.Create(
+				localName: this.LocalName,
+				namespaceName: this.NamespaceName,
+				children: this.Children,
+				content: content);
 		}
 		
 		public new Builder ToBuilder() {
@@ -494,13 +492,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public XmlElement ToXmlElement() {
-			return XmlElement.Create(
-				localName: this.LocalName,
-				namespaceName: this.NamespaceName,
-				children: this.Children);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -531,6 +522,13 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
 	
 			internal System.String Content { get; set; }
+		}
+		
+		public XmlElement ToXmlElement() {
+			return XmlElement.Create(
+				localName: this.LocalName,
+				namespaceName: this.NamespaceName,
+				children: this.Children);
 		}
 		
 		public new Builder ToBuilder() {
@@ -674,7 +672,6 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		}
-	
 	
 	
 	 

@@ -116,7 +116,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -284,7 +283,6 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		}
-	
 	
 	
 	 
@@ -466,7 +464,6 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		}
-	
 	
 	
 	 

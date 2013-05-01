@@ -94,25 +94,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-	
-		public virtual ReqAndHierL2 ToReqAndHierL2(
-			System.String l2Field2,
-			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>)) {
-			ReqAndHierL2 that = this as ReqAndHierL2;
-			if (that != null && this.GetType().IsEquivalentTo(typeof(ReqAndHierL2))) {
-				if ((!l2Field1.IsDefined || l2Field1.Value == that.L2Field1) && 
-				    (l2Field2 == that.L2Field2)) {
-					return that;
-				}
-			}
-	
-			return ReqAndHierL2.Create(
-				l1Field1: this.L1Field1,
-				l1Field2: this.L1Field2,
-				l2Field1: l2Field1,
-				l2Field2: l2Field2);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -137,6 +118,24 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String L1Field1 { get; set; }
 	
 			internal System.String L1Field2 { get; set; }
+		}
+		
+		public virtual ReqAndHierL2 ToReqAndHierL2(
+			System.String l2Field2,
+			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ReqAndHierL2 that = this as ReqAndHierL2;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ReqAndHierL2))) {
+				if ((!l2Field1.IsDefined || l2Field1.Value == that.L2Field1) && 
+				    (l2Field2 == that.L2Field2)) {
+					return that;
+				}
+			}
+		
+			return ReqAndHierL2.Create(
+				l1Field1: this.L1Field1,
+				l1Field2: this.L1Field2,
+				l2Field1: l2Field1,
+				l2Field2: l2Field2);
 		}
 		
 		public Builder ToBuilder() {
@@ -307,12 +306,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-		public ReqAndHierL1 ToReqAndHierL1() {
-			return ReqAndHierL1.Create(
-				l1Field1: this.L1Field1,
-				l1Field2: this.L1Field2);
-		}
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
@@ -343,6 +336,12 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String L2Field1 { get; set; }
 	
 			internal System.String L2Field2 { get; set; }
+		}
+		
+		public ReqAndHierL1 ToReqAndHierL1() {
+			return ReqAndHierL1.Create(
+				l1Field1: this.L1Field1,
+				l1Field2: this.L1Field2);
 		}
 		
 		public new Builder ToBuilder() {

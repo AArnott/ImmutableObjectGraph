@@ -30,7 +30,6 @@ namespace ImmutableObjectGraph.Tests {
 			return DefaultInstance;
 		}
 	
-	
 	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>

@@ -258,7 +258,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 	
-	
 	 	public System.Collections.Generic.IEnumerator<TreeNode> GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
