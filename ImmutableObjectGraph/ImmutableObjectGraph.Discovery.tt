@@ -1,4 +1,11 @@
-﻿<#+
+﻿<#
+HiddenTypes.Add(typeof(MetaType));
+HiddenTypes.Add(typeof(ArgSource));
+HiddenTypes.Add(typeof(HandleTypePosition));
+HiddenTypes.Add(typeof(ParameterStyle));
+#><#+
+protected static HashSet<Type> HiddenTypes = new HashSet<Type>();
+
 protected static string PascalCase(string name) {
 	return name.Substring(0,1).ToUpperInvariant() + name.Substring(1);
 }
@@ -13,10 +20,7 @@ protected static HashSet<MetaType> DiscoverTemplateTypes() {
 	var pendingTypes = new Queue<Type>();
 
 	Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
-						&& !t.IsEquivalentTo(typeof(MetaType))
-						&& !t.IsEquivalentTo(typeof(ArgSource))
-						&& !t.IsEquivalentTo(typeof(HandleTypePosition))
-						&& !t.IsEquivalentTo(typeof(ParameterStyle));
+						&& !HiddenTypes.Any(ht => ht.IsEquivalentTo(t));
 
 	foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
 		if (includeTypeTest(nestedType)) {
@@ -115,9 +119,14 @@ private static Type GetTypeOrCollectionMemberType(Type collectionOrOtherType) {
 	return collectionOrOtherType;
 }
 
+protected static string GetOptionalTypeName(string typeName)
+{
+	return "ImmutableObjectGraph.Optional<" + typeName + ">";
+}
+
 protected static string GetOptionalTypeName(Type type)
 {
-	return "ImmutableObjectGraph.Optional<" + GetTypeName(type) + ">";
+	return GetOptionalTypeName(GetTypeName(type));
 }
 
 private enum ArgSource {
