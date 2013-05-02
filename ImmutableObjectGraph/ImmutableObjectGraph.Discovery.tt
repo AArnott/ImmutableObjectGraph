@@ -6,6 +6,8 @@ HiddenTypes.Add(typeof(ParameterStyle));
 
 DiscoverTemplateTypes();
 #><#+
+protected const string GreenFieldName = "greenNode";
+
 protected static HashSet<Type> HiddenTypes = new HashSet<Type>();
 
 protected static HashSet<MetaType> TemplateTypes { get; private set; }
@@ -267,7 +269,7 @@ protected class MetaType {
 		get { return this.Type.IsAbstract; }
 	}
 
-	public string TypeName {
+	public virtual string TypeName {
 		get { return this.Type.Name; }
 	}
 

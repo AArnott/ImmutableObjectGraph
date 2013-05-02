@@ -114,6 +114,31 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
+	public abstract partial class FileSystemEntryRed : IFileSystemEntry {
+		private readonly FileSystemEntry greenNode;
+	
+		private readonly FileSystemEntry parent;
+	
+		protected FileSystemEntryRed(FileSystemEntry greenNode, FileSystemEntry parent) {
+			this.greenNode = greenNode;
+			this.parent = parent;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public FileSystemEntry GreenNode {
+			get { return this.greenNode; }
+		}
+	
+		public System.String PathSegment {
+			get { return this.GreenNode.PathSegment; }
+		}
+		
+		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
+		public FileSystemEntryRed WithPathSegment(System.String value) {
+			throw new System.NotImplementedException();
+		}
+	}
+	
 	public interface IFileSystemFile : IFileSystemEntry {
 		System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; }
 	}
@@ -296,6 +321,30 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.PathSegment),
 					ImmutableObjectGraph.Optional.For(attributes));
 			}
+		}
+	}
+	
+	public partial class FileSystemFileRed : FileSystemEntryRed, IFileSystemFile {
+		protected FileSystemFileRed(FileSystemFile greenNode, FileSystemFile parent) : base(greenNode, parent) {
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public new FileSystemFile GreenNode {
+			get { return (FileSystemFile)base.GreenNode; }
+		}
+	
+		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
+			get { return this.GreenNode.Attributes; }
+		}
+		
+		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
+		public new FileSystemFileRed WithPathSegment(System.String value) {
+			return (FileSystemFileRed)base.WithPathSegment(value);
+		}
+		
+		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
+		public FileSystemFileRed WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
+			throw new System.NotImplementedException();
 		}
 	}
 	
@@ -508,6 +557,30 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.PathSegment),
 					ImmutableObjectGraph.Optional.For(children));
 			}
+		}
+	}
+	
+	public partial class FileSystemDirectoryRed : FileSystemEntryRed, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntryRed> {
+		protected FileSystemDirectoryRed(FileSystemDirectory greenNode, FileSystemDirectory parent) : base(greenNode, parent) {
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public new FileSystemDirectory GreenNode {
+			get { return (FileSystemDirectory)base.GreenNode; }
+		}
+	
+		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
+			get { return this.GreenNode.Children; }
+		}
+		
+		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
+		public new FileSystemDirectoryRed WithPathSegment(System.String value) {
+			return (FileSystemDirectoryRed)base.WithPathSegment(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public FileSystemDirectoryRed WithChildren(System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> value) {
+			throw new System.NotImplementedException();
 		}
 	}
 }

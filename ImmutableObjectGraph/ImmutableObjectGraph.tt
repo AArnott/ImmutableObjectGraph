@@ -210,7 +210,11 @@ if (!templateType.IsAbstract) { #>
 
 	protected event Action<MetaType, HandleTypePosition> HandleType;
 
+	protected event Action<MetaType, HandleTypePosition> HandleRedType;
+
 	protected event Action<MetaType, MetaType.MetaField> HandleField;
+
+	protected event Action<MetaType, MetaType.MetaField> HandleRedField;
 
 	protected void OnHandleType(MetaType type, HandleTypePosition position, int indent = 0) {
 		var handleType = this.HandleType;
@@ -221,11 +225,29 @@ if (!templateType.IsAbstract) { #>
 		}
 	}
 
+	protected void OnHandleRedType(MetaType type, HandleTypePosition position, int indent = 0) {
+		var handleRedType = this.HandleRedType;
+		if (handleRedType != null) {
+			this.PushIndent(new string('\t', indent));
+			handleRedType(type, position);
+			this.PopIndent();
+		}
+	}
+
 	protected void OnHandleField(MetaType type, MetaType.MetaField field) {
 		var handleField = this.HandleField;
 		if (handleField != null) {
 			this.PushIndent("\t");
 			handleField(type, field);
+			this.PopIndent();
+		}
+	}
+
+	protected void OnHandleRedField(MetaType type, MetaType.MetaField field) {
+		var handleRedField = this.HandleRedField;
+		if (handleRedField != null) {
+			this.PushIndent("\t");
+			handleRedField(type, field);
 			this.PopIndent();
 		}
 	}

@@ -1,0 +1,93 @@
+﻿<#
+HiddenTypes.Add(typeof(RedMetaType));
+
+this.HandleType += (templateType, position) => {
+	if (position != HandleTypePosition.AfterTypeDeclaration) {
+		return;
+	}
+
+	var redType = new RedMetaType(templateType);
+	this.OnHandleRedType(redType, HandleTypePosition.BeforeTypeDeclaration);
+#>
+
+public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.TypeName #> : <#= redType.HasAncestor ? (redType.Ancestor.TypeName + ", ") : "" #>I<#= redType.GreenType.TypeName #><# if (redType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=redType.RecursiveType.TypeName#>><# } #> {
+<# if (!redType.HasAncestor) { #>
+	private readonly <#= redType.GreenType.TypeName #> greenNode;
+
+	private readonly <#= redType.GreenType.TypeName #> parent;
+
+<# } #>
+	protected <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> greenNode, <#= redType.GreenType.TypeName #> parent) <# if (redType.HasAncestor) { #>: base(greenNode, parent) <# } #>{
+<# if (!redType.HasAncestor) { #>
+		this.greenNode = greenNode;
+		this.parent = parent;
+<# } #>
+	}
+
+	/// <summary>Gets the parent of this object in the hierarchy.</summary>
+	public <# if (redType.HasAncestor) { #>new <# } #><#= redType.GreenType.TypeName #> GreenNode {
+		get { return <# if (redType.HasAncestor) { #>(<#= redType.GreenType.TypeName #>)base.GreenNode<# } else { #>this.greenNode<# } #>; }
+	}
+<#
+	foreach (var field in redType.LocalFields) {
+#>
+
+	public <#= GetTypeName(field.FieldType) #> <#= field.NamePascalCase #> {
+		get { return this.GreenNode.<#= field.NamePascalCase #>; }
+	}
+<#
+	}
+
+	foreach (var field in redType.AllFields) {
+		this.OnHandleRedField(redType, field);
+	}
+
+	this.OnHandleRedType(redType, HandleTypePosition.WithinTypeDeclaration);
+#>
+}
+<#
+	this.OnHandleRedType(redType, HandleTypePosition.AfterTypeDeclaration);
+}; // event handler
+#><#+
+protected class RedMetaType : MetaType {
+	public RedMetaType(MetaType greenType)
+		: base(greenType.Type) {
+		this.GreenType = greenType;
+	}
+
+	public MetaType GreenType { get; private set; }
+
+	public override string TypeName {
+		get { return base.TypeName + "Red"; }
+	}
+
+	public override MetaType RecursiveType {
+		get { return Wrap(base.RecursiveType); }
+	}
+
+	public override IEnumerable<MetaType> Ancestors {
+		get { return Wrap(base.Ancestors); }
+	}
+	
+	public override MetaType Ancestor {
+		get { return Wrap(base.Ancestor); }
+	}
+
+	public override IEnumerable<MetaType> Descendents {
+		get { return Wrap(base.Descendents); }
+	}
+
+	public override bool Equals(object value) {
+		var other = value as RedMetaType;
+		return other != null && this.GreenType.Equals(other.GreenType);
+	}
+
+	private static RedMetaType Wrap(MetaType type) {
+		return type != null ? new RedMetaType(type) : null;
+	}
+
+	private static IEnumerable<MetaType> Wrap(IEnumerable<MetaType> type) {
+		return type.Select(t => new RedMetaType(t));
+	}
+}
+#>
