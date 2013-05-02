@@ -11,6 +11,7 @@
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt" #>
 // ------------------------------------------------------------------------------
@@ -25,6 +26,7 @@
 
 namespace <#= this.Namespace #> {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
 <#
 	this.PushIndent("\t");

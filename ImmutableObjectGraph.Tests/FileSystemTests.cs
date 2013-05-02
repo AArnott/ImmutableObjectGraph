@@ -43,6 +43,31 @@
 			FileSystemFile fileAgain = folder.ToFileSystemFile();
 			Assert.Equal(file.PathSegment, fileAgain.PathSegment);
 		}
+
+		[Fact]
+		public void ReplaceDescendentUpdatesProperty() {
+			var leafToModify = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			var updatedLeaf = leafToModify.WithPathSegment("e.cs");
+			var updatedTree = this.root.ReplaceDescendent(leafToModify, updatedLeaf);
+			Assert.Equal(this.root.PathSegment, updatedTree.PathSegment);
+			var leafFromUpdatedTree = updatedTree.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
+		}
+
+		[Fact]
+		public void ReplaceDescendentChangesType() {
+			var leafToModify = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			var updatedLeaf = leafToModify.ToFileSystemDirectory().WithPathSegment("f");
+			var updatedTree = this.root.ReplaceDescendent(leafToModify, updatedLeaf);
+			var leafFromUpdatedTree = updatedTree.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			Assert.IsType<FileSystemDirectory>(leafFromUpdatedTree);
+			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
+		}
+
+		[Fact(Skip = "It currently fails")]
+		public void ReplaceDescendentNotFound() {
+			Assert.Throws<ArgumentException>(() => this.root.ReplaceDescendent(FileSystemFile.Create("nonexistent"), FileSystemFile.Create("replacement")));
+		}
 	}
 
 	[DebuggerDisplay("{FullPath}")]

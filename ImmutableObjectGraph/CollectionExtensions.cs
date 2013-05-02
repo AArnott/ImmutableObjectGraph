@@ -32,5 +32,10 @@
 		public static ImmutableList<T> ResetContents<T>(this ImmutableList<T> list, IEnumerable<T> values) {
 			return list.SequenceEqual(values) ? list : list.Clear().AddRange(values);
 		}
+
+		public static ImmutableSortedSet<T> Replace<T>(this ImmutableSortedSet<T> set, T oldValue, T newValue) {
+			var alteredSet = set.Remove(oldValue);
+			return alteredSet != set ? alteredSet.Add(newValue) : set;
+		}
 	}
 }

@@ -10,6 +10,7 @@
 
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
 	
 	public interface IFamily {

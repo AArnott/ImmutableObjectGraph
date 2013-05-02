@@ -10,6 +10,7 @@
 
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
 	
 	public interface IFileSystemEntry {
@@ -450,6 +451,25 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String PathSegment { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; set; }
+		}
+		
+		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
+			// TODO: fix this horribly inefficient algorithm.
+			var newChildren = this.Children.Replace(current, replacement);
+			if (this.Children != newChildren) {
+				return this.WithChildren(newChildren);
+			}
+			
+			foreach (var child in this.OfType<FileSystemDirectory>())
+			{
+				var newChild = child.ReplaceDescendent(current, replacement);
+				if (newChild != child) {
+					newChildren = this.Children.Replace(child, newChild);
+					return this.WithChildren(newChildren);
+				}
+			}
+				
+			return this;
 		}
 		
 		public new Builder ToBuilder() {
