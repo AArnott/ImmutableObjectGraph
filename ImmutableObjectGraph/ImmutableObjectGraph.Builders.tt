@@ -11,18 +11,18 @@ public <#= templateType.HasAncestor ? "new ": "" #>Builder ToBuilder() {
 
 public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 	if (templateType.HasAncestor) {
-		Write(" : {0}.Builder", templateType.Ancestor.Name);
+		Write(" : {0}.Builder", templateType.Ancestor.TypeName);
 	}
 #> {
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private <#= templateType.Name #> immutable;
+	private <#= templateType.TypeName #> immutable;
 <#		foreach(var field in templateType.LocalFields) { #>
 
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 	protected <#= field.TypeNameForBuilderField #> <#= field.NameCamelCase #>;
 <#		} #>
 
-	internal Builder(<#= templateType.Name #> immutable)<#
+	internal Builder(<#= templateType.TypeName #> immutable)<#
 		if (templateType.HasAncestor) {
 			Write(" : base(immutable)");
 		} #> {
@@ -55,7 +55,7 @@ public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 	}
 <#		} #>
 
-	public <#= templateType.HasAncestor ? "new ": "" #><#= templateType.Name #> ToImmutable() {
+	public <#= templateType.HasAncestor ? "new ": "" #><#= templateType.TypeName #> ToImmutable() {
 <#			foreach(var templateField in templateType.AllFields.Where(f => !f.IsPrimitiveType)) { #>
 		var <#= templateField.NameCamelCase #> = this.<#= templateField.NameCamelCase #>.IsDefined ? (this.<#= templateField.NameCamelCase #>.Value != null ? this.<#= templateField.NameCamelCase #>.Value.ToImmutable() : null) : this.immutable.<#= templateField.NamePascalCase #>;
 <#			} #>

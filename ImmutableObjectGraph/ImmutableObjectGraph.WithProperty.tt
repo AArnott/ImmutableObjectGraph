@@ -4,7 +4,7 @@ this.HandleField += (templateType, field) => {
 #>
 
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
-public <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
+public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
 	if (value == this.<#= field.NamePascalCase #>) {
 		return this;
 	}
@@ -16,8 +16,8 @@ public <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= field.TypeNa
 #>
 
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
-public new <#= templateType.Name #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
-	return (<#= templateType.Name #>)base.With<#= field.NamePascalCase #>(value);
+public new <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
+	return (<#= templateType.TypeName #>)base.With<#= field.NamePascalCase #>(value);
 }
 <#
 	}

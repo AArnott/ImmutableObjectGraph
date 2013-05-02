@@ -5,9 +5,9 @@ this.HandleType += (templateType, position) => {
 	}
 #>
 
-public interface I<#= templateType.Name #><#
+public interface I<#= templateType.TypeName #><#
 	if (templateType.HasAncestor) {
-		Write(" : I{0}", templateType.Ancestor.Name);
+		Write(" : I{0}", templateType.Ancestor.TypeName);
 	}
 #> {
 <#

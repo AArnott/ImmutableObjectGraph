@@ -37,10 +37,10 @@ namespace <#= this.Namespace #> {
 		this.OnHandleType(templateType, HandleTypePosition.BeforeTypeDeclaration);
 #>
 
-public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.Name #> : <#= templateType.HasAncestor ? (templateType.Ancestor.Name + ", ") : "" #>I<#= templateType.Name #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.RecursiveType.Name#>><# } #> {
+public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.TypeName #> : <#= templateType.HasAncestor ? (templateType.Ancestor.TypeName + ", ") : "" #>I<#= templateType.TypeName #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.RecursiveType.TypeName#>><# } #> {
 <#	if (!templateType.IsAbstract) { #>
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private static readonly <#= templateType.Name #> DefaultInstance = GetDefaultTemplate();
+	private static readonly <#= templateType.TypeName #> DefaultInstance = GetDefaultTemplate();
 <#	}
 	foreach(var field in templateType.LocalFields) {
 #>
@@ -51,16 +51,16 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	}
 #>
 
-	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	protected <#= templateType.Name #>()
+	/// <summary>Initializes a new instance of the <#= templateType.TypeName #> class.</summary>
+	protected <#= templateType.TypeName #>()
 	{
 	}
 
 <#
 	bool firstInSequence = true;
 	if (templateType.LocalFields.Count > 0) { #>
-	/// <summary>Initializes a new instance of the <#= templateType.Name #> class.</summary>
-	protected <#= templateType.Name #>(<# WriteParameters(templateType.AllFields, ParameterStyle.Required); #>)
+	/// <summary>Initializes a new instance of the <#= templateType.TypeName #> class.</summary>
+	protected <#= templateType.TypeName #>(<# WriteParameters(templateType.AllFields, ParameterStyle.Required); #>)
 		: base(<# WriteArguments(templateType.AllFields.Where(f => f.DeclaringType != templateType), ArgSource.Argument); #>)
 	{
 <#
@@ -79,7 +79,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	if (!templateType.IsAbstract) { #>
 
-	public static <#= templateType.Name #> Create(<# WriteParameters(templateType.AllFields, ParameterStyle.OptionalOrRequired); #>) {
+	public static <#= templateType.TypeName #> Create(<# WriteParameters(templateType.AllFields, ParameterStyle.OptionalOrRequired); #>) {
 		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.With(<#
 		WriteArguments(templateType.AllFields, ArgSource.OptionalArgumentOrTemplate);
 #>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
@@ -104,7 +104,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-	public override <#= templateType.Ancestor.Name #> With(<# WriteParameters(templateType.Ancestor.AllFields, ParameterStyle.Optional); #>) {
+	public override <#= templateType.Ancestor.TypeName #> With(<# WriteParameters(templateType.Ancestor.AllFields, ParameterStyle.Optional); #>) {
 		return this.With(<#
 			WriteArguments(templateType.Ancestor.AllFields, ArgSource.Argument);
 			Write(",");
@@ -114,7 +114,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	<# } /* templateType.HasAncestor */ #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-	public <#= templateType.IsAbstract ? "abstract" : "virtual" #> <#= templateType.Name #> With(<#
+	public <#= templateType.IsAbstract ? "abstract" : "virtual" #> <#= templateType.TypeName #> With(<#
 		WriteParameters(templateType.AllFields, ParameterStyle.Optional);
 #>)<# if (templateType.IsAbstract) { #>;<# } else { #> {
 		if (<#
@@ -126,7 +126,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 				firstInSequence = false;
 			}
 	#>) {
-			return new <#= templateType.Name #>(<# WriteArguments(templateType.AllFields, ArgSource.OptionalArgumentOrProperty, indent: 4); #>);
+			return new <#= templateType.TypeName #>(<# WriteArguments(templateType.AllFields, ArgSource.OptionalArgumentOrProperty, indent: 4); #>);
 		} else {
 			return this;
 		}
@@ -136,7 +136,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 <# if (templateType.IsRecursive) { #>
 
-	public System.Collections.Generic.IEnumerator<<#=templateType.RecursiveType.Name#>> GetEnumerator() {
+	public System.Collections.Generic.IEnumerator<<#=templateType.RecursiveType.TypeName#>> GetEnumerator() {
 		return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
 	}
 
@@ -153,11 +153,11 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	/// <param name="template">The struct to set default values on.</param>
 	static partial void CreateDefaultTemplate(ref Template template);
 
-	/// <summary>Returns a newly instantiated <#= templateType.Name #> whose fields are initialized with default values.</summary>
-	private static <#= templateType.Name #> GetDefaultTemplate() {
+	/// <summary>Returns a newly instantiated <#= templateType.TypeName #> whose fields are initialized with default values.</summary>
+	private static <#= templateType.TypeName #> GetDefaultTemplate() {
 		var template = new Template();
 		CreateDefaultTemplate(ref template);
-		return new <#= templateType.Name #>(<#
+		return new <#= templateType.TypeName #>(<#
 		firstInSequence = true;
 		this.PushIndent("\t\t\t");
 

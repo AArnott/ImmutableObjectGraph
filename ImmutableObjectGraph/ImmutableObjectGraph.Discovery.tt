@@ -213,10 +213,6 @@ protected class MetaType {
 
 	public Type Type { get; private set; }
 
-	public string Name {
-		get { return this.Type.Name; }
-	}
-
 	public ImmutableList<MetaField> LocalFields {
 		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToImmutableList(); }
 	}

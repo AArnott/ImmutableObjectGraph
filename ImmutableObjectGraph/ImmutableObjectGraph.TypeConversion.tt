@@ -7,8 +7,8 @@ this.HandleType += (templateType, position) => {
 	if (templateType.HasAncestor && !templateType.Ancestor.IsAbstract) {
 #>
 
-public <#= templateType.Ancestor.Name#> To<#= templateType.Ancestor.Name#>() {
-	return <#= templateType.Ancestor.Name #>.Create(<# WriteArguments(templateType.Ancestor.AllFields, indent: 2); #>);
+public <#= templateType.Ancestor.TypeName#> To<#= templateType.Ancestor.TypeName#>() {
+	return <#= templateType.Ancestor.TypeName #>.Create(<# WriteArguments(templateType.Ancestor.AllFields, indent: 2); #>);
 }
 <#
 	}
@@ -16,9 +16,9 @@ public <#= templateType.Ancestor.Name#> To<#= templateType.Ancestor.Name#>() {
 	foreach (MetaType derivedType in templateType.Descendents.Where(d => !d.IsAbstract)) {
 #>
 
-public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), ParameterStyle.OptionalOrRequired, indent: 1); #>) {
-	<#= derivedType.Name #> that = this as <#= derivedType.Name #>;
-	if (that != null && this.GetType().IsEquivalentTo(typeof(<#= derivedType.Name #>))) {
+public virtual <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# WriteParameters(derivedType.GetFieldsBeyond(templateType), ParameterStyle.OptionalOrRequired, indent: 1); #>) {
+	<#= derivedType.TypeName #> that = this as <#= derivedType.TypeName #>;
+	if (that != null && this.GetType().IsEquivalentTo(typeof(<#= derivedType.TypeName #>))) {
 		if (<#
 		bool firstInSequence = true;
 		PushIndent("\t\t    ");
@@ -39,7 +39,7 @@ public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParamet
 		}
 	}
 
-	return <#= derivedType.Name #>.Create(<#
+	return <#= derivedType.TypeName #>.Create(<#
 		WriteArguments(templateType.AllFields, indent: 2);
 		Write(",");
 		WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument, indent: 2);
@@ -48,8 +48,8 @@ public virtual <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParamet
 <#
 		foreach (var ancestor in templateType.Ancestors) { #>
 
-public override <#= derivedType.Name #> To<#= derivedType.Name #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired); #>) {
-	return base.To<#= derivedType.Name #>(<#
+public override <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired); #>) {
+	return base.To<#= derivedType.TypeName #>(<#
 		WriteArguments(templateType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty);
 		Write(",");
 		WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
