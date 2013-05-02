@@ -46,7 +46,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>
 
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private readonly <#= GetTypeName(field.FieldType) #> <#= field.NameCamelCase #>;
+	private readonly <#= field.TypeName #> <#= field.NameCamelCase #>;
 <#
 	}
 #>
@@ -90,7 +90,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	foreach(var field in templateType.LocalFields) {
 #>
 
-	public <#= GetTypeName(field.FieldType) #> <#= field.NamePascalCase #> {
+	public <#= field.TypeName #> <#= field.NamePascalCase #> {
 		get { return this.<#= field.NameCamelCase #>; }
 	}
 <#  } // foreach Fields
@@ -181,7 +181,7 @@ if (!templateType.IsAbstract) { #>
 	foreach(var field in templateType.AllFields) {
 #>
 
-		internal <#= GetTypeName(field.FieldType) #> <#= field.NamePascalCase #> { get; set; }
+		internal <#= field.TypeName #> <#= field.NamePascalCase #> { get; set; }
 <#
 	}
 #>
