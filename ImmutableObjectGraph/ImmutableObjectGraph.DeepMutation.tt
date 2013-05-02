@@ -1,5 +1,9 @@
 ﻿<#
-this.HandleType += (templateType) => { 
+this.HandleType += (templateType, position) => {
+	if (position != HandleTypePosition.WithinTypeDeclaration) {
+		return;
+	}
+
 	if (templateType.IsRecursive) {
 #>
 

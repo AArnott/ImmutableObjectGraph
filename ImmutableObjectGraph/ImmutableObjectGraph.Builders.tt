@@ -1,5 +1,8 @@
 ﻿<#
-this.HandleType += (templateType) => { 
+this.HandleType += (templateType, position) => {
+	if (position != HandleTypePosition.WithinTypeDeclaration) {
+		return;
+	}
 #>
 
 public <#= templateType.HasAncestor ? "new ": "" #>Builder ToBuilder() {

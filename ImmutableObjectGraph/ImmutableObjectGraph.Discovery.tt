@@ -15,6 +15,7 @@ protected static HashSet<MetaType> DiscoverTemplateTypes() {
 	Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
 						&& !t.IsEquivalentTo(typeof(MetaType))
 						&& !t.IsEquivalentTo(typeof(ArgSource))
+						&& !t.IsEquivalentTo(typeof(HandleTypePosition))
 						&& !t.IsEquivalentTo(typeof(ParameterStyle));
 
 	foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {

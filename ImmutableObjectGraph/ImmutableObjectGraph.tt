@@ -33,6 +33,7 @@ namespace <#= this.Namespace #> {
 	var templateTypes = DiscoverTemplateTypes();
 
 	foreach(var templateType in templateTypes) {
+		this.OnHandleType(templateType, HandleTypePosition.BeforeTypeDeclaration);
 #>
 
 public interface I<#= templateType.Name #><#
@@ -198,10 +199,11 @@ if (!templateType.IsAbstract) { #>
 	}
 <#	} /* !IsAbstract */
 
-	this.OnHandleType(templateType);
+	this.OnHandleType(templateType, HandleTypePosition.WithinTypeDeclaration);
 #>
 }
 <#
+		this.OnHandleType(templateType, HandleTypePosition.AfterTypeDeclaration);
 	} // looping over all template types
 
 	this.PopIndent();
@@ -211,15 +213,23 @@ if (!templateType.IsAbstract) { #>
 <#+
 	public string Namespace { get; set; }
 
-	protected event Action<MetaType> HandleType;
+	protected enum HandleTypePosition {
+		BeforeTypeDeclaration,
+
+		WithinTypeDeclaration,
+
+		AfterTypeDeclaration,
+	}
+
+	protected event Action<MetaType, HandleTypePosition> HandleType;
 
 	protected event Action<MetaType, MetaType.MetaField> HandleField;
 
-	protected void OnHandleType(MetaType type) {
+	protected void OnHandleType(MetaType type, HandleTypePosition position) {
 		var handleType = this.HandleType;
 		if (handleType != null) {
 			this.PushIndent("\t");
-			handleType(type);
+			handleType(type, position);
 			this.PopIndent();
 		}
 	}
