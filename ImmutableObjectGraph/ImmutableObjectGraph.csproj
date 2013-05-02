@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ImmutableObjectGraph.Interface.tt" />
     <None Include="ImmutableObjectGraph.DeepMutation.tt" />
     <None Include="ImmutableObjectGraph.TypeConversion.tt" />
     <None Include="ImmutableObjectGraph.WithProperty.tt" />

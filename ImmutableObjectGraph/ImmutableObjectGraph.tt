@@ -9,6 +9,7 @@
 <#@ Import Namespace="System.Reflection" #>
 <#@ import namespace="System.Text" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt" #>
@@ -35,18 +36,6 @@ namespace <#= this.Namespace #> {
 	foreach(var templateType in templateTypes) {
 		this.OnHandleType(templateType, HandleTypePosition.BeforeTypeDeclaration);
 #>
-
-public interface I<#= templateType.Name #><#
-	if (templateType.HasAncestor) {
-		Write(" : I{0}", templateType.Ancestor.Name);
-	}
-#> {
-<#
-	foreach(var field in templateType.LocalFields) { #>
-	<#= field.TypeName #> <#= field.NamePascalCase #> { get; }
-<#	}
-#>
-}
 
 public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.Name #> : <#= templateType.HasAncestor ? (templateType.Ancestor.Name + ", ") : "" #>I<#= templateType.Name #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.RecursiveType.Name#>><# } #> {
 <#	if (!templateType.IsAbstract) { #>
@@ -199,7 +188,7 @@ if (!templateType.IsAbstract) { #>
 	}
 <#	} /* !IsAbstract */
 
-	this.OnHandleType(templateType, HandleTypePosition.WithinTypeDeclaration);
+	this.OnHandleType(templateType, HandleTypePosition.WithinTypeDeclaration, indent: 1);
 #>
 }
 <#
@@ -225,10 +214,10 @@ if (!templateType.IsAbstract) { #>
 
 	protected event Action<MetaType, MetaType.MetaField> HandleField;
 
-	protected void OnHandleType(MetaType type, HandleTypePosition position) {
+	protected void OnHandleType(MetaType type, HandleTypePosition position, int indent = 0) {
 		var handleType = this.HandleType;
 		if (handleType != null) {
-			this.PushIndent("\t");
+			this.PushIndent(new string('\t', indent));
 			handleType(type, position);
 			this.PopIndent();
 		}
