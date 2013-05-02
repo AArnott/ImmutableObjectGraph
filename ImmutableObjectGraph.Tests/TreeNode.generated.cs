@@ -10,6 +10,7 @@
 
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
 	
 	public interface ITreeNode {
@@ -295,6 +296,25 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<TreeNode> Children { get; set; }
+		}
+		
+		public TreeNode ReplaceDescendent(TreeNode current, TreeNode replacement) {
+			// TODO: fix this horribly inefficient algorithm.
+			var newChildren = this.Children.Replace(current, replacement);
+			if (this.Children != newChildren) {
+				return this.WithChildren(newChildren);
+			}
+			
+			foreach (var child in this.OfType<TreeNode>())
+			{
+				var newChild = child.ReplaceDescendent(current, replacement);
+				if (newChild != child) {
+					newChildren = this.Children.Replace(child, newChild);
+					return this.WithChildren(newChildren);
+				}
+			}
+				
+			return this;
 		}
 		
 		public Builder ToBuilder() {

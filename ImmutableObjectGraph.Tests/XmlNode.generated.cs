@@ -10,6 +10,7 @@
 
 namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
 	
 	public interface IXmlNode {
@@ -319,6 +320,25 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String NamespaceName { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
+		}
+		
+		public XmlElement ReplaceDescendent(XmlNode current, XmlNode replacement) {
+			// TODO: fix this horribly inefficient algorithm.
+			var newChildren = this.Children.Replace(current, replacement);
+			if (this.Children != newChildren) {
+				return this.WithChildren(newChildren);
+			}
+			
+			foreach (var child in this.OfType<XmlElement>())
+			{
+				var newChild = child.ReplaceDescendent(current, replacement);
+				if (newChild != child) {
+					newChildren = this.Children.Replace(child, newChild);
+					return this.WithChildren(newChildren);
+				}
+			}
+				
+			return this;
 		}
 		
 		public virtual XmlElementWithContent ToXmlElementWithContent(

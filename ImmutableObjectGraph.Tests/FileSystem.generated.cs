@@ -454,6 +454,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
+			// TODO: fix this horribly inefficient algorithm.
 			var newChildren = this.Children.Replace(current, replacement);
 			if (this.Children != newChildren) {
 				return this.WithChildren(newChildren);
