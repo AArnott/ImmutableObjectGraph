@@ -119,7 +119,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedFileSystemEntry {
+	public partial struct RootedFileSystemEntry : System.IEquatable<RootedFileSystemEntry> {
 		private readonly FileSystemEntry greenNode;
 	
 		private readonly FileSystemDirectory root;
@@ -129,7 +129,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.root = root;
 		}
 	
-		/// <summary>Gets the parent.</summary>
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get { throw new System.NotImplementedException(); }
 		}
@@ -149,9 +149,26 @@ namespace ImmutableObjectGraph.Tests {
 			return mutatedLeaf.WithRoot(newRoot);
 		}
 	
-		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemEntry FileSystemEntry {
 			get { return this.greenNode; }
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedFileSystemEntry) {
+				var other = (RootedFileSystemEntry)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedFileSystemEntry other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode.GetHashCode();
 		}
 	}
 	
@@ -345,7 +362,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedFileSystemFile {
+	public partial struct RootedFileSystemFile : System.IEquatable<RootedFileSystemFile> {
 		private readonly FileSystemFile greenNode;
 	
 		private readonly FileSystemDirectory root;
@@ -355,7 +372,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.root = root;
 		}
 	
-		/// <summary>Gets the parent.</summary>
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get { throw new System.NotImplementedException(); }
 		}
@@ -386,9 +403,26 @@ namespace ImmutableObjectGraph.Tests {
 			return mutatedLeaf.WithRoot(newRoot);
 		}
 	
-		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemFile FileSystemFile {
 			get { return this.greenNode; }
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedFileSystemFile) {
+				var other = (RootedFileSystemFile)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedFileSystemFile other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode.GetHashCode();
 		}
 	}
 	
@@ -613,7 +647,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedFileSystemDirectory {
+	public partial struct RootedFileSystemDirectory : System.IEquatable<RootedFileSystemDirectory> {
 		private static readonly System.Func<RootedFileSystemEntry, FileSystemEntry> toUnrooted = r => r.FileSystemEntry;
 		private static readonly System.Func<FileSystemEntry, FileSystemDirectory, RootedFileSystemEntry> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -628,7 +662,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>>);
 		}
 	
-		/// <summary>Gets the parent.</summary>
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get { throw new System.NotImplementedException(); }
 		}
@@ -670,13 +704,30 @@ namespace ImmutableObjectGraph.Tests {
 			return mutatedLeaf.WithRoot(newRoot);
 		}
 	
-		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemDirectory FileSystemDirectory {
 			get { return this.greenNode; }
 		}
 	
 		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {
 			return this.Children.GetEnumerator();
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedFileSystemDirectory) {
+				var other = (RootedFileSystemDirectory)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedFileSystemDirectory other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode.GetHashCode();
 		}
 	}
 }

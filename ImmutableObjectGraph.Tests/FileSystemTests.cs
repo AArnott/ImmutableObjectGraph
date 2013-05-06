@@ -68,6 +68,58 @@
 		public void ReplaceDescendentNotFound() {
 			Assert.Throws<ArgumentException>(() => this.root.ReplaceDescendent(FileSystemFile.Create("nonexistent"), FileSystemFile.Create("replacement")));
 		}
+
+		[Fact]
+		public void RedNodeStuff() {
+			var redRoot = this.root.AsRoot;
+			Assert.Equal(this.root.PathSegment, redRoot.PathSegment);
+			Assert.Equal(this.root.Children.Count, redRoot.Children.Count);
+			Assert.True(redRoot.Children.Any(c => c.PathSegment == "a.cs"));
+			Assert.True(redRoot.Children.Any(c => c.PathSegment == "b.cs"));
+
+			RootedFileSystemDirectory subdir = ((FileSystemDirectory)redRoot.Children.Last().FileSystemEntry).WithRoot(redRoot.FileSystemDirectory);
+			Assert.Equal("d.cs", subdir.Children.Single().PathSegment);
+		}
+
+		[Fact]
+		public void AllRedDescendentsShareRoot() {
+			VerifyDescendentsShareRoot(this.root.AsRoot);
+		}
+
+		[Fact]
+		public void RedNodeEquality() {
+			var greenLeaf = (FileSystemDirectory)this.root.Children.Last();
+			var redLeaf = greenLeaf.WithRoot(this.root);
+			var redLeafAsRoot = greenLeaf.AsRoot;
+
+			Assert.Equal(redLeafAsRoot, redLeafAsRoot);
+			Assert.Equal(redLeaf, redLeaf);
+			Assert.NotEqual(redLeaf, redLeafAsRoot);
+
+			IEquatable<RootedFileSystemDirectory> redLeafAsEquatable = redLeaf;
+			Assert.True(redLeafAsEquatable.Equals(redLeaf));
+		}
+
+		[Fact]
+		public void GetHashCodeMatchesGreenNode() {
+			var greenLeaf = (FileSystemDirectory)this.root.Children.Last();
+			var redLeaf = greenLeaf.WithRoot(this.root);
+			var redLeafAsRoot = greenLeaf.AsRoot;
+
+			Assert.Equal(greenLeaf.GetHashCode(), redLeaf.GetHashCode());
+			Assert.Equal(greenLeaf.GetHashCode(), redLeafAsRoot.GetHashCode());
+		}
+
+		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
+			foreach (var child in directory) {
+				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
+
+				var subdirectory = child.FileSystemEntry as FileSystemDirectory;
+				if (subdirectory != null) {
+					VerifyDescendentsShareRoot(subdirectory.WithRoot(directory.Root.FileSystemDirectory));
+				}
+			}
+		}
 	}
 
 	[DebuggerDisplay("{FullPath}")]
