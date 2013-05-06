@@ -50,7 +50,18 @@ public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.Typ
 	protected <# if (redType.HasAncestor) { #>new <# } #><#= redType.GreenType.TypeName #> GreenNode {
 		get { return <# if (redType.HasAncestor) { #>(<#= redType.GreenType.TypeName #>)base.GreenNode<# } else { #>this.greenNode<# } #>; }
 	}
+<#	if (redType.IsRecursive) { #>
+
+	public System.Collections.Generic.IEnumerator<<#=redType.RecursiveType.TypeName#>> GetEnumerator() {
+		return this.<#=redType.RecursiveField.NamePascalCase#>.GetEnumerator();
+	}
+
+	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+		return this.<#=redType.RecursiveField.NamePascalCase#>.GetEnumerator();
+	}
 <#
+	} // if IsRecursive
+
 	this.OnHandleRedType(redType, HandleTypePosition.WithinTypeDeclaration);
 #>
 }

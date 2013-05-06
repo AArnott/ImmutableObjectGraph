@@ -587,6 +587,14 @@ namespace ImmutableObjectGraph.Tests {
 		protected new FileSystemDirectory GreenNode {
 			get { return (FileSystemDirectory)base.GreenNode; }
 		}
+	
+		public System.Collections.Generic.IEnumerator<FileSystemEntryRed> GetEnumerator() {
+			return this.Children.GetEnumerator();
+		}
+	
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+			return this.Children.GetEnumerator();
+		}
 	}
 }
 
