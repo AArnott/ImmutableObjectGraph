@@ -58,27 +58,6 @@ protected static void DiscoverTemplateTypes() {
 	}
 }
 
-protected static string GetTypeName(Type type) {
-	var typeName = new StringBuilder();
-
-	if (type.IsGenericType) {
-		typeName.Append(type.FullName.Substring(0, type.FullName.IndexOf('`')));
-		typeName.Append("<");
-		foreach (Type typeArgument in type.GenericTypeArguments) {
-			typeName.Append(GetTypeName(typeArgument));
-			typeName.Append(", ");
-		}
-
-		typeName.Length -= 2;
-		typeName.Append(">");
-	} else {
-		var templateDeclaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
-		typeName.Append(type.DeclaringType == templateDeclaringType ? type.Name : type.FullName);
-	}
-
-	return typeName.ToString();
-}
-
 private static bool IsCollectionType(Type type) {
 	if (type.IsArray) {
 		return true;
@@ -121,16 +100,6 @@ private static Type GetTypeOrCollectionMemberType(Type collectionOrOtherType) {
 	}
 
 	return collectionOrOtherType;
-}
-
-protected static string GetOptionalTypeName(string typeName)
-{
-	return "ImmutableObjectGraph.Optional<" + typeName + ">";
-}
-
-protected static string GetOptionalTypeName(Type type)
-{
-	return GetOptionalTypeName(GetTypeName(type));
 }
 
 private enum ArgSource {
@@ -216,7 +185,7 @@ protected class MetaType {
 	public Type Type { get; private set; }
 
 	public ImmutableList<MetaField> LocalFields {
-		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToImmutableList(); }
+		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(this.CreateField).ToImmutableList(); }
 	}
 
 	public ImmutableList<MetaField> AllFields {
@@ -283,7 +252,7 @@ protected class MetaType {
 	}
 
 	public string OptionalTypeName {
-		get { return GetOptionalTypeName(this.Type); }
+		get { return this.GetOptionalTypeName(this.Type); }
 	}
 
 	protected virtual MetaType RootAncestorOrThisType {
@@ -312,7 +281,7 @@ protected class MetaType {
 		var fields = ImmutableList.Create<MetaField>();
 		if (ancestor != this) {
 			fields = fields.AddRange(this.LocalFields)
-				            .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
+			               .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
 		}
 
 		return fields;
@@ -327,8 +296,47 @@ protected class MetaType {
 		return other != null && this.Type.IsEquivalentTo(other.Type);
 	}
 
+	protected virtual MetaField CreateField(FieldInfo field) {
+		return new MetaField(field, this);
+	}
+
 	protected virtual MetaType FindMetaType(Type type) {
 		return TemplateTypes.SingleOrDefault(mt => mt.Type.IsEquivalentTo(type));
+	}
+
+	protected virtual string GetTypeName(Type type) {
+		var typeName = new StringBuilder();
+
+		if (type.IsGenericType) {
+			typeName.Append(type.FullName.Substring(0, type.FullName.IndexOf('`')));
+			typeName.Append("<");
+			foreach (Type typeArgument in type.GenericTypeArguments) {
+				typeName.Append(GetTypeName(typeArgument));
+				typeName.Append(", ");
+			}
+
+			typeName.Length -= 2;
+			typeName.Append(">");
+		} else {
+			var templateDeclaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.DeclaringType;
+			typeName.Append(this.GetTypeNameCore(type, type.DeclaringType == templateDeclaringType));
+		}
+
+		return typeName.ToString();
+	}
+
+	protected virtual string GetTypeNameCore(Type type, bool isTemplateType) {
+		return isTemplateType ? type.Name : type.FullName;
+	}
+	
+	protected static string GetOptionalTypeName(string typeName)
+	{
+		return "ImmutableObjectGraph.Optional<" + typeName + ">";
+	}
+
+	protected virtual string GetOptionalTypeName(Type type)
+	{
+		return GetOptionalTypeName(this.GetTypeName(type));
 	}
 
 	[DebuggerDisplay("{DeclaringType.TypeName,nq}.{NamePascalCase,nq}")]
@@ -366,23 +374,23 @@ protected class MetaType {
 			get { return !TemplateTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) && !this.IsCollection; }
 		}
 			
-		public Type ElementType {
+		public virtual Type ElementType {
 			get { return GetTypeOrCollectionMemberType(this.Field.FieldType); }
 		}
 
 		public string ElementTypeName {
-			get { return GetTypeName(GetTypeOrCollectionMemberType(this.Field.FieldType)); }
+			get { return this.DeclaringType.GetTypeName(GetTypeOrCollectionMemberType(this.Field.FieldType)); }
 		}
 
-		public string TypeName {
-			get { return GetTypeName(this.Field.FieldType); }
+		public virtual string TypeName {
+			get { return this.DeclaringType.GetTypeName(this.Field.FieldType); }
 		}
 
-		public string OptionalTypeName {
-			get { return GetOptionalTypeName(this.Field.FieldType); }
+		public virtual string OptionalTypeName {
+			get { return this.DeclaringType.GetOptionalTypeName(this.Field.FieldType); }
 		}
 
-		public string TypeNameForBuilderField {
+		public virtual string TypeNameForBuilderField {
 			get {
 				return TemplateTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) || IsCollectionType(this.FieldType)
 					? "ImmutableObjectGraph.Optional<" + this.TypeName + ".Builder>"

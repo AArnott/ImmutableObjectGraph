@@ -10,13 +10,20 @@ this.HandleType += (templateType, position) => {
 	this.OnHandleRedType(redType, HandleTypePosition.BeforeTypeDeclaration);
 #>
 
-public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.TypeName #> : <#= redType.HasAncestor ? (redType.Ancestor.TypeName + ", ") : "" #>I<#= redType.GreenType.TypeName #><# if (redType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=redType.RecursiveType.TypeName#>><# } #> {
-<# if (!redType.HasAncestor) { #>
+public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.TypeName #><# WriteBaseTypes(redType.HasAncestor ? redType.Ancestor.TypeName : null, redType.IsRecursive ? "System.Collections.Generic.IEnumerable<" + redType.RecursiveType.TypeName + ">" : null); #> {
+<#	if (!redType.HasAncestor) { #>
 	private readonly <#= redType.GreenType.TypeName #> greenNode;
 
 	private readonly <#= redType.RecursiveParent.TypeName #> parent;
+<#	}
 
-<# } #>
+	foreach (var field in redType.LocalFields.Where(f => !f.IsPrimitiveType)) {
+#>
+	private <#= field.TypeName #> <#= field.NameCamelCase #>;
+<#
+		}
+#>
+
 	protected <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> greenNode, <#= redType.RecursiveParent.TypeName #> parent) <# if (redType.HasAncestor) { #>: base(greenNode, parent) <# } #>{
 <# if (!redType.HasAncestor) { #>
 		this.greenNode = greenNode;
@@ -35,8 +42,12 @@ public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.Typ
 	foreach (var field in redType.LocalFields) {
 #>
 
-	public <#= GetTypeName(field.FieldType) #> <#= field.NamePascalCase #> {
+	public <#= field.TypeName #> <#= field.NamePascalCase #> {
+<#	if (field.IsPrimitiveType) { #>
 		get { return this.GreenNode.<#= field.NamePascalCase #>; }
+<# } else { #>
+		get { return this.<#= field.NameCamelCase #>; }
+<# } #>
 	}
 <#
 	}
@@ -109,6 +120,21 @@ protected class RedMetaType : MetaType {
 
 	private static IEnumerable<MetaType> Wrap(IEnumerable<MetaType> type) {
 		return type.Select(t => new RedMetaType(t));
+	}
+	
+	protected override MetaField CreateField(FieldInfo field) {
+		return new RedMetaField(field, this);
+	}
+
+	protected override string GetTypeNameCore(Type type, bool isTemplateType) {
+		return isTemplateType ? type.Name + "Red" : type.FullName;
+	}
+
+	[DebuggerDisplay("{DeclaringType.TypeName,nq}.{NamePascalCase,nq} (red)")]
+	public class RedMetaField : MetaField {
+		public RedMetaField(FieldInfo field, MetaType declaringType)
+			: base(field, declaringType) {
+		}
 	}
 }
 #>

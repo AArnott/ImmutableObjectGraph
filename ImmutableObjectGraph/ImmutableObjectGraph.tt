@@ -252,4 +252,20 @@ if (!templateType.IsAbstract) { #>
 			this.PopIndent();
 		}
 	}
+
+	protected void WriteBaseTypes(params string[] typeNames) {
+		var elements = typeNames.Where(t => t != null);
+		if (elements.Any()) {
+			Write(" : ");
+			bool firstElement = true;
+			foreach (var element in elements) {
+				if (!firstElement) {
+					Write(", ");
+				}
+
+				Write(element);
+				firstElement = false;
+			}
+		}
+	}
 #>

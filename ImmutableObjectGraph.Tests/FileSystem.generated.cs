@@ -114,7 +114,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public abstract partial class FileSystemEntryRed : IFileSystemEntry {
+	public abstract partial class FileSystemEntryRed {
 		private readonly FileSystemEntry greenNode;
 	
 		private readonly FileSystemDirectoryRed parent;
@@ -329,12 +329,14 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class FileSystemFileRed : FileSystemEntryRed, IFileSystemFile {
+	public partial class FileSystemFileRed : FileSystemEntryRed {
+		private System.Collections.Immutable.ImmutableHashSet<System.String> attributes;
+	
 		protected FileSystemFileRed(FileSystemFile greenNode, FileSystemDirectoryRed parent) : base(greenNode, parent) {
 		}
 	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
-			get { return this.GreenNode.Attributes; }
+			get { return this.attributes; }
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
@@ -565,12 +567,14 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class FileSystemDirectoryRed : FileSystemEntryRed, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntryRed> {
+	public partial class FileSystemDirectoryRed : FileSystemEntryRed, System.Collections.Generic.IEnumerable<FileSystemEntryRed> {
+		private System.Collections.Immutable.ImmutableSortedSet<FileSystemEntryRed> children;
+	
 		protected FileSystemDirectoryRed(FileSystemDirectory greenNode, FileSystemDirectoryRed parent) : base(greenNode, parent) {
 		}
 	
-		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
-			get { return this.GreenNode.Children; }
+		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntryRed> Children {
+			get { return this.children; }
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
@@ -579,7 +583,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public FileSystemDirectoryRed WithChildren(System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> value) {
+		public FileSystemDirectoryRed WithChildren(System.Collections.Immutable.ImmutableSortedSet<FileSystemEntryRed> value) {
 			throw new System.NotImplementedException();
 		}
 	
