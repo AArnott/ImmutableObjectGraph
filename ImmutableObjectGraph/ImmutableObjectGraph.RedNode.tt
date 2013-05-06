@@ -58,6 +58,7 @@ public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.Typ
 	this.OnHandleRedType(redType, HandleTypePosition.AfterTypeDeclaration);
 }; // event handler
 #><#+
+[DebuggerDisplay("{TypeName,nq} (red)")]
 protected class RedMetaType : MetaType {
 	public RedMetaType(MetaType greenType)
 		: base(greenType.Type) {

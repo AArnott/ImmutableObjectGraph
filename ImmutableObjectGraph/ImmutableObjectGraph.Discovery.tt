@@ -207,6 +207,7 @@ private static IEnumerable<MetaType.MetaField> SortRequiredFieldsFirst(IEnumerab
 	return fields.Where(f => f.IsRequired).Concat(fields.Where(f => !f.IsRequired));
 }
 
+[DebuggerDisplay("{TypeName,nq}")]
 protected class MetaType {
 	public MetaType(Type type) {
 		this.Type = type;
@@ -241,11 +242,6 @@ protected class MetaType {
 	public virtual MetaType RecursiveParent {
 		get {
 			var result = this.GetTypeFamily().SingleOrDefault(t => t.RecursiveType != null && t.RecursiveType.Type.IsAssignableFrom(this.Type));
-			if (result == null) {
-				System.Diagnostics.Debugger.Launch();
-				System.Diagnostics.Debugger.Break();
-			}
-
 			return result;
 		 }
 	}
@@ -335,6 +331,7 @@ protected class MetaType {
 		return TemplateTypes.SingleOrDefault(mt => mt.Type.IsEquivalentTo(type));
 	}
 
+	[DebuggerDisplay("{DeclaringType.TypeName,nq}.{NamePascalCase,nq}")]
 	public class MetaField {
 		public MetaField(FieldInfo field, MetaType declaringType) {
 			this.Field = field;

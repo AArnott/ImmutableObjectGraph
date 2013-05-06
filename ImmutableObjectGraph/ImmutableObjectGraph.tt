@@ -5,6 +5,7 @@
 <#@ Import Namespace="ImmutableObjectGraph" #>
 <#@ Import Namespace="System.Collections.Generic" #>
 <#@ Import Namespace="System.Collections.Immutable" #>
+<#@ Import Namespace="System.Diagnostics" #>
 <#@ import namespace="System.Linq" #>
 <#@ Import Namespace="System.Reflection" #>
 <#@ import namespace="System.Text" #>
