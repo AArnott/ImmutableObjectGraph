@@ -14,21 +14,24 @@ public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.Typ
 <# if (!redType.HasAncestor) { #>
 	private readonly <#= redType.GreenType.TypeName #> greenNode;
 
-	private readonly <#= redType.GreenType.TypeName #> parent;
+	private readonly <#= redType.RecursiveParent.TypeName #> parent;
 
 <# } #>
-	protected <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> greenNode, <#= redType.GreenType.TypeName #> parent) <# if (redType.HasAncestor) { #>: base(greenNode, parent) <# } #>{
+	protected <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> greenNode, <#= redType.RecursiveParent.TypeName #> parent) <# if (redType.HasAncestor) { #>: base(greenNode, parent) <# } #>{
 <# if (!redType.HasAncestor) { #>
 		this.greenNode = greenNode;
 		this.parent = parent;
 <# } #>
 	}
+<# if (!redType.HasAncestor) { #>
 
-	/// <summary>Gets the parent of this object in the hierarchy.</summary>
-	public <# if (redType.HasAncestor) { #>new <# } #><#= redType.GreenType.TypeName #> GreenNode {
-		get { return <# if (redType.HasAncestor) { #>(<#= redType.GreenType.TypeName #>)base.GreenNode<# } else { #>this.greenNode<# } #>; }
+	/// <summary>Gets the parent.</summary>
+	public <#= redType.RecursiveParent.TypeName #> Parent {
+		get { return this.parent; }
 	}
 <#
+	}
+
 	foreach (var field in redType.LocalFields) {
 #>
 
@@ -41,7 +44,13 @@ public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.Typ
 	foreach (var field in redType.AllFields) {
 		this.OnHandleRedField(redType, field);
 	}
+#>
 
+	/// <summary>Gets the parent of this object in the hierarchy.</summary>
+	protected <# if (redType.HasAncestor) { #>new <# } #><#= redType.GreenType.TypeName #> GreenNode {
+		get { return <# if (redType.HasAncestor) { #>(<#= redType.GreenType.TypeName #>)base.GreenNode<# } else { #>this.greenNode<# } #>; }
+	}
+<#
 	this.OnHandleRedType(redType, HandleTypePosition.WithinTypeDeclaration);
 #>
 }

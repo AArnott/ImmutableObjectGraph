@@ -237,6 +237,19 @@ protected class MetaType {
 		get { return this.RecursiveField != null ? this.FindMetaType(this.RecursiveField.ElementType) : null; }
 	}
 
+	/// <summary>Gets the type that contains the collection of this (or a base) type.</summary>
+	public virtual MetaType RecursiveParent {
+		get {
+			var result = this.GetTypeFamily().SingleOrDefault(t => t.RecursiveType != null && t.RecursiveType.Type.IsAssignableFrom(this.Type));
+			if (result == null) {
+				System.Diagnostics.Debugger.Launch();
+				System.Diagnostics.Debugger.Break();
+			}
+
+			return result;
+		 }
+	}
+
 	public bool IsRecursive {
 		get { return this.LocalFields.Count(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)) == 1; }
 	}
@@ -286,6 +299,17 @@ protected class MetaType {
 
 			return current;
 		}
+	}
+	
+	public virtual HashSet<MetaType> GetTypeFamily() {
+		var set = new HashSet<MetaType>();
+		var furthestAncestor = this.Ancestors.LastOrDefault() ?? this;
+		set.Add(furthestAncestor);
+		foreach(var relative in furthestAncestor.Descendents) {
+			set.Add(relative);
+		}
+
+		return set;
 	}
 
 	public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
