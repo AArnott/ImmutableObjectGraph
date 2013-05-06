@@ -74,10 +74,10 @@
 			var redRoot = this.root.AsRoot;
 			Assert.Equal(this.root.PathSegment, redRoot.PathSegment);
 			Assert.Equal(this.root.Children.Count, redRoot.Children.Count);
-			Assert.True(redRoot.Children.Any(c => c.PathSegment == "a.cs"));
-			Assert.True(redRoot.Children.Any(c => c.PathSegment == "b.cs"));
+			Assert.True(redRoot.Children.Any(c => c.PathSegment == "a.cs" && c.IsFileSystemFile));
+			Assert.True(redRoot.Children.Any(c => c.PathSegment == "b.cs" && c.IsFileSystemFile));
 
-			RootedFileSystemDirectory subdir = ((FileSystemDirectory)redRoot.Children.Last().FileSystemEntry).WithRoot(redRoot.FileSystemDirectory);
+			RootedFileSystemDirectory subdir = redRoot.Children.Last().AsFileSystemDirectory;
 			Assert.Equal("d.cs", subdir.Children.Single().PathSegment);
 		}
 
@@ -114,9 +114,8 @@
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
 
-				var subdirectory = child.FileSystemEntry as FileSystemDirectory;
-				if (subdirectory != null) {
-					VerifyDescendentsShareRoot(subdirectory.WithRoot(directory.Root.FileSystemDirectory));
+				if (child.IsFileSystemDirectory) {
+					VerifyDescendentsShareRoot(child.AsFileSystemDirectory);
 				}
 			}
 		}

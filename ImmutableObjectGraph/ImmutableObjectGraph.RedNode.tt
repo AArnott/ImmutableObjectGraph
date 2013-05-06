@@ -67,6 +67,31 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 		get { return this.root.AsRoot; }
 	}
 <#
+			foreach (var descendent in redType.Descendents) {
+				var greenDescendent = ((RedMetaType)descendent).GreenType;
+#>
+
+	public bool Is<#=greenDescendent.TypeName#> {
+		get { return this.greenNode is <#=greenDescendent.TypeName#>; }
+	}
+
+	public <#=descendent.TypeName#> As<#=greenDescendent.TypeName#> {
+		get { return ((<#=greenDescendent.TypeName#>)this.greenNode).WithRoot(this.root); }
+	}
+<#
+			}
+
+			foreach (var ancestor in redType.Ancestors) {
+				System.Diagnostics.Debugger.Launch();
+				var greenAncestor = ((RedMetaType)ancestor).GreenType;
+#>
+
+	public <#=ancestor.TypeName#> As<#=greenAncestor.TypeName#> {
+		get { return ((<#=greenAncestor.TypeName#>)this.greenNode).WithRoot(this.root); }
+	}
+<#
+			}
+
 			if (redType.RecursiveParent.Equals(redType)) {
 #>
 
@@ -149,6 +174,10 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 protected class RedMetaType : MetaType {
 	public RedMetaType(MetaType greenType)
 		: base(greenType.Type) {
+		if (greenType is RedMetaType) {
+			throw new ArgumentException("Red type handed in as green type.");
+		}
+
 		this.GreenType = greenType;
 	}
 
@@ -184,7 +213,7 @@ protected class RedMetaType : MetaType {
 	}
 
 	private static IEnumerable<MetaType> Wrap(IEnumerable<MetaType> type) {
-		return type.Select(t => new RedMetaType(t));
+		return type.Select(t => t is RedMetaType ? t : new RedMetaType(t));
 	}
 	
 	protected override MetaField CreateField(FieldInfo field) {
