@@ -250,6 +250,10 @@ protected class MetaType {
 	public virtual string TypeName {
 		get { return this.Type.Name; }
 	}
+	
+	public string TypeNameCamelCase {
+		get { return CamelCase(this.TypeName); }
+	}
 
 	public string OptionalTypeName {
 		get { return this.GetOptionalTypeName(this.Type); }

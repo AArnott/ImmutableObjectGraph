@@ -52,6 +52,11 @@ namespace ImmutableObjectGraph.Tests {
 		public abstract FileSystemEntry With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
 		
+		public RootedFileSystemEntry WithRoot(FileSystemDirectory root) {
+			// TODO: add runtime check to ensure that in fact this node is a descendent of 'root'
+			return new RootedFileSystemEntry(this, root);
+		}
+		
 		public virtual FileSystemFile ToFileSystemFile(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			FileSystemFile that = this as FileSystemFile;
@@ -114,32 +119,38 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public abstract partial class FileSystemEntryRed {
+	public partial struct RootedFileSystemEntry {
 		private readonly FileSystemEntry greenNode;
 	
-		private readonly FileSystemDirectoryRed parent;
+		private readonly FileSystemDirectory root;
 	
-		protected FileSystemEntryRed(FileSystemEntry greenNode, FileSystemDirectoryRed parent) {
-			this.greenNode = greenNode;
-			this.parent = parent;
+		internal RootedFileSystemEntry(FileSystemEntry fileSystemEntry, FileSystemDirectory root) {
+			this.greenNode = fileSystemEntry;
+			this.root = root;
 		}
 	
 		/// <summary>Gets the parent.</summary>
-		public FileSystemDirectoryRed Parent {
-			get { return this.parent; }
+		public RootedFileSystemDirectory Parent {
+			get { throw new System.NotImplementedException(); }
+		}
+	
+		public RootedFileSystemDirectory Root {
+			get { return this.root.AsRoot; }
 		}
 	
 		public System.String PathSegment {
-			get { return this.GreenNode.PathSegment; }
+			get { return this.greenNode.PathSegment; }
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
-		public FileSystemEntryRed WithPathSegment(System.String value) {
-			throw new System.NotImplementedException();
+		public RootedFileSystemEntry WithPathSegment(System.String value) {
+			var mutatedLeaf = this.greenNode.WithPathSegment(value);
+			var newRoot = this.root; // TODO: update spine to root.
+			return mutatedLeaf.WithRoot(newRoot);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
-		protected FileSystemEntry GreenNode {
+		public FileSystemEntry FileSystemEntry {
 			get { return this.greenNode; }
 		}
 	}
@@ -290,6 +301,11 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; set; }
 		}
 		
+		public RootedFileSystemFile WithRoot(FileSystemDirectory root) {
+			// TODO: add runtime check to ensure that in fact this node is a descendent of 'root'
+			return new RootedFileSystemFile(this, root);
+		}
+		
 		public new Builder ToBuilder() {
 			return new Builder(this);
 		}
@@ -329,29 +345,50 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class FileSystemFileRed : FileSystemEntryRed {
-		private System.Collections.Immutable.ImmutableHashSet<System.String> attributes;
+	public partial struct RootedFileSystemFile {
+		private readonly FileSystemFile greenNode;
 	
-		protected FileSystemFileRed(FileSystemFile greenNode, FileSystemDirectoryRed parent) : base(greenNode, parent) {
+		private readonly FileSystemDirectory root;
+	
+		internal RootedFileSystemFile(FileSystemFile fileSystemFile, FileSystemDirectory root) {
+			this.greenNode = fileSystemFile;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent.</summary>
+		public RootedFileSystemDirectory Parent {
+			get { throw new System.NotImplementedException(); }
+		}
+	
+		public RootedFileSystemDirectory Root {
+			get { return this.root.AsRoot; }
+		}
+	
+		public System.String PathSegment {
+			get { return this.greenNode.PathSegment; }
 		}
 	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
-			get { return this.attributes; }
+			get { return this.greenNode.Attributes; }
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
-		public new FileSystemFileRed WithPathSegment(System.String value) {
-			return (FileSystemFileRed)base.WithPathSegment(value);
+		public RootedFileSystemFile WithPathSegment(System.String value) {
+			var mutatedLeaf = this.greenNode.WithPathSegment(value);
+			var newRoot = this.root; // TODO: update spine to root.
+			return mutatedLeaf.WithRoot(newRoot);
 		}
 		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
-		public FileSystemFileRed WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
-			throw new System.NotImplementedException();
+		public RootedFileSystemFile WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
+			var mutatedLeaf = this.greenNode.WithAttributes(value);
+			var newRoot = this.root; // TODO: update spine to root.
+			return mutatedLeaf.WithRoot(newRoot);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
-		protected new FileSystemFile GreenNode {
-			get { return (FileSystemFile)base.GreenNode; }
+		public FileSystemFile FileSystemFile {
+			get { return this.greenNode; }
 		}
 	}
 	
@@ -509,6 +546,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; set; }
 		}
 		
+		public RootedFileSystemDirectory AsRoot {
+			get { return new RootedFileSystemDirectory(this, this); }
+		}
+		
+		public RootedFileSystemDirectory WithRoot(FileSystemDirectory root) {
+			// TODO: add runtime check to ensure that in fact this node is a descendent of 'root'
+			return new RootedFileSystemDirectory(this, root);
+		}
+		
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
 			// TODO: fix this horribly inefficient algorithm.
 			var newChildren = this.Children.Replace(current, replacement);
@@ -567,32 +613,57 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class FileSystemDirectoryRed : FileSystemEntryRed, System.Collections.Generic.IEnumerable<FileSystemEntryRed> {
-		private System.Collections.Immutable.ImmutableSortedSet<FileSystemEntryRed> children;
+	public partial struct RootedFileSystemDirectory {
+		private readonly FileSystemDirectory greenNode;
 	
-		protected FileSystemDirectoryRed(FileSystemDirectory greenNode, FileSystemDirectoryRed parent) : base(greenNode, parent) {
+		private readonly FileSystemDirectory root;
+	
+		internal RootedFileSystemDirectory(FileSystemDirectory fileSystemDirectory, FileSystemDirectory root) {
+			this.greenNode = fileSystemDirectory;
+			this.root = root;
 		}
 	
-		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntryRed> Children {
-			get { return this.children; }
+		/// <summary>Gets the parent.</summary>
+		public RootedFileSystemDirectory Parent {
+			get { throw new System.NotImplementedException(); }
+		}
+	
+		public RootedFileSystemDirectory Root {
+			get { return this.root.AsRoot; }
+		}
+	
+		public bool IsRoot {
+			get { return this.root == this.greenNode; }
+		}
+	
+		public System.String PathSegment {
+			get { return this.greenNode.PathSegment; }
+		}
+	
+		public System.Collections.Immutable.ImmutableSortedSet<RootedFileSystemEntry> Children {
+			get { return this.greenNode.Children; }
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
-		public new FileSystemDirectoryRed WithPathSegment(System.String value) {
-			return (FileSystemDirectoryRed)base.WithPathSegment(value);
+		public RootedFileSystemDirectory WithPathSegment(System.String value) {
+			var mutatedLeaf = this.greenNode.WithPathSegment(value);
+			var newRoot = this.root; // TODO: update spine to root.
+			return mutatedLeaf.WithRoot(newRoot);
 		}
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public FileSystemDirectoryRed WithChildren(System.Collections.Immutable.ImmutableSortedSet<FileSystemEntryRed> value) {
-			throw new System.NotImplementedException();
+		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.ImmutableSortedSet<RootedFileSystemEntry> value) {
+			var mutatedLeaf = this.greenNode.WithChildren(value);
+			var newRoot = this.root; // TODO: update spine to root.
+			return mutatedLeaf.WithRoot(newRoot);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
-		protected new FileSystemDirectory GreenNode {
-			get { return (FileSystemDirectory)base.GreenNode; }
+		public FileSystemDirectory FileSystemDirectory {
+			get { return this.greenNode; }
 		}
 	
-		public System.Collections.Generic.IEnumerator<FileSystemEntryRed> GetEnumerator() {
+		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {
 			return this.Children.GetEnumerator();
 		}
 	

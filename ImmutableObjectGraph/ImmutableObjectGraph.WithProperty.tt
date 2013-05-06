@@ -24,22 +24,14 @@ public new <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= fiel
 }; // event handler
 
 this.HandleRedField += (templateType, field) => {
-	if (field.DeclaringType.Equals(templateType)) { // field is declared locally
 #>
 
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
 public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
-	throw new System.NotImplementedException();
+	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(value);
+	var newRoot = this.root; // TODO: update spine to root.
+	return mutatedLeaf.WithRoot(newRoot);
 }
 <#
-	} else { // else field is declared on a base type
-#>
-
-/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
-public new <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
-	return (<#= templateType.TypeName #>)base.With<#= field.NamePascalCase #>(value);
-}
-<#
-	}
 };
 #>
