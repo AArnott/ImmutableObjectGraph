@@ -56,7 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapter.cs" />
+    <Compile Include="Adapters\IImmutableCollectionAdapter.cs" />
     <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="Adapters\ImmutableSetRootAdapter.cs" />
     <Compile Include="Optional.cs" />
     <Compile Include="Optional`1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

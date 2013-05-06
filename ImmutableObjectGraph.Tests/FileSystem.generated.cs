@@ -367,16 +367,16 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String PathSegment {
 			get { return this.greenNode.PathSegment; }
 		}
-	
-		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
-			get { return this.greenNode.Attributes; }
-		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemFile WithPathSegment(System.String value) {
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
 			var newRoot = this.root; // TODO: update spine to root.
 			return mutatedLeaf.WithRoot(newRoot);
+		}
+	
+		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
+			get { return this.greenNode.Attributes; }
 		}
 		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
@@ -614,13 +614,18 @@ namespace ImmutableObjectGraph.Tests {
 	}
 	
 	public partial struct RootedFileSystemDirectory {
+		private static readonly System.Func<RootedFileSystemEntry, FileSystemEntry> toUnrooted = r => r.FileSystemEntry;
+		private static readonly System.Func<FileSystemEntry, FileSystemDirectory, RootedFileSystemEntry> toRooted = (u, r) => u.WithRoot(r);
+	
 		private readonly FileSystemDirectory greenNode;
 	
 		private readonly FileSystemDirectory root;
+		private Optional<Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>> children;
 	
 		internal RootedFileSystemDirectory(FileSystemDirectory fileSystemDirectory, FileSystemDirectory root) {
 			this.greenNode = fileSystemDirectory;
 			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>>);
 		}
 	
 		/// <summary>Gets the parent.</summary>
@@ -639,10 +644,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String PathSegment {
 			get { return this.greenNode.PathSegment; }
 		}
-	
-		public System.Collections.Immutable.ImmutableSortedSet<RootedFileSystemEntry> Children {
-			get { return this.greenNode.Children; }
-		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemDirectory WithPathSegment(System.String value) {
@@ -650,10 +651,21 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root; // TODO: update spine to root.
 			return mutatedLeaf.WithRoot(newRoot);
 		}
+	
+		public System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.ImmutableSortedSet<RootedFileSystemEntry> value) {
-			var mutatedLeaf = this.greenNode.WithChildren(value);
+		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> value) {
+			var adapter = (Adapters.IImmutableCollectionAdapter<FileSystemEntry>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			var newRoot = this.root; // TODO: update spine to root.
 			return mutatedLeaf.WithRoot(newRoot);
 		}
@@ -664,10 +676,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {
-			return this.Children.GetEnumerator();
-		}
-	
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.Children.GetEnumerator();
 		}
 	}

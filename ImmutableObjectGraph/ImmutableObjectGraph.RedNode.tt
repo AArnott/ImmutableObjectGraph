@@ -26,13 +26,36 @@ public <#= redType.TypeName #> WithRoot(<#= ((RedMetaType)redType.RecursiveParen
 #>
 
 public partial struct <#= redType.TypeName #> {
+<#
+			if (redType.Equals(redType.RecursiveParent)) {
+#>
+	private static readonly System.Func<<#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveType.TypeName#>> toUnrooted = r => r.<#=redType.GreenType.RecursiveType.TypeName#>;
+	private static readonly System.Func<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>, <#=redType.RecursiveType.TypeName#>> toRooted = (u, r) => u.WithRoot(r);
+
+<#
+			}
+#>
 	private readonly <#= redType.GreenType.TypeName #> greenNode;
 
-	private readonly <#= ((RedMetaType)redType.RecursiveParent).GreenType.TypeName #> root;
+	private readonly <#= redType.GreenType.RecursiveParent.TypeName #> root;
+<#
+			if (redType.IsRecursive) {
+#>
+	private Optional<Adapters.ImmutableSetRootAdapter<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>>> <#= redType.RecursiveField.NameCamelCase #>;
+<#
+			}
+#>
 
-	internal <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> <#= redType.GreenType.TypeNameCamelCase #>, <#= ((RedMetaType)redType.RecursiveParent).GreenType.TypeName #> root) {
+	internal <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> <#= redType.GreenType.TypeNameCamelCase #>, <#= redType.GreenType.RecursiveParent.TypeName #> root) {
 		this.greenNode = <#= redType.GreenType.TypeNameCamelCase #>;
 		this.root = root;
+<#
+			if (redType.IsRecursive) {
+#>
+		this.<#= redType.RecursiveField.NameCamelCase #> = default(Optional<Adapters.ImmutableSetRootAdapter<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>>>);
+<#
+			}
+#>
 	}
 
 	/// <summary>Gets the parent.</summary>
@@ -54,15 +77,28 @@ public partial struct <#= redType.TypeName #> {
 			}
 
 			foreach (var field in redType.AllFields) {
+				if (field.IsRecursiveCollection) {
+#>
+
+	public System.Collections.Immutable.IImmutableSet<<#= field.ElementTypeName #>> <#= field.NamePascalCase #> {
+		get {
+			if (!this.<#= field.NameCamelCase #>.IsDefined) {
+				this.<#= field.NameCamelCase #> = Optional.For(Adapter.Create(this.greenNode.<#= field.NamePascalCase #>, toRooted, toUnrooted, this.root));
+			}
+
+			return this.<#= field.NameCamelCase #>.Value;
+		}
+	}
+<#
+				} else {
 #>
 
 	public <#= field.TypeName #> <#= field.NamePascalCase #> {
 		get { return this.greenNode.<#= field.NamePascalCase #>; }
 	}
 <#
-			}
+				}
 
-			foreach (var field in redType.AllFields) {
 				this.OnHandleRedField(redType, field);
 			}
 #>
@@ -76,10 +112,6 @@ public partial struct <#= redType.TypeName #> {
 #>
 
 	public System.Collections.Generic.IEnumerator<<#=redType.RecursiveType.TypeName#>> GetEnumerator() {
-		return this.<#=redType.RecursiveField.NamePascalCase#>.GetEnumerator();
-	}
-
-	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 		return this.<#=redType.RecursiveField.NamePascalCase#>.GetEnumerator();
 	}
 <#

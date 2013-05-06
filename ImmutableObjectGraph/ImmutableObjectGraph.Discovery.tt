@@ -374,6 +374,10 @@ protected class MetaType {
 			get { return IsCollectionType(this.Field.FieldType); }
 		}
 
+		public bool IsRecursiveCollection {
+			get { return this.IsCollection && this.DeclaringType.RecursiveType != null && this.ElementType.IsEquivalentTo(this.DeclaringType.RecursiveType.Type); }
+		}
+
 		public bool IsPrimitiveType {
 			get { return !TemplateTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) && !this.IsCollection; }
 		}
