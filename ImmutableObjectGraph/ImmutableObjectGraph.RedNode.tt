@@ -162,8 +162,8 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	}
 
 	private <#= redType.TypeName #> NewSpine(<#= redType.GreenType.TypeName #> leaf) {
-		// TODO: spine rewrite here.
-		return leaf.WithRoot(this.root);
+		var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+		return leaf.WithRoot(newRoot);
 	}
 }
 <#

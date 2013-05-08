@@ -187,8 +187,8 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		private RootedFileSystemEntry NewSpine(FileSystemEntry leaf) {
-			// TODO: spine rewrite here.
-			return leaf.WithRoot(this.root);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
 		}
 	}
 	
@@ -448,8 +448,8 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		private RootedFileSystemFile NewSpine(FileSystemFile leaf) {
-			// TODO: spine rewrite here.
-			return leaf.WithRoot(this.root);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
 		}
 	}
 	
@@ -760,8 +760,8 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		private RootedFileSystemDirectory NewSpine(FileSystemDirectory leaf) {
-			// TODO: spine rewrite here.
-			return leaf.WithRoot(this.root);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
 		}
 	}
 }
