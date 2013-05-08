@@ -82,7 +82,6 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 			}
 
 			foreach (var ancestor in redType.Ancestors) {
-				System.Diagnostics.Debugger.Launch();
 				var greenAncestor = ((RedMetaType)ancestor).GreenType;
 #>
 
@@ -160,6 +159,11 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 
 	public override int GetHashCode() {
 		return this.greenNode.GetHashCode();
+	}
+
+	private <#= redType.TypeName #> NewSpine(<#= redType.GreenType.TypeName #> leaf) {
+		// TODO: spine rewrite here.
+		return leaf.WithRoot(this.root);
 	}
 }
 <#

@@ -161,8 +161,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemEntry WithPathSegment(System.String value) {
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
-			var newRoot = this.root; // TODO: update spine to root.
-			return mutatedLeaf.WithRoot(newRoot);
+			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -185,6 +184,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public override int GetHashCode() {
 			return this.greenNode.GetHashCode();
+		}
+	
+		private RootedFileSystemEntry NewSpine(FileSystemEntry leaf) {
+			// TODO: spine rewrite here.
+			return leaf.WithRoot(this.root);
 		}
 	}
 	
@@ -408,8 +412,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemFile WithPathSegment(System.String value) {
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
-			var newRoot = this.root; // TODO: update spine to root.
-			return mutatedLeaf.WithRoot(newRoot);
+			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
@@ -419,8 +422,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
 		public RootedFileSystemFile WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			var mutatedLeaf = this.greenNode.WithAttributes(value);
-			var newRoot = this.root; // TODO: update spine to root.
-			return mutatedLeaf.WithRoot(newRoot);
+			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -443,6 +445,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public override int GetHashCode() {
 			return this.greenNode.GetHashCode();
+		}
+	
+		private RootedFileSystemFile NewSpine(FileSystemFile leaf) {
+			// TODO: spine rewrite here.
+			return leaf.WithRoot(this.root);
 		}
 	}
 	
@@ -706,8 +713,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemDirectory WithPathSegment(System.String value) {
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
-			var newRoot = this.root; // TODO: update spine to root.
-			return mutatedLeaf.WithRoot(newRoot);
+			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> Children {
@@ -724,8 +730,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> value) {
 			var adapter = (Adapters.IImmutableCollectionAdapter<FileSystemEntry>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			var newRoot = this.root; // TODO: update spine to root.
-			return mutatedLeaf.WithRoot(newRoot);
+			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -752,6 +757,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public override int GetHashCode() {
 			return this.greenNode.GetHashCode();
+		}
+	
+		private RootedFileSystemDirectory NewSpine(FileSystemDirectory leaf) {
+			// TODO: spine rewrite here.
+			return leaf.WithRoot(this.root);
 		}
 	}
 }

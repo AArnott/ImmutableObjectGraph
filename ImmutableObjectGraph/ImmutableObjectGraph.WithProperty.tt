@@ -31,8 +31,7 @@ this.HandleRedField += (templateType, field) => {
 public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Collections.Immutable.IImmutableSet<<#= field.ElementTypeName #>> value) {
 	var adapter = (Adapters.IImmutableCollectionAdapter<<#= ((RedMetaType)templateType).GreenType.RecursiveType.TypeName #>>)value;
 	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(adapter.UnderlyingCollection);
-	var newRoot = this.root; // TODO: update spine to root.
-	return mutatedLeaf.WithRoot(newRoot);
+	return this.NewSpine(mutatedLeaf);
 }
 <#
 	} else {
@@ -41,8 +40,7 @@ public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Colle
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
 public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
 	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(value);
-	var newRoot = this.root; // TODO: update spine to root.
-	return mutatedLeaf.WithRoot(newRoot);
+	return this.NewSpine(mutatedLeaf);
 }
 <#
 	}
