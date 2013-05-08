@@ -8,22 +8,62 @@ this.HandleType += (templateType, position) => {
 #>
 
 public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.RecursiveType.TypeName #> current, <#= templateType.RecursiveType.TypeName #> replacement) {
-	// TODO: fix this horribly inefficient algorithm.
-	var newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(current, replacement);
-	if (this.<#= templateType.RecursiveField.NamePascalCase #> != newChildren) {
-		return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
+	var spine = this.GetSpine(current);
+
+	if (spine.IsEmpty) {
+		// The descendent was not found.
+		return this;
 	}
-	
-	foreach (var child in this.OfType<<#= templateType.RecursiveField.DeclaringType.TypeName #>>())
-	{
-		var newChild = child.ReplaceDescendent(current, replacement);
-		if (newChild != child) {
-			newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(child, newChild);
-			return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
+
+	return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, replacement);
+}
+
+private <#= templateType.RecursiveType.TypeName #> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> spine, <#= templateType.RecursiveType.TypeName #> replacement) {
+	Debug.Assert(this == spine.Peek());
+	var remainingSpine = spine.Pop();
+	if (remainingSpine.IsEmpty) {
+		// This is the instance to be replaced.
+		return replacement;
+	}
+
+	<#= templateType.RecursiveType.TypeName #> newChild;
+	var child = remainingSpine.Peek();
+	var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
+	if (recursiveChild != null) {
+		newChild = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+	} else {
+		Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
+		Debug.Assert(this.<#= templateType.RecursiveField.NamePascalCase #>.Contains(child));
+		newChild = replacement;
+	}
+
+	var newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(child, newChild);
+	return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
+}
+
+internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RecursiveType.TypeName #> descendent) {
+	// TODO: fix this horribly inefficient algorithm.
+	var emptySpine = System.Collections.Immutable.ImmutableStack.Create<<#= templateType.RecursiveType.TypeName #>>();
+	if (this.Equals(descendent)) {
+		return emptySpine.Push(descendent);
+	}
+
+	var spine = emptySpine;
+	foreach (var child in this.Children) {
+		var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
+		if (recursiveChild != null) {
+			spine = recursiveChild.GetSpine(descendent);
+		} else if (child.Equals(descendent)) {
+			spine = spine.Push(child);
+		}
+
+		if (!spine.IsEmpty) {
+			return spine.Push(this);
 		}
 	}
-		
-	return this;
+
+	// The descendent is not in this sub-tree.
+	return emptySpine;
 }
 <#
 	}
