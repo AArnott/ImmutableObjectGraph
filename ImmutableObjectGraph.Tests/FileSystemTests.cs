@@ -110,6 +110,15 @@
 			Assert.Equal(greenLeaf.GetHashCode(), redLeafAsRoot.GetHashCode());
 		}
 
+		[Fact]
+		public void ModifyPropertyInLeafRewritesSpine() {
+			var redRoot = this.root.AsRoot;
+			var leaf = redRoot.Children.Last().AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			var newLeaf = leaf.WithPathSegment("changed");
+			var leafFromNewRoot = newLeaf.Root.Children.Last().AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			Assert.Equal(newLeaf, leafFromNewRoot);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
@@ -125,6 +134,12 @@
 	partial class FileSystemFile {
 		static partial void CreateDefaultTemplate(ref FileSystemFile.Template template) {
 			template.Attributes = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
+		}
+	}
+
+	partial struct RootedFileSystemFile {
+		public override string ToString() {
+			return this.PathSegment;
 		}
 	}
 
