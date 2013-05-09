@@ -130,6 +130,15 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	public <#= redType.GreenType.TypeName #> <#= redType.GreenType.TypeName #> {
 		get { return this.greenNode; }
 	}
+
+	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+	public <#= redType.TypeName #> With(<#
+		WriteParameters(redType.AllFields, ParameterStyle.Optional);
+#>) {
+		var newGreenNode = this.greenNode.With(<# WriteArguments(redType.AllFields, ArgSource.Argument); #>);
+		var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+		return newGreenNode.WithRoot(newRoot);
+	}
 <#
 			if (redType.IsRecursive) {
 #>
@@ -231,6 +240,30 @@ protected class RedMetaType : MetaType {
 	public class RedMetaField : MetaField {
 		public RedMetaField(FieldInfo field, MetaType declaringType)
 			: base(field, declaringType) {
+		}
+
+		public MetaField GreenField {
+			get { return ((RedMetaType)this.DeclaringType).GreenType.LocalFields.Single(f => f.Field == this.Field); }
+		}
+
+		public override string TypeName {
+			get {
+				if (this.IsRecursiveCollection) {
+					return string.Format("System.Collections.Immutable.IImmutableSet<{0}>", this.ElementTypeName);
+				} else {
+					return base.TypeName;
+				}
+			}
+		}
+
+		public override string ArgumentReference {
+			get {
+				if (this.IsRecursiveCollection) {
+					return string.Format("{1}.IsDefined ? ({2})((Adapters.IImmutableCollectionAdapter<{0}>){1}.Value).UnderlyingCollection : default({3})", this.GreenField.ElementTypeName, this.NameCamelCase, this.GreenField.TypeName, this.GreenField.OptionalTypeName);
+				} else {
+					return base.ArgumentReference;
+				}
+			}
 		}
 	}
 }

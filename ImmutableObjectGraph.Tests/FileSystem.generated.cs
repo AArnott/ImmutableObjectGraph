@@ -168,6 +168,15 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.greenNode; }
 		}
 	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedFileSystemEntry With(
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.With(
+				pathSegment: pathSegment);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
 		public override bool Equals(object obj) {
 			if (obj is RootedFileSystemEntry) {
 				var other = (RootedFileSystemEntry)obj;
@@ -426,6 +435,17 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemFile FileSystemFile {
 			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedFileSystemFile With(
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			var newGreenNode = this.greenNode.With(
+				pathSegment: pathSegment,
+				attributes: attributes);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -773,6 +793,17 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemDirectory FileSystemDirectory {
 			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedFileSystemDirectory With(
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
+			var newGreenNode = this.greenNode.With(
+				pathSegment: pathSegment,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
 		}
 	
 		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {

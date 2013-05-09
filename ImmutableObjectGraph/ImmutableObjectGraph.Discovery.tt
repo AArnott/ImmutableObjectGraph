@@ -124,7 +124,7 @@ private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource so
 				Write("this.{0}", field.NamePascalCase);
 				break;
 			case ArgSource.Argument:
-				Write(field.NameCamelCase);
+				Write(field.ArgumentReference);
 				break;
 			case ArgSource.OptionalArgumentOrProperty:
 				Write("{0}.GetValueOrDefault(this.{1})", field.NameCamelCase, field.NamePascalCase);
@@ -256,7 +256,7 @@ protected class MetaType {
 	}
 
 	public string OptionalTypeName {
-		get { return this.GetOptionalTypeName(this.Type); }
+		get { return GetOptionalTypeName(this.TypeName); }
 	}
 
 	protected virtual MetaType RootAncestorOrThisType {
@@ -395,7 +395,7 @@ protected class MetaType {
 		}
 
 		public virtual string OptionalTypeName {
-			get { return this.DeclaringType.GetOptionalTypeName(this.Field.FieldType); }
+			get { return GetOptionalTypeName(this.TypeName); }
 		}
 
 		public virtual string TypeNameForBuilderField {
@@ -412,6 +412,10 @@ protected class MetaType {
 					? this.TypeName + ".Builder"
 					: this.TypeName;
 			}
+		}
+
+		public virtual string ArgumentReference {
+			get { return this.NameCamelCase; }
 		}
 	}
 }

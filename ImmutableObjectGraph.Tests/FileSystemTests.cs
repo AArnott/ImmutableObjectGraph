@@ -125,6 +125,21 @@
 			Assert.Throws<ArgumentException>(() => leaf.WithRoot(this.root));
 		}
 
+		[Fact]
+		public void RedNodeWithBulkMethodOnChild() {
+			var redRoot = this.root.AsRoot;
+			var firstChild = redRoot.Children.First();
+			RootedFileSystemEntry modifiedChild = firstChild.With(pathSegment: "g");
+			Assert.Equal("g", modifiedChild.PathSegment);
+		}
+
+		[Fact]
+		public void RedNodeWithBulkMethodOnRoot() {
+			var redRoot = this.root.AsRoot;
+			RootedFileSystemDirectory modifiedRoot = redRoot.With(pathSegment: "g");
+			Assert.Equal("g", modifiedRoot.PathSegment);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
