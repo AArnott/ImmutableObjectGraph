@@ -16,7 +16,6 @@ public <#= redType.TypeName #> AsRoot {
 #>
 
 public <#= redType.TypeName #> WithRoot(<#= ((RedMetaType)redType.RecursiveParent).GreenType.TypeName #> root) {
-	// TODO: add runtime check to ensure that in fact this node is a descendent of 'root'
 	return new <#= redType.TypeName #>(this, root);
 }
 <#

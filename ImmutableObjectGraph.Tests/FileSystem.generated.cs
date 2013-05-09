@@ -53,7 +53,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
 		
 		public RootedFileSystemEntry WithRoot(FileSystemDirectory root) {
-			// TODO: add runtime check to ensure that in fact this node is a descendent of 'root'
 			return new RootedFileSystemEntry(this, root);
 		}
 		
@@ -339,7 +338,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public RootedFileSystemFile WithRoot(FileSystemDirectory root) {
-			// TODO: add runtime check to ensure that in fact this node is a descendent of 'root'
 			return new RootedFileSystemFile(this, root);
 		}
 		
@@ -612,7 +610,6 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public RootedFileSystemDirectory WithRoot(FileSystemDirectory root) {
-			// TODO: add runtime check to ensure that in fact this node is a descendent of 'root'
 			return new RootedFileSystemDirectory(this, root);
 		}
 		

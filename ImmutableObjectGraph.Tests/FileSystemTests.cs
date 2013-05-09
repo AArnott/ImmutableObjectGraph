@@ -119,6 +119,12 @@
 			Assert.Equal(newLeaf, leafFromNewRoot);
 		}
 
+		[Fact(Skip = "It currently fails.")]
+		public void WithRootInUnrelatedTreeThrows() {
+			var leaf = FileSystemDirectory.Create("z");
+			Assert.Throws<ArgumentException>(() => leaf.WithRoot(this.root));
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
