@@ -120,6 +120,20 @@
 		}
 
 		[Fact]
+		public void ModifyPropertyInLeafRewritesSpineWithLookupTable() {
+			// Fill in a bunch of children to force the creation of a lookup table.
+			var root = this.root.AddChildren(
+				Enumerable.Range(100, 30).Select(
+					n => FileSystemFile.Create("filler" + n)));
+
+			var redRoot = root.AsRoot;
+			var leaf = redRoot.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			var newLeaf = leaf.WithPathSegment("changed");
+			var leafFromNewRoot = newLeaf.Root.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			Assert.Equal(newLeaf, leafFromNewRoot);
+		}
+
+		[Fact]
 		public void WithRootInUnrelatedTreeThrows() {
 			var leaf = FileSystemDirectory.Create("z");
 			Assert.Throws<ArgumentException>(() => leaf.WithRoot(this.root));
