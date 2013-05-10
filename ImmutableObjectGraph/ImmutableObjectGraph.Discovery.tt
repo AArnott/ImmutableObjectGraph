@@ -269,7 +269,7 @@ protected class MetaType {
 		get { return GetOptionalTypeName(this.TypeName); }
 	}
 
-	protected virtual MetaType RootAncestorOrThisType {
+	public virtual MetaType RootAncestorOrThisType {
 		get {
 			MetaType current = this;
 			while (current.Ancestor != null) {

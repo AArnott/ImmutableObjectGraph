@@ -61,6 +61,12 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemEntry(this, root);
 		}
 		
+		private System.IntPtr identity;
+		
+		protected internal System.IntPtr Identity {
+			get { return this.identity; }
+		}
+		
 		public virtual FileSystemFile ToFileSystemFile(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			FileSystemFile that = this as FileSystemFile;
@@ -530,6 +536,7 @@ namespace ImmutableObjectGraph.Tests {
 		{
 			this.children = children;
 			this.Validate();
+			this.InitializeLookup();
 		}
 	
 		public static FileSystemDirectory Create(
@@ -706,29 +713,113 @@ namespace ImmutableObjectGraph.Tests {
 			return this.WithChildren(newChildren);
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(FileSystemEntry descendent) {
-			// TODO: fix this horribly inefficient algorithm.
-			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<FileSystemEntry>();
-			if (this.Equals(descendent)) {
-				return emptySpine.Push(descendent);
-			}
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>>().Add(System.IntPtr.Zero, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>());
 		
-			var spine = emptySpine;
-			foreach (var child in this.Children) {
-				var recursiveChild = child as FileSystemDirectory;
-				if (recursiveChild != null) {
-					spine = recursiveChild.GetSpine(descendent);
-				} else if (child.Equals(descendent)) {
-					spine = spine.Push(child);
+		private System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> lookupTable;
+		
+		private int inefficiencyLoad;
+		
+		/// <summary>
+		/// The maximum number of steps allowable for a search to be done among this node's children
+		/// before a faster lookup table will be built.
+		/// </summary>
+		private const int InefficiencyLoadThreshold = 16;
+		
+		private System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> LookupTable {
+			get {
+				if (this.lookupTable == lookupTableLazySentinal) {
+					this.lookupTable = this.CreateLookupTable();
+					this.inefficiencyLoad = 1;
 				}
 		
-				if (!spine.IsEmpty) {
+				return this.lookupTable;
+			}
+		}
+		
+		private void InitializeLookup() {
+			this.inefficiencyLoad = 1;
+			foreach (var child in this.children)
+			{
+				var recursiveChild = child as FileSystemDirectory;
+				this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+			}
+		
+			if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+				this.inefficiencyLoad = 1;
+				this.lookupTable = lookupTableLazySentinal;
+			}
+		}
+		
+		/// <summary>
+		/// Creates the lookup table that will contain all this node's children.
+		/// </summary>
+		/// <returns>The lookup table.</returns>
+		private System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>>().ToBuilder();
+			this.ContributeDescendentsToLookupTable(table);
+			return table.ToImmutable();
+		}
+		
+		/// <summary>
+		/// Adds this node's children (recursively) to the lookup table.
+		/// </summary>
+		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
+		/// <returns>The new lookup table.</returns>
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>>.Builder seedLookupTable)
+		{
+			foreach (var child in this.Children)
+			{
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>(child, this.Identity));
+				var recursiveChild = child as FileSystemDirectory;
+				if (recursiveChild != null) {
+					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
+				}
+			}
+		}
+		
+		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(System.IntPtr descendent) {
+			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<FileSystemEntry>();
+			if (this.Identity.Equals(descendent)) {
+				return emptySpine.Push(this);
+			}
+		
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr> lookupValue;
+				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
+				{
+					// Awesome.  We know the node the caller is looking for is a descendent of this node.
+					// Now just string together all the nodes that connect this one with the sought one.
+					var spine = emptySpine;
+					do
+					{
+						spine = spine.Push(lookupValue.Key);
+					}
+					while (this.lookupTable.TryGetValue(lookupValue.Value, out lookupValue));
 					return spine.Push(this);
+				}
+			} else {
+				// We don't have an efficient lookup table for this node.  Aggressively search every child.
+				var spine = emptySpine;
+				foreach (var child in this.Children) {
+					var recursiveChild = child as FileSystemDirectory;
+					if (recursiveChild != null) {
+						spine = recursiveChild.GetSpine(descendent);
+					} else if (child.Identity.Equals(descendent)) {
+						spine = spine.Push(child);
+					}
+		
+					if (!spine.IsEmpty) {
+						return spine.Push(this);
+					}
 				}
 			}
 		
 			// The descendent is not in this sub-tree.
 			return emptySpine;
+		}
+		
+		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(FileSystemEntry descendent) {
+			return this.GetSpine(descendent.Identity);
 		}
 		
 		public new Builder ToBuilder() {

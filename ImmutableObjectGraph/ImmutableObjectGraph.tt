@@ -14,6 +14,7 @@
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt" #>
 // ------------------------------------------------------------------------------
@@ -73,6 +74,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>
 		this.Validate();
 <#	} #>
+<#	OnHandleType(templateType, HandleTypePosition.InsideConstructor); #>
 	}
 <# }
 
@@ -203,6 +205,8 @@ if (!templateType.IsAbstract) { #>
 
 	protected enum HandleTypePosition {
 		BeforeTypeDeclaration,
+
+		InsideConstructor,
 
 		WithinTypeDeclaration,
 

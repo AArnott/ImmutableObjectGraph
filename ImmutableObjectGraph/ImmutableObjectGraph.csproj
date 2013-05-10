@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ImmutableObjectGraph.FastSpine.tt" />
     <None Include="ImmutableObjectGraph.RedNode.tt" />
     <None Include="ImmutableObjectGraph.Interface.tt" />
     <None Include="ImmutableObjectGraph.DeepMutation.tt" />

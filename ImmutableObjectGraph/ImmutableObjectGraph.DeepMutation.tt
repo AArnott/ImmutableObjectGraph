@@ -40,31 +40,6 @@ private <#= templateType.RecursiveType.TypeName #> ReplaceDescendent(System.Coll
 	var newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(child, newChild);
 	return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
 }
-
-internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RecursiveType.TypeName #> descendent) {
-	// TODO: fix this horribly inefficient algorithm.
-	var emptySpine = System.Collections.Immutable.ImmutableStack.Create<<#= templateType.RecursiveType.TypeName #>>();
-	if (this.Equals(descendent)) {
-		return emptySpine.Push(descendent);
-	}
-
-	var spine = emptySpine;
-	foreach (var child in this.Children) {
-		var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
-		if (recursiveChild != null) {
-			spine = recursiveChild.GetSpine(descendent);
-		} else if (child.Equals(descendent)) {
-			spine = spine.Push(child);
-		}
-
-		if (!spine.IsEmpty) {
-			return spine.Push(this);
-		}
-	}
-
-	// The descendent is not in this sub-tree.
-	return emptySpine;
-}
 <#
 	}
 }; // event handler
