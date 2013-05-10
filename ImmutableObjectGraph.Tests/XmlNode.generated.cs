@@ -524,47 +524,47 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
-		public XmlElementWithContent WithChildren(params XmlNode[] values) {
+		public new XmlElementWithContent WithChildren(params XmlNode[] values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
-		public XmlElementWithContent WithChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+		public new XmlElementWithContent WithChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
-		public XmlElementWithContent AddChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+		public new XmlElementWithContent AddChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
-		public XmlElementWithContent AddChildren(params XmlNode[] values) {
+		public new XmlElementWithContent AddChildren(params XmlNode[] values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public XmlElementWithContent AddChildren(XmlNode value) {
+		public new XmlElementWithContent AddChildren(XmlNode value) {
 			return this.With(children: this.Children.Add(value));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+		public new XmlElementWithContent RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
 			return this.With(children: this.Children.RemoveRange(values));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren(params XmlNode[] values) {
+		public new XmlElementWithContent RemoveChildren(params XmlNode[] values) {
 			return this.With(children: this.Children.RemoveRange(values));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren(XmlNode value) {
+		public new XmlElementWithContent RemoveChildren(XmlNode value) {
 			return this.With(children: this.Children.Remove(value));
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren() {
+		public new XmlElementWithContent RemoveChildren() {
 			return this.With(children: this.Children.Clear());
 		}
 		
