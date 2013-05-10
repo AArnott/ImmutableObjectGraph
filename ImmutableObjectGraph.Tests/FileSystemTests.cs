@@ -64,7 +64,7 @@
 			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
 		}
 
-		[Fact(Skip = "It currently fails")]
+		[Fact]
 		public void ReplaceDescendentNotFound() {
 			Assert.Throws<ArgumentException>(() => this.root.ReplaceDescendent(FileSystemFile.Create("nonexistent"), FileSystemFile.Create("replacement")));
 		}

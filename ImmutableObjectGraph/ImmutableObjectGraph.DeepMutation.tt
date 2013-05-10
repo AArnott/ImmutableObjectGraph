@@ -12,7 +12,7 @@ public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.Recursive
 
 	if (spine.IsEmpty) {
 		// The descendent was not found.
-		return this;
+		throw new System.ArgumentException("Old value not found");
 	}
 
 	return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, replacement);

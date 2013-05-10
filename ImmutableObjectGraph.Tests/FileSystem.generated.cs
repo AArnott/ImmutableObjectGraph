@@ -662,7 +662,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 			if (spine.IsEmpty) {
 				// The descendent was not found.
-				return this;
+				throw new System.ArgumentException("Old value not found");
 			}
 		
 			return (FileSystemDirectory)this.ReplaceDescendent(spine, replacement);
