@@ -15,7 +15,7 @@ public <#= redType.TypeName #> AsRoot {
 			}
 #>
 
-public <#= redType.TypeName #> WithRoot(<#= redType.GreenType.RecursiveParent.TypeName #> root) {
+public <#= redType.HasAncestor ? "new " : "" #><#= redType.TypeName #> WithRoot(<#= redType.GreenType.RecursiveParent.TypeName #> root) {
 	var spine = root.GetSpine(this);
 	if (spine.IsEmpty) {
 		throw new System.ArgumentException("Root does not belong to the same tree.");
@@ -223,6 +223,10 @@ protected class RedMetaType : MetaType {
 	public override bool Equals(object value) {
 		var other = value as RedMetaType;
 		return other != null && this.GreenType.Equals(other.GreenType);
+	}
+
+	public override int GetHashCode() {
+		return this.GreenType.GetHashCode();
 	}
 
 	private static RedMetaType Wrap(MetaType type) {

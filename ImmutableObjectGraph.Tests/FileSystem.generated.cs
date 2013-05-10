@@ -367,7 +367,7 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; set; }
 		}
 		
-		public RootedFileSystemFile WithRoot(FileSystemDirectory root) {
+		public new RootedFileSystemFile WithRoot(FileSystemDirectory root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
 				throw new System.ArgumentException("Root does not belong to the same tree.");
@@ -663,7 +663,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return new RootedFileSystemDirectory(this, this); }
 		}
 		
-		public RootedFileSystemDirectory WithRoot(FileSystemDirectory root) {
+		public new RootedFileSystemDirectory WithRoot(FileSystemDirectory root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
 				throw new System.ArgumentException("Root does not belong to the same tree.");
