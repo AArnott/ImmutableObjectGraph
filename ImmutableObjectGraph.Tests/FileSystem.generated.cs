@@ -18,20 +18,21 @@ namespace ImmutableObjectGraph.Tests {
 	}
 	
 	public abstract partial class FileSystemEntry : IFileSystemEntry {
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String pathSegment;
 	
-		/// <summary>Initializes a new instance of the FileSystemEntry class.</summary>
-		protected FileSystemEntry()
-		{
-		}
+		private readonly System.Int32 identity;
 	
 		/// <summary>Initializes a new instance of the FileSystemEntry class.</summary>
 		protected FileSystemEntry(
+			System.Int32 identity,
 			System.String pathSegment)
-			: base()
 		{
+			this.identity = identity;
 			this.pathSegment = pathSegment;
 		}
 	
@@ -50,7 +51,17 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public abstract FileSystemEntry With(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>));
+	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
+	
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		}
 		
 		public RootedFileSystemEntry WithRoot(FileSystemDirectory root) {
 			var spine = root.GetSpine(this);
@@ -59,12 +70,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return new RootedFileSystemEntry(this, root);
-		}
-		
-		private System.IntPtr identity;
-		
-		protected internal System.IntPtr Identity {
-			get { return this.identity; }
 		}
 		
 		public virtual FileSystemFile ToFileSystemFile(
@@ -239,15 +244,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly System.Collections.Immutable.ImmutableHashSet<System.String> attributes;
 	
 		/// <summary>Initializes a new instance of the FileSystemFile class.</summary>
-		protected FileSystemFile()
-		{
-		}
-	
-		/// <summary>Initializes a new instance of the FileSystemFile class.</summary>
 		protected FileSystemFile(
+			System.Int32 identity,
 			System.String pathSegment,
 			System.Collections.Immutable.ImmutableHashSet<System.String> attributes)
 			: base(
+				identity: identity,
 				pathSegment: pathSegment)
 		{
 			this.attributes = attributes;
@@ -257,9 +259,11 @@ namespace ImmutableObjectGraph.Tests {
 		public static FileSystemFile Create(
 			System.String pathSegment,
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.With(
 				pathSegment: pathSegment,
-				attributes: attributes.GetValueOrDefault(DefaultInstance.Attributes));
+				attributes: attributes.GetValueOrDefault(DefaultInstance.Attributes),
+				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
 	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
@@ -328,8 +332,10 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public override FileSystemEntry With(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
+				identity: identity,
 				pathSegment: pathSegment,
 				attributes: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>));
 		}
@@ -337,11 +343,14 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual FileSystemFile With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
 				(attributes.IsDefined && attributes.Value != this.Attributes)) {
 				return new FileSystemFile(
+					identity: identity.GetValueOrDefault(this.Identity),
 					pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
 					attributes: attributes.GetValueOrDefault(this.Attributes));
 			} else {
@@ -362,6 +371,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new FileSystemFile(
+				default(System.Int32), 
 				template.PathSegment, 
 				template.Attributes);
 		}
@@ -523,15 +533,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children;
 	
 		/// <summary>Initializes a new instance of the FileSystemDirectory class.</summary>
-		protected FileSystemDirectory()
-		{
-		}
-	
-		/// <summary>Initializes a new instance of the FileSystemDirectory class.</summary>
 		protected FileSystemDirectory(
+			System.Int32 identity,
 			System.String pathSegment,
 			System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children)
 			: base(
+				identity: identity,
 				pathSegment: pathSegment)
 		{
 			this.children = children;
@@ -542,9 +549,11 @@ namespace ImmutableObjectGraph.Tests {
 		public static FileSystemDirectory Create(
 			System.String pathSegment,
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
+			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.With(
 				pathSegment: pathSegment,
-				children: children.GetValueOrDefault(DefaultInstance.Children));
+				children: children.GetValueOrDefault(DefaultInstance.Children),
+				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
 	
 		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
@@ -613,8 +622,10 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public override FileSystemEntry With(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.With(
+				identity: identity,
 				pathSegment: pathSegment,
 				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 		}
@@ -622,18 +633,20 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual FileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
 				(children.IsDefined && children.Value != this.Children)) {
 				return new FileSystemDirectory(
+					identity: identity.GetValueOrDefault(this.Identity),
 					pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
 					children: children.GetValueOrDefault(this.Children));
 			} else {
 				return this;
 			}
 		}
-	
 	
 		public System.Collections.Generic.IEnumerator<FileSystemEntry> GetEnumerator() {
 			return this.children.GetEnumerator();
@@ -642,6 +655,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -655,6 +669,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new FileSystemDirectory(
+				default(System.Int32), 
 				template.PathSegment, 
 				template.Children);
 		}
@@ -713,9 +728,9 @@ namespace ImmutableObjectGraph.Tests {
 			return this.WithChildren(newChildren);
 		}
 		
-		private static readonly System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>>().Add(System.IntPtr.Zero, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>());
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>());
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> lookupTable;
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTable;
 		
 		private int inefficiencyLoad;
 		
@@ -725,7 +740,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		private const int InefficiencyLoadThreshold = 16;
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> LookupTable {
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> LookupTable {
 			get {
 				if (this.lookupTable == lookupTableLazySentinal) {
 					this.lookupTable = this.CreateLookupTable();
@@ -754,8 +769,8 @@ namespace ImmutableObjectGraph.Tests {
 		/// Creates the lookup table that will contain all this node's children.
 		/// </summary>
 		/// <returns>The lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> CreateLookupTable() {
-			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>>().ToBuilder();
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>().ToBuilder();
 			this.ContributeDescendentsToLookupTable(table);
 			return table.ToImmutable();
 		}
@@ -765,11 +780,11 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
 		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>>.Builder seedLookupTable)
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>.Builder seedLookupTable)
 		{
 			foreach (var child in this.Children)
 			{
-				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>(child, this.Identity));
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>(child, this.Identity));
 				var recursiveChild = child as FileSystemDirectory;
 				if (recursiveChild != null) {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
@@ -777,14 +792,14 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(System.IntPtr descendent) {
+		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(System.Int32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<FileSystemEntry>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr> lookupValue;
+				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
 				{
 					// Awesome.  We know the node the caller is looking for is a descendent of this node.

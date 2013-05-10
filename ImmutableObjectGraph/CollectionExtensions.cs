@@ -37,5 +37,13 @@
 			var alteredSet = set.Remove(oldValue);
 			return alteredSet != set ? alteredSet.Add(newValue) : set;
 		}
+
+		public static IEnumerable<T> Concat<T>(this T element, IEnumerable<T> sequence) {
+			return new[] { element }.Concat(sequence);
+		}
+
+		public static IEnumerable<T> Concat<T>(this IEnumerable<T> sequence, T element) {
+			return sequence.Concat(new[] { element });
+		}
 	}
 }

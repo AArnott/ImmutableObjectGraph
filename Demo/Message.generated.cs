@@ -10,8 +10,8 @@
 
 namespace Demo {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
-
 	
 	public interface IMessage {
 		Contact Author { get; }
@@ -25,6 +25,9 @@ namespace Demo {
 	public partial class Message : IMessage {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Message DefaultInstance = GetDefaultTemplate();
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly Contact author;
@@ -44,21 +47,19 @@ namespace Demo {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String body;
 	
-		/// <summary>Initializes a new instance of the Message class.</summary>
-		protected Message()
-		{
-		}
+		private readonly System.Int32 identity;
 	
 		/// <summary>Initializes a new instance of the Message class.</summary>
 		protected Message(
+			System.Int32 identity,
 			Contact author,
 			System.Collections.Immutable.ImmutableList<Contact> to,
 			System.Collections.Immutable.ImmutableList<Contact> cc,
 			System.Collections.Immutable.ImmutableList<Contact> bcc,
 			System.String subject,
 			System.String body)
-			: base()
 		{
+			this.identity = identity;
 			this.author = author;
 			this.to = to;
 			this.cc = cc;
@@ -75,13 +76,15 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
 			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.With(
 				author: author.GetValueOrDefault(DefaultInstance.Author),
 				to: to.GetValueOrDefault(DefaultInstance.To),
 				cc: cc.GetValueOrDefault(DefaultInstance.Cc),
 				bcc: bcc.GetValueOrDefault(DefaultInstance.Bcc),
 				subject: subject.GetValueOrDefault(DefaultInstance.Subject),
-				body: body.GetValueOrDefault(DefaultInstance.Body));
+				body: body.GetValueOrDefault(DefaultInstance.Body),
+				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
 	
 		public Contact Author {
@@ -107,20 +110,22 @@ namespace Demo {
 		public System.String Body {
 			get { return this.body; }
 		}
+		
 		/// <summary>Returns a new instance with the Author property set to the specified value.</summary>
 		public Message WithAuthor(Contact value) {
 			if (value == this.Author) {
 				return this;
 			}
-	
+		
 			return this.With(author: value);
 		}
+		
 		/// <summary>Returns a new instance with the To property set to the specified value.</summary>
 		public Message WithTo(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.To) {
 				return this;
 			}
-	
+		
 			return this.With(to: value);
 		}
 		
@@ -169,12 +174,13 @@ namespace Demo {
 			return this.With(to: this.To.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Cc property set to the specified value.</summary>
 		public Message WithCc(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.Cc) {
 				return this;
 			}
-	
+		
 			return this.With(cc: value);
 		}
 		
@@ -223,12 +229,13 @@ namespace Demo {
 			return this.With(cc: this.Cc.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Bcc property set to the specified value.</summary>
 		public Message WithBcc(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.Bcc) {
 				return this;
 			}
-	
+		
 			return this.With(bcc: value);
 		}
 		
@@ -277,20 +284,22 @@ namespace Demo {
 			return this.With(bcc: this.Bcc.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Subject property set to the specified value.</summary>
 		public Message WithSubject(System.String value) {
 			if (value == this.Subject) {
 				return this;
 			}
-	
+		
 			return this.With(subject: value);
 		}
+		
 		/// <summary>Returns a new instance with the Body property set to the specified value.</summary>
 		public Message WithBody(System.String value) {
 			if (value == this.Body) {
 				return this;
 			}
-	
+		
 			return this.With(body: value);
 		}
 	
@@ -301,8 +310,10 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
 			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(author.IsDefined && author.Value != this.Author) || 
 				(to.IsDefined && to.Value != this.To) || 
 				(cc.IsDefined && cc.Value != this.Cc) || 
@@ -310,6 +321,7 @@ namespace Demo {
 				(subject.IsDefined && subject.Value != this.Subject) || 
 				(body.IsDefined && body.Value != this.Body)) {
 				return new Message(
+					identity: identity.GetValueOrDefault(this.Identity),
 					author: author.GetValueOrDefault(this.Author),
 					to: to.GetValueOrDefault(this.To),
 					cc: cc.GetValueOrDefault(this.Cc),
@@ -322,8 +334,14 @@ namespace Demo {
 		}
 	
 	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
 	
-	 
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		}
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -337,6 +355,7 @@ namespace Demo {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Message(
+				default(System.Int32), 
 				template.Author, 
 				template.To, 
 				template.Cc, 
@@ -344,7 +363,6 @@ namespace Demo {
 				template.Subject, 
 				template.Body);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -484,10 +502,7 @@ namespace Demo {
 					ImmutableObjectGraph.Optional.For(this.Body));
 			}
 		}
-		
-	
 	}
-	
 	
 	public interface IContact {
 		System.String Name { get; }
@@ -497,6 +512,9 @@ namespace Demo {
 	public partial class Contact : IContact {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Contact DefaultInstance = GetDefaultTemplate();
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String name;
@@ -504,17 +522,15 @@ namespace Demo {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String email;
 	
-		/// <summary>Initializes a new instance of the Contact class.</summary>
-		protected Contact()
-		{
-		}
+		private readonly System.Int32 identity;
 	
 		/// <summary>Initializes a new instance of the Contact class.</summary>
 		protected Contact(
+			System.Int32 identity,
 			System.String name,
 			System.String email)
-			: base()
 		{
+			this.identity = identity;
 			this.name = name;
 			this.email = email;
 			this.Validate();
@@ -523,9 +539,11 @@ namespace Demo {
 		public static Contact Create(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.With(
 				name: name.GetValueOrDefault(DefaultInstance.Name),
-				email: email.GetValueOrDefault(DefaultInstance.Email));
+				email: email.GetValueOrDefault(DefaultInstance.Email),
+				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
 	
 		public System.String Name {
@@ -535,31 +553,36 @@ namespace Demo {
 		public System.String Email {
 			get { return this.email; }
 		}
+		
 		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
 		public Contact WithName(System.String value) {
 			if (value == this.Name) {
 				return this;
 			}
-	
+		
 			return this.With(name: value);
 		}
+		
 		/// <summary>Returns a new instance with the Email property set to the specified value.</summary>
 		public Contact WithEmail(System.String value) {
 			if (value == this.Email) {
 				return this;
 			}
-	
+		
 			return this.With(email: value);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Contact With(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(name.IsDefined && name.Value != this.Name) || 
 				(email.IsDefined && email.Value != this.Email)) {
 				return new Contact(
+					identity: identity.GetValueOrDefault(this.Identity),
 					name: name.GetValueOrDefault(this.Name),
 					email: email.GetValueOrDefault(this.Email));
 			} else {
@@ -568,8 +591,14 @@ namespace Demo {
 		}
 	
 	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
 	
-	 
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		}
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -583,10 +612,10 @@ namespace Demo {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Contact(
+				default(System.Int32), 
 				template.Name, 
 				template.Email);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -642,10 +671,7 @@ namespace Demo {
 					ImmutableObjectGraph.Optional.For(this.Email));
 			}
 		}
-		
-	
 	}
-	
 }
 
 

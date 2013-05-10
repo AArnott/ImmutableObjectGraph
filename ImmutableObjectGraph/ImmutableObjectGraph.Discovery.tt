@@ -113,6 +113,7 @@ private enum ArgSource {
 private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3) {
 	PushIndent(new string('\t', indent));
 	bool firstInSequence = true;
+
 	foreach(var field in fields) {
 		ArgSource fieldSource = (source == ArgSource.OptionalArgumentOrTemplate && field.IsRequired) ? ArgSource.Argument : source;
 		if (!firstInSequence) { Write(","); }
@@ -180,6 +181,8 @@ private static IEnumerable<MetaType.MetaField> SortRequiredFieldsFirst(IEnumerab
 protected class MetaType {
 	public MetaType(Type type) {
 		this.Type = type;
+		this.RequiredIdentityField = this.CreateField(IdentityFieldInfo.Required);
+		this.OptionalIdentityField = this.CreateField(IdentityFieldInfo.Optional);
 	}
 
 	public Type Type { get; private set; }
@@ -198,6 +201,10 @@ protected class MetaType {
 			return fieldsWithBase;
 		}
 	}
+
+	public MetaField RequiredIdentityField { get; private set; }
+
+	public MetaField OptionalIdentityField { get; private set; }
 
 	public MetaField RecursiveField {
 		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)); }
@@ -387,7 +394,7 @@ protected class MetaType {
 		}
 
 		public bool IsRequired {
-			get { return this.Field.GetCustomAttribute<RequiredAttribute>() != null; }
+			get { return this.Field.IsDefined(typeof(RequiredAttribute), false); }
 		}
 
 		public bool IsCollection {
@@ -436,6 +443,66 @@ protected class MetaType {
 
 		public virtual string ArgumentReference {
 			get { return this.NameCamelCase; }
+		}
+	}
+
+	internal class IdentityFieldInfo : FieldInfo {
+		private bool required;
+
+		private IdentityFieldInfo(bool required) {
+			this.required = required;
+		}
+
+		internal static FieldInfo Optional = new IdentityFieldInfo(required: false);
+
+		internal static FieldInfo Required = new IdentityFieldInfo(required: true);
+
+		public override FieldAttributes Attributes {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override Type FieldType {
+			get { return typeof(int); }
+		}
+
+		public override RuntimeFieldHandle FieldHandle {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override object GetValue(object obj) {
+			throw new NotImplementedException();
+		}
+
+		public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, System.Globalization.CultureInfo culture) {
+			throw new NotImplementedException();
+		}
+
+		public override Type DeclaringType {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override object[] GetCustomAttributes(Type attributeType, bool inherit) {
+			throw new NotImplementedException();
+		}
+
+		public override object[] GetCustomAttributes(bool inherit) {
+			throw new NotImplementedException();
+		}
+
+		public override bool IsDefined(Type attributeType, bool inherit) {
+			if (attributeType == typeof(RequiredAttribute) && this.required) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public override Type ReflectedType {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override string Name {
+			get { return "identity"; }
 		}
 	}
 }

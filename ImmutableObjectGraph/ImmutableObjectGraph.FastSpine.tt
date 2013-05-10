@@ -11,22 +11,11 @@ this.HandleType += (templateType, position) => {
 			break;
 
 		case HandleTypePosition.WithinTypeDeclaration:
-			if (templateType.RootAncestorOrThisType.Equals(templateType)) {
-#>
-
-private System.IntPtr identity;
-
-protected internal System.IntPtr Identity {
-	get { return this.identity; }
-}
-<#
-			}
-
 			if (templateType.IsRecursive) {
-				var nodeLookupTableTypeName = string.Format("System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<{0}, System.IntPtr>>", templateType.RecursiveType.TypeName);
+				var nodeLookupTableTypeName = string.Format("System.Collections.Immutable.ImmutableDictionary<{1}, System.Collections.Generic.KeyValuePair<{0}, {1}>>", templateType.RecursiveType.TypeName, templateType.RequiredIdentityField.TypeName);
 #>
 
-private static readonly System.Collections.Immutable.ImmutableDictionary<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.IntPtr, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>>().Add(System.IntPtr.Zero, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.IntPtr>());
+private static readonly System.Collections.Immutable.ImmutableDictionary<<#= templateType.RequiredIdentityField.TypeName #>, System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<<#= templateType.RequiredIdentityField.TypeName #>, System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>>().Add(default(<#= templateType.RequiredIdentityField.TypeName #>), new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>());
 
 private <#= nodeLookupTableTypeName #> lookupTable;
 
@@ -68,7 +57,7 @@ private void InitializeLookup() {
 /// </summary>
 /// <returns>The lookup table.</returns>
 private <#= nodeLookupTableTypeName #> CreateLookupTable() {
-	var table = System.Collections.Immutable.ImmutableDictionary.Create<System.IntPtr, System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, System.IntPtr>>().ToBuilder();
+	var table = System.Collections.Immutable.ImmutableDictionary.Create<<#= templateType.RequiredIdentityField.TypeName #>, System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>>().ToBuilder();
 	this.ContributeDescendentsToLookupTable(table);
 	return table.ToImmutable();
 }
@@ -82,7 +71,7 @@ private void ContributeDescendentsToLookupTable(<#= nodeLookupTableTypeName #>.B
 {
 	foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>)
 	{
-		seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, System.IntPtr>(child, this.Identity));
+		seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>(child, this.Identity));
 		var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
 		if (recursiveChild != null) {
 			recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
@@ -90,14 +79,14 @@ private void ContributeDescendentsToLookupTable(<#= nodeLookupTableTypeName #>.B
 	}
 }
 
-internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(System.IntPtr descendent) {
+internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RequiredIdentityField.TypeName #> descendent) {
 	var emptySpine = System.Collections.Immutable.ImmutableStack.Create<<#= templateType.RecursiveType.TypeName #>>();
 	if (this.Identity.Equals(descendent)) {
 		return emptySpine.Push(this);
 	}
 
 	if (this.LookupTable != null) {
-		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, System.IntPtr> lookupValue;
+		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
 		if (this.LookupTable.TryGetValue(descendent, out lookupValue))
 		{
 			// Awesome.  We know the node the caller is looking for is a descendent of this node.

@@ -19,15 +19,32 @@ namespace ImmutableObjectGraph.Tests {
 	public partial class Empty : IEmpty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Empty DefaultInstance = GetDefaultTemplate();
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
+	
+		private readonly System.Int32 identity;
 	
 		/// <summary>Initializes a new instance of the Empty class.</summary>
-		protected Empty()
+		protected Empty(
+			System.Int32 identity)
 		{
+			this.identity = identity;
+			this.Validate();
 		}
 	
-	
 		public static Empty Create() {
+			var identity = Optional.For(NewIdentity());
 			return DefaultInstance;
+		}
+	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
+	
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -42,7 +59,8 @@ namespace ImmutableObjectGraph.Tests {
 		private static Empty GetDefaultTemplate() {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
-			return new Empty();
+			return new Empty(
+				default(System.Int32));
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
