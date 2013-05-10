@@ -1,6 +1,6 @@
 ﻿<#
 this.HandleType += (templateType, position) => {
-	if (position != HandleTypePosition.WithinTypeDeclaration) {
+	if (position != HandleTypePosition.WithinTypeDeclaration || !templateType.AllFields.Any()) {
 		return;
 	}
 #>
