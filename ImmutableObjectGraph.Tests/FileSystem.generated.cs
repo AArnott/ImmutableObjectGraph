@@ -53,6 +53,11 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
 		
 		public RootedFileSystemEntry WithRoot(FileSystemDirectory root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
 			return new RootedFileSystemEntry(this, root);
 		}
 		
@@ -363,6 +368,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public RootedFileSystemFile WithRoot(FileSystemDirectory root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
 			return new RootedFileSystemFile(this, root);
 		}
 		
@@ -654,6 +664,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public RootedFileSystemDirectory WithRoot(FileSystemDirectory root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
 			return new RootedFileSystemDirectory(this, root);
 		}
 		

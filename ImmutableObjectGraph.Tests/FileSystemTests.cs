@@ -119,7 +119,7 @@
 			Assert.Equal(newLeaf, leafFromNewRoot);
 		}
 
-		[Fact(Skip = "It currently fails.")]
+		[Fact]
 		public void WithRootInUnrelatedTreeThrows() {
 			var leaf = FileSystemDirectory.Create("z");
 			Assert.Throws<ArgumentException>(() => leaf.WithRoot(this.root));

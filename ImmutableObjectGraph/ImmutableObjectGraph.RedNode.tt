@@ -15,7 +15,12 @@ public <#= redType.TypeName #> AsRoot {
 			}
 #>
 
-public <#= redType.TypeName #> WithRoot(<#= ((RedMetaType)redType.RecursiveParent).GreenType.TypeName #> root) {
+public <#= redType.TypeName #> WithRoot(<#= redType.GreenType.RecursiveParent.TypeName #> root) {
+	var spine = root.GetSpine(this);
+	if (spine.IsEmpty) {
+		throw new System.ArgumentException("Root does not belong to the same tree.");
+	}
+
 	return new <#= redType.TypeName #>(this, root);
 }
 <#
