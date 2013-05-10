@@ -176,6 +176,22 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
+		
+		public RootedFileSystemFile ToFileSystemFile(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			var newGreenNode = this.greenNode.ToFileSystemFile(
+					attributes: attributes);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedFileSystemDirectory ToFileSystemDirectory(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
+			var newGreenNode = this.greenNode.ToFileSystemDirectory(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
 	
 		public override bool Equals(object obj) {
 			if (obj is RootedFileSystemEntry) {
@@ -444,6 +460,14 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				pathSegment: pathSegment,
 				attributes: attributes);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedFileSystemDirectory ToFileSystemDirectory(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
+			var newGreenNode = this.greenNode.ToFileSystemDirectory(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -808,6 +832,14 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {
 			return this.Children.GetEnumerator();
+		}
+		
+		public RootedFileSystemFile ToFileSystemFile(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			var newGreenNode = this.greenNode.ToFileSystemFile(
+					attributes: attributes);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
 		}
 	
 		public override bool Equals(object obj) {

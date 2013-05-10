@@ -140,6 +140,28 @@
 			Assert.Equal("g", modifiedRoot.PathSegment);
 		}
 
+		[Fact]
+		public void ConvertRootedFileToDirectory() {
+			RootedFileSystemFile redFile = this.root.AsRoot.Children.First().AsFileSystemFile;
+			RootedFileSystemDirectory redDirectory = redFile.ToFileSystemDirectory();
+			Assert.True(redDirectory.Root.Children.Contains(redDirectory.AsFileSystemEntry));
+		}
+
+		[Fact]
+		public void ConvertRootedDirectoryToFile() {
+			RootedFileSystemDirectory redDirectory = this.root.AsRoot.Children.Last().AsFileSystemDirectory;
+			var redFile = redDirectory.ToFileSystemFile();
+			Assert.True(redFile.Root.Children.Contains(redFile.AsFileSystemEntry));
+		}
+
+		[Fact]
+		public void ConvertFileAsEntryToFileRetainsIdentity() {
+			RootedFileSystemEntry redEntry = this.root.AsRoot.Children.First();
+			var redFile = redEntry.ToFileSystemFile();
+			Assert.True(redFile.Root.Children.Contains(redFile.AsFileSystemEntry));
+			Assert.Same(redEntry.FileSystemEntry, redFile.FileSystemFile);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);

@@ -227,6 +227,12 @@ protected class MetaType {
 		}
 	}
 
+	public IEnumerable<MetaType> SelfAndAncestors {
+		get {
+			return new [] { this }.Concat(this.Ancestors);
+		}
+	}
+
 	public virtual MetaType Ancestor {
 		get { return TemplateTypes.FirstOrDefault(mt => mt.Type.IsEquivalentTo(this.Type.BaseType)); }
 	}
@@ -279,6 +285,16 @@ protected class MetaType {
 		}
 
 		return set;
+	}
+
+	public MetaType GetFirstCommonAncestor(MetaType cousin) {
+		foreach (var ancestor in this.SelfAndAncestors) {
+			if (cousin.SelfAndAncestors.Contains(ancestor)) {
+				return ancestor;
+			}
+		}
+
+		throw new ArgumentException("No common ancestor between " + this.TypeName + " and " + cousin.TypeName);
 	}
 
 	public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {

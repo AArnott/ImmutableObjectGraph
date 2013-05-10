@@ -59,4 +59,25 @@ public override <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# Wri
 		} // foreach ancestor type
 	} // foreach derived type
 }; // event handler
+
+this.HandleRedType += (templateType, position) => {
+	if (position != HandleTypePosition.WithinTypeDeclaration) {
+		return;
+	}
+
+	PushIndent("\t");
+	foreach (RedMetaType familyType in templateType.GetTypeFamily().Where(ft => !ft.IsAbstract && !ft.Equals(templateType))) {
+		var commonAncestor = familyType.GetFirstCommonAncestor(templateType);
+#>
+
+public <#= familyType.TypeName #> To<#= familyType.GreenType.TypeName #>(<# WriteParameters(familyType.GetFieldsBeyond(commonAncestor), ParameterStyle.OptionalOrRequired, indent: 1); #>) {
+	var newGreenNode = this.greenNode.To<#= familyType.GreenType.TypeName #>(<# WriteArguments(familyType.GetFieldsBeyond(commonAncestor), ArgSource.Argument); #>);
+	var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+	return newGreenNode.WithRoot(newRoot);
+}
+<#
+	} // foreach familyType
+
+	PopIndent();
+};
 #>
