@@ -49,7 +49,7 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.With(
+			return DefaultInstance.WithFactory(
 				color: color.GetValueOrDefault(DefaultInstance.Color),
 				skinThickness: skinThickness.GetValueOrDefault(DefaultInstance.SkinThickness),
 				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
@@ -80,9 +80,20 @@ namespace Demo {
 		
 			return this.With(skinThickness: value);
 		}
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Fruit With(
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				color: color.GetValueOrDefault(this.Color),
+				skinThickness: skinThickness.GetValueOrDefault(this.SkinThickness),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private Fruit WithFactory(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
@@ -99,7 +110,6 @@ namespace Demo {
 			}
 		}
 	
-	
 		protected internal System.Int32 Identity {
 			get { return this.identity; }
 		}
@@ -108,6 +118,7 @@ namespace Demo {
 		protected static System.Int32 NewIdentity() {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();

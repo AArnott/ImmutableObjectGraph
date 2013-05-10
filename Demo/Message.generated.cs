@@ -77,7 +77,7 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.With(
+			return DefaultInstance.WithFactory(
 				author: author.GetValueOrDefault(DefaultInstance.Author),
 				to: to.GetValueOrDefault(DefaultInstance.To),
 				cc: cc.GetValueOrDefault(DefaultInstance.Cc),
@@ -302,9 +302,28 @@ namespace Demo {
 		
 			return this.With(body: value);
 		}
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Message With(
+			ImmutableObjectGraph.Optional<Contact> author = default(ImmutableObjectGraph.Optional<Contact>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> to = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				author: author.GetValueOrDefault(this.Author),
+				to: to.GetValueOrDefault(this.To),
+				cc: cc.GetValueOrDefault(this.Cc),
+				bcc: bcc.GetValueOrDefault(this.Bcc),
+				subject: subject.GetValueOrDefault(this.Subject),
+				body: body.GetValueOrDefault(this.Body),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private Message WithFactory(
 			ImmutableObjectGraph.Optional<Contact> author = default(ImmutableObjectGraph.Optional<Contact>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> to = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
@@ -333,7 +352,6 @@ namespace Demo {
 			}
 		}
 	
-	
 		protected internal System.Int32 Identity {
 			get { return this.identity; }
 		}
@@ -342,6 +360,7 @@ namespace Demo {
 		protected static System.Int32 NewIdentity() {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -540,7 +559,7 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.With(
+			return DefaultInstance.WithFactory(
 				name: name.GetValueOrDefault(DefaultInstance.Name),
 				email: email.GetValueOrDefault(DefaultInstance.Email),
 				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
@@ -571,9 +590,20 @@ namespace Demo {
 		
 			return this.With(email: value);
 		}
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Contact With(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				name: name.GetValueOrDefault(this.Name),
+				email: email.GetValueOrDefault(this.Email),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private Contact WithFactory(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
@@ -590,7 +620,6 @@ namespace Demo {
 			}
 		}
 	
-	
 		protected internal System.Int32 Identity {
 			get { return this.identity; }
 		}
@@ -599,6 +628,7 @@ namespace Demo {
 		protected static System.Int32 NewIdentity() {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();

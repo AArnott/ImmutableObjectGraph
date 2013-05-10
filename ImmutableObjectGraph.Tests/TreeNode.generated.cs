@@ -71,7 +71,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.With(
+			return DefaultInstance.WithFactory(
 				caption: caption.GetValueOrDefault(DefaultInstance.Caption),
 				filePath: filePath.GetValueOrDefault(DefaultInstance.FilePath),
 				visible: visible.GetValueOrDefault(DefaultInstance.Visible),
@@ -236,9 +236,26 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(children: this.Children.Clear());
 		}
 		
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual TreeNode With(
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				caption: caption.GetValueOrDefault(this.Caption),
+				filePath: filePath.GetValueOrDefault(this.FilePath),
+				visible: visible.GetValueOrDefault(this.Visible),
+				attributes: attributes.GetValueOrDefault(this.Attributes),
+				children: children.GetValueOrDefault(this.Children),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private TreeNode WithFactory(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),

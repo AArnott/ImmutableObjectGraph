@@ -42,7 +42,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static Family Create(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.With(
+			return DefaultInstance.WithFactory(
 				members: members.GetValueOrDefault(DefaultInstance.Members),
 				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
@@ -105,9 +105,18 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(members: this.Members.Clear());
 		}
 		
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Family With(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				members: members.GetValueOrDefault(this.Members),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private Family WithFactory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
@@ -233,7 +242,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.With(
+			return DefaultInstance.WithFactory(
 				name: name,
 				age: age.GetValueOrDefault(DefaultInstance.Age),
 				watch: watch.GetValueOrDefault(DefaultInstance.Watch),
@@ -278,9 +287,22 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(watch: value);
 		}
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Person With(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				name: name.GetValueOrDefault(this.Name),
+				age: age.GetValueOrDefault(this.Age),
+				watch: watch.GetValueOrDefault(this.Watch),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private Person WithFactory(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>),
@@ -441,7 +463,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.With(
+			return DefaultInstance.WithFactory(
 				color: color.GetValueOrDefault(DefaultInstance.Color),
 				size: size.GetValueOrDefault(DefaultInstance.Size),
 				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
@@ -472,9 +494,20 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(size: value);
 		}
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual Watch With(
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				color: color.GetValueOrDefault(this.Color),
+				size: size.GetValueOrDefault(this.Size),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private Watch WithFactory(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {

@@ -100,7 +100,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	public static <#= templateType.TypeName #> Create(<# WriteParameters(templateType.AllFields, ParameterStyle.OptionalOrRequired); #>) {
 		var <#= templateType.RequiredIdentityField.NameCamelCase #> = Optional.For(NewIdentity());
-		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.With(<#
+		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.WithFactory(<#
 		WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrTemplate);
 #>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
 	}
@@ -124,20 +124,30 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-	public override <#= templateType.Ancestor.TypeName #> With(<# WriteParameters(templateType.Ancestor.AllFields.Concat(templateType.OptionalIdentityField), ParameterStyle.Optional); #>) {
+	public override <#= templateType.Ancestor.TypeName #> With(<# WriteParameters(templateType.Ancestor.AllFields, ParameterStyle.Optional); #>) {
 		return this.With(<#
-			WriteArguments(templateType.OptionalIdentityField.Concat(templateType.Ancestor.AllFields), ArgSource.Argument);
+			WriteArguments(templateType.Ancestor.AllFields, ArgSource.Argument);
 			Write(",");
 			WriteArguments(templateType.LocalFields, ArgSource.Missing);
 #>);
 	}
 	<# } /* templateType.HasAncestor */ #>
-
+	
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 	public <#= templateType.IsAbstract ? "abstract" : "virtual" #> <#= templateType.TypeName #> With(<#
-		WriteParameters(templateType.AllFields.Concat(templateType.OptionalIdentityField), ParameterStyle.Optional);
+		WriteParameters(templateType.AllFields, ParameterStyle.Optional);
 #>)<# if (templateType.IsAbstract) { #>;
 <# } else { #> {
+		var <#= templateType.RequiredIdentityField.NameCamelCase #> = default(<#= templateType.RequiredIdentityField.OptionalTypeName#>);
+		return this.WithFactory(<# WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrProperty); #>);
+	}
+<#		} /* if isAbstract */
+
+		if (!templateType.IsAbstract) {
+ #>
+
+	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+	private <#= templateType.TypeName #> WithFactory(<# WriteParameters(templateType.AllFields.Concat(templateType.OptionalIdentityField), ParameterStyle.Optional); #>) {
 		if (<#
 			firstInSequence = true;
 			foreach(var field in templateType.RequiredIdentityField.Concat(templateType.AllFields)) {
@@ -152,8 +162,9 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 			return this;
 		}
 	}
-<#		} /* if isAbstract */ #>
-<#	} /* templateType.LocalFields.Count > 0 */
+<#
+		}
+	} /* templateType.LocalFields.Count > 0 */
 	
 	if (!templateType.HasAncestor) {
 #>
