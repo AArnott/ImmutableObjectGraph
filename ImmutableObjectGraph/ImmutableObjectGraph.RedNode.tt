@@ -189,16 +189,20 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 #><#+
 [DebuggerDisplay("{TypeName,nq} (red)")]
 protected class RedMetaType : MetaType {
+	private readonly MetaType greenType;
+
 	public RedMetaType(MetaType greenType)
 		: base(greenType.Type) {
 		if (greenType is RedMetaType) {
 			throw new ArgumentException("Red type handed in as green type.");
 		}
 
-		this.GreenType = greenType;
+		this.greenType = greenType;
 	}
 
-	public MetaType GreenType { get; private set; }
+	public override MetaType GreenType {
+		get { return this.greenType; }
+	}
 
 	public override string TypeName {
 		get { return "Rooted" + base.TypeName; }

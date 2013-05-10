@@ -253,6 +253,10 @@ protected class MetaType {
 		get { return this.Type.IsAbstract; }
 	}
 
+	public virtual MetaType GreenType {
+		get { return this; }
+	}
+
 	public virtual string TypeName {
 		get { return this.Type.Name; }
 	}

@@ -299,22 +299,62 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public TreeNode ReplaceDescendent(TreeNode current, TreeNode replacement) {
-			// TODO: fix this horribly inefficient algorithm.
-			var newChildren = this.Children.Replace(current, replacement);
-			if (this.Children != newChildren) {
-				return this.WithChildren(newChildren);
+			var spine = this.GetSpine(current);
+		
+			if (spine.IsEmpty) {
+				// The descendent was not found.
+				throw new System.ArgumentException("Old value not found");
 			}
-			
-			foreach (var child in this.OfType<TreeNode>())
-			{
-				var newChild = child.ReplaceDescendent(current, replacement);
-				if (newChild != child) {
-					newChildren = this.Children.Replace(child, newChild);
-					return this.WithChildren(newChildren);
+		
+			return (TreeNode)this.ReplaceDescendent(spine, replacement);
+		}
+		
+		private TreeNode ReplaceDescendent(System.Collections.Immutable.ImmutableStack<TreeNode> spine, TreeNode replacement) {
+			Debug.Assert(this == spine.Peek());
+			var remainingSpine = spine.Pop();
+			if (remainingSpine.IsEmpty) {
+				// This is the instance to be replaced.
+				return replacement;
+			}
+		
+			TreeNode newChild;
+			var child = remainingSpine.Peek();
+			var recursiveChild = child as TreeNode;
+			if (recursiveChild != null) {
+				newChild = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+			} else {
+				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
+				Debug.Assert(this.Children.Contains(child));
+				newChild = replacement;
+			}
+		
+			var newChildren = this.Children.Replace(child, newChild);
+			return this.WithChildren(newChildren);
+		}
+		
+		internal System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(TreeNode descendent) {
+			// TODO: fix this horribly inefficient algorithm.
+			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<TreeNode>();
+			if (this.Equals(descendent)) {
+				return emptySpine.Push(descendent);
+			}
+		
+			var spine = emptySpine;
+			foreach (var child in this.Children) {
+				var recursiveChild = child as TreeNode;
+				if (recursiveChild != null) {
+					spine = recursiveChild.GetSpine(descendent);
+				} else if (child.Equals(descendent)) {
+					spine = spine.Push(child);
+				}
+		
+				if (!spine.IsEmpty) {
+					return spine.Push(this);
 				}
 			}
-				
-			return this;
+		
+			// The descendent is not in this sub-tree.
+			return emptySpine;
 		}
 		
 		public Builder ToBuilder() {
