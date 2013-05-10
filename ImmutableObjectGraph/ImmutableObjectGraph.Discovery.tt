@@ -283,7 +283,7 @@ protected class MetaType {
 
 	public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
 		var fields = ImmutableList.Create<MetaField>();
-		if (ancestor != this) {
+		if (!ancestor.Equals(this)) {
 			fields = fields.AddRange(this.LocalFields)
 			               .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
 		}
