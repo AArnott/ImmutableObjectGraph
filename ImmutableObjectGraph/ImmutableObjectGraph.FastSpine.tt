@@ -12,12 +12,11 @@ this.HandleType += (templateType, position) => {
 
 		case HandleTypePosition.WithinTypeDeclaration:
 			if (templateType.IsRecursive) {
-				var nodeLookupTableTypeName = string.Format("System.Collections.Immutable.ImmutableDictionary<{1}, System.Collections.Generic.KeyValuePair<{0}, {1}>>", templateType.RecursiveType.TypeName, templateType.RequiredIdentityField.TypeName);
 #>
 
 private static readonly System.Collections.Immutable.ImmutableDictionary<<#= templateType.RequiredIdentityField.TypeName #>, System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<<#= templateType.RequiredIdentityField.TypeName #>, System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>>().Add(default(<#= templateType.RequiredIdentityField.TypeName #>), new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>());
 
-private <#= nodeLookupTableTypeName #> lookupTable;
+private <#= templateType.NodeLookupTableTypeName #> lookupTable;
 
 private int inefficiencyLoad;
 
@@ -27,7 +26,7 @@ private int inefficiencyLoad;
 /// </summary>
 private const int InefficiencyLoadThreshold = 16;
 
-private <#= nodeLookupTableTypeName #> LookupTable {
+private <#= templateType.NodeLookupTableTypeName #> LookupTable {
 	get {
 		if (this.lookupTable == lookupTableLazySentinal) {
 			this.lookupTable = this.CreateLookupTable();
@@ -56,7 +55,7 @@ private void InitializeLookup() {
 /// Creates the lookup table that will contain all this node's children.
 /// </summary>
 /// <returns>The lookup table.</returns>
-private <#= nodeLookupTableTypeName #> CreateLookupTable() {
+private <#= templateType.NodeLookupTableTypeName #> CreateLookupTable() {
 	var table = System.Collections.Immutable.ImmutableDictionary.Create<<#= templateType.RequiredIdentityField.TypeName #>, System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>>().ToBuilder();
 	this.ContributeDescendentsToLookupTable(table);
 	return table.ToImmutable();
@@ -67,7 +66,7 @@ private <#= nodeLookupTableTypeName #> CreateLookupTable() {
 /// </summary>
 /// <param name="seedLookupTable">The lookup table to add entries to.</param>
 /// <returns>The new lookup table.</returns>
-private void ContributeDescendentsToLookupTable(<#= nodeLookupTableTypeName #>.Builder seedLookupTable)
+private void ContributeDescendentsToLookupTable(<#= templateType.NodeLookupTableTypeName #>.Builder seedLookupTable)
 {
 	foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>)
 	{
