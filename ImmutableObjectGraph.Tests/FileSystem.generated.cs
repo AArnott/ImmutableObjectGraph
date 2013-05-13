@@ -656,6 +656,7 @@ namespace ImmutableObjectGraph.Tests {
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
 				(children.IsDefined && children.Value != this.Children)) {
+				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>) : Optional.For(this.lookupTable);
 				return new FileSystemDirectory(
 					identity: identity.GetValueOrDefault(this.Identity),
 					pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),

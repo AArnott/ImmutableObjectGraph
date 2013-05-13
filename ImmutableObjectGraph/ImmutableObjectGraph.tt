@@ -157,6 +157,13 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 				firstInSequence = false;
 			}
 	#>) {
+<#
+			if (templateType.RecursiveParent.Equals(templateType)) {
+#>
+			var lookupTable = <#= templateType.RecursiveField.NameCamelCase #>.IsDefined && <#= templateType.RecursiveField.NameCamelCase #>.Value != this.<#= templateType.RecursiveField.NamePascalCase #> ? default(Optional<<#= templateType.NodeLookupTableTypeName #>>) : Optional.For(this.lookupTable);
+<#
+			}
+#>
 			return new <#= templateType.TypeName #>(<# WriteArguments(templateType.RequiredIdentityField.Concat(templateType.AllFields), ArgSource.OptionalArgumentOrProperty, indent: 4); #>);
 		} else {
 			return this;
