@@ -130,6 +130,15 @@
 		}
 
 		[Fact]
+		public void ModifyPropertyInRootWithLookupTablePreservesLookupTable()
+		{
+			var root = this.GetRootWithLookupTable();
+			var redRoot = root.AsRoot;
+			root.Children.First().WithRoot(root); // force lazy construction of lookup table
+			var newRoot = redRoot.WithPathSegment("changed");
+		}
+
+		[Fact]
 		public void WithRootInUnrelatedTreeThrows() {
 			var leaf = FileSystemDirectory.Create("z");
 			Assert.Throws<ArgumentException>(() => leaf.WithRoot(this.root));

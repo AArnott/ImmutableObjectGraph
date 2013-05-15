@@ -544,14 +544,15 @@ namespace ImmutableObjectGraph.Tests {
 		protected FileSystemDirectory(
 			System.Int32 identity,
 			System.String pathSegment,
-			System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children)
+			System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children,
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>))
 			: base(
 				identity: identity,
 				pathSegment: pathSegment)
 		{
 			this.children = children;
 			this.Validate();
-			this.InitializeLookup();
+			this.InitializeLookup(lookupTable);
 		}
 	
 		public static FileSystemDirectory Create(
@@ -660,7 +661,8 @@ namespace ImmutableObjectGraph.Tests {
 				return new FileSystemDirectory(
 					identity: identity.GetValueOrDefault(this.Identity),
 					pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
-					children: children.GetValueOrDefault(this.Children));
+					children: children.GetValueOrDefault(this.Children),
+					lookupTable: lookupTable);
 			} else {
 				return this;
 			}
@@ -769,17 +771,21 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		private void InitializeLookup() {
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>)) {
 			this.inefficiencyLoad = 1;
-			foreach (var child in this.children)
-			{
-				var recursiveChild = child as FileSystemDirectory;
-				this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
-			}
+			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
+				this.lookupTable = priorLookupTable.Value;
+			} else {
+				foreach (var child in this.children)
+				{
+					var recursiveChild = child as FileSystemDirectory;
+					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				}
 		
-			if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
-				this.inefficiencyLoad = 1;
-				this.lookupTable = lookupTableLazySentinal;
+				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+					this.inefficiencyLoad = 1;
+					this.lookupTable = lookupTableLazySentinal;
+				}
 			}
 		}
 		

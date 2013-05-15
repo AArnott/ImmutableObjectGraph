@@ -4,7 +4,7 @@ this.HandleType += (templateType, position) => {
 		case HandleTypePosition.InsideConstructor:
 			if (templateType.IsRecursive) {
 #>
-		this.InitializeLookup();
+		this.InitializeLookup(<#= templateType.LookupTableField.NameCamelCase #>);
 <#
 			}
 			
@@ -37,17 +37,21 @@ private <#= templateType.NodeLookupTableTypeName #> LookupTable {
 	}
 }
 
-private void InitializeLookup() {
+private void InitializeLookup(ImmutableObjectGraph.Optional<<#= templateType.NodeLookupTableTypeName #>> priorLookupTable = default(ImmutableObjectGraph.Optional<<#= templateType.NodeLookupTableTypeName #>>)) {
 	this.inefficiencyLoad = 1;
-	foreach (var child in this.<#= templateType.RecursiveField.NameCamelCase #>)
-	{
-		var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
-		this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
-	}
+	if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
+		this.lookupTable = priorLookupTable.Value;
+	} else {
+		foreach (var child in this.<#= templateType.RecursiveField.NameCamelCase #>)
+		{
+			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
+			this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+		}
 
-	if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
-		this.inefficiencyLoad = 1;
-		this.lookupTable = lookupTableLazySentinal;
+		if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+			this.inefficiencyLoad = 1;
+			this.lookupTable = lookupTableLazySentinal;
+		}
 	}
 }
 

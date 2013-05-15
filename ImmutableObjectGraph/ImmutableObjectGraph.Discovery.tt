@@ -110,9 +110,9 @@ private enum ArgSource {
 	Missing,
 }
 
-private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3) {
+private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3, bool concatenated = false) {
 	PushIndent(new string('\t', indent));
-	bool firstInSequence = true;
+	bool firstInSequence = !concatenated;
 
 	foreach(var field in fields) {
 		ArgSource fieldSource = (source == ArgSource.OptionalArgumentOrTemplate && field.IsRequired) ? ArgSource.Argument : source;
@@ -150,9 +150,9 @@ private enum ParameterStyle {
 	OptionalOrRequired,
 }
 
-private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style, int indent = 2) {
+private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style, int indent = 2, bool concatenated = false) {
 	PushIndent(new string('\t', indent));
-	bool firstInSequence = true;
+	bool firstInSequence = !concatenated;
 	if (style == ParameterStyle.OptionalOrRequired) {
 		fields = SortRequiredFieldsFirst(fields);
 	}
@@ -181,8 +181,8 @@ private static IEnumerable<MetaType.MetaField> SortRequiredFieldsFirst(IEnumerab
 protected class MetaType {
 	public MetaType(Type type) {
 		this.Type = type;
-		this.RequiredIdentityField = this.CreateField(IdentityFieldInfo.Required);
-		this.OptionalIdentityField = this.CreateField(IdentityFieldInfo.Optional);
+		this.RequiredIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(int), required: true));
+		this.OptionalIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(int), required: false));
 	}
 
 	public Type Type { get; private set; }
@@ -205,6 +205,10 @@ protected class MetaType {
 	public MetaField RequiredIdentityField { get; private set; }
 
 	public MetaField OptionalIdentityField { get; private set; }
+
+	public MetaField LookupTableField {
+		get { return this.CreateField(new SpecialFieldInfo("lookupTable", this.NodeLookupTableTypeName, required: true)); }
+	}
 
 	public MetaField RecursiveField {
 		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)); }
@@ -422,7 +426,14 @@ protected class MetaType {
 		}
 
 		public virtual string TypeName {
-			get { return this.DeclaringType.GetTypeName(this.Field.FieldType); }
+			get { 
+				var specialField = this.Field as SpecialFieldInfo;
+				if (specialField != null && this.Field.FieldType == null) {
+					return specialField.FieldTypeName;
+				}
+			
+				return this.DeclaringType.GetTypeName(this.Field.FieldType);
+			}
 		}
 
 		public virtual string OptionalTypeName {
@@ -450,23 +461,34 @@ protected class MetaType {
 		}
 	}
 
-	internal class IdentityFieldInfo : FieldInfo {
+	internal class SpecialFieldInfo : FieldInfo {
+		private string fieldName;
+		private Type fieldType;
+		private string fieldTypeName;
 		private bool required;
 
-		private IdentityFieldInfo(bool required) {
+		internal SpecialFieldInfo(string fieldName, Type fieldType, bool required) {
+			this.fieldName = fieldName;
+			this.fieldType = fieldType;
 			this.required = required;
 		}
 
-		internal static FieldInfo Optional = new IdentityFieldInfo(required: false);
-
-		internal static FieldInfo Required = new IdentityFieldInfo(required: true);
+		internal SpecialFieldInfo(string fieldName, string fieldTypeName, bool required) {
+			this.fieldName = fieldName;
+			this.fieldTypeName = fieldTypeName;
+			this.required = required;
+		}
 
 		public override FieldAttributes Attributes {
 			get { throw new NotImplementedException(); }
 		}
 
 		public override Type FieldType {
-			get { return typeof(int); }
+			get { return this.fieldType; }
+		}
+
+		public string FieldTypeName {
+			get { return this.fieldTypeName; }
 		}
 
 		public override RuntimeFieldHandle FieldHandle {
@@ -506,7 +528,7 @@ protected class MetaType {
 		}
 
 		public override string Name {
-			get { return "identity"; }
+			get { return this.fieldName; }
 		}
 	}
 }
