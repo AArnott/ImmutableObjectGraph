@@ -98,7 +98,11 @@ namespace ImmutableObjectGraph.Tests {
 				pathSegment: this.PathSegment,
 				children: children);
 		}
-		
+
+		public virtual System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
+			yield return this;
+		}
+
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
@@ -722,32 +726,145 @@ namespace ImmutableObjectGraph.Tests {
 				throw new System.ArgumentException("Old value not found");
 			}
 		
-			return (FileSystemDirectory)this.ReplaceDescendent(spine, replacement);
+			return (FileSystemDirectory)this.ReplaceDescendent(spine, replacement).Peek();
 		}
 		
-		private FileSystemEntry ReplaceDescendent(System.Collections.Immutable.ImmutableStack<FileSystemEntry> spine, FileSystemEntry replacement) {
+		private System.Collections.Immutable.ImmutableStack<FileSystemEntry> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<FileSystemEntry> spine, FileSystemEntry replacement) {
 			Debug.Assert(this == spine.Peek());
 			var remainingSpine = spine.Pop();
 			if (remainingSpine.IsEmpty) {
 				// This is the instance to be replaced.
-				return replacement;
+				return System.Collections.Immutable.ImmutableStack.Create(replacement);
 			}
-		
-			FileSystemEntry newChild;
+
+			System.Collections.Immutable.ImmutableStack<FileSystemEntry> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as FileSystemDirectory;
 			if (recursiveChild != null) {
-				newChild = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
 			} else {
 				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
 				Debug.Assert(this.Children.Contains(child));
-				newChild = replacement;
+				newChildSpine = System.Collections.Immutable.ImmutableStack.Create(replacement);
 			}
 		
-			var newChildren = this.Children.Replace(child, newChild);
-			return this.WithChildren(newChildren);
+			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
+			var newSelf = this.WithChildren(newChildren);
+			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal)
+			{
+				// Our newly mutated self wants a lookup table. If we already have one we can use it,
+				// but it needs to be fixed up given the newly rewritten spine through our descendents.
+				newSelf.lookupTable = FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
+			}
+
+			return newChildSpine.Push(newSelf);
 		}
-		
+
+		private enum ChangeKind {
+			Added,
+			Removed,
+			Replaced,
+		}
+
+		/// <summary>
+		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
+		/// </summary>
+		/// <param name="updatedSpine">
+		/// The spine of this node's new descendents' instances that are created for this change.
+		/// The head is an immediate child of the new instance for this node.
+		/// The tail is the node that was added or replaced.
+		/// </param>
+		/// <param name="oldSpine">
+		/// The spine of this node's descendents that have been changed in this delta.
+		/// The head is an immediate child of this instance.
+		/// The tail is the node that was removed or replaced.
+		/// </param>
+		/// <returns>An updated lookup table.</returns>
+		private System.Collections.Immutable.ImmutableDictionary<int, System.Collections.Generic.KeyValuePair<FileSystemEntry, int>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<FileSystemEntry> updatedSpine, ImmutableObjectGraph.ImmutableDeque<FileSystemEntry> oldSpine) {
+			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
+				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
+				return lookupTableLazySentinal;
+			}
+
+			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
+				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
+				// No changes were actually made.
+				return this.lookupTable;
+			}
+
+			var lookupTable = this.lookupTable.ToBuilder();
+
+			// Classify the kind of change that has just occurred.
+			var oldSpineTail = oldSpine.PeekTail();
+			var newSpineTail = updatedSpine.PeekTail();
+			ChangeKind changeKind;
+			bool childrenChanged = false;
+			if (updatedSpine.Count == oldSpine.Count) {
+				changeKind = ChangeKind.Replaced;
+				var oldSpineTailRecursive = oldSpineTail as FileSystemDirectory;
+				var newSpineTailRecursive = newSpineTail as FileSystemDirectory;
+				if (oldSpineTailRecursive != null || newSpineTailRecursive != null) {
+					// Children have changed if either before or after type didn't have a children property,
+					// or if both did, but the children actually changed.
+					childrenChanged = oldSpineTailRecursive == null || newSpineTailRecursive == null
+						|| !System.Object.ReferenceEquals(oldSpineTailRecursive.Children, newSpineTailRecursive.Children);
+				}
+			} else if (updatedSpine.Count > oldSpine.Count) {
+				changeKind = ChangeKind.Added;
+			} else // updatedSpine.Count < oldSpine.Count
+			{
+				changeKind = ChangeKind.Removed;
+			}
+
+			// Trim the lookup table of any entries for nodes that have been removed from the tree.
+			if (childrenChanged || changeKind == ChangeKind.Removed) {
+				// We need to remove all descendents of the old tail node.
+				lookupTable.RemoveRange(oldSpineTail.GetSelfAndDescendents().Select(n => n.Identity));
+			} else if (changeKind == ChangeKind.Replaced && oldSpineTail.Identity != newSpineTail.Identity) {
+				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
+				// from our lookup table in this case.
+				lookupTable.Remove(oldSpineTail.Identity);
+
+				// We also need to update any immediate children of the old spine tail
+				// because the identity of their parent has changed.
+				var oldSpineTailRecursive = oldSpineTail as FileSystemDirectory;
+				if (oldSpineTailRecursive != null) {
+					foreach (var child in oldSpineTailRecursive) {
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<FileSystemEntry, int>(child, newSpineTail.Identity);
+					}
+				}
+			}
+
+			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
+			FileSystemEntry parent = this;
+			foreach (var node in updatedSpine) {
+				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
+				// assume no change is relevant and not apply the change.
+				lookupTable.Remove(node.Identity);
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, int>(node, parent.Identity));
+				parent = node;
+			}
+
+			// There may be children on the added node that we should include.
+			if (childrenChanged || changeKind == ChangeKind.Added) {
+				var recursiveParent = parent as FileSystemDirectory;
+				if (recursiveParent != null) {
+					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
+				}
+			}
+
+			return lookupTable.ToImmutable();
+		}
+
+		public override System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
+			yield return this;
+			foreach (var child in this.Children) {
+				foreach (var descendent in child.GetSelfAndDescendents()) {
+					yield return descendent;
+				}
+			}
+		}
+
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>());
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTable;
@@ -804,10 +921,8 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
 		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>.Builder seedLookupTable)
-		{
-			foreach (var child in this.Children)
-			{
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>.Builder seedLookupTable) {
+			foreach (var child in this.Children) {
 				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>(child, this.Identity));
 				var recursiveChild = child as FileSystemDirectory;
 				if (recursiveChild != null) {
