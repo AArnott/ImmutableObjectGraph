@@ -755,6 +755,7 @@ namespace ImmutableObjectGraph.Tests {
 				// Our newly mutated self wants a lookup table. If we already have one we can use it,
 				// but it needs to be fixed up given the newly rewritten spine through our descendents.
 				newSelf.lookupTable = FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
+				newSelf.ValidateInternalIntegrityDebugOnly();
 			}
 
 			return newChildSpine.Push(newSelf);
@@ -865,6 +866,63 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 
+		/// <summary>
+		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
+		/// </summary>
+		[Conditional("DEBUG")]
+		private void ValidateInternalIntegrityDebugOnly() {
+			this.ValidateInternalIntegrity();
+		}
+
+		/// <summary>
+		/// Validates this node and all its descendents.
+		/// </summary>
+		protected internal void ValidateInternalIntegrity() {
+			// Each node id appears at most once.
+			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			foreach (var node in this.GetSelfAndDescendents()) {
+				if (!observedIdentities.Add(node.Identity)) {
+					throw new System.ApplicationException("Node ID " + node.Identity + " observed more than once in the tree.");
+				}
+			}
+
+			// The lookup table (if any) accurately describes the contents of this tree.
+			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
+				// The table should have one entry for every *descendent* of this node (not this node itself).
+				int expectedCount = this.GetSelfAndDescendents().Count() - 1;
+				int actualCount = this.lookupTable.Count;
+				if (actualCount != expectedCount) {
+					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
+				}
+
+				this.ValidateLookupTable(this.lookupTable);
+			}
+		}
+
+		/// <summary>
+		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
+		/// </summary>
+		/// <param name="lookupTable">The lookup table being validated.</param>
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<int, System.Collections.Generic.KeyValuePair<FileSystemEntry, int>> lookupTable) {
+			const string ErrorString = "Lookup table integrity failure.";
+
+			foreach (var child in this.Children) {
+				var entry = lookupTable[child.Identity];
+				if (!object.ReferenceEquals(entry.Key, child)) {
+					throw new System.ApplicationException(ErrorString);
+				}
+
+				if (entry.Value != this.Identity) {
+					throw new System.ApplicationException(ErrorString);
+				}
+
+				var recursiveChild = child as FileSystemDirectory;
+				if (recursiveChild != null) {
+					recursiveChild.ValidateLookupTable(lookupTable);
+				}
+			}
+		}
+
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>());
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTable;
@@ -904,6 +962,8 @@ namespace ImmutableObjectGraph.Tests {
 					this.lookupTable = lookupTableLazySentinal;
 				}
 			}
+
+			this.ValidateInternalIntegrityDebugOnly();
 		}
 		
 		/// <summary>
