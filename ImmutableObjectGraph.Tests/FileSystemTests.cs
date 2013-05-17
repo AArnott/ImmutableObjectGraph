@@ -70,6 +70,26 @@
 		}
 
 		[Fact]
+		public void AddDescendent() {
+			FileSystemDirectory subdir = this.root.OfType<FileSystemDirectory>().First();
+			FileSystemFile newLeaf = FileSystemFile.Create("added.txt");
+			FileSystemDirectory updatedRoot = this.root.AddDescendent(newLeaf, subdir);
+			Assert.Equal(this.root.Identity, updatedRoot.Identity);
+			FileSystemDirectory updatedSubdir = updatedRoot.OfType<FileSystemDirectory>().First();
+			Assert.True(updatedSubdir.Contains(newLeaf));
+		}
+
+		[Fact]
+		public void RemoveDescendent() {
+			FileSystemDirectory subdir = this.root.OfType<FileSystemDirectory>().First(d => d.Children.OfType<FileSystemFile>().Any());
+			FileSystemFile fileUnderSubdir = subdir.Children.OfType<FileSystemFile>().First();
+			FileSystemDirectory updatedRoot = this.root.RemoveDescendent(fileUnderSubdir);
+			Assert.Equal(this.root.Identity, updatedRoot.Identity);
+			FileSystemDirectory updatedSubdir = (FileSystemDirectory)updatedRoot.Single(c => c.Identity == subdir.Identity);
+			Assert.False(updatedSubdir.Contains(fileUnderSubdir));
+		}
+
+		[Fact]
 		public void RedNodeStuff() {
 			var redRoot = this.root.AsRoot;
 			Assert.Equal(this.root.PathSegment, redRoot.PathSegment);
@@ -130,8 +150,7 @@
 		}
 
 		[Fact]
-		public void ModifyPropertyInRootWithLookupTablePreservesLookupTable()
-		{
+		public void ModifyPropertyInRootWithLookupTablePreservesLookupTable() {
 			var root = this.GetRootWithLookupTable();
 			var redRoot = root.AsRoot;
 			root.Children.First().WithRoot(root); // force lazy construction of lookup table

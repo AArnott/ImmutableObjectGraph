@@ -16,6 +16,14 @@ public virtual System.Collections.Generic.IEnumerable<<#= templateType.TypeName 
 	if (templateType.IsRecursive) {
 #>
 
+public <#= templateType.TypeName #> AddDescendent(<#= templateType.RecursiveType.TypeName #> value, <#= templateType.RecursiveParent.TypeName #> parent) {
+	throw new System.NotImplementedException();
+}
+
+public <#= templateType.TypeName #> RemoveDescendent(<#= templateType.RecursiveType.TypeName #> value) {
+	throw new System.NotImplementedException();
+}
+
 public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.RecursiveType.TypeName #> current, <#= templateType.RecursiveType.TypeName #> replacement) {
 	var spine = this.GetSpine(current);
 

@@ -718,6 +718,14 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemDirectory(this, root);
 		}
 		
+		public FileSystemDirectory AddDescendent(FileSystemEntry value, FileSystemDirectory parent) {
+			throw new System.NotImplementedException();
+		}
+		
+		public FileSystemDirectory RemoveDescendent(FileSystemEntry value) {
+			throw new System.NotImplementedException();
+		}
+		
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
 			var spine = this.GetSpine(current);
 		
