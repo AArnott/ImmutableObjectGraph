@@ -71,6 +71,10 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemEntry(this, root);
 		}
 		
+		public virtual System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
+			yield return this;
+		}
+		
 		public virtual FileSystemFile ToFileSystemFile(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			FileSystemFile that = this as FileSystemFile;
@@ -98,11 +102,7 @@ namespace ImmutableObjectGraph.Tests {
 				pathSegment: this.PathSegment,
 				children: children);
 		}
-
-		public virtual System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
-			yield return this;
-		}
-
+		
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
@@ -736,7 +736,7 @@ namespace ImmutableObjectGraph.Tests {
 				// This is the instance to be replaced.
 				return System.Collections.Immutable.ImmutableStack.Create(replacement);
 			}
-
+		
 			System.Collections.Immutable.ImmutableStack<FileSystemEntry> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as FileSystemDirectory;
@@ -754,19 +754,19 @@ namespace ImmutableObjectGraph.Tests {
 			{
 				// Our newly mutated self wants a lookup table. If we already have one we can use it,
 				// but it needs to be fixed up given the newly rewritten spine through our descendents.
-				newSelf.lookupTable = FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
+				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
 				newSelf.ValidateInternalIntegrityDebugOnly();
 			}
-
+		
 			return newChildSpine.Push(newSelf);
 		}
-
+		
 		private enum ChangeKind {
 			Added,
 			Removed,
 			Replaced,
 		}
-
+		
 		/// <summary>
 		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
 		/// </summary>
@@ -781,20 +781,20 @@ namespace ImmutableObjectGraph.Tests {
 		/// The tail is the node that was removed or replaced.
 		/// </param>
 		/// <returns>An updated lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<int, System.Collections.Generic.KeyValuePair<FileSystemEntry, int>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<FileSystemEntry> updatedSpine, ImmutableObjectGraph.ImmutableDeque<FileSystemEntry> oldSpine) {
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<FileSystemEntry> updatedSpine, ImmutableObjectGraph.ImmutableDeque<FileSystemEntry> oldSpine) {
 			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
 				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
 				return lookupTableLazySentinal;
 			}
-
+		
 			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
 				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
 				// No changes were actually made.
 				return this.lookupTable;
 			}
-
+		
 			var lookupTable = this.lookupTable.ToBuilder();
-
+		
 			// Classify the kind of change that has just occurred.
 			var oldSpineTail = oldSpine.PeekTail();
 			var newSpineTail = updatedSpine.PeekTail();
@@ -816,7 +816,7 @@ namespace ImmutableObjectGraph.Tests {
 			{
 				changeKind = ChangeKind.Removed;
 			}
-
+		
 			// Trim the lookup table of any entries for nodes that have been removed from the tree.
 			if (childrenChanged || changeKind == ChangeKind.Removed) {
 				// We need to remove all descendents of the old tail node.
@@ -825,7 +825,7 @@ namespace ImmutableObjectGraph.Tests {
 				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
 				// from our lookup table in this case.
 				lookupTable.Remove(oldSpineTail.Identity);
-
+		
 				// We also need to update any immediate children of the old spine tail
 				// because the identity of their parent has changed.
 				var oldSpineTailRecursive = oldSpineTail as FileSystemDirectory;
@@ -835,7 +835,7 @@ namespace ImmutableObjectGraph.Tests {
 					}
 				}
 			}
-
+		
 			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
 			FileSystemEntry parent = this;
 			foreach (var node in updatedSpine) {
@@ -845,7 +845,7 @@ namespace ImmutableObjectGraph.Tests {
 				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, int>(node, parent.Identity));
 				parent = node;
 			}
-
+		
 			// There may be children on the added node that we should include.
 			if (childrenChanged || changeKind == ChangeKind.Added) {
 				var recursiveParent = parent as FileSystemDirectory;
@@ -853,10 +853,10 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
 				}
 			}
-
+		
 			return lookupTable.ToImmutable();
 		}
-
+		
 		public override System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
 			yield return this;
 			foreach (var child in this.Children) {
@@ -865,7 +865,7 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		}
-
+		
 		/// <summary>
 		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
 		/// </summary>
@@ -873,7 +873,7 @@ namespace ImmutableObjectGraph.Tests {
 		private void ValidateInternalIntegrityDebugOnly() {
 			this.ValidateInternalIntegrity();
 		}
-
+		
 		/// <summary>
 		/// Validates this node and all its descendents.
 		/// </summary>
@@ -885,7 +885,7 @@ namespace ImmutableObjectGraph.Tests {
 					throw new System.ApplicationException("Node ID " + node.Identity + " observed more than once in the tree.");
 				}
 			}
-
+		
 			// The lookup table (if any) accurately describes the contents of this tree.
 			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
 				// The table should have one entry for every *descendent* of this node (not this node itself).
@@ -894,35 +894,37 @@ namespace ImmutableObjectGraph.Tests {
 				if (actualCount != expectedCount) {
 					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
 				}
-
+		
 				this.ValidateLookupTable(this.lookupTable);
 			}
 		}
-
+		
 		/// <summary>
 		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
 		/// </summary>
 		/// <param name="lookupTable">The lookup table being validated.</param>
-		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<int, System.Collections.Generic.KeyValuePair<FileSystemEntry, int>> lookupTable) {
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTable) {
 			const string ErrorString = "Lookup table integrity failure.";
-
+		
 			foreach (var child in this.Children) {
 				var entry = lookupTable[child.Identity];
 				if (!object.ReferenceEquals(entry.Key, child)) {
 					throw new System.ApplicationException(ErrorString);
 				}
-
+		
 				if (entry.Value != this.Identity) {
 					throw new System.ApplicationException(ErrorString);
 				}
-
+		
 				var recursiveChild = child as FileSystemDirectory;
 				if (recursiveChild != null) {
 					recursiveChild.ValidateLookupTable(lookupTable);
 				}
 			}
 		}
-
+		
+		
+		
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>());
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTable;
@@ -962,7 +964,7 @@ namespace ImmutableObjectGraph.Tests {
 					this.lookupTable = lookupTableLazySentinal;
 				}
 			}
-
+		
 			this.ValidateInternalIntegrityDebugOnly();
 		}
 		
@@ -981,8 +983,10 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
 		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>.Builder seedLookupTable) {
-			foreach (var child in this.Children) {
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>.Builder seedLookupTable)
+		{
+			foreach (var child in this.Children)
+			{
 				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>(child, this.Identity));
 				var recursiveChild = child as FileSystemDirectory;
 				if (recursiveChild != null) {

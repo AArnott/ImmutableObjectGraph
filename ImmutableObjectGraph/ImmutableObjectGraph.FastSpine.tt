@@ -53,6 +53,8 @@ private void InitializeLookup(ImmutableObjectGraph.Optional<<#= templateType.Nod
 			this.lookupTable = lookupTableLazySentinal;
 		}
 	}
+
+	this.ValidateInternalIntegrityDebugOnly();
 }
 
 /// <summary>

@@ -210,6 +210,10 @@ protected class MetaType {
 		get { return this.CreateField(new SpecialFieldInfo("lookupTable", this.NodeLookupTableTypeName, required: true)); }
 	}
 
+	public bool IsRecursiveType {
+		get { return this.GetTypeFamily().Any(t => this.Equals(t.RecursiveType)); }
+	}
+
 	public MetaField RecursiveField {
 		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)); }
 	}
