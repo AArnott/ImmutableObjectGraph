@@ -110,9 +110,10 @@ private enum ArgSource {
 	Missing,
 }
 
-private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3) {
+private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3, bool concatenated = false) {
 	PushIndent(new string('\t', indent));
-	bool firstInSequence = true;
+	bool firstInSequence = !concatenated;
+
 	foreach(var field in fields) {
 		ArgSource fieldSource = (source == ArgSource.OptionalArgumentOrTemplate && field.IsRequired) ? ArgSource.Argument : source;
 		if (!firstInSequence) { Write(","); }
@@ -124,7 +125,7 @@ private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource so
 				Write("this.{0}", field.NamePascalCase);
 				break;
 			case ArgSource.Argument:
-				Write(field.NameCamelCase);
+				Write(field.ArgumentReference);
 				break;
 			case ArgSource.OptionalArgumentOrProperty:
 				Write("{0}.GetValueOrDefault(this.{1})", field.NameCamelCase, field.NamePascalCase);
@@ -149,9 +150,9 @@ private enum ParameterStyle {
 	OptionalOrRequired,
 }
 
-private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style, int indent = 2) {
+private void WriteParameters(IEnumerable<MetaType.MetaField> fields, ParameterStyle style, int indent = 2, bool concatenated = false) {
 	PushIndent(new string('\t', indent));
-	bool firstInSequence = true;
+	bool firstInSequence = !concatenated;
 	if (style == ParameterStyle.OptionalOrRequired) {
 		fields = SortRequiredFieldsFirst(fields);
 	}
@@ -180,6 +181,8 @@ private static IEnumerable<MetaType.MetaField> SortRequiredFieldsFirst(IEnumerab
 protected class MetaType {
 	public MetaType(Type type) {
 		this.Type = type;
+		this.RequiredIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(int), required: true));
+		this.OptionalIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(int), required: false));
 	}
 
 	public Type Type { get; private set; }
@@ -197,6 +200,18 @@ protected class MetaType {
 
 			return fieldsWithBase;
 		}
+	}
+
+	public MetaField RequiredIdentityField { get; private set; }
+
+	public MetaField OptionalIdentityField { get; private set; }
+
+	public MetaField LookupTableField {
+		get { return this.CreateField(new SpecialFieldInfo("lookupTable", this.NodeLookupTableTypeName, required: true)); }
+	}
+
+	public bool IsRecursiveType {
+		get { return this.GetTypeFamily().Any(t => this.Equals(t.RecursiveType)); }
 	}
 
 	public MetaField RecursiveField {
@@ -227,6 +242,12 @@ protected class MetaType {
 		}
 	}
 
+	public IEnumerable<MetaType> SelfAndAncestors {
+		get {
+			return new [] { this }.Concat(this.Ancestors);
+		}
+	}
+
 	public virtual MetaType Ancestor {
 		get { return TemplateTypes.FirstOrDefault(mt => mt.Type.IsEquivalentTo(this.Type.BaseType)); }
 	}
@@ -247,15 +268,23 @@ protected class MetaType {
 		get { return this.Type.IsAbstract; }
 	}
 
+	public virtual MetaType GreenType {
+		get { return this; }
+	}
+
 	public virtual string TypeName {
 		get { return this.Type.Name; }
 	}
-
-	public string OptionalTypeName {
-		get { return this.GetOptionalTypeName(this.Type); }
+	
+	public string TypeNameCamelCase {
+		get { return CamelCase(this.TypeName); }
 	}
 
-	protected virtual MetaType RootAncestorOrThisType {
+	public string OptionalTypeName {
+		get { return GetOptionalTypeName(this.TypeName); }
+	}
+
+	public virtual MetaType RootAncestorOrThisType {
 		get {
 			MetaType current = this;
 			while (current.Ancestor != null) {
@@ -266,6 +295,10 @@ protected class MetaType {
 		}
 	}
 	
+	public virtual string NodeLookupTableTypeName {
+		get { return string.Format("System.Collections.Immutable.ImmutableDictionary<{1}, System.Collections.Generic.KeyValuePair<{0}, {1}>>", this.RecursiveType.TypeName, this.RequiredIdentityField.TypeName); }
+	}
+
 	public virtual HashSet<MetaType> GetTypeFamily() {
 		var set = new HashSet<MetaType>();
 		var furthestAncestor = this.Ancestors.LastOrDefault() ?? this;
@@ -277,9 +310,19 @@ protected class MetaType {
 		return set;
 	}
 
+	public MetaType GetFirstCommonAncestor(MetaType cousin) {
+		foreach (var ancestor in this.SelfAndAncestors) {
+			if (cousin.SelfAndAncestors.Contains(ancestor)) {
+				return ancestor;
+			}
+		}
+
+		throw new ArgumentException("No common ancestor between " + this.TypeName + " and " + cousin.TypeName);
+	}
+
 	public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
 		var fields = ImmutableList.Create<MetaField>();
-		if (ancestor != this) {
+		if (!ancestor.Equals(this)) {
 			fields = fields.AddRange(this.LocalFields)
 			               .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
 		}
@@ -363,11 +406,15 @@ protected class MetaType {
 		}
 
 		public bool IsRequired {
-			get { return this.Field.GetCustomAttribute<RequiredAttribute>() != null; }
+			get { return this.Field.IsDefined(typeof(RequiredAttribute), false); }
 		}
 
 		public bool IsCollection {
 			get { return IsCollectionType(this.Field.FieldType); }
+		}
+
+		public bool IsRecursiveCollection {
+			get { return this.IsCollection && this.DeclaringType.RecursiveType != null && this.ElementType.IsEquivalentTo(this.DeclaringType.RecursiveType.Type); }
 		}
 
 		public bool IsPrimitiveType {
@@ -383,11 +430,18 @@ protected class MetaType {
 		}
 
 		public virtual string TypeName {
-			get { return this.DeclaringType.GetTypeName(this.Field.FieldType); }
+			get { 
+				var specialField = this.Field as SpecialFieldInfo;
+				if (specialField != null && this.Field.FieldType == null) {
+					return specialField.FieldTypeName;
+				}
+			
+				return this.DeclaringType.GetTypeName(this.Field.FieldType);
+			}
 		}
 
 		public virtual string OptionalTypeName {
-			get { return this.DeclaringType.GetOptionalTypeName(this.Field.FieldType); }
+			get { return GetOptionalTypeName(this.TypeName); }
 		}
 
 		public virtual string TypeNameForBuilderField {
@@ -404,6 +458,81 @@ protected class MetaType {
 					? this.TypeName + ".Builder"
 					: this.TypeName;
 			}
+		}
+
+		public virtual string ArgumentReference {
+			get { return this.NameCamelCase; }
+		}
+	}
+
+	internal class SpecialFieldInfo : FieldInfo {
+		private string fieldName;
+		private Type fieldType;
+		private string fieldTypeName;
+		private bool required;
+
+		internal SpecialFieldInfo(string fieldName, Type fieldType, bool required) {
+			this.fieldName = fieldName;
+			this.fieldType = fieldType;
+			this.required = required;
+		}
+
+		internal SpecialFieldInfo(string fieldName, string fieldTypeName, bool required) {
+			this.fieldName = fieldName;
+			this.fieldTypeName = fieldTypeName;
+			this.required = required;
+		}
+
+		public override FieldAttributes Attributes {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override Type FieldType {
+			get { return this.fieldType; }
+		}
+
+		public string FieldTypeName {
+			get { return this.fieldTypeName; }
+		}
+
+		public override RuntimeFieldHandle FieldHandle {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override object GetValue(object obj) {
+			throw new NotImplementedException();
+		}
+
+		public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, System.Globalization.CultureInfo culture) {
+			throw new NotImplementedException();
+		}
+
+		public override Type DeclaringType {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override object[] GetCustomAttributes(Type attributeType, bool inherit) {
+			throw new NotImplementedException();
+		}
+
+		public override object[] GetCustomAttributes(bool inherit) {
+			throw new NotImplementedException();
+		}
+
+		public override bool IsDefined(Type attributeType, bool inherit) {
+			if (attributeType == typeof(RequiredAttribute) && this.required) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public override Type ReflectedType {
+			get { throw new NotImplementedException(); }
+		}
+
+		public override string Name {
+			get { return this.fieldName; }
 		}
 	}
 }

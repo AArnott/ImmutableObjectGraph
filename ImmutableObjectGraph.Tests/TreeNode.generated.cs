@@ -24,6 +24,9 @@ namespace ImmutableObjectGraph.Tests {
 	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly TreeNode DefaultInstance = GetDefaultTemplate();
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String caption;
@@ -40,26 +43,26 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableList<TreeNode> children;
 	
-		/// <summary>Initializes a new instance of the TreeNode class.</summary>
-		protected TreeNode()
-		{
-		}
+		private readonly System.Int32 identity;
 	
 		/// <summary>Initializes a new instance of the TreeNode class.</summary>
 		protected TreeNode(
+			System.Int32 identity,
 			System.String caption,
 			System.String filePath,
 			System.Boolean visible,
 			System.Collections.Immutable.ImmutableHashSet<System.String> attributes,
-			System.Collections.Immutable.ImmutableList<TreeNode> children)
-			: base()
+			System.Collections.Immutable.ImmutableList<TreeNode> children,
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>>))
 		{
+			this.identity = identity;
 			this.caption = caption;
 			this.filePath = filePath;
 			this.visible = visible;
 			this.attributes = attributes;
 			this.children = children;
 			this.Validate();
+			this.InitializeLookup(lookupTable);
 		}
 	
 		public static TreeNode Create(
@@ -68,12 +71,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
-			return DefaultInstance.With(
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
 				caption: caption.GetValueOrDefault(DefaultInstance.Caption),
 				filePath: filePath.GetValueOrDefault(DefaultInstance.FilePath),
 				visible: visible.GetValueOrDefault(DefaultInstance.Visible),
 				attributes: attributes.GetValueOrDefault(DefaultInstance.Attributes),
-				children: children.GetValueOrDefault(DefaultInstance.Children));
+				children: children.GetValueOrDefault(DefaultInstance.Children),
+				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
 	
 		public System.String Caption {
@@ -232,7 +237,7 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(children: this.Children.Clear());
 		}
 		
-	
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual TreeNode With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -240,23 +245,53 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				caption: caption.GetValueOrDefault(this.Caption),
+				filePath: filePath.GetValueOrDefault(this.FilePath),
+				visible: visible.GetValueOrDefault(this.Visible),
+				attributes: attributes.GetValueOrDefault(this.Attributes),
+				children: children.GetValueOrDefault(this.Children),
+				identity: identity.GetValueOrDefault(this.Identity));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private TreeNode WithFactory(
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(caption.IsDefined && caption.Value != this.Caption) || 
 				(filePath.IsDefined && filePath.Value != this.FilePath) || 
 				(visible.IsDefined && visible.Value != this.Visible) || 
 				(attributes.IsDefined && attributes.Value != this.Attributes) || 
 				(children.IsDefined && children.Value != this.Children)) {
+				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>>) : Optional.For(this.lookupTable);
 				return new TreeNode(
+					identity: identity.GetValueOrDefault(this.Identity),
 					caption: caption.GetValueOrDefault(this.Caption),
 					filePath: filePath.GetValueOrDefault(this.FilePath),
 					visible: visible.GetValueOrDefault(this.Visible),
 					attributes: attributes.GetValueOrDefault(this.Attributes),
-					children: children.GetValueOrDefault(this.Children));
+					children: children.GetValueOrDefault(this.Children),
+					lookupTable: lookupTable);
 			} else {
 				return this;
 			}
 		}
 	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
+	
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		}
 	
 		public System.Collections.Generic.IEnumerator<TreeNode> GetEnumerator() {
 			return this.children.GetEnumerator();
@@ -265,6 +300,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -278,6 +314,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new TreeNode(
+				default(System.Int32), 
 				template.Caption, 
 				template.FilePath, 
 				template.Visible, 
@@ -299,22 +336,325 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public TreeNode ReplaceDescendent(TreeNode current, TreeNode replacement) {
-			// TODO: fix this horribly inefficient algorithm.
-			var newChildren = this.Children.Replace(current, replacement);
-			if (this.Children != newChildren) {
-				return this.WithChildren(newChildren);
+			var spine = this.GetSpine(current);
+		
+			if (spine.IsEmpty) {
+				// The descendent was not found.
+				throw new System.ArgumentException("Old value not found");
 			}
-			
-			foreach (var child in this.OfType<TreeNode>())
+		
+			return (TreeNode)this.ReplaceDescendent(spine, replacement).Peek();
+		}
+		
+		private System.Collections.Immutable.ImmutableStack<TreeNode> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<TreeNode> spine, TreeNode replacement) {
+			Debug.Assert(this == spine.Peek());
+			var remainingSpine = spine.Pop();
+			if (remainingSpine.IsEmpty) {
+				// This is the instance to be replaced.
+				return System.Collections.Immutable.ImmutableStack.Create(replacement);
+			}
+		
+			System.Collections.Immutable.ImmutableStack<TreeNode> newChildSpine;
+			var child = remainingSpine.Peek();
+			var recursiveChild = child as TreeNode;
+			if (recursiveChild != null) {
+				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+			} else {
+				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
+				Debug.Assert(this.Children.Contains(child));
+				newChildSpine = System.Collections.Immutable.ImmutableStack.Create(replacement);
+			}
+		
+			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
+			var newSelf = this.WithChildren(newChildren);
+			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal)
 			{
-				var newChild = child.ReplaceDescendent(current, replacement);
-				if (newChild != child) {
-					newChildren = this.Children.Replace(child, newChild);
-					return this.WithChildren(newChildren);
+				// Our newly mutated self wants a lookup table. If we already have one we can use it,
+				// but it needs to be fixed up given the newly rewritten spine through our descendents.
+				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
+				newSelf.ValidateInternalIntegrityDebugOnly();
+			}
+		
+			return newChildSpine.Push(newSelf);
+		}
+		
+		private enum ChangeKind {
+			Added,
+			Removed,
+			Replaced,
+		}
+		
+		/// <summary>
+		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
+		/// </summary>
+		/// <param name="updatedSpine">
+		/// The spine of this node's new descendents' instances that are created for this change.
+		/// The head is an immediate child of the new instance for this node.
+		/// The tail is the node that was added or replaced.
+		/// </param>
+		/// <param name="oldSpine">
+		/// The spine of this node's descendents that have been changed in this delta.
+		/// The head is an immediate child of this instance.
+		/// The tail is the node that was removed or replaced.
+		/// </param>
+		/// <returns>An updated lookup table.</returns>
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<TreeNode> updatedSpine, ImmutableObjectGraph.ImmutableDeque<TreeNode> oldSpine) {
+			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
+				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
+				return lookupTableLazySentinal;
+			}
+		
+			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
+				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
+				// No changes were actually made.
+				return this.lookupTable;
+			}
+		
+			var lookupTable = this.lookupTable.ToBuilder();
+		
+			// Classify the kind of change that has just occurred.
+			var oldSpineTail = oldSpine.PeekTail();
+			var newSpineTail = updatedSpine.PeekTail();
+			ChangeKind changeKind;
+			bool childrenChanged = false;
+			if (updatedSpine.Count == oldSpine.Count) {
+				changeKind = ChangeKind.Replaced;
+				var oldSpineTailRecursive = oldSpineTail as TreeNode;
+				var newSpineTailRecursive = newSpineTail as TreeNode;
+				if (oldSpineTailRecursive != null || newSpineTailRecursive != null) {
+					// Children have changed if either before or after type didn't have a children property,
+					// or if both did, but the children actually changed.
+					childrenChanged = oldSpineTailRecursive == null || newSpineTailRecursive == null
+						|| !System.Object.ReferenceEquals(oldSpineTailRecursive.Children, newSpineTailRecursive.Children);
+				}
+			} else if (updatedSpine.Count > oldSpine.Count) {
+				changeKind = ChangeKind.Added;
+			} else // updatedSpine.Count < oldSpine.Count
+			{
+				changeKind = ChangeKind.Removed;
+			}
+		
+			// Trim the lookup table of any entries for nodes that have been removed from the tree.
+			if (childrenChanged || changeKind == ChangeKind.Removed) {
+				// We need to remove all descendents of the old tail node.
+				lookupTable.RemoveRange(oldSpineTail.GetSelfAndDescendents().Select(n => n.Identity));
+			} else if (changeKind == ChangeKind.Replaced && oldSpineTail.Identity != newSpineTail.Identity) {
+				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
+				// from our lookup table in this case.
+				lookupTable.Remove(oldSpineTail.Identity);
+		
+				// We also need to update any immediate children of the old spine tail
+				// because the identity of their parent has changed.
+				var oldSpineTailRecursive = oldSpineTail as TreeNode;
+				if (oldSpineTailRecursive != null) {
+					foreach (var child in oldSpineTailRecursive) {
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<TreeNode, int>(child, newSpineTail.Identity);
+					}
 				}
 			}
-				
-			return this;
+		
+			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
+			TreeNode parent = this;
+			foreach (var node in updatedSpine) {
+				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
+				// assume no change is relevant and not apply the change.
+				lookupTable.Remove(node.Identity);
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<TreeNode, int>(node, parent.Identity));
+				parent = node;
+			}
+		
+			// There may be children on the added node that we should include.
+			if (childrenChanged || changeKind == ChangeKind.Added) {
+				var recursiveParent = parent as TreeNode;
+				if (recursiveParent != null) {
+					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
+				}
+			}
+		
+			return lookupTable.ToImmutable();
+		}
+		
+		public System.Collections.Generic.IEnumerable<TreeNode> GetSelfAndDescendents() {
+			yield return this;
+			foreach (var child in this.Children) {
+				foreach (var descendent in child.GetSelfAndDescendents()) {
+					yield return descendent;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
+		/// </summary>
+		[Conditional("DEBUG")]
+		private void ValidateInternalIntegrityDebugOnly() {
+			this.ValidateInternalIntegrity();
+		}
+		
+		/// <summary>
+		/// Validates this node and all its descendents.
+		/// </summary>
+		protected internal void ValidateInternalIntegrity() {
+			// Each node id appears at most once.
+			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			foreach (var node in this.GetSelfAndDescendents()) {
+				if (!observedIdentities.Add(node.Identity)) {
+					throw new System.ApplicationException("Node ID " + node.Identity + " observed more than once in the tree.");
+				}
+			}
+		
+			// The lookup table (if any) accurately describes the contents of this tree.
+			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
+				// The table should have one entry for every *descendent* of this node (not this node itself).
+				int expectedCount = this.GetSelfAndDescendents().Count() - 1;
+				int actualCount = this.lookupTable.Count;
+				if (actualCount != expectedCount) {
+					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
+				}
+		
+				this.ValidateLookupTable(this.lookupTable);
+			}
+		}
+		
+		/// <summary>
+		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
+		/// </summary>
+		/// <param name="lookupTable">The lookup table being validated.</param>
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> lookupTable) {
+			const string ErrorString = "Lookup table integrity failure.";
+		
+			foreach (var child in this.Children) {
+				var entry = lookupTable[child.Identity];
+				if (!object.ReferenceEquals(entry.Key, child)) {
+					throw new System.ApplicationException(ErrorString);
+				}
+		
+				if (entry.Value != this.Identity) {
+					throw new System.ApplicationException(ErrorString);
+				}
+		
+				var recursiveChild = child as TreeNode;
+				if (recursiveChild != null) {
+					recursiveChild.ValidateLookupTable(lookupTable);
+				}
+			}
+		}
+		
+		
+		
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>());
+		
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> lookupTable;
+		
+		private int inefficiencyLoad;
+		
+		/// <summary>
+		/// The maximum number of steps allowable for a search to be done among this node's children
+		/// before a faster lookup table will be built.
+		/// </summary>
+		private const int InefficiencyLoadThreshold = 16;
+		
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> LookupTable {
+			get {
+				if (this.lookupTable == lookupTableLazySentinal) {
+					this.lookupTable = this.CreateLookupTable();
+					this.inefficiencyLoad = 1;
+				}
+		
+				return this.lookupTable;
+			}
+		}
+		
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>>)) {
+			this.inefficiencyLoad = 1;
+			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
+				this.lookupTable = priorLookupTable.Value;
+			} else {
+				foreach (var child in this.children)
+				{
+					var recursiveChild = child as TreeNode;
+					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				}
+		
+				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+					this.inefficiencyLoad = 1;
+					this.lookupTable = lookupTableLazySentinal;
+				}
+			}
+		
+			this.ValidateInternalIntegrityDebugOnly();
+		}
+		
+		/// <summary>
+		/// Creates the lookup table that will contain all this node's children.
+		/// </summary>
+		/// <returns>The lookup table.</returns>
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>().ToBuilder();
+			this.ContributeDescendentsToLookupTable(table);
+			return table.ToImmutable();
+		}
+		
+		/// <summary>
+		/// Adds this node's children (recursively) to the lookup table.
+		/// </summary>
+		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
+		/// <returns>The new lookup table.</returns>
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>.Builder seedLookupTable)
+		{
+			foreach (var child in this.Children)
+			{
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>(child, this.Identity));
+				var recursiveChild = child as TreeNode;
+				if (recursiveChild != null) {
+					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
+				}
+			}
+		}
+		
+		internal System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(System.Int32 descendent) {
+			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<TreeNode>();
+			if (this.Identity.Equals(descendent)) {
+				return emptySpine.Push(this);
+			}
+		
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
+				{
+					// Awesome.  We know the node the caller is looking for is a descendent of this node.
+					// Now just string together all the nodes that connect this one with the sought one.
+					var spine = emptySpine;
+					do
+					{
+						spine = spine.Push(lookupValue.Key);
+					}
+					while (this.lookupTable.TryGetValue(lookupValue.Value, out lookupValue));
+					return spine.Push(this);
+				}
+			} else {
+				// We don't have an efficient lookup table for this node.  Aggressively search every child.
+				var spine = emptySpine;
+				foreach (var child in this.Children) {
+					var recursiveChild = child as TreeNode;
+					if (recursiveChild != null) {
+						spine = recursiveChild.GetSpine(descendent);
+					} else if (child.Identity.Equals(descendent)) {
+						spine = spine.Push(child);
+					}
+		
+					if (!spine.IsEmpty) {
+						return spine.Push(this);
+					}
+				}
+			}
+		
+			// The descendent is not in this sub-tree.
+			return emptySpine;
+		}
+		
+		internal System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(TreeNode descendent) {
+			return this.GetSpine(descendent.Identity);
 		}
 		
 		public Builder ToBuilder() {

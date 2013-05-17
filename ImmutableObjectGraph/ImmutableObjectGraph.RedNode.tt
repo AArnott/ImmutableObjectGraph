@@ -1,96 +1,211 @@
 ﻿<#
 HiddenTypes.Add(typeof(RedMetaType));
-
 this.HandleType += (templateType, position) => {
-	if (position != HandleTypePosition.AfterTypeDeclaration) {
-		return;
-	}
-
 	var redType = new RedMetaType(templateType);
-	this.OnHandleRedType(redType, HandleTypePosition.BeforeTypeDeclaration);
+
+	switch (position) {
+		case HandleTypePosition.WithinTypeDeclaration:
+			if (redType.RecursiveParent.Equals(redType)) {
 #>
 
-public <#= redType.IsAbstract ? "abstract " : "" #>partial class <#= redType.TypeName #><# WriteBaseTypes(redType.HasAncestor ? redType.Ancestor.TypeName : null, redType.IsRecursive ? "System.Collections.Generic.IEnumerable<" + redType.RecursiveType.TypeName + ">" : null); #> {
-<#	if (!redType.HasAncestor) { #>
+public <#= redType.TypeName #> AsRoot {
+	get { return new <#= redType.TypeName #>(this, this); }
+}
+<#
+			}
+#>
+
+public <#= redType.HasAncestor ? "new " : "" #><#= redType.TypeName #> WithRoot(<#= redType.GreenType.RecursiveParent.TypeName #> root) {
+	var spine = root.GetSpine(this);
+	if (spine.IsEmpty) {
+		throw new System.ArgumentException("Root does not belong to the same tree.");
+	}
+
+	return new <#= redType.TypeName #>(this, root);
+}
+<#
+			break;
+		case HandleTypePosition.AfterTypeDeclaration:
+			this.OnHandleRedType(redType, HandleTypePosition.BeforeTypeDeclaration);
+#>
+
+public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.TypeName #>> {
+<#
+			if (redType.Equals(redType.RecursiveParent)) {
+#>
+	private static readonly System.Func<<#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveType.TypeName#>> toUnrooted = r => r.<#=redType.GreenType.RecursiveType.TypeName#>;
+	private static readonly System.Func<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>, <#=redType.RecursiveType.TypeName#>> toRooted = (u, r) => u.WithRoot(r);
+
+<#
+			}
+#>
 	private readonly <#= redType.GreenType.TypeName #> greenNode;
 
-	private readonly <#= redType.RecursiveParent.TypeName #> parent;
-<#	}
-
-	foreach (var field in redType.LocalFields.Where(f => !f.IsPrimitiveType)) {
-#>
-	private <#= field.TypeName #> <#= field.NameCamelCase #>;
+	private readonly <#= redType.GreenType.RecursiveParent.TypeName #> root;
 <#
-		}
+			if (redType.IsRecursive) {
+#>
+	private Optional<Adapters.ImmutableSetRootAdapter<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>>> <#= redType.RecursiveField.NameCamelCase #>;
+<#
+			}
 #>
 
-	protected <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> greenNode, <#= redType.RecursiveParent.TypeName #> parent) <# if (redType.HasAncestor) { #>: base(greenNode, parent) <# } #>{
-<# if (!redType.HasAncestor) { #>
-		this.greenNode = greenNode;
-		this.parent = parent;
-<# } #>
+	internal <#= redType.TypeName #>(<#= redType.GreenType.TypeName #> <#= redType.GreenType.TypeNameCamelCase #>, <#= redType.GreenType.RecursiveParent.TypeName #> root) {
+		this.greenNode = <#= redType.GreenType.TypeNameCamelCase #>;
+		this.root = root;
+<#
+			if (redType.IsRecursive) {
+#>
+		this.<#= redType.RecursiveField.NameCamelCase #> = default(Optional<Adapters.ImmutableSetRootAdapter<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>>>);
+<#
+			}
+#>
 	}
-<# if (!redType.HasAncestor) { #>
 
-	/// <summary>Gets the parent.</summary>
+	/// <summary>Gets the parent of this object in the hierarchy.</summary>
 	public <#= redType.RecursiveParent.TypeName #> Parent {
-		get { return this.parent; }
-	}
-<#
+		get { throw new System.NotImplementedException(); }
 	}
 
-	foreach (var field in redType.LocalFields) {
+	public <#= redType.RecursiveParent.TypeName #> Root {
+		get { return this.root.AsRoot; }
+	}
+<#
+			foreach (var descendent in redType.Descendents) {
+				var greenDescendent = ((RedMetaType)descendent).GreenType;
+#>
+
+	public bool Is<#=greenDescendent.TypeName#> {
+		get { return this.greenNode is <#=greenDescendent.TypeName#>; }
+	}
+
+	public <#=descendent.TypeName#> As<#=greenDescendent.TypeName#> {
+		get { return ((<#=greenDescendent.TypeName#>)this.greenNode).WithRoot(this.root); }
+	}
+<#
+			}
+
+			foreach (var ancestor in redType.Ancestors) {
+				var greenAncestor = ((RedMetaType)ancestor).GreenType;
+#>
+
+	public <#=ancestor.TypeName#> As<#=greenAncestor.TypeName#> {
+		get { return ((<#=greenAncestor.TypeName#>)this.greenNode).WithRoot(this.root); }
+	}
+<#
+			}
+
+			if (redType.RecursiveParent.Equals(redType)) {
+#>
+
+	public bool IsRoot {
+		get { return this.root == this.greenNode; }
+	}
+<#
+			}
+
+			foreach (var field in redType.AllFields) {
+				if (field.IsRecursiveCollection) {
+#>
+
+	public System.Collections.Immutable.IImmutableSet<<#= field.ElementTypeName #>> <#= field.NamePascalCase #> {
+		get {
+			if (!this.<#= field.NameCamelCase #>.IsDefined) {
+				this.<#= field.NameCamelCase #> = Optional.For(Adapter.Create(this.greenNode.<#= field.NamePascalCase #>, toRooted, toUnrooted, this.root));
+			}
+
+			return this.<#= field.NameCamelCase #>.Value;
+		}
+	}
+<#
+				} else {
 #>
 
 	public <#= field.TypeName #> <#= field.NamePascalCase #> {
-<#	if (field.IsPrimitiveType) { #>
-		get { return this.GreenNode.<#= field.NamePascalCase #>; }
-<# } else { #>
-		get { return this.<#= field.NameCamelCase #>; }
-<# } #>
+		get { return this.greenNode.<#= field.NamePascalCase #>; }
 	}
 <#
-	}
+				}
 
-	foreach (var field in redType.AllFields) {
-		this.OnHandleRedField(redType, field);
-	}
+				this.OnHandleRedField(redType, field);
+			}
 #>
 
-	/// <summary>Gets the parent of this object in the hierarchy.</summary>
-	protected <# if (redType.HasAncestor) { #>new <# } #><#= redType.GreenType.TypeName #> GreenNode {
-		get { return <# if (redType.HasAncestor) { #>(<#= redType.GreenType.TypeName #>)base.GreenNode<# } else { #>this.greenNode<# } #>; }
+	/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+	public <#= redType.GreenType.TypeName #> <#= redType.GreenType.TypeName #> {
+		get { return this.greenNode; }
 	}
-<#	if (redType.IsRecursive) { #>
+
+	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+	public <#= redType.TypeName #> With(<#
+		WriteParameters(redType.AllFields, ParameterStyle.Optional);
+#>) {
+		var newGreenNode = this.greenNode.With(<# WriteArguments(redType.AllFields, ArgSource.Argument); #>);
+		var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+		return newGreenNode.WithRoot(newRoot);
+	}
+<#
+			if (redType.IsRecursive) {
+#>
 
 	public System.Collections.Generic.IEnumerator<<#=redType.RecursiveType.TypeName#>> GetEnumerator() {
 		return this.<#=redType.RecursiveField.NamePascalCase#>.GetEnumerator();
 	}
-
-	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-		return this.<#=redType.RecursiveField.NamePascalCase#>.GetEnumerator();
-	}
 <#
-	} // if IsRecursive
+			} // if IsRecursive
 
-	this.OnHandleRedType(redType, HandleTypePosition.WithinTypeDeclaration);
+			this.OnHandleRedType(redType, HandleTypePosition.WithinTypeDeclaration);
 #>
+
+	public override bool Equals(object obj) {
+		if (obj is <#= redType.TypeName #>) {
+			var other = (<#= redType.TypeName #>)obj;
+			return this.Equals(other);
+		}
+
+		return false;
+	}
+
+	public bool Equals(<#= redType.TypeName #> other) {
+		return this.greenNode == other.greenNode && this.root == other.root;
+	}
+
+	public override int GetHashCode() {
+		return this.greenNode.GetHashCode();
+	}
+
+	private <#= redType.TypeName #> NewSpine(<#= redType.GreenType.TypeName #> leaf) {
+		var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+		return leaf.WithRoot(newRoot);
+	}
 }
 <#
-	this.OnHandleRedType(redType, HandleTypePosition.AfterTypeDeclaration);
+			this.OnHandleRedType(redType, HandleTypePosition.AfterTypeDeclaration);
+			break;
+		default:
+			break;
+	} // switch
 }; // event handler
 #><#+
 [DebuggerDisplay("{TypeName,nq} (red)")]
 protected class RedMetaType : MetaType {
+	private readonly MetaType greenType;
+
 	public RedMetaType(MetaType greenType)
 		: base(greenType.Type) {
-		this.GreenType = greenType;
+		if (greenType is RedMetaType) {
+			throw new ArgumentException("Red type handed in as green type.");
+		}
+
+		this.greenType = greenType;
 	}
 
-	public MetaType GreenType { get; private set; }
+	public override MetaType GreenType {
+		get { return this.greenType; }
+	}
 
 	public override string TypeName {
-		get { return base.TypeName + "Red"; }
+		get { return "Rooted" + base.TypeName; }
 	}
 
 	public override MetaType RecursiveType {
@@ -114,12 +229,16 @@ protected class RedMetaType : MetaType {
 		return other != null && this.GreenType.Equals(other.GreenType);
 	}
 
+	public override int GetHashCode() {
+		return this.GreenType.GetHashCode();
+	}
+
 	private static RedMetaType Wrap(MetaType type) {
 		return type != null ? new RedMetaType(type) : null;
 	}
 
 	private static IEnumerable<MetaType> Wrap(IEnumerable<MetaType> type) {
-		return type.Select(t => new RedMetaType(t));
+		return type.Select(t => t is RedMetaType ? t : new RedMetaType(t));
 	}
 	
 	protected override MetaField CreateField(FieldInfo field) {
@@ -127,13 +246,37 @@ protected class RedMetaType : MetaType {
 	}
 
 	protected override string GetTypeNameCore(Type type, bool isTemplateType) {
-		return isTemplateType ? type.Name + "Red" : type.FullName;
+		return isTemplateType ? "Rooted" + type.Name : type.FullName;
 	}
 
 	[DebuggerDisplay("{DeclaringType.TypeName,nq}.{NamePascalCase,nq} (red)")]
 	public class RedMetaField : MetaField {
 		public RedMetaField(FieldInfo field, MetaType declaringType)
 			: base(field, declaringType) {
+		}
+
+		public MetaField GreenField {
+			get { return ((RedMetaType)this.DeclaringType).GreenType.LocalFields.Single(f => f.Field == this.Field); }
+		}
+
+		public override string TypeName {
+			get {
+				if (this.IsRecursiveCollection) {
+					return string.Format("System.Collections.Immutable.IImmutableSet<{0}>", this.ElementTypeName);
+				} else {
+					return base.TypeName;
+				}
+			}
+		}
+
+		public override string ArgumentReference {
+			get {
+				if (this.IsRecursiveCollection) {
+					return string.Format("{1}.IsDefined ? ({2})((Adapters.IImmutableCollectionAdapter<{0}>){1}.Value).UnderlyingCollection : default({3})", this.GreenField.ElementTypeName, this.NameCamelCase, this.GreenField.TypeName, this.GreenField.OptionalTypeName);
+				} else {
+					return base.ArgumentReference;
+				}
+			}
 		}
 	}
 }

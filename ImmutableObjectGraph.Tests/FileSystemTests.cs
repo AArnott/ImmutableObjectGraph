@@ -64,9 +64,143 @@
 			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
 		}
 
-		[Fact(Skip = "It currently fails")]
+		[Fact]
 		public void ReplaceDescendentNotFound() {
 			Assert.Throws<ArgumentException>(() => this.root.ReplaceDescendent(FileSystemFile.Create("nonexistent"), FileSystemFile.Create("replacement")));
+		}
+
+		[Fact]
+		public void RedNodeStuff() {
+			var redRoot = this.root.AsRoot;
+			Assert.Equal(this.root.PathSegment, redRoot.PathSegment);
+			Assert.Equal(this.root.Children.Count, redRoot.Children.Count);
+			Assert.True(redRoot.Children.Any(c => c.PathSegment == "a.cs" && c.IsFileSystemFile));
+			Assert.True(redRoot.Children.Any(c => c.PathSegment == "b.cs" && c.IsFileSystemFile));
+
+			RootedFileSystemDirectory subdir = redRoot.Children.Last().AsFileSystemDirectory;
+			Assert.Equal("d.cs", subdir.Children.Single().PathSegment);
+		}
+
+		[Fact]
+		public void AllRedDescendentsShareRoot() {
+			VerifyDescendentsShareRoot(this.root.AsRoot);
+		}
+
+		[Fact]
+		public void RedNodeEquality() {
+			var greenLeaf = (FileSystemDirectory)this.root.Children.Last();
+			var redLeaf = greenLeaf.WithRoot(this.root);
+			var redLeafAsRoot = greenLeaf.AsRoot;
+
+			Assert.Equal(redLeafAsRoot, redLeafAsRoot);
+			Assert.Equal(redLeaf, redLeaf);
+			Assert.NotEqual(redLeaf, redLeafAsRoot);
+
+			IEquatable<RootedFileSystemDirectory> redLeafAsEquatable = redLeaf;
+			Assert.True(redLeafAsEquatable.Equals(redLeaf));
+		}
+
+		[Fact]
+		public void GetHashCodeMatchesGreenNode() {
+			var greenLeaf = (FileSystemDirectory)this.root.Children.Last();
+			var redLeaf = greenLeaf.WithRoot(this.root);
+			var redLeafAsRoot = greenLeaf.AsRoot;
+
+			Assert.Equal(greenLeaf.GetHashCode(), redLeaf.GetHashCode());
+			Assert.Equal(greenLeaf.GetHashCode(), redLeafAsRoot.GetHashCode());
+		}
+
+		[Fact]
+		public void ModifyPropertyInLeafRewritesSpine() {
+			var redRoot = this.root.AsRoot;
+			var leaf = redRoot.Children.Last().AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			var newLeaf = leaf.WithPathSegment("changed");
+			var leafFromNewRoot = newLeaf.Root.Children.Last().AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			Assert.Equal(newLeaf, leafFromNewRoot);
+		}
+
+		[Fact]
+		public void ModifyPropertyInLeafRewritesSpineWithLookupTable() {
+			var root = this.GetRootWithLookupTable();
+			var redRoot = root.AsRoot;
+			var leaf = redRoot.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			var newLeaf = leaf.WithPathSegment("changed");
+			var leafFromNewRoot = newLeaf.Root.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
+			Assert.Equal(newLeaf, leafFromNewRoot);
+		}
+
+		[Fact]
+		public void ModifyPropertyInRootWithLookupTablePreservesLookupTable()
+		{
+			var root = this.GetRootWithLookupTable();
+			var redRoot = root.AsRoot;
+			root.Children.First().WithRoot(root); // force lazy construction of lookup table
+			var newRoot = redRoot.WithPathSegment("changed");
+		}
+
+		[Fact]
+		public void WithRootInUnrelatedTreeThrows() {
+			var leaf = FileSystemDirectory.Create("z");
+			Assert.Throws<ArgumentException>(() => leaf.WithRoot(this.root));
+		}
+
+		[Fact]
+		public void RedNodeWithBulkMethodOnChild() {
+			var redRoot = this.root.AsRoot;
+			var firstChild = redRoot.Children.First();
+			RootedFileSystemEntry modifiedChild = firstChild.With(pathSegment: "g");
+			Assert.Equal("g", modifiedChild.PathSegment);
+		}
+
+		[Fact]
+		public void RedNodeWithBulkMethodOnRoot() {
+			var redRoot = this.root.AsRoot;
+			RootedFileSystemDirectory modifiedRoot = redRoot.With(pathSegment: "g");
+			Assert.Equal("g", modifiedRoot.PathSegment);
+		}
+
+		[Fact]
+		public void ConvertRootedFileToDirectory() {
+			RootedFileSystemFile redFile = this.root.AsRoot.Children.First().AsFileSystemFile;
+			RootedFileSystemDirectory redDirectory = redFile.ToFileSystemDirectory();
+			Assert.True(redDirectory.Root.Children.Contains(redDirectory.AsFileSystemEntry));
+		}
+
+		[Fact]
+		public void ConvertRootedDirectoryToFile() {
+			RootedFileSystemDirectory redDirectory = this.root.AsRoot.Children.Last().AsFileSystemDirectory;
+			var redFile = redDirectory.ToFileSystemFile();
+			Assert.True(redFile.Root.Children.Contains(redFile.AsFileSystemEntry));
+		}
+
+		[Fact]
+		public void ConvertFileAsEntryToFileRetainsIdentity() {
+			RootedFileSystemEntry redEntry = this.root.AsRoot.Children.First();
+			var redFile = redEntry.ToFileSystemFile();
+			Assert.True(redFile.Root.Children.Contains(redFile.AsFileSystemEntry));
+			Assert.Same(redEntry.FileSystemEntry, redFile.FileSystemFile);
+		}
+
+		[Fact]
+		public void LookupTableIntactAfterMutatingNonRecursiveField() {
+			var root = this.GetRootWithLookupTable();
+			var modifiedRoot = root.WithPathSegment("d:");
+		}
+
+		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
+			foreach (var child in directory) {
+				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
+
+				if (child.IsFileSystemDirectory) {
+					VerifyDescendentsShareRoot(child.AsFileSystemDirectory);
+				}
+			}
+		}
+
+		private FileSystemDirectory GetRootWithLookupTable() {
+			// Fill in a bunch of children to force the creation of a lookup table.
+			var root = this.root.AddChildren(Enumerable.Range(100, 30).Select(n => FileSystemFile.Create("filler" + n)));
+			return root;
 		}
 	}
 
@@ -74,6 +208,12 @@
 	partial class FileSystemFile {
 		static partial void CreateDefaultTemplate(ref FileSystemFile.Template template) {
 			template.Attributes = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
+		}
+	}
+
+	partial struct RootedFileSystemFile {
+		public override string ToString() {
+			return this.PathSegment;
 		}
 	}
 
