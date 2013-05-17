@@ -121,16 +121,21 @@
 
 		[Fact]
 		public void ModifyPropertyInLeafRewritesSpineWithLookupTable() {
-			// Fill in a bunch of children to force the creation of a lookup table.
-			var root = this.root.AddChildren(
-				Enumerable.Range(100, 30).Select(
-					n => FileSystemFile.Create("filler" + n)));
-
+			var root = this.GetRootWithLookupTable();
 			var redRoot = root.AsRoot;
 			var leaf = redRoot.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
 			var newLeaf = leaf.WithPathSegment("changed");
 			var leafFromNewRoot = newLeaf.Root.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
 			Assert.Equal(newLeaf, leafFromNewRoot);
+		}
+
+		[Fact]
+		public void ModifyPropertyInRootWithLookupTablePreservesLookupTable()
+		{
+			var root = this.GetRootWithLookupTable();
+			var redRoot = root.AsRoot;
+			root.Children.First().WithRoot(root); // force lazy construction of lookup table
+			var newRoot = redRoot.WithPathSegment("changed");
 		}
 
 		[Fact]
@@ -176,6 +181,12 @@
 			Assert.Same(redEntry.FileSystemEntry, redFile.FileSystemFile);
 		}
 
+		[Fact]
+		public void LookupTableIntactAfterMutatingNonRecursiveField() {
+			var root = this.GetRootWithLookupTable();
+			var modifiedRoot = root.WithPathSegment("d:");
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
@@ -184,6 +195,12 @@
 					VerifyDescendentsShareRoot(child.AsFileSystemDirectory);
 				}
 			}
+		}
+
+		private FileSystemDirectory GetRootWithLookupTable() {
+			// Fill in a bunch of children to force the creation of a lookup table.
+			var root = this.root.AddChildren(Enumerable.Range(100, 30).Select(n => FileSystemFile.Create("filler" + n)));
+			return root;
 		}
 	}
 

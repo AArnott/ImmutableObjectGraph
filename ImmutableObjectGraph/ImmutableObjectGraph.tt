@@ -71,7 +71,12 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	bool firstInSequence = true;
 #>
 	/// <summary>Initializes a new instance of the <#= templateType.TypeName #> class.</summary>
-	protected <#= templateType.TypeName #>(<# WriteParameters(templateType.RequiredIdentityField.Concat(templateType.AllFields), ParameterStyle.Required); #>)
+	protected <#= templateType.TypeName #>(<#
+		WriteParameters(templateType.RequiredIdentityField.Concat(templateType.AllFields), ParameterStyle.Required);
+		if (templateType.RecursiveParent.Equals(templateType)) {
+			WriteParameters(new [] { templateType.LookupTableField }, ParameterStyle.Optional, concatenated: true);
+		}
+#>)
 <# if (templateType.HasAncestor) { #>
 		: base(<# WriteArguments(templateType.RequiredIdentityField.Concat(templateType.AllFields.Where(f => f.DeclaringType != templateType)), ArgSource.Argument); #>)
 <# } #>
@@ -157,7 +162,19 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 				firstInSequence = false;
 			}
 	#>) {
-			return new <#= templateType.TypeName #>(<# WriteArguments(templateType.RequiredIdentityField.Concat(templateType.AllFields), ArgSource.OptionalArgumentOrProperty, indent: 4); #>);
+<#
+			if (templateType.RecursiveParent.Equals(templateType)) {
+#>
+			var <#= templateType.LookupTableField.NameCamelCase #> = <#= templateType.RecursiveField.NameCamelCase #>.IsDefined && <#= templateType.RecursiveField.NameCamelCase #>.Value != this.<#= templateType.RecursiveField.NamePascalCase #> ? default(Optional<<#= templateType.NodeLookupTableTypeName #>>) : Optional.For(this.lookupTable);
+<#
+			}
+#>
+			return new <#= templateType.TypeName #>(<#
+				WriteArguments(templateType.RequiredIdentityField.Concat(templateType.AllFields), ArgSource.OptionalArgumentOrProperty, indent: 4);
+				if (templateType.RecursiveParent.Equals(templateType)) {
+					WriteArguments(new [] { templateType.LookupTableField }, ArgSource.Argument, indent: 4, concatenated: true);
+				}
+#>);
 		} else {
 			return this;
 		}
