@@ -4,7 +4,7 @@ this.HandleType += (templateType, position) => {
 		return;
 	}
 
-	if (templateType.IsRecursiveType) {
+	if (templateType.IsRecursiveType && templateType.RecursiveField == null) {
 #>
 
 public virtual System.Collections.Generic.IEnumerable<<#= templateType.TypeName #>> GetSelfAndDescendents() {
@@ -155,7 +155,7 @@ private <#= templateType.NodeLookupTableTypeName #> FixupLookupTable(ImmutableOb
 	return lookupTable.ToImmutable();
 }
 
-public override System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> GetSelfAndDescendents() {
+public <#= !templateType.IsRecursiveType ? "override " : "" #>System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> GetSelfAndDescendents() {
 	yield return this;
 	foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>) {
 		foreach (var descendent in child.GetSelfAndDescendents()) {

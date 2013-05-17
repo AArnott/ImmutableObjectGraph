@@ -62,6 +62,10 @@ namespace ImmutableObjectGraph.Tests {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
+		public virtual System.Collections.Generic.IEnumerable<XmlNode> GetSelfAndDescendents() {
+			yield return this;
+		}
+		
 		public virtual XmlElement ToXmlElement(
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
@@ -170,7 +174,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String localName,
 			System.String namespaceName,
-			System.Collections.Immutable.ImmutableList<XmlNode> children)
+			System.Collections.Immutable.ImmutableList<XmlNode> children,
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>))
 			: base(
 				identity: identity,
 				localName: localName)
@@ -178,7 +183,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.namespaceName = namespaceName;
 			this.children = children;
 			this.Validate();
-			this.InitializeLookup();
+			this.InitializeLookup(lookupTable);
 		}
 	
 		public static XmlElement Create(
@@ -303,11 +308,13 @@ namespace ImmutableObjectGraph.Tests {
 				(localName.IsDefined && localName.Value != this.LocalName) || 
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(children.IsDefined && children.Value != this.Children)) {
+				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>) : Optional.For(this.lookupTable);
 				return new XmlElement(
 					identity: identity.GetValueOrDefault(this.Identity),
 					localName: localName.GetValueOrDefault(this.LocalName),
 					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
-					children: children.GetValueOrDefault(this.Children));
+					children: children.GetValueOrDefault(this.Children),
+					lookupTable: lookupTable);
 			} else {
 				return this;
 			}
@@ -357,31 +364,204 @@ namespace ImmutableObjectGraph.Tests {
 				throw new System.ArgumentException("Old value not found");
 			}
 		
-			return (XmlElement)this.ReplaceDescendent(spine, replacement);
+			return (XmlElement)this.ReplaceDescendent(spine, replacement).Peek();
 		}
 		
-		private XmlNode ReplaceDescendent(System.Collections.Immutable.ImmutableStack<XmlNode> spine, XmlNode replacement) {
+		private System.Collections.Immutable.ImmutableStack<XmlNode> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<XmlNode> spine, XmlNode replacement) {
 			Debug.Assert(this == spine.Peek());
 			var remainingSpine = spine.Pop();
 			if (remainingSpine.IsEmpty) {
 				// This is the instance to be replaced.
-				return replacement;
+				return System.Collections.Immutable.ImmutableStack.Create(replacement);
 			}
 		
-			XmlNode newChild;
+			System.Collections.Immutable.ImmutableStack<XmlNode> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as XmlElement;
 			if (recursiveChild != null) {
-				newChild = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
 			} else {
 				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
 				Debug.Assert(this.Children.Contains(child));
-				newChild = replacement;
+				newChildSpine = System.Collections.Immutable.ImmutableStack.Create(replacement);
 			}
 		
-			var newChildren = this.Children.Replace(child, newChild);
-			return this.WithChildren(newChildren);
+			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
+			var newSelf = this.WithChildren(newChildren);
+			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal)
+			{
+				// Our newly mutated self wants a lookup table. If we already have one we can use it,
+				// but it needs to be fixed up given the newly rewritten spine through our descendents.
+				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
+				newSelf.ValidateInternalIntegrityDebugOnly();
+			}
+		
+			return newChildSpine.Push(newSelf);
 		}
+		
+		private enum ChangeKind {
+			Added,
+			Removed,
+			Replaced,
+		}
+		
+		/// <summary>
+		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
+		/// </summary>
+		/// <param name="updatedSpine">
+		/// The spine of this node's new descendents' instances that are created for this change.
+		/// The head is an immediate child of the new instance for this node.
+		/// The tail is the node that was added or replaced.
+		/// </param>
+		/// <param name="oldSpine">
+		/// The spine of this node's descendents that have been changed in this delta.
+		/// The head is an immediate child of this instance.
+		/// The tail is the node that was removed or replaced.
+		/// </param>
+		/// <returns>An updated lookup table.</returns>
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<XmlNode> updatedSpine, ImmutableObjectGraph.ImmutableDeque<XmlNode> oldSpine) {
+			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
+				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
+				return lookupTableLazySentinal;
+			}
+		
+			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
+				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
+				// No changes were actually made.
+				return this.lookupTable;
+			}
+		
+			var lookupTable = this.lookupTable.ToBuilder();
+		
+			// Classify the kind of change that has just occurred.
+			var oldSpineTail = oldSpine.PeekTail();
+			var newSpineTail = updatedSpine.PeekTail();
+			ChangeKind changeKind;
+			bool childrenChanged = false;
+			if (updatedSpine.Count == oldSpine.Count) {
+				changeKind = ChangeKind.Replaced;
+				var oldSpineTailRecursive = oldSpineTail as XmlElement;
+				var newSpineTailRecursive = newSpineTail as XmlElement;
+				if (oldSpineTailRecursive != null || newSpineTailRecursive != null) {
+					// Children have changed if either before or after type didn't have a children property,
+					// or if both did, but the children actually changed.
+					childrenChanged = oldSpineTailRecursive == null || newSpineTailRecursive == null
+						|| !System.Object.ReferenceEquals(oldSpineTailRecursive.Children, newSpineTailRecursive.Children);
+				}
+			} else if (updatedSpine.Count > oldSpine.Count) {
+				changeKind = ChangeKind.Added;
+			} else // updatedSpine.Count < oldSpine.Count
+			{
+				changeKind = ChangeKind.Removed;
+			}
+		
+			// Trim the lookup table of any entries for nodes that have been removed from the tree.
+			if (childrenChanged || changeKind == ChangeKind.Removed) {
+				// We need to remove all descendents of the old tail node.
+				lookupTable.RemoveRange(oldSpineTail.GetSelfAndDescendents().Select(n => n.Identity));
+			} else if (changeKind == ChangeKind.Replaced && oldSpineTail.Identity != newSpineTail.Identity) {
+				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
+				// from our lookup table in this case.
+				lookupTable.Remove(oldSpineTail.Identity);
+		
+				// We also need to update any immediate children of the old spine tail
+				// because the identity of their parent has changed.
+				var oldSpineTailRecursive = oldSpineTail as XmlElement;
+				if (oldSpineTailRecursive != null) {
+					foreach (var child in oldSpineTailRecursive) {
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<XmlNode, int>(child, newSpineTail.Identity);
+					}
+				}
+			}
+		
+			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
+			XmlNode parent = this;
+			foreach (var node in updatedSpine) {
+				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
+				// assume no change is relevant and not apply the change.
+				lookupTable.Remove(node.Identity);
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<XmlNode, int>(node, parent.Identity));
+				parent = node;
+			}
+		
+			// There may be children on the added node that we should include.
+			if (childrenChanged || changeKind == ChangeKind.Added) {
+				var recursiveParent = parent as XmlElement;
+				if (recursiveParent != null) {
+					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
+				}
+			}
+		
+			return lookupTable.ToImmutable();
+		}
+		
+		public override System.Collections.Generic.IEnumerable<XmlNode> GetSelfAndDescendents() {
+			yield return this;
+			foreach (var child in this.Children) {
+				foreach (var descendent in child.GetSelfAndDescendents()) {
+					yield return descendent;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
+		/// </summary>
+		[Conditional("DEBUG")]
+		private void ValidateInternalIntegrityDebugOnly() {
+			this.ValidateInternalIntegrity();
+		}
+		
+		/// <summary>
+		/// Validates this node and all its descendents.
+		/// </summary>
+		protected internal void ValidateInternalIntegrity() {
+			// Each node id appears at most once.
+			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			foreach (var node in this.GetSelfAndDescendents()) {
+				if (!observedIdentities.Add(node.Identity)) {
+					throw new System.ApplicationException("Node ID " + node.Identity + " observed more than once in the tree.");
+				}
+			}
+		
+			// The lookup table (if any) accurately describes the contents of this tree.
+			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
+				// The table should have one entry for every *descendent* of this node (not this node itself).
+				int expectedCount = this.GetSelfAndDescendents().Count() - 1;
+				int actualCount = this.lookupTable.Count;
+				if (actualCount != expectedCount) {
+					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
+				}
+		
+				this.ValidateLookupTable(this.lookupTable);
+			}
+		}
+		
+		/// <summary>
+		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
+		/// </summary>
+		/// <param name="lookupTable">The lookup table being validated.</param>
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTable) {
+			const string ErrorString = "Lookup table integrity failure.";
+		
+			foreach (var child in this.Children) {
+				var entry = lookupTable[child.Identity];
+				if (!object.ReferenceEquals(entry.Key, child)) {
+					throw new System.ApplicationException(ErrorString);
+				}
+		
+				if (entry.Value != this.Identity) {
+					throw new System.ApplicationException(ErrorString);
+				}
+		
+				var recursiveChild = child as XmlElement;
+				if (recursiveChild != null) {
+					recursiveChild.ValidateLookupTable(lookupTable);
+				}
+			}
+		}
+		
+		
 		
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>());
 		
@@ -406,18 +586,24 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		private void InitializeLookup() {
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>)) {
 			this.inefficiencyLoad = 1;
-			foreach (var child in this.children)
-			{
-				var recursiveChild = child as XmlElement;
-				this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
+				this.lookupTable = priorLookupTable.Value;
+			} else {
+				foreach (var child in this.children)
+				{
+					var recursiveChild = child as XmlElement;
+					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				}
+		
+				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+					this.inefficiencyLoad = 1;
+					this.lookupTable = lookupTableLazySentinal;
+				}
 			}
 		
-			if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
-				this.inefficiencyLoad = 1;
-				this.lookupTable = lookupTableLazySentinal;
-			}
+			this.ValidateInternalIntegrityDebugOnly();
 		}
 		
 		/// <summary>
