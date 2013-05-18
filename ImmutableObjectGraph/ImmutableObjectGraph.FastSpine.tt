@@ -84,6 +84,33 @@ private void ContributeDescendentsToLookupTable(<#= templateType.NodeLookupTable
 	}
 }
 
+private <#= templateType.RecursiveParent.TypeName #> GetParent(<#= templateType.RecursiveType.TypeName #> descendent) {
+	if (this.LookupTable != null) {
+		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
+		if (this.LookupTable.TryGetValue(descendent.Identity, out lookupValue)) {
+			var parentIdentity = lookupValue.Value;
+			return (<#= templateType.RecursiveParent.TypeName #>)this.LookupTable[parentIdentity].Key;
+		}
+	} else {
+		// No lookup table means we have to aggressively search each child.
+		foreach (var child in this.Children) {
+			if (child.Identity.Equals(descendent.Identity)) {
+				return this;
+			}
+
+			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
+			if (recursiveChild != null) {
+				var childResult = recursiveChild.GetParent(descendent);
+				if (childResult != null) {
+					return childResult;
+				}
+			} 
+		}
+	}
+
+	return null;
+}
+
 internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RequiredIdentityField.TypeName #> descendent) {
 	var emptySpine = System.Collections.Immutable.ImmutableStack.Create<<#= templateType.RecursiveType.TypeName #>>();
 	if (this.Identity.Equals(descendent)) {

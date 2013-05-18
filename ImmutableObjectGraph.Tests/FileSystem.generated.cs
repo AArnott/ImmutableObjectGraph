@@ -719,11 +719,14 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public FileSystemDirectory AddDescendent(FileSystemEntry value, FileSystemDirectory parent) {
-			throw new System.NotImplementedException();
+			var newParent = parent.AddChildren(value);
+			return this.ReplaceDescendent(parent, newParent);
 		}
 		
 		public FileSystemDirectory RemoveDescendent(FileSystemEntry value) {
-			throw new System.NotImplementedException();
+			var parent = this.GetParent(value);
+			var newParent = parent.RemoveChildren(value);
+			return this.ReplaceDescendent(parent, newParent);
 		}
 		
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
@@ -1001,6 +1004,33 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
 				}
 			}
+		}
+		
+		private FileSystemDirectory GetParent(FileSystemEntry descendent) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(descendent.Identity, out lookupValue)) {
+					var parentIdentity = lookupValue.Value;
+					return (FileSystemDirectory)this.LookupTable[parentIdentity].Key;
+				}
+			} else {
+				// No lookup table means we have to aggressively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(descendent.Identity)) {
+						return this;
+					}
+		
+					var recursiveChild = child as FileSystemDirectory;
+					if (recursiveChild != null) {
+						var childResult = recursiveChild.GetParent(descendent);
+						if (childResult != null) {
+							return childResult;
+						}
+					} 
+				}
+			}
+		
+			return null;
 		}
 		
 		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(System.Int32 descendent) {

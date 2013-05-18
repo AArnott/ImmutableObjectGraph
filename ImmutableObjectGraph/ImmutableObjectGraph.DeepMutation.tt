@@ -17,11 +17,14 @@ public virtual System.Collections.Generic.IEnumerable<<#= templateType.TypeName 
 #>
 
 public <#= templateType.TypeName #> AddDescendent(<#= templateType.RecursiveType.TypeName #> value, <#= templateType.RecursiveParent.TypeName #> parent) {
-	throw new System.NotImplementedException();
+	var newParent = parent.Add<#= templateType.RecursiveField.NamePascalCase #>(value);
+	return this.ReplaceDescendent(parent, newParent);
 }
 
 public <#= templateType.TypeName #> RemoveDescendent(<#= templateType.RecursiveType.TypeName #> value) {
-	throw new System.NotImplementedException();
+	var parent = this.GetParent(value);
+	var newParent = parent.Remove<#= templateType.RecursiveField.NamePascalCase #>(value);
+	return this.ReplaceDescendent(parent, newParent);
 }
 
 public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.RecursiveType.TypeName #> current, <#= templateType.RecursiveType.TypeName #> replacement) {
