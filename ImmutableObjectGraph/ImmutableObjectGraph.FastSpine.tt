@@ -84,6 +84,7 @@ private void ContributeDescendentsToLookupTable(<#= templateType.NodeLookupTable
 	}
 }
 
+/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 private <#= templateType.RecursiveParent.TypeName #> GetParent(<#= templateType.RecursiveType.TypeName #> descendent) {
 	if (this.LookupTable != null) {
 		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
