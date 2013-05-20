@@ -156,6 +156,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root.AsRoot; }
 		}
 	
+		public System.Int32 Identity {
+			get { return this.greenNode.Identity; }
+		}
+	
 		public bool IsFileSystemFile {
 			get { return this.greenNode is FileSystemFile; }
 		}
@@ -460,6 +464,10 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public RootedFileSystemDirectory Root {
 			get { return this.root.AsRoot; }
+		}
+	
+		public System.Int32 Identity {
+			get { return this.greenNode.Identity; }
 		}
 	
 		public RootedFileSystemEntry AsFileSystemEntry {
@@ -1010,6 +1018,36 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
+		public FileSystemEntry Find(System.Int32 identity) {
+			if (this.Identity.Equals(identity)) {
+				return this;
+			}
+		
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
+					return lookupValue.Key;
+				}
+			} else {
+				// No lookup table means we have to aggressively search each child.
+				foreach (var child in this.Children) {
+					var recursiveChild = child as FileSystemDirectory;
+					if (recursiveChild != null) {
+						var result = recursiveChild.Find(identity);
+						if (result != null) {
+							return result;
+						}
+					} else {
+						if (child.Identity.Equals(identity)) {
+							return child;
+						}
+					}
+				}
+			}
+		
+			return null;
+		}
+		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		private FileSystemDirectory GetParent(FileSystemEntry descendent) {
 			if (this.LookupTable != null) {
@@ -1146,6 +1184,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root.AsRoot; }
 		}
 	
+		public System.Int32 Identity {
+			get { return this.greenNode.Identity; }
+		}
+	
 		public RootedFileSystemEntry AsFileSystemEntry {
 			get { return ((FileSystemEntry)this.greenNode).WithRoot(this.root); }
 		}
@@ -1195,6 +1237,11 @@ namespace ImmutableObjectGraph.Tests {
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public RootedFileSystemEntry Find(System.Int32 identity) {
+			var found = this.greenNode.Find(identity);
+			return found != null ? found.WithRoot(this.root) : default(RootedFileSystemEntry);
 		}
 	
 		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {

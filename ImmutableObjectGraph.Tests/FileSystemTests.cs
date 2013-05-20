@@ -153,6 +153,36 @@
 		}
 
 		[Fact]
+		public void FindWithLookupTable() {
+			var root = this.GetRootWithLookupTable();
+			Assert.Same(root, root.Find(root.Identity));
+			var immediateChild = root.Children.First();
+			Assert.Same(immediateChild, root.Find(immediateChild.Identity));
+			var grandchild = root.Children.OfType<FileSystemDirectory>().First().Children.First();
+			Assert.Same(grandchild, root.Find(grandchild.Identity));
+		}
+
+		[Fact]
+		public void Find() {
+			var root = this.root;
+			Assert.Same(root, root.Find(root.Identity));
+			var immediateChild = root.Children.First();
+			Assert.Same(immediateChild, root.Find(immediateChild.Identity));
+			var grandchild = root.Children.OfType<FileSystemDirectory>().First().Children.First();
+			Assert.Same(grandchild, root.Find(grandchild.Identity));
+		}
+
+		[Fact]
+		public void RedNodeFind() {
+			var root = this.root.AsRoot;
+			Assert.Equal(root, root.Find(root.Identity).AsFileSystemDirectory);
+			var immediateChild = root.Children.First();
+			Assert.Equal(immediateChild, root.Find(immediateChild.Identity));
+			var grandchild = root.Children.First(c => c.IsFileSystemDirectory).AsFileSystemDirectory.Children.First();
+			Assert.Equal(grandchild, root.Find(grandchild.Identity));
+		}
+
+		[Fact]
 		public void ModifyPropertyInLeafRewritesSpine() {
 			var redRoot = this.root.AsRoot;
 			var leaf = redRoot.Children.Last().AsFileSystemDirectory.Children.First().AsFileSystemFile;

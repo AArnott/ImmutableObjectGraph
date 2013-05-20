@@ -84,6 +84,36 @@ private void ContributeDescendentsToLookupTable(<#= templateType.NodeLookupTable
 	}
 }
 
+public <#= templateType.RecursiveType.TypeName #> Find(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+	if (this.Identity.Equals(identity)) {
+		return this;
+	}
+
+	if (this.LookupTable != null) {
+		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
+		if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
+			return lookupValue.Key;
+		}
+	} else {
+		// No lookup table means we have to aggressively search each child.
+		foreach (var child in this.Children) {
+			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
+			if (recursiveChild != null) {
+				var result = recursiveChild.Find(identity);
+				if (result != null) {
+					return result;
+				}
+			} else {
+				if (child.Identity.Equals(identity)) {
+					return child;
+				}
+			}
+		}
+	}
+
+	return null;
+}
+
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 private <#= templateType.RecursiveParent.TypeName #> GetParent(<#= templateType.RecursiveType.TypeName #> descendent) {
 	if (this.LookupTable != null) {

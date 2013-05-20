@@ -70,6 +70,10 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	public <#= redType.RecursiveParent.TypeName #> Root {
 		get { return this.root.AsRoot; }
 	}
+
+	public <#= templateType.RequiredIdentityField.TypeName #> Identity {
+		get { return this.greenNode.Identity; }
+	}
 <#
 			foreach (var descendent in redType.Descendents) {
 				var greenDescendent = ((RedMetaType)descendent).GreenType;
@@ -147,6 +151,11 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 <#
 			if (redType.IsRecursive) {
 #>
+
+	public <#=redType.RecursiveType.TypeName#> Find(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+		var found = this.greenNode.Find(identity);
+		return found != null ? found.WithRoot(this.root) : default(<#=redType.RecursiveType.TypeName#>);
+	}
 
 	public System.Collections.Generic.IEnumerator<<#=redType.RecursiveType.TypeName#>> GetEnumerator() {
 		return this.<#=redType.RecursiveField.NamePascalCase#>.GetEnumerator();

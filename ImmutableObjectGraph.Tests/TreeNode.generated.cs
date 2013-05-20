@@ -627,6 +627,36 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
+		public TreeNode Find(System.Int32 identity) {
+			if (this.Identity.Equals(identity)) {
+				return this;
+			}
+		
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
+					return lookupValue.Key;
+				}
+			} else {
+				// No lookup table means we have to aggressively search each child.
+				foreach (var child in this.Children) {
+					var recursiveChild = child as TreeNode;
+					if (recursiveChild != null) {
+						var result = recursiveChild.Find(identity);
+						if (result != null) {
+							return result;
+						}
+					} else {
+						if (child.Identity.Equals(identity)) {
+							return child;
+						}
+					}
+				}
+			}
+		
+			return null;
+		}
+		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		private TreeNode GetParent(TreeNode descendent) {
 			if (this.LookupTable != null) {
