@@ -335,6 +335,22 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<TreeNode> Children { get; set; }
 		}
 		
+		public TreeNode AddDescendent(TreeNode value, TreeNode parent) {
+			var spine = this.GetSpine(parent);
+			var newParent = parent.AddChildren(value);
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create(value, newParent);
+			return (TreeNode)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: false).Peek();
+		}
+		
+		public TreeNode RemoveDescendent(TreeNode value) {
+			var spine = this.GetSpine(value);
+			var parent = (TreeNode)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
+			var newParent = parent.RemoveChildren(value);
+		
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create((TreeNode)newParent);
+			return (TreeNode)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
+		}
+		
 		public TreeNode ReplaceDescendent(TreeNode current, TreeNode replacement) {
 			var spine = this.GetSpine(current);
 		
@@ -343,32 +359,31 @@ namespace ImmutableObjectGraph.Tests {
 				throw new System.ArgumentException("Old value not found");
 			}
 		
-			return (TreeNode)this.ReplaceDescendent(spine, replacement).Peek();
+			return (TreeNode)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
 		}
 		
-		private System.Collections.Immutable.ImmutableStack<TreeNode> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<TreeNode> spine, TreeNode replacement) {
+		private System.Collections.Immutable.ImmutableStack<TreeNode> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<TreeNode> spine, System.Collections.Immutable.ImmutableStack<TreeNode> replacementStackTip, bool spineIncludesDeletedElement) {
 			Debug.Assert(this == spine.Peek());
 			var remainingSpine = spine.Pop();
-			if (remainingSpine.IsEmpty) {
-				// This is the instance to be replaced.
-				return System.Collections.Immutable.ImmutableStack.Create(replacement);
+			if (remainingSpine.IsEmpty || (spineIncludesDeletedElement && remainingSpine.Pop().IsEmpty)) {
+				// This is the instance to be changed.
+				return replacementStackTip;
 			}
 		
 			System.Collections.Immutable.ImmutableStack<TreeNode> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as TreeNode;
 			if (recursiveChild != null) {
-				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacementStackTip, spineIncludesDeletedElement);
 			} else {
 				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
 				Debug.Assert(this.Children.Contains(child));
-				newChildSpine = System.Collections.Immutable.ImmutableStack.Create(replacement);
+				newChildSpine = replacementStackTip;
 			}
 		
 			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
 			var newSelf = this.WithChildren(newChildren);
-			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal)
-			{
+			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
 				// Our newly mutated self wants a lookup table. If we already have one we can use it,
 				// but it needs to be fixed up given the newly rewritten spine through our descendents.
 				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
@@ -610,6 +625,34 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
 				}
 			}
+		}
+		
+		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
+		private TreeNode GetParent(TreeNode descendent) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(descendent.Identity, out lookupValue)) {
+					var parentIdentity = lookupValue.Value;
+					return (TreeNode)this.LookupTable[parentIdentity].Key;
+				}
+			} else {
+				// No lookup table means we have to aggressively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(descendent.Identity)) {
+						return this;
+					}
+		
+					var recursiveChild = child as TreeNode;
+					if (recursiveChild != null) {
+						var childResult = recursiveChild.GetParent(descendent);
+						if (childResult != null) {
+							return childResult;
+						}
+					} 
+				}
+			}
+		
+			return null;
 		}
 		
 		internal System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(System.Int32 descendent) {

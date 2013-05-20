@@ -17,14 +17,19 @@ public virtual System.Collections.Generic.IEnumerable<<#= templateType.TypeName 
 #>
 
 public <#= templateType.TypeName #> AddDescendent(<#= templateType.RecursiveType.TypeName #> value, <#= templateType.RecursiveParent.TypeName #> parent) {
+	var spine = this.GetSpine(parent);
 	var newParent = parent.Add<#= templateType.RecursiveField.NamePascalCase #>(value);
-	return this.ReplaceDescendent(parent, newParent);
+	var newSpine = System.Collections.Immutable.ImmutableStack.Create(value, newParent);
+	return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: false).Peek();
 }
 
 public <#= templateType.TypeName #> RemoveDescendent(<#= templateType.RecursiveType.TypeName #> value) {
-	var parent = this.GetParent(value);
+	var spine = this.GetSpine(value);
+	var parent = (<#= templateType.RecursiveParent.TypeName #>)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
 	var newParent = parent.Remove<#= templateType.RecursiveField.NamePascalCase #>(value);
-	return this.ReplaceDescendent(parent, newParent);
+
+	var newSpine = System.Collections.Immutable.ImmutableStack.Create((<#= templateType.RecursiveType.TypeName #>)newParent);
+	return (<#= templateType.RecursiveParent.TypeName #>)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 }
 
 public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.RecursiveType.TypeName #> current, <#= templateType.RecursiveType.TypeName #> replacement) {
@@ -35,32 +40,31 @@ public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.Recursive
 		throw new System.ArgumentException("Old value not found");
 	}
 
-	return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, replacement).Peek();
+	return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
 }
 
-private System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> spine, <#= templateType.RecursiveType.TypeName #> replacement) {
+private System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> spine, System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> replacementStackTip, bool spineIncludesDeletedElement) {
 	Debug.Assert(this == spine.Peek());
 	var remainingSpine = spine.Pop();
-	if (remainingSpine.IsEmpty) {
-		// This is the instance to be replaced.
-		return System.Collections.Immutable.ImmutableStack.Create(replacement);
+	if (remainingSpine.IsEmpty || (spineIncludesDeletedElement && remainingSpine.Pop().IsEmpty)) {
+		// This is the instance to be changed.
+		return replacementStackTip;
 	}
 
 	System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> newChildSpine;
 	var child = remainingSpine.Peek();
 	var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
 	if (recursiveChild != null) {
-		newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+		newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacementStackTip, spineIncludesDeletedElement);
 	} else {
 		Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
 		Debug.Assert(this.<#= templateType.RecursiveField.NamePascalCase #>.Contains(child));
-		newChildSpine = System.Collections.Immutable.ImmutableStack.Create(replacement);
+		newChildSpine = replacementStackTip;
 	}
 
 	var newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(child, newChildSpine.Peek());
 	var newSelf = this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
-	if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal)
-	{
+	if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
 		// Our newly mutated self wants a lookup table. If we already have one we can use it,
 		// but it needs to be fixed up given the newly rewritten spine through our descendents.
 		newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));

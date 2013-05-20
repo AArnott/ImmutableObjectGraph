@@ -719,14 +719,19 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public FileSystemDirectory AddDescendent(FileSystemEntry value, FileSystemDirectory parent) {
+			var spine = this.GetSpine(parent);
 			var newParent = parent.AddChildren(value);
-			return this.ReplaceDescendent(parent, newParent);
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create(value, newParent);
+			return (FileSystemDirectory)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: false).Peek();
 		}
 		
 		public FileSystemDirectory RemoveDescendent(FileSystemEntry value) {
-			var parent = this.GetParent(value);
+			var spine = this.GetSpine(value);
+			var parent = (FileSystemDirectory)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
 			var newParent = parent.RemoveChildren(value);
-			return this.ReplaceDescendent(parent, newParent);
+		
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create((FileSystemEntry)newParent);
+			return (FileSystemDirectory)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 		}
 		
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
@@ -737,32 +742,31 @@ namespace ImmutableObjectGraph.Tests {
 				throw new System.ArgumentException("Old value not found");
 			}
 		
-			return (FileSystemDirectory)this.ReplaceDescendent(spine, replacement).Peek();
+			return (FileSystemDirectory)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
 		}
 		
-		private System.Collections.Immutable.ImmutableStack<FileSystemEntry> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<FileSystemEntry> spine, FileSystemEntry replacement) {
+		private System.Collections.Immutable.ImmutableStack<FileSystemEntry> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<FileSystemEntry> spine, System.Collections.Immutable.ImmutableStack<FileSystemEntry> replacementStackTip, bool spineIncludesDeletedElement) {
 			Debug.Assert(this == spine.Peek());
 			var remainingSpine = spine.Pop();
-			if (remainingSpine.IsEmpty) {
-				// This is the instance to be replaced.
-				return System.Collections.Immutable.ImmutableStack.Create(replacement);
+			if (remainingSpine.IsEmpty || (spineIncludesDeletedElement && remainingSpine.Pop().IsEmpty)) {
+				// This is the instance to be changed.
+				return replacementStackTip;
 			}
 		
 			System.Collections.Immutable.ImmutableStack<FileSystemEntry> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as FileSystemDirectory;
 			if (recursiveChild != null) {
-				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacementStackTip, spineIncludesDeletedElement);
 			} else {
 				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
 				Debug.Assert(this.Children.Contains(child));
-				newChildSpine = System.Collections.Immutable.ImmutableStack.Create(replacement);
+				newChildSpine = replacementStackTip;
 			}
 		
 			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
 			var newSelf = this.WithChildren(newChildren);
-			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal)
-			{
+			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
 				// Our newly mutated self wants a lookup table. If we already have one we can use it,
 				// but it needs to be fixed up given the newly rewritten spine through our descendents.
 				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
@@ -1006,6 +1010,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
+		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		private FileSystemDirectory GetParent(FileSystemEntry descendent) {
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;

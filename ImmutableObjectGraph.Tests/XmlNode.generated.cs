@@ -356,6 +356,22 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
 		}
 		
+		public XmlElement AddDescendent(XmlNode value, XmlElement parent) {
+			var spine = this.GetSpine(parent);
+			var newParent = parent.AddChildren(value);
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create(value, newParent);
+			return (XmlElement)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: false).Peek();
+		}
+		
+		public XmlElement RemoveDescendent(XmlNode value) {
+			var spine = this.GetSpine(value);
+			var parent = (XmlElement)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
+			var newParent = parent.RemoveChildren(value);
+		
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create((XmlNode)newParent);
+			return (XmlElement)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
+		}
+		
 		public XmlElement ReplaceDescendent(XmlNode current, XmlNode replacement) {
 			var spine = this.GetSpine(current);
 		
@@ -364,32 +380,31 @@ namespace ImmutableObjectGraph.Tests {
 				throw new System.ArgumentException("Old value not found");
 			}
 		
-			return (XmlElement)this.ReplaceDescendent(spine, replacement).Peek();
+			return (XmlElement)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
 		}
 		
-		private System.Collections.Immutable.ImmutableStack<XmlNode> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<XmlNode> spine, XmlNode replacement) {
+		private System.Collections.Immutable.ImmutableStack<XmlNode> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<XmlNode> spine, System.Collections.Immutable.ImmutableStack<XmlNode> replacementStackTip, bool spineIncludesDeletedElement) {
 			Debug.Assert(this == spine.Peek());
 			var remainingSpine = spine.Pop();
-			if (remainingSpine.IsEmpty) {
-				// This is the instance to be replaced.
-				return System.Collections.Immutable.ImmutableStack.Create(replacement);
+			if (remainingSpine.IsEmpty || (spineIncludesDeletedElement && remainingSpine.Pop().IsEmpty)) {
+				// This is the instance to be changed.
+				return replacementStackTip;
 			}
 		
 			System.Collections.Immutable.ImmutableStack<XmlNode> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as XmlElement;
 			if (recursiveChild != null) {
-				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacement);
+				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacementStackTip, spineIncludesDeletedElement);
 			} else {
 				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
 				Debug.Assert(this.Children.Contains(child));
-				newChildSpine = System.Collections.Immutable.ImmutableStack.Create(replacement);
+				newChildSpine = replacementStackTip;
 			}
 		
 			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
 			var newSelf = this.WithChildren(newChildren);
-			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal)
-			{
+			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
 				// Our newly mutated self wants a lookup table. If we already have one we can use it,
 				// but it needs to be fixed up given the newly rewritten spine through our descendents.
 				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
@@ -631,6 +646,34 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
 				}
 			}
+		}
+		
+		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
+		private XmlElement GetParent(XmlNode descendent) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(descendent.Identity, out lookupValue)) {
+					var parentIdentity = lookupValue.Value;
+					return (XmlElement)this.LookupTable[parentIdentity].Key;
+				}
+			} else {
+				// No lookup table means we have to aggressively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(descendent.Identity)) {
+						return this;
+					}
+		
+					var recursiveChild = child as XmlElement;
+					if (recursiveChild != null) {
+						var childResult = recursiveChild.GetParent(descendent);
+						if (childResult != null) {
+							return childResult;
+						}
+					} 
+				}
+			}
+		
+			return null;
 		}
 		
 		internal System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(System.Int32 descendent) {
