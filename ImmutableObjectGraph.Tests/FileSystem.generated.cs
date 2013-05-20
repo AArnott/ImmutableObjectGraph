@@ -12,21 +12,21 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using System.Linq;
 	using ImmutableObjectGraph;
-
+	
 	public interface IFileSystemEntry {
 		System.String PathSegment { get; }
 	}
-
+	
 	public abstract partial class FileSystemEntry : IFileSystemEntry {
-
+		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String pathSegment;
-
+	
 		private readonly System.Int32 identity;
-
+	
 		/// <summary>Initializes a new instance of the FileSystemEntry class.</summary>
 		protected FileSystemEntry(
 			System.Int32 identity,
@@ -35,46 +35,46 @@ namespace ImmutableObjectGraph.Tests {
 			this.identity = identity;
 			this.pathSegment = pathSegment;
 		}
-
+	
 		public System.String PathSegment {
 			get { return this.pathSegment; }
 		}
-
+		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public FileSystemEntry WithPathSegment(System.String value) {
 			if (value == this.PathSegment) {
 				return this;
 			}
-
+		
 			return this.With(pathSegment: value);
 		}
-
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public abstract FileSystemEntry With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
-
+	
 		protected internal System.Int32 Identity {
 			get { return this.identity; }
 		}
-
+	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
 		protected static System.Int32 NewIdentity() {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
-
+		
 		public RootedFileSystemEntry WithRoot(FileSystemDirectory root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
 				throw new System.ArgumentException("Root does not belong to the same tree.");
 			}
-
+		
 			return new RootedFileSystemEntry(this, root);
 		}
-
+		
 		public virtual System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
 			yield return this;
 		}
-
+		
 		public virtual FileSystemFile ToFileSystemFile(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			FileSystemFile that = this as FileSystemFile;
@@ -83,12 +83,12 @@ namespace ImmutableObjectGraph.Tests {
 					return that;
 				}
 			}
-
+		
 			return FileSystemFile.Create(
 				pathSegment: this.PathSegment,
 				attributes: attributes);
 		}
-
+		
 		public virtual FileSystemDirectory ToFileSystemDirectory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			FileSystemDirectory that = this as FileSystemDirectory;
@@ -97,96 +97,96 @@ namespace ImmutableObjectGraph.Tests {
 					return that;
 				}
 			}
-
+		
 			return FileSystemDirectory.Create(
 				pathSegment: this.PathSegment,
 				children: children);
 		}
-
+		
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
-
+		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private FileSystemEntry immutable;
-
+		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String pathSegment;
-
+		
 			internal Builder(FileSystemEntry immutable) {
 				this.immutable = immutable;
-
+		
 				this.pathSegment = immutable.PathSegment;
 			}
-
+		
 			public System.String PathSegment {
 				get {
 					return this.pathSegment;
 				}
-
+		
 				set {
 					this.pathSegment = value;
 				}
 			}
-
+		
 			public FileSystemEntry ToImmutable() {
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.PathSegment));
 			}
 		}
 	}
-
+	
 	public partial struct RootedFileSystemEntry : System.IEquatable<RootedFileSystemEntry> {
 		private readonly FileSystemEntry greenNode;
-
+	
 		private readonly FileSystemDirectory root;
-
+	
 		internal RootedFileSystemEntry(FileSystemEntry fileSystemEntry, FileSystemDirectory root) {
 			this.greenNode = fileSystemEntry;
 			this.root = root;
 		}
-
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get { throw new System.NotImplementedException(); }
 		}
-
+	
 		public RootedFileSystemDirectory Root {
 			get { return this.root.AsRoot; }
 		}
-
+	
 		public bool IsFileSystemFile {
 			get { return this.greenNode is FileSystemFile; }
 		}
-
+	
 		public RootedFileSystemFile AsFileSystemFile {
 			get { return ((FileSystemFile)this.greenNode).WithRoot(this.root); }
 		}
-
+	
 		public bool IsFileSystemDirectory {
 			get { return this.greenNode is FileSystemDirectory; }
 		}
-
+	
 		public RootedFileSystemDirectory AsFileSystemDirectory {
 			get { return ((FileSystemDirectory)this.greenNode).WithRoot(this.root); }
 		}
-
+	
 		public System.String PathSegment {
 			get { return this.greenNode.PathSegment; }
 		}
-
+		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemEntry WithPathSegment(System.String value) {
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-
+	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemEntry FileSystemEntry {
 			get { return this.greenNode; }
 		}
-
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedFileSystemEntry With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
@@ -195,7 +195,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-
+		
 		public RootedFileSystemFile ToFileSystemFile(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			var newGreenNode = this.greenNode.ToFileSystemFile(
@@ -203,7 +203,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-
+		
 		public RootedFileSystemDirectory ToFileSystemDirectory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
 			var newGreenNode = this.greenNode.ToFileSystemDirectory(
@@ -211,41 +211,41 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-
+	
 		public override bool Equals(object obj) {
 			if (obj is RootedFileSystemEntry) {
 				var other = (RootedFileSystemEntry)obj;
 				return this.Equals(other);
 			}
-
+	
 			return false;
 		}
-
+	
 		public bool Equals(RootedFileSystemEntry other) {
 			return this.greenNode == other.greenNode && this.root == other.root;
 		}
-
+	
 		public override int GetHashCode() {
 			return this.greenNode.GetHashCode();
 		}
-
+	
 		private RootedFileSystemEntry NewSpine(FileSystemEntry leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
 		}
 	}
-
+	
 	public interface IFileSystemFile : IFileSystemEntry {
 		System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; }
 	}
-
+	
 	public partial class FileSystemFile : FileSystemEntry, IFileSystemFile {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly FileSystemFile DefaultInstance = GetDefaultTemplate();
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableHashSet<System.String> attributes;
-
+	
 		/// <summary>Initializes a new instance of the FileSystemFile class.</summary>
 		protected FileSystemFile(
 			System.Int32 identity,
@@ -258,7 +258,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.attributes = attributes;
 			this.Validate();
 		}
-
+	
 		public static FileSystemFile Create(
 			System.String pathSegment,
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
@@ -268,71 +268,71 @@ namespace ImmutableObjectGraph.Tests {
 				attributes: attributes.GetValueOrDefault(DefaultInstance.Attributes),
 				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
-
+	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
 			get { return this.attributes; }
 		}
-
+		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public new FileSystemFile WithPathSegment(System.String value) {
 			return (FileSystemFile)base.WithPathSegment(value);
 		}
-
+		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
 		public FileSystemFile WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			if (value == this.Attributes) {
 				return this;
 			}
-
+		
 			return this.With(attributes: value);
 		}
-
+		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public FileSystemFile WithAttributes(params System.String[] values) {
 			return this.With(attributes: this.Attributes.ResetContents(values));
 		}
-
+		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public FileSystemFile WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
 			return this.With(attributes: this.Attributes.ResetContents(values));
 		}
-
+		
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public FileSystemFile AddAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
 			return this.With(attributes: this.Attributes.AddRange(values));
 		}
-
+		
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public FileSystemFile AddAttributes(params System.String[] values) {
 			return this.With(attributes: this.Attributes.AddRange(values));
 		}
-
+		
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
 		public FileSystemFile AddAttributes(System.String value) {
 			return this.With(attributes: this.Attributes.Add(value));
 		}
-
+		
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public FileSystemFile RemoveAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
 			return this.With(attributes: this.Attributes.RemoveRange(values));
 		}
-
+		
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public FileSystemFile RemoveAttributes(params System.String[] values) {
 			return this.With(attributes: this.Attributes.RemoveRange(values));
 		}
-
+		
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
 		public FileSystemFile RemoveAttributes(System.String value) {
 			return this.With(attributes: this.Attributes.Remove(value));
 		}
-
+		
 		/// <summary>Clears all elements from the Attributes collection.</summary>
 		public FileSystemFile RemoveAttributes() {
 			return this.With(attributes: this.Attributes.Clear());
 		}
-
-
+		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public override FileSystemEntry With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
@@ -340,7 +340,7 @@ namespace ImmutableObjectGraph.Tests {
 				pathSegment: pathSegment,
 				attributes: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>));
 		}
-
+			
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual FileSystemFile With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
@@ -351,15 +351,15 @@ namespace ImmutableObjectGraph.Tests {
 				attributes: attributes.GetValueOrDefault(this.Attributes),
 				identity: identity.GetValueOrDefault(this.Identity));
 		}
-
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private FileSystemFile WithFactory(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
-				(identity.IsDefined && identity.Value != this.Identity) ||
-				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) ||
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
 				(attributes.IsDefined && attributes.Value != this.Attributes)) {
 				return new FileSystemFile(
 					identity: identity.GetValueOrDefault(this.Identity),
@@ -369,71 +369,71 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		}
-
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
-
+	
 		/// <summary>Provides defaults for fields.</summary>
 		/// <param name="template">The struct to set default values on.</param>
 		static partial void CreateDefaultTemplate(ref Template template);
-
+	
 		/// <summary>Returns a newly instantiated FileSystemFile whose fields are initialized with default values.</summary>
 		private static FileSystemFile GetDefaultTemplate() {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new FileSystemFile(
-				default(System.Int32),
-				template.PathSegment,
+				default(System.Int32), 
+				template.PathSegment, 
 				template.Attributes);
 		}
-
+	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.String PathSegment { get; set; }
-
+	
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; set; }
 		}
-
+		
 		public new RootedFileSystemFile WithRoot(FileSystemDirectory root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
 				throw new System.ArgumentException("Root does not belong to the same tree.");
 			}
-
+		
 			return new RootedFileSystemFile(this, root);
 		}
-
+		
 		public new Builder ToBuilder() {
 			return new Builder(this);
 		}
-
+		
 		public new partial class Builder : FileSystemEntry.Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private FileSystemFile immutable;
-
+		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>.Builder> attributes;
-
+		
 			internal Builder(FileSystemFile immutable) : base(immutable) {
 				this.immutable = immutable;
-
+		
 			}
-
+		
 			public System.Collections.Immutable.ImmutableHashSet<System.String>.Builder Attributes {
 				get {
 					if (!this.attributes.IsDefined) {
 						this.attributes = this.immutable.attributes != null ? this.immutable.attributes.ToBuilder() : null;
 					}
-
+		
 					return this.attributes.Value;
 				}
-
+		
 				set {
 					this.attributes = value;
 				}
 			}
-
+		
 			public new FileSystemFile ToImmutable() {
 				var attributes = this.attributes.IsDefined ? (this.attributes.Value != null ? this.attributes.Value.ToImmutable() : null) : this.immutable.Attributes;
 				return this.immutable = this.immutable.With(
@@ -442,55 +442,55 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	}
-
+	
 	public partial struct RootedFileSystemFile : System.IEquatable<RootedFileSystemFile> {
 		private readonly FileSystemFile greenNode;
-
+	
 		private readonly FileSystemDirectory root;
-
+	
 		internal RootedFileSystemFile(FileSystemFile fileSystemFile, FileSystemDirectory root) {
 			this.greenNode = fileSystemFile;
 			this.root = root;
 		}
-
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get { throw new System.NotImplementedException(); }
 		}
-
+	
 		public RootedFileSystemDirectory Root {
 			get { return this.root.AsRoot; }
 		}
-
+	
 		public RootedFileSystemEntry AsFileSystemEntry {
 			get { return ((FileSystemEntry)this.greenNode).WithRoot(this.root); }
 		}
-
+	
 		public System.String PathSegment {
 			get { return this.greenNode.PathSegment; }
 		}
-
+		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemFile WithPathSegment(System.String value) {
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-
+	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
 			get { return this.greenNode.Attributes; }
 		}
-
+		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
 		public RootedFileSystemFile WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			var mutatedLeaf = this.greenNode.WithAttributes(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-
+	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemFile FileSystemFile {
 			get { return this.greenNode; }
 		}
-
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedFileSystemFile With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
@@ -501,7 +501,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-
+		
 		public RootedFileSystemDirectory ToFileSystemDirectory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
 			var newGreenNode = this.greenNode.ToFileSystemDirectory(
@@ -509,41 +509,41 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-
+	
 		public override bool Equals(object obj) {
 			if (obj is RootedFileSystemFile) {
 				var other = (RootedFileSystemFile)obj;
 				return this.Equals(other);
 			}
-
+	
 			return false;
 		}
-
+	
 		public bool Equals(RootedFileSystemFile other) {
 			return this.greenNode == other.greenNode && this.root == other.root;
 		}
-
+	
 		public override int GetHashCode() {
 			return this.greenNode.GetHashCode();
 		}
-
+	
 		private RootedFileSystemFile NewSpine(FileSystemFile leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
 		}
 	}
-
+	
 	public interface IFileSystemDirectory : IFileSystemEntry {
 		System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; }
 	}
-
+	
 	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntry> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly FileSystemDirectory DefaultInstance = GetDefaultTemplate();
-
+	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children;
-
+	
 		/// <summary>Initializes a new instance of the FileSystemDirectory class.</summary>
 		protected FileSystemDirectory(
 			System.Int32 identity,
@@ -558,7 +558,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.Validate();
 			this.InitializeLookup(lookupTable);
 		}
-
+	
 		public static FileSystemDirectory Create(
 			System.String pathSegment,
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
@@ -568,71 +568,71 @@ namespace ImmutableObjectGraph.Tests {
 				children: children.GetValueOrDefault(DefaultInstance.Children),
 				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
-
+	
 		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
 			get { return this.children; }
 		}
-
+		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public new FileSystemDirectory WithPathSegment(System.String value) {
 			return (FileSystemDirectory)base.WithPathSegment(value);
 		}
-
+		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public FileSystemDirectory WithChildren(System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> value) {
 			if (value == this.Children) {
 				return this;
 			}
-
+		
 			return this.With(children: value);
 		}
-
+		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public FileSystemDirectory WithChildren(params FileSystemEntry[] values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
-
+		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public FileSystemDirectory WithChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
-
+		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public FileSystemDirectory AddChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
-
+		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public FileSystemDirectory AddChildren(params FileSystemEntry[] values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
-
+		
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public FileSystemDirectory AddChildren(FileSystemEntry value) {
 			return this.With(children: this.Children.Add(value));
 		}
-
+		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
 			return this.With(children: this.Children.RemoveRange(values));
 		}
-
+		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren(params FileSystemEntry[] values) {
 			return this.With(children: this.Children.RemoveRange(values));
 		}
-
+		
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren(FileSystemEntry value) {
 			return this.With(children: this.Children.Remove(value));
 		}
-
+		
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren() {
 			return this.With(children: this.Children.Clear());
 		}
-
-
+		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public override FileSystemEntry With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
@@ -640,7 +640,7 @@ namespace ImmutableObjectGraph.Tests {
 				pathSegment: pathSegment,
 				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 		}
-
+			
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual FileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
@@ -651,15 +651,15 @@ namespace ImmutableObjectGraph.Tests {
 				children: children.GetValueOrDefault(this.Children),
 				identity: identity.GetValueOrDefault(this.Identity));
 		}
-
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private FileSystemDirectory WithFactory(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
-				(identity.IsDefined && identity.Value != this.Identity) ||
-				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) ||
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
 				(children.IsDefined && children.Value != this.Children)) {
 				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>) : Optional.For(this.lookupTable);
 				return new FileSystemDirectory(
@@ -671,80 +671,80 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		}
-
+	
 		public System.Collections.Generic.IEnumerator<FileSystemEntry> GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
-
+	
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
-
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
-
+	
 		/// <summary>Provides defaults for fields.</summary>
 		/// <param name="template">The struct to set default values on.</param>
 		static partial void CreateDefaultTemplate(ref Template template);
-
+	
 		/// <summary>Returns a newly instantiated FileSystemDirectory whose fields are initialized with default values.</summary>
 		private static FileSystemDirectory GetDefaultTemplate() {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new FileSystemDirectory(
-				default(System.Int32),
-				template.PathSegment,
+				default(System.Int32), 
+				template.PathSegment, 
 				template.Children);
 		}
-
+	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.String PathSegment { get; set; }
-
+	
 			internal System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; set; }
 		}
-
+		
 		public RootedFileSystemDirectory AsRoot {
 			get { return new RootedFileSystemDirectory(this, this); }
 		}
-
+		
 		public new RootedFileSystemDirectory WithRoot(FileSystemDirectory root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
 				throw new System.ArgumentException("Root does not belong to the same tree.");
 			}
-
+		
 			return new RootedFileSystemDirectory(this, root);
 		}
-
+		
 		public FileSystemDirectory AddDescendent(FileSystemEntry value, FileSystemDirectory parent) {
 			var spine = this.GetSpine(parent);
 			var newParent = parent.AddChildren(value);
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create(value, newParent);
 			return (FileSystemDirectory)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: false).Peek();
 		}
-
+		
 		public FileSystemDirectory RemoveDescendent(FileSystemEntry value) {
 			var spine = this.GetSpine(value);
 			var parent = (FileSystemDirectory)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
 			var newParent = parent.RemoveChildren(value);
-
+		
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create((FileSystemEntry)newParent);
 			return (FileSystemDirectory)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 		}
-
+		
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
 			var spine = this.GetSpine(current);
-
+		
 			if (spine.IsEmpty) {
 				// The descendent was not found.
 				throw new System.ArgumentException("Old value not found");
 			}
-
+		
 			return (FileSystemDirectory)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
 		}
-
+		
 		private System.Collections.Immutable.ImmutableStack<FileSystemEntry> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<FileSystemEntry> spine, System.Collections.Immutable.ImmutableStack<FileSystemEntry> replacementStackTip, bool spineIncludesDeletedElement) {
 			Debug.Assert(this == spine.Peek());
 			var remainingSpine = spine.Pop();
@@ -752,7 +752,7 @@ namespace ImmutableObjectGraph.Tests {
 				// This is the instance to be changed.
 				return replacementStackTip;
 			}
-
+		
 			System.Collections.Immutable.ImmutableStack<FileSystemEntry> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as FileSystemDirectory;
@@ -763,7 +763,7 @@ namespace ImmutableObjectGraph.Tests {
 				Debug.Assert(this.Children.Contains(child));
 				newChildSpine = replacementStackTip;
 			}
-
+		
 			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
 			var newSelf = this.WithChildren(newChildren);
 			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
@@ -772,16 +772,16 @@ namespace ImmutableObjectGraph.Tests {
 				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
 				newSelf.ValidateInternalIntegrityDebugOnly();
 			}
-
+		
 			return newChildSpine.Push(newSelf);
 		}
-
+		
 		private enum ChangeKind {
 			Added,
 			Removed,
 			Replaced,
 		}
-
+		
 		/// <summary>
 		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
 		/// </summary>
@@ -801,15 +801,15 @@ namespace ImmutableObjectGraph.Tests {
 				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
 				return lookupTableLazySentinal;
 			}
-
+		
 			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
 				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
 				// No changes were actually made.
 				return this.lookupTable;
 			}
-
+		
 			var lookupTable = this.lookupTable.ToBuilder();
-
+		
 			// Classify the kind of change that has just occurred.
 			var oldSpineTail = oldSpine.PeekTail();
 			var newSpineTail = updatedSpine.PeekTail();
@@ -831,7 +831,7 @@ namespace ImmutableObjectGraph.Tests {
 			{
 				changeKind = ChangeKind.Removed;
 			}
-
+		
 			// Trim the lookup table of any entries for nodes that have been removed from the tree.
 			if (childrenChanged || changeKind == ChangeKind.Removed) {
 				// We need to remove all descendents of the old tail node.
@@ -840,7 +840,7 @@ namespace ImmutableObjectGraph.Tests {
 				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
 				// from our lookup table in this case.
 				lookupTable.Remove(oldSpineTail.Identity);
-
+		
 				// We also need to update any immediate children of the old spine tail
 				// because the identity of their parent has changed.
 				var oldSpineTailRecursive = oldSpineTail as FileSystemDirectory;
@@ -850,7 +850,7 @@ namespace ImmutableObjectGraph.Tests {
 					}
 				}
 			}
-
+		
 			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
 			FileSystemEntry parent = this;
 			foreach (var node in updatedSpine) {
@@ -860,7 +860,7 @@ namespace ImmutableObjectGraph.Tests {
 				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<FileSystemEntry, int>(node, parent.Identity));
 				parent = node;
 			}
-
+		
 			// There may be children on the added node that we should include.
 			if (childrenChanged || changeKind == ChangeKind.Added) {
 				var recursiveParent = parent as FileSystemDirectory;
@@ -868,10 +868,10 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
 				}
 			}
-
+		
 			return lookupTable.ToImmutable();
 		}
-
+		
 		public override System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
 			yield return this;
 			foreach (var child in this.Children) {
@@ -880,7 +880,7 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		}
-
+		
 		/// <summary>
 		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
 		/// </summary>
@@ -888,7 +888,7 @@ namespace ImmutableObjectGraph.Tests {
 		private void ValidateInternalIntegrityDebugOnly() {
 			this.ValidateInternalIntegrity();
 		}
-
+		
 		/// <summary>
 		/// Validates this node and all its descendents.
 		/// </summary>
@@ -900,7 +900,7 @@ namespace ImmutableObjectGraph.Tests {
 					throw new System.ApplicationException("Node ID " + node.Identity + " observed more than once in the tree.");
 				}
 			}
-
+		
 			// The lookup table (if any) accurately describes the contents of this tree.
 			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
 				// The table should have one entry for every *descendent* of this node (not this node itself).
@@ -909,60 +909,60 @@ namespace ImmutableObjectGraph.Tests {
 				if (actualCount != expectedCount) {
 					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
 				}
-
+		
 				this.ValidateLookupTable(this.lookupTable);
 			}
 		}
-
+		
 		/// <summary>
 		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
 		/// </summary>
 		/// <param name="lookupTable">The lookup table being validated.</param>
 		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTable) {
 			const string ErrorString = "Lookup table integrity failure.";
-
+		
 			foreach (var child in this.Children) {
 				var entry = lookupTable[child.Identity];
 				if (!object.ReferenceEquals(entry.Key, child)) {
 					throw new System.ApplicationException(ErrorString);
 				}
-
+		
 				if (entry.Value != this.Identity) {
 					throw new System.ApplicationException(ErrorString);
 				}
-
+		
 				var recursiveChild = child as FileSystemDirectory;
 				if (recursiveChild != null) {
 					recursiveChild.ValidateLookupTable(lookupTable);
 				}
 			}
 		}
-
-
-
+		
+		
+		
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>());
-
+		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> lookupTable;
-
+		
 		private int inefficiencyLoad;
-
+		
 		/// <summary>
 		/// The maximum number of steps allowable for a search to be done among this node's children
 		/// before a faster lookup table will be built.
 		/// </summary>
 		private const int InefficiencyLoadThreshold = 16;
-
+		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> LookupTable {
 			get {
 				if (this.lookupTable == lookupTableLazySentinal) {
 					this.lookupTable = this.CreateLookupTable();
 					this.inefficiencyLoad = 1;
 				}
-
+		
 				return this.lookupTable;
 			}
 		}
-
+		
 		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>)) {
 			this.inefficiencyLoad = 1;
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
@@ -973,16 +973,16 @@ namespace ImmutableObjectGraph.Tests {
 					var recursiveChild = child as FileSystemDirectory;
 					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
 				}
-
+		
 				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
 					this.inefficiencyLoad = 1;
 					this.lookupTable = lookupTableLazySentinal;
 				}
 			}
-
+		
 			this.ValidateInternalIntegrityDebugOnly();
 		}
-
+		
 		/// <summary>
 		/// Creates the lookup table that will contain all this node's children.
 		/// </summary>
@@ -992,7 +992,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.ContributeDescendentsToLookupTable(table);
 			return table.ToImmutable();
 		}
-
+		
 		/// <summary>
 		/// Adds this node's children (recursively) to the lookup table.
 		/// </summary>
@@ -1009,7 +1009,8 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		}
-
+		
+		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		private FileSystemDirectory GetParent(FileSystemEntry descendent) {
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
@@ -1023,26 +1024,26 @@ namespace ImmutableObjectGraph.Tests {
 					if (child.Identity.Equals(descendent.Identity)) {
 						return this;
 					}
-
+		
 					var recursiveChild = child as FileSystemDirectory;
 					if (recursiveChild != null) {
 						var childResult = recursiveChild.GetParent(descendent);
 						if (childResult != null) {
 							return childResult;
 						}
-					}
+					} 
 				}
 			}
-
+		
 			return null;
 		}
-
+		
 		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(System.Int32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<FileSystemEntry>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
 			}
-
+		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
@@ -1067,51 +1068,51 @@ namespace ImmutableObjectGraph.Tests {
 					} else if (child.Identity.Equals(descendent)) {
 						spine = spine.Push(child);
 					}
-
+		
 					if (!spine.IsEmpty) {
 						return spine.Push(this);
 					}
 				}
 			}
-
+		
 			// The descendent is not in this sub-tree.
 			return emptySpine;
 		}
-
+		
 		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(FileSystemEntry descendent) {
 			return this.GetSpine(descendent.Identity);
 		}
-
+		
 		public new Builder ToBuilder() {
 			return new Builder(this);
 		}
-
+		
 		public new partial class Builder : FileSystemEntry.Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private FileSystemDirectory immutable;
-
+		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>.Builder> children;
-
+		
 			internal Builder(FileSystemDirectory immutable) : base(immutable) {
 				this.immutable = immutable;
-
+		
 			}
-
+		
 			public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>.Builder Children {
 				get {
 					if (!this.children.IsDefined) {
 						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
 					}
-
+		
 					return this.children.Value;
 				}
-
+		
 				set {
 					this.children = value;
 				}
 			}
-
+		
 			public new FileSystemDirectory ToImmutable() {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable.With(
@@ -1120,71 +1121,71 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	}
-
+	
 	public partial struct RootedFileSystemDirectory : System.IEquatable<RootedFileSystemDirectory> {
 		private static readonly System.Func<RootedFileSystemEntry, FileSystemEntry> toUnrooted = r => r.FileSystemEntry;
 		private static readonly System.Func<FileSystemEntry, FileSystemDirectory, RootedFileSystemEntry> toRooted = (u, r) => u.WithRoot(r);
-
+	
 		private readonly FileSystemDirectory greenNode;
-
+	
 		private readonly FileSystemDirectory root;
 		private Optional<Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>> children;
-
+	
 		internal RootedFileSystemDirectory(FileSystemDirectory fileSystemDirectory, FileSystemDirectory root) {
 			this.greenNode = fileSystemDirectory;
 			this.root = root;
 			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>>);
 		}
-
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get { throw new System.NotImplementedException(); }
 		}
-
+	
 		public RootedFileSystemDirectory Root {
 			get { return this.root.AsRoot; }
 		}
-
+	
 		public RootedFileSystemEntry AsFileSystemEntry {
 			get { return ((FileSystemEntry)this.greenNode).WithRoot(this.root); }
 		}
-
+	
 		public bool IsRoot {
 			get { return this.root == this.greenNode; }
 		}
-
+	
 		public System.String PathSegment {
 			get { return this.greenNode.PathSegment; }
 		}
-
+		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemDirectory WithPathSegment(System.String value) {
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-
+	
 		public System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> Children {
 			get {
 				if (!this.children.IsDefined) {
 					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
 				}
-
+	
 				return this.children.Value;
 			}
 		}
-
+		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> value) {
 			var adapter = (Adapters.IImmutableCollectionAdapter<FileSystemEntry>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
-
+	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemDirectory FileSystemDirectory {
 			get { return this.greenNode; }
 		}
-
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedFileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
@@ -1195,11 +1196,11 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-
+	
 		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {
 			return this.Children.GetEnumerator();
 		}
-
+		
 		public RootedFileSystemFile ToFileSystemFile(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			var newGreenNode = this.greenNode.ToFileSystemFile(
@@ -1207,24 +1208,24 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-
+	
 		public override bool Equals(object obj) {
 			if (obj is RootedFileSystemDirectory) {
 				var other = (RootedFileSystemDirectory)obj;
 				return this.Equals(other);
 			}
-
+	
 			return false;
 		}
-
+	
 		public bool Equals(RootedFileSystemDirectory other) {
 			return this.greenNode == other.greenNode && this.root == other.root;
 		}
-
+	
 		public override int GetHashCode() {
 			return this.greenNode.GetHashCode();
 		}
-
+	
 		private RootedFileSystemDirectory NewSpine(FileSystemDirectory leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
