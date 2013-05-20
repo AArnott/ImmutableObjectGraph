@@ -70,6 +70,17 @@
 		}
 
 		[Fact]
+		public void AddDescendentWithLookupTableFixup() {
+			var root = this.GetRootWithLookupTable();
+			FileSystemDirectory subdir = root.OfType<FileSystemDirectory>().First();
+			FileSystemFile newLeaf = FileSystemFile.Create("added.txt");
+			FileSystemDirectory updatedRoot = root.AddDescendent(newLeaf, subdir);
+			Assert.Equal(root.Identity, updatedRoot.Identity);
+			FileSystemDirectory updatedSubdir = updatedRoot.OfType<FileSystemDirectory>().First();
+			Assert.True(updatedSubdir.Contains(newLeaf));
+		}
+
+		[Fact]
 		public void AddDescendent() {
 			FileSystemDirectory subdir = this.root.OfType<FileSystemDirectory>().First();
 			FileSystemFile newLeaf = FileSystemFile.Create("added.txt");
@@ -77,6 +88,17 @@
 			Assert.Equal(this.root.Identity, updatedRoot.Identity);
 			FileSystemDirectory updatedSubdir = updatedRoot.OfType<FileSystemDirectory>().First();
 			Assert.True(updatedSubdir.Contains(newLeaf));
+		}
+
+		[Fact]
+		public void RemoveDescendentWithLookupTableFixup() {
+			var root = this.GetRootWithLookupTable();
+			FileSystemDirectory subdir = root.OfType<FileSystemDirectory>().First(d => d.Children.OfType<FileSystemFile>().Any());
+			FileSystemFile fileUnderSubdir = subdir.Children.OfType<FileSystemFile>().First();
+			FileSystemDirectory updatedRoot = root.RemoveDescendent(fileUnderSubdir);
+			Assert.Equal(root.Identity, updatedRoot.Identity);
+			FileSystemDirectory updatedSubdir = (FileSystemDirectory)updatedRoot.Single(c => c.Identity == subdir.Identity);
+			Assert.False(updatedSubdir.Contains(fileUnderSubdir));
 		}
 
 		[Fact]
