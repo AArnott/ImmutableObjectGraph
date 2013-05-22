@@ -258,6 +258,14 @@
 			var modifiedRoot = root.WithPathSegment("d:");
 		}
 
+		[Fact]
+		public void RedNodeRecursiveParentCreate() {
+			var drive = RootedFileSystemDirectory.Create("c:");
+			Assert.Equal("c:", drive.PathSegment);
+			Assert.True(drive.IsRoot);
+			Assert.Equal(drive, drive.Root);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);

@@ -1239,6 +1239,15 @@ namespace ImmutableObjectGraph.Tests {
 			return newGreenNode.WithRoot(newRoot);
 		}
 	
+		public static RootedFileSystemDirectory Create(
+			System.String pathSegment,
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
+			var greenNode = FileSystemDirectory.Create(
+				pathSegment: pathSegment,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+			return greenNode.AsRoot;
+		}
+	
 		public RootedFileSystemEntry Find(System.Int32 identity) {
 			var found = this.greenNode.Find(identity);
 			return found != null ? found.WithRoot(this.root) : default(RootedFileSystemEntry);
