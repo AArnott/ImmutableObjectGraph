@@ -348,6 +348,13 @@
 			}
 		}
 
+		[Fact]
+		public void FullPath() {
+			Assert.Equal(@"c:\", this.root.AsRoot.FullPath);
+			Assert.Equal(@"c:\a.cs", this.root.AsRoot.Children.First().FullPath);
+			Assert.Equal(@"c:\c\d.cs", this.root.AsRoot.Children.Last().AsFileSystemDirectory.Children.Single().FullPath);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
@@ -373,30 +380,65 @@
 	}
 
 	partial struct RootedFileSystemFile {
+		public string FullPath {
+			get {
+				var path = new StringBuilder(this.PathSegment);
+				var parent = this.Parent;
+				while (parent.FileSystemDirectory != null) {
+					path.Insert(0, Path.DirectorySeparatorChar);
+					path.Insert(0, parent.PathSegment);
+					parent = parent.Parent;
+				}
+
+				return path.ToString();
+			}
+		}
+
 		public override string ToString() {
-			return this.PathSegment;
+			return this.FullPath;
+		}
+	}
+
+	partial struct RootedFileSystemDirectory {
+		public string FullPath {
+			get {
+				var path = new StringBuilder(this.PathSegment);
+				path.Append(Path.DirectorySeparatorChar);
+				var parent = this.Parent;
+				while (parent.FileSystemDirectory != null) {
+					path.Insert(0, Path.DirectorySeparatorChar);
+					path.Insert(0, parent.PathSegment);
+				}
+
+				return path.ToString();
+			}
+		}
+
+		public override string ToString() {
+			return this.FullPath;
+		}
+	}
+
+	partial struct RootedFileSystemEntry {
+		public string FullPath {
+			get {
+				return this.IsFileSystemDirectory ? this.AsFileSystemDirectory.FullPath : this.AsFileSystemFile.FullPath;
+			}
+		}
+
+		public override string ToString() {
+			return this.FullPath;
 		}
 	}
 
 	[DebuggerDisplay("{FullPath}")]
 	partial class FileSystemDirectory {
-		public override string FullPath {
-			get { return base.FullPath + Path.DirectorySeparatorChar; }
-		}
-
 		static partial void CreateDefaultTemplate(ref FileSystemDirectory.Template template) {
 			template.Children = ImmutableSortedSet.Create<FileSystemEntry>(SiblingComparer.Instance);
 		}
 	}
 
 	partial class FileSystemEntry {
-		public virtual string FullPath {
-			get {
-				// TODO: when we get properties that point back to the root, fix this to include the full path.
-				return this.PathSegment;
-			}
-		}
-
 		public class SiblingComparer : IComparer<FileSystemEntry> {
 			public static SiblingComparer Instance = new SiblingComparer();
 
