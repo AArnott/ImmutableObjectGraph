@@ -173,6 +173,12 @@
 		}
 
 		[Fact]
+		public void FindFailure() {
+			FileSystemEntry missing = this.root.Find(1025890195);
+			Assert.Null(missing);
+		}
+
+		[Fact]
 		public void RedNodeFind() {
 			var root = this.root.AsRoot;
 			Assert.Equal(root, root.Find(root.Identity).AsFileSystemDirectory);
@@ -180,6 +186,50 @@
 			Assert.Equal(immediateChild, root.Find(immediateChild.Identity));
 			var grandchild = root.Children.First(c => c.IsFileSystemDirectory).AsFileSystemDirectory.Children.First();
 			Assert.Equal(grandchild, root.Find(grandchild.Identity));
+		}
+
+		[Fact]
+		public void RedNodeFindFailure() {
+			var root = this.root.AsRoot;
+			RootedFileSystemEntry missing = root.Find(1082591875);
+			Assert.Null(missing.FileSystemEntry);
+		}
+
+		[Fact]
+		public void DefaultRootedFileSystemEntry() {
+			var missing = default(RootedFileSystemEntry);
+			Assert.False(missing.IsFileSystemFile);
+			Assert.False(missing.IsFileSystemDirectory);
+			Assert.Null(missing.FileSystemEntry);
+			Assert.Null(missing.Root.FileSystemDirectory);
+			Assert.Null(missing.AsFileSystemFile.FileSystemFile);
+			Assert.Null(missing.AsFileSystemDirectory.FileSystemDirectory);
+
+			Assert.Throws<InvalidOperationException>(() => missing.Identity);
+			Assert.Throws<InvalidOperationException>(() => missing.PathSegment);
+			Assert.Throws<InvalidOperationException>(() => missing.With());
+			Assert.Throws<InvalidOperationException>(() => missing.WithPathSegment("q"));
+
+			Assert.True(missing.Equals(missing));
+			missing.GetHashCode(); // we don't care what the result is, so long as it doesn't throw.
+		}
+
+		[Fact]
+		public void DefaultRootedFileSystemDirectory() {
+			var missing = default(RootedFileSystemDirectory);
+			Assert.Throws<InvalidOperationException>(() => missing.WithChildren(Enumerable.Empty<RootedFileSystemEntry>()));
+			Assert.Throws<InvalidOperationException>(() => missing.AddChildren(Enumerable.Empty<RootedFileSystemEntry>()));
+			Assert.Throws<InvalidOperationException>(() => missing.RemoveChildren(Enumerable.Empty<RootedFileSystemEntry>()));
+			Assert.Throws<InvalidOperationException>(() => missing.Children);
+		}
+
+		[Fact]
+		public void DefaultRootedFileSystemFile() {
+			var missing = default(RootedFileSystemFile);
+			Assert.Throws<InvalidOperationException>(() => missing.WithAttributes(Enumerable.Empty<string>()));
+			Assert.Throws<InvalidOperationException>(() => missing.AddAttributes(Enumerable.Empty<string>()));
+			Assert.Throws<InvalidOperationException>(() => missing.RemoveAttributes(Enumerable.Empty<string>()));
+			Assert.Throws<InvalidOperationException>(() => missing.Attributes);
 		}
 
 		[Fact]

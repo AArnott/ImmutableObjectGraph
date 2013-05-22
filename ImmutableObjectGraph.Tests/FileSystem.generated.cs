@@ -153,11 +153,14 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemDirectory Root {
-			get { return this.root.AsRoot; }
+			get { return this.root != null ? this.root.AsRoot : default(RootedFileSystemDirectory); }
 		}
 	
 		public System.Int32 Identity {
-			get { return this.greenNode.Identity; }
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
 		}
 	
 		public bool IsFileSystemFile {
@@ -165,7 +168,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemFile AsFileSystemFile {
-			get { return ((FileSystemFile)this.greenNode).WithRoot(this.root); }
+			get { return this.greenNode != null ? ((FileSystemFile)this.greenNode).WithRoot(this.root) : default(RootedFileSystemFile); }
 		}
 	
 		public bool IsFileSystemDirectory {
@@ -173,15 +176,19 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemDirectory AsFileSystemDirectory {
-			get { return ((FileSystemDirectory)this.greenNode).WithRoot(this.root); }
+			get { return this.greenNode != null ? ((FileSystemDirectory)this.greenNode).WithRoot(this.root) : default(RootedFileSystemDirectory); }
 		}
 	
 		public System.String PathSegment {
-			get { return this.greenNode.PathSegment; }
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.PathSegment;
+			}
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemEntry WithPathSegment(System.String value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -194,6 +201,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedFileSystemEntry With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			this.ThrowIfDefault();
 			var newGreenNode = this.greenNode.With(
 				pathSegment: pathSegment);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
@@ -230,12 +238,19 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public override int GetHashCode() {
-			return this.greenNode.GetHashCode();
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
 		}
 	
 		private RootedFileSystemEntry NewSpine(FileSystemEntry leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing FileSystemEntry.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
 		}
 	}
 	
@@ -463,87 +478,107 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemDirectory Root {
-			get { return this.root.AsRoot; }
+			get { return this.root != null ? this.root.AsRoot : default(RootedFileSystemDirectory); }
 		}
 	
 		public System.Int32 Identity {
-			get { return this.greenNode.Identity; }
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
 		}
 	
 		public RootedFileSystemEntry AsFileSystemEntry {
-			get { return ((FileSystemEntry)this.greenNode).WithRoot(this.root); }
+			get { return this.greenNode != null ? ((FileSystemEntry)this.greenNode).WithRoot(this.root) : default(RootedFileSystemEntry); }
 		}
 	
 		public System.String PathSegment {
-			get { return this.greenNode.PathSegment; }
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.PathSegment;
+			}
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemFile WithPathSegment(System.String value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
-			get { return this.greenNode.Attributes; }
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Attributes;
+			}
 		}
 		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
 		public RootedFileSystemFile WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithAttributes(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public RootedFileSystemFile WithAttributes(params System.String[] values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithAttributes(values);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public RootedFileSystemFile WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithAttributes(values);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public RootedFileSystemFile AddAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddAttributes(values);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public RootedFileSystemFile AddAttributes(params System.String[] values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddAttributes(values);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
 		public RootedFileSystemFile AddAttributes(System.String value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddAttributes(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public RootedFileSystemFile RemoveAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveAttributes(values);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public RootedFileSystemFile RemoveAttributes(params System.String[] values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveAttributes(values);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
 		public RootedFileSystemFile RemoveAttributes(System.String value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveAttributes(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Clears all elements from the Attributes collection.</summary>
 		public RootedFileSystemFile RemoveAttributes() {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveAttributes();
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -557,6 +592,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemFile With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			this.ThrowIfDefault();
 			var newGreenNode = this.greenNode.With(
 				pathSegment: pathSegment,
 				attributes: attributes);
@@ -586,12 +622,19 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public override int GetHashCode() {
-			return this.greenNode.GetHashCode();
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
 		}
 	
 		private RootedFileSystemFile NewSpine(FileSystemFile leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing FileSystemFile.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
 		}
 	}
 	
@@ -1235,15 +1278,18 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemDirectory Root {
-			get { return this.root.AsRoot; }
+			get { return this.root != null ? this.root.AsRoot : default(RootedFileSystemDirectory); }
 		}
 	
 		public System.Int32 Identity {
-			get { return this.greenNode.Identity; }
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
 		}
 	
 		public RootedFileSystemEntry AsFileSystemEntry {
-			get { return ((FileSystemEntry)this.greenNode).WithRoot(this.root); }
+			get { return this.greenNode != null ? ((FileSystemEntry)this.greenNode).WithRoot(this.root) : default(RootedFileSystemEntry); }
 		}
 	
 		public bool IsRoot {
@@ -1251,11 +1297,15 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public System.String PathSegment {
-			get { return this.greenNode.PathSegment; }
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.PathSegment;
+			}
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public RootedFileSystemDirectory WithPathSegment(System.String value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -1263,6 +1313,7 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> Children {
 			get {
 				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
 					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
 				}
 	
@@ -1272,6 +1323,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> value) {
+			this.ThrowIfDefault();
 			var adapter = (Adapters.IImmutableCollectionAdapter<FileSystemEntry>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
@@ -1279,54 +1331,63 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedFileSystemDirectory WithChildren(params RootedFileSystemEntry[] values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.FileSystemEntry));
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedFileSystemDirectory WithChildren(System.Collections.Generic.IEnumerable<RootedFileSystemEntry> values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.FileSystemEntry));
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedFileSystemDirectory AddChildren(System.Collections.Generic.IEnumerable<RootedFileSystemEntry> values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.FileSystemEntry));
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedFileSystemDirectory AddChildren(params RootedFileSystemEntry[] values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.FileSystemEntry));
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public RootedFileSystemDirectory AddChildren(RootedFileSystemEntry value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.FileSystemEntry);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedFileSystemDirectory RemoveChildren(System.Collections.Generic.IEnumerable<RootedFileSystemEntry> values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.FileSystemEntry));
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedFileSystemDirectory RemoveChildren(params RootedFileSystemEntry[] values) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.FileSystemEntry));
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public RootedFileSystemDirectory RemoveChildren(RootedFileSystemEntry value) {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value.FileSystemEntry);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public RootedFileSystemDirectory RemoveChildren() {
+			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren();
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -1340,6 +1401,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
+			this.ThrowIfDefault();
 			var newGreenNode = this.greenNode.With(
 				pathSegment: pathSegment,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
@@ -1387,12 +1449,19 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public override int GetHashCode() {
-			return this.greenNode.GetHashCode();
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
 		}
 	
 		private RootedFileSystemDirectory NewSpine(FileSystemDirectory leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing FileSystemDirectory.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
 		}
 	}
 }

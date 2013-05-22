@@ -68,11 +68,14 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	}
 
 	public <#= redType.RecursiveParent.TypeName #> Root {
-		get { return this.root.AsRoot; }
+		get { return this.root != null ? this.root.AsRoot : default(<#= redType.RecursiveParent.TypeName #>); }
 	}
 
 	public <#= templateType.RequiredIdentityField.TypeName #> Identity {
-		get { return this.greenNode.Identity; }
+		get {
+			this.ThrowIfDefault();
+			return this.greenNode.Identity;
+		}
 	}
 <#
 			foreach (var descendent in redType.Descendents) {
@@ -84,7 +87,7 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	}
 
 	public <#=descendent.TypeName#> As<#=greenDescendent.TypeName#> {
-		get { return ((<#=greenDescendent.TypeName#>)this.greenNode).WithRoot(this.root); }
+		get { return this.greenNode != null ? ((<#=greenDescendent.TypeName#>)this.greenNode).WithRoot(this.root) : default(<#=descendent.TypeName#>); }
 	}
 <#
 			}
@@ -94,7 +97,7 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 #>
 
 	public <#=ancestor.TypeName#> As<#=greenAncestor.TypeName#> {
-		get { return ((<#=greenAncestor.TypeName#>)this.greenNode).WithRoot(this.root); }
+		get { return this.greenNode != null ? ((<#=greenAncestor.TypeName#>)this.greenNode).WithRoot(this.root) : default(<#=ancestor.TypeName#>); }
 	}
 <#
 			}
@@ -115,6 +118,7 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	public System.Collections.Immutable.IImmutableSet<<#= field.ElementTypeName #>> <#= field.NamePascalCase #> {
 		get {
 			if (!this.<#= field.NameCamelCase #>.IsDefined) {
+				this.ThrowIfDefault();
 				this.<#= field.NameCamelCase #> = Optional.For(Adapter.Create(this.greenNode.<#= field.NamePascalCase #>, toRooted, toUnrooted, this.root));
 			}
 
@@ -126,7 +130,10 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 #>
 
 	public <#= field.TypeName #> <#= field.NamePascalCase #> {
-		get { return this.greenNode.<#= field.NamePascalCase #>; }
+		get {
+			this.ThrowIfDefault();
+			return this.greenNode.<#= field.NamePascalCase #>;
+		}
 	}
 <#
 				}
@@ -144,6 +151,7 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	public <#= redType.TypeName #> With(<#
 		WriteParameters(redType.AllFields, ParameterStyle.Optional);
 #>) {
+		this.ThrowIfDefault();
 		var newGreenNode = this.greenNode.With(<# WriteArguments(redType.AllFields, ArgSource.Argument); #>);
 		var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 		return newGreenNode.WithRoot(newRoot);
@@ -185,12 +193,19 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	}
 
 	public override int GetHashCode() {
-		return this.greenNode.GetHashCode();
+		return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
 	}
 
 	private <#= redType.TypeName #> NewSpine(<#= redType.GreenType.TypeName #> leaf) {
 		var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 		return leaf.WithRoot(newRoot);
+	}
+
+	/// <summary>Throws an exception if this struct does not have a backing <#= redType.GreenType.TypeName #>.</summary>
+	private void ThrowIfDefault() {
+		if (this.greenNode == null) {
+			throw new System.InvalidOperationException();
+		}
 	}
 }
 <#
