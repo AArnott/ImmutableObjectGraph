@@ -269,7 +269,7 @@ protected class RedMetaType : MetaType {
 			: base(field, declaringType) {
 		}
 
-		public MetaField GreenField {
+		public override MetaField GreenField {
 			get { return ((RedMetaType)this.DeclaringType).GreenType.LocalFields.Single(f => f.Field == this.Field); }
 		}
 

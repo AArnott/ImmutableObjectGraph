@@ -266,6 +266,18 @@
 			Assert.Equal(drive, drive.Root);
 		}
 
+		[Fact]
+		public void RedNodeNonRecursiveCollectionHelpers() {
+			var redRoot = this.root.AsRoot;
+			var redFile = redRoot.Children.First(c => c.IsFileSystemFile).AsFileSystemFile;
+			var modifiedFile = redFile.AddAttributes("three", "new", "attributes");
+			Assert.Equal(3, modifiedFile.Attributes.Count);
+			Assert.Equal(redRoot.Identity, modifiedFile.Root.Identity);
+
+			// Verify that the root of the new file points to the modified file.
+			Assert.Equal(3, modifiedFile.Root.Find(modifiedFile.Identity).AsFileSystemFile.Attributes.Count);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);

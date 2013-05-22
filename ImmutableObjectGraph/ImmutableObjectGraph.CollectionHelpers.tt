@@ -50,5 +50,68 @@ public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCas
 
 <#
 	} // if field type is a collection
-}; // event handler
+}; // green field event handler
+
+this.HandleRedField += (templateType, field) => {
+	if (field.IsCollection) {
+		var translateOne = field.GreenField.TypeName != field.TypeName ? "." + field.GreenField.ElementTypeName : "";
+		var translateCollection = field.GreenField.TypeName != field.TypeName ? (".Select(r => r" + translateOne + ")") : "";
+#>
+
+/// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
+public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
+public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(value<#= translateOne #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+	var mutatedLeaf = this.greenNode.Remove<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+	var mutatedLeaf = this.greenNode.Remove<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+	var mutatedLeaf = this.greenNode.Remove<#= field.NamePascalCase #>(value<#= translateOne #>);
+	return this.NewSpine(mutatedLeaf);
+}
+
+/// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>() {
+	var mutatedLeaf = this.greenNode.Remove<#= field.NamePascalCase #>();
+	return this.NewSpine(mutatedLeaf);
+}
+<#
+	} // if field type is a collection
+}; // red field event handler
 #>

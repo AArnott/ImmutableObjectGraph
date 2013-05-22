@@ -395,6 +395,10 @@ protected class MetaType {
 			get { return this.Field.FieldType; }
 		}
 
+		public virtual MetaField GreenField {
+			get { return this; }
+		}
+
 		public MetaType DeclaringType { get; private set; }
 
 		public string NamePascalCase {

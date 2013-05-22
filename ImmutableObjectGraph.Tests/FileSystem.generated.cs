@@ -493,6 +493,60 @@ namespace ImmutableObjectGraph.Tests {
 			var mutatedLeaf = this.greenNode.WithAttributes(value);
 			return this.NewSpine(mutatedLeaf);
 		}
+		
+		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
+		public RootedFileSystemFile WithAttributes(params System.String[] values) {
+			var mutatedLeaf = this.greenNode.WithAttributes(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
+		public RootedFileSystemFile WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			var mutatedLeaf = this.greenNode.WithAttributes(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Attributes collection.</summary>
+		public RootedFileSystemFile AddAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			var mutatedLeaf = this.greenNode.AddAttributes(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Attributes collection.</summary>
+		public RootedFileSystemFile AddAttributes(params System.String[] values) {
+			var mutatedLeaf = this.greenNode.AddAttributes(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Attributes collection.</summary>
+		public RootedFileSystemFile AddAttributes(System.String value) {
+			var mutatedLeaf = this.greenNode.AddAttributes(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Attributes collection.</summary>
+		public RootedFileSystemFile RemoveAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
+			var mutatedLeaf = this.greenNode.RemoveAttributes(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Attributes collection.</summary>
+		public RootedFileSystemFile RemoveAttributes(params System.String[] values) {
+			var mutatedLeaf = this.greenNode.RemoveAttributes(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Attributes collection.</summary>
+		public RootedFileSystemFile RemoveAttributes(System.String value) {
+			var mutatedLeaf = this.greenNode.RemoveAttributes(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Attributes collection.</summary>
+		public RootedFileSystemFile RemoveAttributes() {
+			var mutatedLeaf = this.greenNode.RemoveAttributes();
+			return this.NewSpine(mutatedLeaf);
+		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemFile FileSystemFile {
@@ -1220,6 +1274,60 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> value) {
 			var adapter = (Adapters.IImmutableCollectionAdapter<FileSystemEntry>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedFileSystemDirectory WithChildren(params RootedFileSystemEntry[] values) {
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.FileSystemEntry));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedFileSystemDirectory WithChildren(System.Collections.Generic.IEnumerable<RootedFileSystemEntry> values) {
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.FileSystemEntry));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory AddChildren(System.Collections.Generic.IEnumerable<RootedFileSystemEntry> values) {
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.FileSystemEntry));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory AddChildren(params RootedFileSystemEntry[] values) {
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.FileSystemEntry));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public RootedFileSystemDirectory AddChildren(RootedFileSystemEntry value) {
+			var mutatedLeaf = this.greenNode.AddChildren(value.FileSystemEntry);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory RemoveChildren(System.Collections.Generic.IEnumerable<RootedFileSystemEntry> values) {
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.FileSystemEntry));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory RemoveChildren(params RootedFileSystemEntry[] values) {
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.FileSystemEntry));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedFileSystemDirectory RemoveChildren(RootedFileSystemEntry value) {
+			var mutatedLeaf = this.greenNode.RemoveChildren(value.FileSystemEntry);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedFileSystemDirectory RemoveChildren() {
+			var mutatedLeaf = this.greenNode.RemoveChildren();
 			return this.NewSpine(mutatedLeaf);
 		}
 	
