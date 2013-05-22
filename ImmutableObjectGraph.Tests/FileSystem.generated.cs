@@ -149,7 +149,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
-			get { throw new System.NotImplementedException(); }
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.FileSystemEntry);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedFileSystemDirectory);
+			}
 		}
 	
 		public RootedFileSystemDirectory Root {
@@ -474,7 +478,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
-			get { throw new System.NotImplementedException(); }
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.FileSystemFile);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedFileSystemDirectory);
+			}
 		}
 	
 		public RootedFileSystemDirectory Root {
@@ -1146,7 +1154,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		private FileSystemDirectory GetParent(FileSystemEntry descendent) {
+		internal FileSystemDirectory GetParent(FileSystemEntry descendent) {
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent.Identity, out lookupValue)) {
@@ -1274,7 +1282,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
-			get { throw new System.NotImplementedException(); }
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.FileSystemDirectory);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedFileSystemDirectory);
+			}
 		}
 	
 		public RootedFileSystemDirectory Root {

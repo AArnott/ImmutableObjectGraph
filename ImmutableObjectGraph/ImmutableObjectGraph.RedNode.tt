@@ -64,7 +64,11 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 
 	/// <summary>Gets the parent of this object in the hierarchy.</summary>
 	public <#= redType.RecursiveParent.TypeName #> Parent {
-		get { throw new System.NotImplementedException(); }
+		get {
+			this.ThrowIfDefault();
+			var greenParent = this.root.GetParent(this.<#= redType.GreenType.TypeName #>);
+			return greenParent != null ? greenParent.WithRoot(this.root) : default(<#= redType.RecursiveParent.TypeName #>);
+		}
 	}
 
 	public <#= redType.RecursiveParent.TypeName #> Root {

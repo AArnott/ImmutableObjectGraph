@@ -328,6 +328,26 @@
 			Assert.Equal(3, modifiedFile.Root.Find(modifiedFile.Identity).AsFileSystemFile.Attributes.Count);
 		}
 
+		[Fact]
+		public void ParentOfRootIsDefault() {
+			var redRoot = this.root.AsRoot;
+			Assert.Null(redRoot.Parent.FileSystemDirectory);
+		}
+
+		[Fact]
+		public void ParentOfChildIsCorrect() {
+			var redRoot = this.root.AsRoot;
+			foreach (var child in redRoot) {
+				Assert.Equal(redRoot, child.Parent);
+				if (child.IsFileSystemDirectory) {
+					var recursiveChild = child.AsFileSystemDirectory;
+					foreach (var grandchild in recursiveChild) {
+						Assert.Equal(recursiveChild, grandchild.Parent);
+					}
+				}
+			}
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
