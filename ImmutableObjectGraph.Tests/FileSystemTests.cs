@@ -329,6 +329,18 @@
 		}
 
 		[Fact]
+		public void RedNodeConstructionAPI() {
+			var redRoot = RootedFileSystemDirectory.Create("c:").AddChildren(
+				FileSystemFile.Create("a.cs"),
+				FileSystemFile.Create("b.cs"),
+				FileSystemDirectory.Create("c")
+					.AddChildren(FileSystemFile.Create("d.cs")));
+			Assert.Equal("c:", redRoot.PathSegment);
+			Assert.Equal(3, redRoot.Children.Count);
+			Assert.Equal("d.cs", redRoot.Children.Single(c => c.IsFileSystemDirectory).AsFileSystemDirectory.Children.Single().PathSegment);
+		}
+
+		[Fact]
 		public void ParentOfRootIsDefault() {
 			var redRoot = this.root.AsRoot;
 			Assert.Null(redRoot.Parent.FileSystemDirectory);

@@ -1397,6 +1397,62 @@ namespace ImmutableObjectGraph.Tests {
 			return this.NewSpine(mutatedLeaf);
 		}
 		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedFileSystemDirectory WithChildren(params FileSystemEntry[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedFileSystemDirectory WithChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory AddChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory AddChildren(params FileSystemEntry[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public RootedFileSystemDirectory AddChildren(FileSystemEntry value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory RemoveChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedFileSystemDirectory RemoveChildren(params FileSystemEntry[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedFileSystemDirectory RemoveChildren(FileSystemEntry value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public RootedFileSystemDirectory RemoveChildren() {
 			this.ThrowIfDefault();
