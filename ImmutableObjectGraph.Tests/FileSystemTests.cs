@@ -375,6 +375,12 @@
 			Assert.Throws<RecursiveChildNotUniqueException>(() => root.AddChildren(child).AddChildren(mutatedChild));
 		}
 
+		[Fact]
+		public void Indexer() {
+			Assert.Equal("a.cs", this.root["a.cs"].PathSegment);
+			Assert.Equal("d.cs", ((FileSystemDirectory)this.root["c"])["d.cs"].PathSegment);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
@@ -453,6 +459,17 @@
 
 	[DebuggerDisplay("{FullPath}")]
 	partial class FileSystemDirectory {
+		public FileSystemEntry this[string pathSegment] {
+			get {
+				int index = this.children.IndexOf(FileSystemFile.Create(pathSegment));
+				if (index < 0) {
+					throw new IndexOutOfRangeException();
+				}
+
+				return this.children[index];
+			}
+		}
+
 		static partial void CreateDefaultTemplate(ref FileSystemDirectory.Template template) {
 			template.Children = ImmutableSortedSet.Create<FileSystemEntry>(SiblingComparer.Instance);
 		}
