@@ -222,6 +222,10 @@ protected class MetaType {
 		get { return this.RecursiveField != null ? this.FindMetaType(this.RecursiveField.ElementType) : null; }
 	}
 
+	public virtual MetaType RecursiveTypeFromFamily {
+		get { return this.GetTypeFamily().SingleOrDefault(t => t.IsRecursiveType); }
+	}
+
 	/// <summary>Gets the type that contains the collection of this (or a base) type.</summary>
 	public virtual MetaType RecursiveParent {
 		get {

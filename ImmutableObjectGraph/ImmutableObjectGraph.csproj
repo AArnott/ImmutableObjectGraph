@@ -58,8 +58,10 @@
   <ItemGroup>
     <Compile Include="Adapter.cs" />
     <Compile Include="Adapters\IImmutableCollectionAdapter.cs" />
+    <Compile Include="ChangeKind.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="Adapters\ImmutableSetRootAdapter.cs" />
+    <Compile Include="DiffGram.cs" />
     <Compile Include="ImmutableDeque.cs" />
     <Compile Include="ImmutableDeque`1.cs" />
     <Compile Include="Optional.cs" />
@@ -70,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ImmutableObjectGraph.Delta.tt" />
     <None Include="ImmutableObjectGraph.FastSpine.tt" />
     <None Include="ImmutableObjectGraph.RedNode.tt" />
     <None Include="ImmutableObjectGraph.Interface.tt" />

@@ -1,0 +1,93 @@
+﻿<#
+this.HandleType += (templateType, position) => {
+	if (templateType.IsRecursiveType) {
+		string enumTypeName = GetPropertiesEnumTypeName(templateType);
+		string diffTypeName = GetDiffGramTypeName(templateType);
+		switch (position) {
+			case HandleTypePosition.WithinTypeDeclaration:
+#>
+
+public System.Collections.Generic.IEnumerable<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
+	return System.Linq.Enumerable.Empty<<#= diffTypeName #>>();
+}
+<#
+				break;
+			case HandleTypePosition.AfterTypeDeclaration:
+#>
+
+[System.Flags]
+public enum <#= enumTypeName #> {
+	/// <summary>
+	/// No change was made to the node.  It was either entirely added or removed. 
+	/// </summary>
+	None = 0x0,
+
+	/// <summary>
+	/// The node's position within its parent's list of children changed.
+	/// </summary>
+	PositionUnderParent = 0x1,
+<#
+				int counter = 1;
+				// We're interested in enumerating the union of all fields on this and derived types,
+				// excluding the recursive collection itself.
+				var fields = templateType.Concat(templateType.Descendents)
+					.SelectMany(t => t.LocalFields)
+					.Where(f => !f.IsRecursiveCollection);
+				foreach (var field in fields) {
+#>
+
+	/// <summary>
+	/// The <see cref="<#= field.DeclaringType.TypeName #>.<#= field.NamePascalCase #>" /> property was changed.
+	/// </summary>
+	<#= field.NamePascalCase #> = <#= string.Format("0x{0:x}", (int)Math.Pow(2, counter)) #>,
+<#
+					counter++;
+				}
+#>
+
+	/// <summary>
+	/// All flags in this enum.
+	/// </summary>
+	All = PositionUnderParent<#
+	foreach (var field in fields) {
+		Write(" | ");
+		Write(field.NamePascalCase);
+	}
+#>,
+}
+<#
+				break;
+			default:
+				break;
+		}
+	}
+}; // green type event handler
+
+this.HandleRedType += (templateType, position) => {
+	string enumTypeName = GetPropertiesEnumTypeName(templateType.RecursiveTypeFromFamily.GreenType);
+	string diffTypeName = GetDiffGramTypeName(templateType.RecursiveTypeFromFamily.GreenType);
+	switch (position) {
+		case HandleTypePosition.WithinTypeDeclaration:
+#>
+
+	public System.Collections.Generic.IEnumerable<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
+		this.ThrowIfDefault();
+		return this.greenNode.ChangesSince(priorVersion.<#= templateType.GreenType.TypeName #>);
+	}
+<#
+			break;
+		default:
+			break;
+	}
+}; // red type event handler
+#>
+
+<#+
+	private string GetPropertiesEnumTypeName(MetaType templateType) {
+		return templateType.TypeName + "ChangedProperties";
+	}
+
+	private string GetDiffGramTypeName(MetaType templateType) {
+		return "DiffGram<" + GetPropertiesEnumTypeName(templateType) + ">";
+	}
+#>
