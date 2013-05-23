@@ -1010,7 +1010,7 @@ namespace ImmutableObjectGraph.Tests {
 			var observedIdentities = new System.Collections.Generic.HashSet<int>();
 			foreach (var node in this.GetSelfAndDescendents()) {
 				if (!observedIdentities.Add(node.Identity)) {
-					throw new System.ApplicationException("Node ID " + node.Identity + " observed more than once in the tree.");
+					throw new RecursiveChildNotUniqueException(node.Identity);
 				}
 			}
 		

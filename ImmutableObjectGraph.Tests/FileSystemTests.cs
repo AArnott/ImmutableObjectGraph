@@ -367,6 +367,14 @@
 			Assert.Equal(@"c:\c\d.cs", this.root.AsRoot.Children.Last().AsFileSystemDirectory.Children.Single().FullPath);
 		}
 
+		[Fact]
+		public void ChildAddedTwiceThrowsWithMutation() {
+			var root = FileSystemDirectory.Create("c:");
+			var child = FileSystemFile.Create("a.txt");
+			var mutatedChild = child.WithPathSegment("b.txt"); // same identity since we mutated an existing one.
+			Assert.Throws<RecursiveChildNotUniqueException>(() => root.AddChildren(child).AddChildren(mutatedChild));
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
