@@ -426,6 +426,17 @@
 	}
 
 	partial struct RootedFileSystemDirectory {
+		public RootedFileSystemEntry this[string pathSegment] {
+			get {
+				int index = this.greenNode.Children.IndexOf(FileSystemFile.Create(pathSegment));
+				if (index < 0) {
+					throw new IndexOutOfRangeException();
+				}
+
+				return this.greenNode.Children[index].WithRoot(this.root);
+			}
+		}
+
 		public string FullPath {
 			get {
 				var path = new StringBuilder(this.PathSegment);
