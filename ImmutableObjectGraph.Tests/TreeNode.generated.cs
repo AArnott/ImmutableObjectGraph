@@ -514,7 +514,7 @@ namespace ImmutableObjectGraph.Tests {
 			var observedIdentities = new System.Collections.Generic.HashSet<int>();
 			foreach (var node in this.GetSelfAndDescendents()) {
 				if (!observedIdentities.Add(node.Identity)) {
-					throw new System.ApplicationException("Node ID " + node.Identity + " observed more than once in the tree.");
+					throw new RecursiveChildNotUniqueException(node.Identity);
 				}
 			}
 		
@@ -658,7 +658,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		private TreeNode GetParent(TreeNode descendent) {
+		internal TreeNode GetParent(TreeNode descendent) {
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent.Identity, out lookupValue)) {
