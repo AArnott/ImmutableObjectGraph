@@ -214,6 +214,10 @@ protected class MetaType {
 		get { return this.GetTypeFamily().Any(t => this.Equals(t.RecursiveType)); }
 	}
 
+	public bool IsDerivedFromRecursiveType {
+		get { return this.RecursiveTypeFromFamily.Type.IsAssignableFrom(this.Type); }
+	}
+
 	public MetaField RecursiveField {
 		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)); }
 	}

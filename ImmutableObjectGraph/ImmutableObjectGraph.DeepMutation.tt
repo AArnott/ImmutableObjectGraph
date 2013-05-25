@@ -74,12 +74,6 @@ private System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveTy
 	return newChildSpine.Push(newSelf);
 }
 
-private enum ChangeKind {
-	Added,
-	Removed,
-	Replaced,
-}
-
 /// <summary>
 /// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
 /// </summary>

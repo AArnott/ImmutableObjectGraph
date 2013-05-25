@@ -7,8 +7,46 @@ this.HandleType += (templateType, position) => {
 			case HandleTypePosition.WithinTypeDeclaration:
 #>
 
-public System.Collections.Generic.IEnumerable<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
-	return System.Linq.Enumerable.Empty<<#= diffTypeName #>>();
+public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
+	if (priorVersion == null) {
+		throw new System.ArgumentNullException("priorVersion");
+	}
+
+	if (priorVersion.Identity != this.Identity) {
+		throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
+	}
+
+	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
+	var changes = this.DiffProperties(priorVersion);
+	if (changes != <#= enumTypeName #>.None) {
+		history.Add(<#= diffTypeName #>.Change(priorVersion, this, changes));
+	}
+
+	return history;
+}
+
+protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #> other) {
+	if (other == null) {
+		throw new System.ArgumentNullException("other");
+	}
+
+	var propertiesChanged = <#= enumTypeName #>.None;
+
+	if (!this.GetType().IsEquivalentTo(other.GetType())) {
+		propertiesChanged |= <#= enumTypeName #>.Type;
+	}
+<#
+	foreach (var field in templateType.LocalFields) {
+#>
+
+	if (this.<#= field.NamePascalCase #> != other.<#= field.NamePascalCase #>) {
+		propertiesChanged |= <#= enumTypeName #>.<#= field.NamePascalCase #>;
+	}
+<#
+	}
+#>
+
+	return propertiesChanged;
 }
 <#
 				break;
@@ -23,11 +61,16 @@ public enum <#= enumTypeName #> {
 	None = 0x0,
 
 	/// <summary>
+	/// The type of the node was changed.
+	/// </summary>
+	Type = 0x1,
+
+	/// <summary>
 	/// The node's position within its parent's list of children changed.
 	/// </summary>
-	PositionUnderParent = 0x1,
+	PositionUnderParent = 0x2,
 <#
-				int counter = 1;
+				int counter = 2;
 				// We're interested in enumerating the union of all fields on this and derived types,
 				// excluding the recursive collection itself.
 				var fields = templateType.Concat(templateType.Descendents)
@@ -48,7 +91,7 @@ public enum <#= enumTypeName #> {
 	/// <summary>
 	/// All flags in this enum.
 	/// </summary>
-	All = PositionUnderParent<#
+	All = Type | PositionUnderParent<#
 	foreach (var field in fields) {
 		Write(" | ");
 		Write(field.NamePascalCase);
@@ -60,17 +103,88 @@ public enum <#= enumTypeName #> {
 			default:
 				break;
 		}
+	} else if (templateType.IsDerivedFromRecursiveType) {
+		MetaType recursiveType = templateType.RecursiveTypeFromFamily;
+		string enumTypeName = GetPropertiesEnumTypeName(recursiveType);
+		string diffTypeName = GetDiffGramTypeName(recursiveType);
+		switch (position) {
+			case HandleTypePosition.WithinTypeDeclaration:
+				var additionalFields = templateType.LocalFields.Where(f => !f.IsRecursiveCollection);
+				if (additionalFields.Any()) {
+#>
+
+protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName #> other) {
+	var propertiesChanged = base.DiffProperties(other);
+
+	var other<#= templateType.TypeName #> = other as <#= templateType.TypeName #>;
+	if (other<#= templateType.TypeName #> != null) {<#
+	foreach (var field in additionalFields) {
+#>
+
+		if (this.<#= field.NamePascalCase #> != other<#= templateType.TypeName #>.<#= field.NamePascalCase #>) {
+			propertiesChanged |= <#= enumTypeName #>.<#= field.NamePascalCase #>;
+		}
+<#
 	}
+#>
+	}
+
+	return propertiesChanged;
+}
+<#
+				}
+
+				if (templateType.Equals(templateType.RecursiveParent)) {
+#>
+
+public override System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= recursiveType.TypeName #> priorVersion) {
+	if (priorVersion == null) {
+		throw new System.ArgumentNullException("priorVersion");
+	}
+
+	if (this == priorVersion) {
+		return System.Collections.Immutable.ImmutableList.Create<<#= diffTypeName #>>();
+	}
+
+	if (priorVersion.Identity != this.Identity) {
+		throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
+	}
+
+	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
+
+	var other = (<#= templateType.TypeName #>) priorVersion;
+
+	var added = this.<#= templateType.RecursiveField.NamePascalCase #>.Except(other.<#= templateType.RecursiveField.NamePascalCase #>);
+	var removed = other.<#= templateType.RecursiveField.NamePascalCase #>.Except(this.<#= templateType.RecursiveField.NamePascalCase #>);
+	var common = from child in this.<#= templateType.RecursiveField.NamePascalCase #>.Intersect(other.<#= templateType.RecursiveField.NamePascalCase #>)
+	             select new { Prior = other.Find(child.Identity), Current = this.Find(child.Identity) };
+
+	history.AddRange(removed.Select(remove => <#= diffTypeName #>.Remove(remove)));
+	history.AddRange(base.ChangesSince(other));
+	history.AddRange(common.SelectMany(change => change.Current.ChangesSince(change.Prior)));
+	history.AddRange(added.Select(add => <#= diffTypeName #>.Add(add)));
+
+	return history;
+}
+<#
+				}
+
+				break;
+			default:
+				break;
+		} // switch
+	} // if derived from recursive type
 }; // green type event handler
 
 this.HandleRedType += (templateType, position) => {
-	string enumTypeName = GetPropertiesEnumTypeName(templateType.RecursiveTypeFromFamily.GreenType);
-	string diffTypeName = GetDiffGramTypeName(templateType.RecursiveTypeFromFamily.GreenType);
+	MetaType recursiveType = templateType.RecursiveTypeFromFamily;
+	string enumTypeName = GetPropertiesEnumTypeName(recursiveType.GreenType);
+	string diffTypeName = GetDiffGramTypeName(recursiveType.GreenType);
 	switch (position) {
 		case HandleTypePosition.WithinTypeDeclaration:
 #>
 
-	public System.Collections.Generic.IEnumerable<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
+	public System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
 		this.ThrowIfDefault();
 		return this.greenNode.ChangesSince(priorVersion.<#= templateType.GreenType.TypeName #>);
 	}
@@ -88,6 +202,6 @@ this.HandleRedType += (templateType, position) => {
 	}
 
 	private string GetDiffGramTypeName(MetaType templateType) {
-		return "DiffGram<" + GetPropertiesEnumTypeName(templateType) + ">";
+		return "DiffGram<" + templateType.TypeName + ", " + GetPropertiesEnumTypeName(templateType) + ">";
 	}
 #>

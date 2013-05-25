@@ -386,10 +386,11 @@
 			var root1 = FileSystemDirectory.Create("c:").AddChildren(
 				FileSystemFile.Create("file1.txt").AddAttributes("att1")).AsRoot;
 			var root2 = root1["file1.txt"].AsFileSystemFile.AddAttributes("att2").Root;
-			IEnumerable<DiffGram<FileSystemEntryChangedProperties>> changes = root2.ChangesSince(root1);
+			IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> changes = root2.ChangesSince(root1);
 			var changesList = changes.ToList();
 			Assert.Equal(1, changesList.Count);
-			Assert.Equal(root1["file1.txt"].Identity, changesList[0].Identity);
+			Assert.Same(root1["file1.txt"].FileSystemEntry, changesList[0].Before);
+			Assert.Same(root2["file1.txt"].FileSystemEntry, changesList[0].After);
 			Assert.Equal(ChangeKind.Replaced, changesList[0].Kind);
 			Assert.Equal(FileSystemEntryChangedProperties.Attributes, changesList[0].Changes);
 		}
@@ -481,7 +482,7 @@
 		}
 	}
 
-	[DebuggerDisplay("{FullPath}")]
+	[DebuggerDisplay("{PathSegment}")]
 	partial class FileSystemDirectory {
 		public FileSystemEntry this[string pathSegment] {
 			get {
@@ -499,6 +500,7 @@
 		}
 	}
 
+	[DebuggerDisplay("{PathSegment}")]
 	partial class FileSystemEntry {
 		public class SiblingComparer : IComparer<FileSystemEntry> {
 			public static SiblingComparer Instance = new SiblingComparer();
@@ -509,6 +511,10 @@
 			public int Compare(FileSystemEntry x, FileSystemEntry y) {
 				return StringComparer.OrdinalIgnoreCase.Compare(x.PathSegment, y.PathSegment);
 			}
+		}
+
+		public override string ToString() {
+			return this.PathSegment;
 		}
 	}
 }

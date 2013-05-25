@@ -73,8 +73,40 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemEntry(this, root);
 		}
 		
-		public System.Collections.Generic.IEnumerable<DiffGram<FileSystemEntryChangedProperties>> ChangesSince(FileSystemEntry priorVersion) {
-			return System.Linq.Enumerable.Empty<DiffGram<FileSystemEntryChangedProperties>>();
+		public virtual System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(FileSystemEntry priorVersion) {
+			if (priorVersion == null) {
+				throw new System.ArgumentNullException("priorVersion");
+			}
+		
+			if (priorVersion.Identity != this.Identity) {
+				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
+			}
+		
+			var history = new System.Collections.Generic.List<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>>();
+			var changes = this.DiffProperties(priorVersion);
+			if (changes != FileSystemEntryChangedProperties.None) {
+				history.Add(DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Change(priorVersion, this, changes));
+			}
+		
+			return history;
+		}
+		
+		protected virtual FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
+			if (other == null) {
+				throw new System.ArgumentNullException("other");
+			}
+		
+			var propertiesChanged = FileSystemEntryChangedProperties.None;
+		
+			if (!this.GetType().IsEquivalentTo(other.GetType())) {
+				propertiesChanged |= FileSystemEntryChangedProperties.Type;
+			}
+		
+			if (this.PathSegment != other.PathSegment) {
+				propertiesChanged |= FileSystemEntryChangedProperties.PathSegment;
+			}
+		
+			return propertiesChanged;
 		}
 		
 		public virtual System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
@@ -218,7 +250,7 @@ namespace ImmutableObjectGraph.Tests {
 			return newGreenNode.WithRoot(newRoot);
 		}
 	
-		public System.Collections.Generic.IEnumerable<DiffGram<FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemEntry priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemEntry priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.FileSystemEntry);
 		}
@@ -277,24 +309,29 @@ namespace ImmutableObjectGraph.Tests {
 		None = 0x0,
 	
 		/// <summary>
+		/// The type of the node was changed.
+		/// </summary>
+		Type = 0x1,
+	
+		/// <summary>
 		/// The node's position within its parent's list of children changed.
 		/// </summary>
-		PositionUnderParent = 0x1,
+		PositionUnderParent = 0x2,
 	
 		/// <summary>
 		/// The <see cref="FileSystemEntry.PathSegment" /> property was changed.
 		/// </summary>
-		PathSegment = 0x2,
+		PathSegment = 0x4,
 	
 		/// <summary>
 		/// The <see cref="FileSystemFile.Attributes" /> property was changed.
 		/// </summary>
-		Attributes = 0x4,
+		Attributes = 0x8,
 	
 		/// <summary>
 		/// All flags in this enum.
 		/// </summary>
-		All = PositionUnderParent | PathSegment | Attributes,
+		All = Type | PositionUnderParent | PathSegment | Attributes,
 	}
 	
 	public interface IFileSystemFile : IFileSystemEntry {
@@ -464,6 +501,19 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return new RootedFileSystemFile(this, root);
+		}
+		
+		protected override FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
+			var propertiesChanged = base.DiffProperties(other);
+		
+			var otherFileSystemFile = other as FileSystemFile;
+			if (otherFileSystemFile != null) {
+				if (this.Attributes != otherFileSystemFile.Attributes) {
+					propertiesChanged |= FileSystemEntryChangedProperties.Attributes;
+				}
+			}
+		
+			return propertiesChanged;
 		}
 		
 		public new Builder ToBuilder() {
@@ -647,7 +697,7 @@ namespace ImmutableObjectGraph.Tests {
 			return newGreenNode.WithRoot(newRoot);
 		}
 	
-		public System.Collections.Generic.IEnumerable<DiffGram<FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemFile priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemFile priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.FileSystemFile);
 		}
@@ -875,6 +925,36 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemDirectory(this, root);
 		}
 		
+		public override System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(FileSystemEntry priorVersion) {
+			if (priorVersion == null) {
+				throw new System.ArgumentNullException("priorVersion");
+			}
+		
+			if (this == priorVersion) {
+				return System.Collections.Immutable.ImmutableList.Create<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>>();
+			}
+		
+			if (priorVersion.Identity != this.Identity) {
+				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
+			}
+		
+			var history = new System.Collections.Generic.List<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>>();
+		
+			var other = (FileSystemDirectory) priorVersion;
+		
+			var added = this.Children.Except(other.Children);
+			var removed = other.Children.Except(this.Children);
+			var common = from child in this.Children.Intersect(other.Children)
+			             select new { Prior = other.Find(child.Identity), Current = this.Find(child.Identity) };
+		
+			history.AddRange(removed.Select(remove => DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Remove(remove)));
+			history.AddRange(base.ChangesSince(other));
+			history.AddRange(common.SelectMany(change => change.Current.ChangesSince(change.Prior)));
+			history.AddRange(added.Select(add => DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Add(add)));
+		
+			return history;
+		}
+		
 		public FileSystemDirectory AddDescendent(FileSystemEntry value, FileSystemDirectory parent) {
 			var spine = this.GetSpine(parent);
 			var newParent = parent.AddChildren(value);
@@ -931,12 +1011,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return newChildSpine.Push(newSelf);
-		}
-		
-		private enum ChangeKind {
-			Added,
-			Removed,
-			Replaced,
 		}
 		
 		/// <summary>
@@ -1539,7 +1613,7 @@ namespace ImmutableObjectGraph.Tests {
 			return this.Children.GetEnumerator();
 		}
 	
-		public System.Collections.Generic.IEnumerable<DiffGram<FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemDirectory priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemDirectory priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.FileSystemDirectory);
 		}
