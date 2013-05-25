@@ -8,7 +8,7 @@ this.HandleType += (templateType, position) => {
 #>
 
 public <#= templateType.Ancestor.TypeName#> To<#= templateType.Ancestor.TypeName#>() {
-	return <#= templateType.Ancestor.TypeName #>.Create(<# WriteArguments(templateType.Ancestor.AllFields, indent: 2); #>);
+	return <#= templateType.Ancestor.TypeName #>.Create(<# WriteArguments(templateType.Ancestor.AllFields, indent: 2, asOptional: true); #>);
 }
 <#
 	}
@@ -40,7 +40,7 @@ public virtual <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# Writ
 	}
 
 	return <#= derivedType.TypeName #>.Create(<#
-		WriteArguments(templateType.AllFields, indent: 2);
+		WriteArguments(templateType.AllFields, indent: 2, asOptional: true);
 		Write(",");
 		WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument, indent: 2);
 		#>);
@@ -50,7 +50,7 @@ public virtual <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# Writ
 
 public override <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# WriteParameters(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired); #>) {
 	return base.To<#= derivedType.TypeName #>(<#
-		WriteArguments(templateType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty);
+		WriteArguments(templateType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty, asOptional: true);
 		Write(",");
 		WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument);
 		#>);

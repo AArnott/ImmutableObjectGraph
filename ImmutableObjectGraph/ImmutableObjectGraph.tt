@@ -106,7 +106,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	public static <#= templateType.TypeName #> Create(<# WriteParameters(templateType.AllFields, ParameterStyle.OptionalOrRequired); #>) {
 		var <#= templateType.RequiredIdentityField.NameCamelCase #> = Optional.For(NewIdentity());
 		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.WithFactory(<#
-		WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrTemplate);
+		WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrTemplate, asOptional: true);
 #>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
 	}
 <#
@@ -144,7 +144,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 #>)<# if (templateType.IsAbstract) { #>;
 <# } else { #> {
 		var <#= templateType.RequiredIdentityField.NameCamelCase #> = default(<#= templateType.RequiredIdentityField.OptionalTypeName#>);
-		return this.WithFactory(<# WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrProperty); #>);
+		return this.WithFactory(<# WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrProperty, asOptional: true); #>);
 	}
 <#		} /* if isAbstract */
 

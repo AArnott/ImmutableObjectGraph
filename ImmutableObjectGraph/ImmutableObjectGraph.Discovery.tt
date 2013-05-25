@@ -110,7 +110,7 @@ private enum ArgSource {
 	Missing,
 }
 
-private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3, bool concatenated = false) {
+private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3, bool concatenated = false, bool asOptional = false) {
 	PushIndent(new string('\t', indent));
 	bool firstInSequence = !concatenated;
 
@@ -119,6 +119,10 @@ private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource so
 		if (!firstInSequence) { Write(","); }
 		WriteLine("");
 		Write("{0}: ", field.NameCamelCase); // named arguments are important because the order can vary (due to required fields, etc.)
+
+		if (asOptional && !field.IsRequired) {
+			Write("Optional.For(");
+		}
 
 		switch (fieldSource) {
 			case ArgSource.Property:
@@ -136,6 +140,10 @@ private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource so
 			case ArgSource.Missing:
 				Write("default({0})", field.OptionalTypeName);
 				break;
+		}
+
+		if (asOptional && !field.IsRequired) {
+			Write(")");
 		}
 
 		firstInSequence = false;

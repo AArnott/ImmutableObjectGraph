@@ -50,9 +50,9 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				color: color.GetValueOrDefault(DefaultInstance.Color),
-				skinThickness: skinThickness.GetValueOrDefault(DefaultInstance.SkinThickness),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				color: Optional.For(color.GetValueOrDefault(DefaultInstance.Color)),
+				skinThickness: Optional.For(skinThickness.GetValueOrDefault(DefaultInstance.SkinThickness)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String Color {
@@ -69,7 +69,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(color: value);
+			return this.With(color: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the SkinThickness property set to the specified value.</summary>
@@ -78,7 +78,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(skinThickness: value);
+			return this.With(skinThickness: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -87,9 +87,9 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				color: color.GetValueOrDefault(this.Color),
-				skinThickness: skinThickness.GetValueOrDefault(this.SkinThickness),
-				identity: identity.GetValueOrDefault(this.Identity));
+				color: Optional.For(color.GetValueOrDefault(this.Color)),
+				skinThickness: Optional.For(skinThickness.GetValueOrDefault(this.SkinThickness)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>

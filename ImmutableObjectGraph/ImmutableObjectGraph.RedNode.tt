@@ -31,10 +31,11 @@ public <#= redType.HasAncestor ? "new " : "" #><#= redType.TypeName #> WithRoot(
 
 public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.TypeName #>> {
 <#
-			if (redType.Equals(redType.RecursiveParent)) {
+			var recursiveParent = redType.SelfAndAncestors.FirstOrDefault(a => a.Equals(redType.RecursiveParent));
+			if (recursiveParent != null) {
 #>
-	private static readonly System.Func<<#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveType.TypeName#>> toUnrooted = r => r.<#=redType.GreenType.RecursiveType.TypeName#>;
-	private static readonly System.Func<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>, <#=redType.RecursiveType.TypeName#>> toRooted = (u, r) => u.WithRoot(r);
+	private static readonly System.Func<<#=recursiveParent.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveType.TypeName#>> toUnrooted = r => r.<#=recursiveParent.GreenType.RecursiveType.TypeName#>;
+	private static readonly System.Func<<#=recursiveParent.GreenType.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveParent.TypeName#>, <#=recursiveParent.RecursiveType.TypeName#>> toRooted = (u, r) => u.WithRoot(r);
 
 <#
 			}
@@ -43,9 +44,9 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 
 	private readonly <#= redType.GreenType.RecursiveParent.TypeName #> root;
 <#
-			if (redType.IsRecursive) {
+			if (recursiveParent != null) {
 #>
-	private Optional<Adapters.ImmutableSetRootAdapter<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>>> <#= redType.RecursiveField.NameCamelCase #>;
+	private Optional<Adapters.ImmutableSetRootAdapter<<#=recursiveParent.GreenType.RecursiveType.TypeName#>, <#=recursiveParent.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveParent.TypeName#>>> <#= recursiveParent.RecursiveField.NameCamelCase #>;
 <#
 			}
 #>
@@ -54,9 +55,9 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 		this.greenNode = <#= redType.GreenType.TypeNameCamelCase #>;
 		this.root = root;
 <#
-			if (redType.IsRecursive) {
+			if (recursiveParent != null) {
 #>
-		this.<#= redType.RecursiveField.NameCamelCase #> = default(Optional<Adapters.ImmutableSetRootAdapter<<#=redType.GreenType.RecursiveType.TypeName#>, <#=redType.RecursiveType.TypeName#>, <#=redType.GreenType.RecursiveParent.TypeName#>>>);
+		this.<#= recursiveParent.RecursiveField.NameCamelCase #> = default(Optional<Adapters.ImmutableSetRootAdapter<<#=recursiveParent.GreenType.RecursiveType.TypeName#>, <#=recursiveParent.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveParent.TypeName#>>>);
 <#
 			}
 #>

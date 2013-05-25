@@ -73,12 +73,12 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				caption: caption.GetValueOrDefault(DefaultInstance.Caption),
-				filePath: filePath.GetValueOrDefault(DefaultInstance.FilePath),
-				visible: visible.GetValueOrDefault(DefaultInstance.Visible),
-				attributes: attributes.GetValueOrDefault(DefaultInstance.Attributes),
-				children: children.GetValueOrDefault(DefaultInstance.Children),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				caption: Optional.For(caption.GetValueOrDefault(DefaultInstance.Caption)),
+				filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
+				visible: Optional.For(visible.GetValueOrDefault(DefaultInstance.Visible)),
+				attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String Caption {
@@ -107,7 +107,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(caption: value);
+			return this.With(caption: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
@@ -116,7 +116,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(filePath: value);
+			return this.With(filePath: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
@@ -125,7 +125,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(visible: value);
+			return this.With(visible: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
@@ -134,7 +134,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(attributes: value);
+			return this.With(attributes: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
@@ -189,7 +189,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(children: value);
+			return this.With(children: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -247,12 +247,12 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				caption: caption.GetValueOrDefault(this.Caption),
-				filePath: filePath.GetValueOrDefault(this.FilePath),
-				visible: visible.GetValueOrDefault(this.Visible),
-				attributes: attributes.GetValueOrDefault(this.Attributes),
-				children: children.GetValueOrDefault(this.Children),
-				identity: identity.GetValueOrDefault(this.Identity));
+				caption: Optional.For(caption.GetValueOrDefault(this.Caption)),
+				filePath: Optional.For(filePath.GetValueOrDefault(this.FilePath)),
+				visible: Optional.For(visible.GetValueOrDefault(this.Visible)),
+				attributes: Optional.For(attributes.GetValueOrDefault(this.Attributes)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -391,12 +391,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return newChildSpine.Push(newSelf);
-		}
-		
-		private enum ChangeKind {
-			Added,
-			Removed,
-			Replaced,
 		}
 		
 		/// <summary>

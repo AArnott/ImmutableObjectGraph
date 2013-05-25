@@ -36,7 +36,8 @@ protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #
 		propertiesChanged |= <#= enumTypeName #>.Type;
 	}
 <#
-	foreach (var field in templateType.LocalFields) {
+	var additionalFields = templateType.LocalFields.Where(f => !f.IsRecursiveCollection);
+	foreach (var field in additionalFields) {
 #>
 
 	if (this.<#= field.NamePascalCase #> != other.<#= field.NamePascalCase #>) {

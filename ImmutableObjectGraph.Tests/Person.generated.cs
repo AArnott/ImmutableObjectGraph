@@ -43,8 +43,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				members: members.GetValueOrDefault(DefaultInstance.Members),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				members: Optional.For(members.GetValueOrDefault(DefaultInstance.Members)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
@@ -57,7 +57,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(members: value);
+			return this.With(members: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Members collection with the specified collection.</summary>
@@ -111,8 +111,8 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				members: members.GetValueOrDefault(this.Members),
-				identity: identity.GetValueOrDefault(this.Identity));
+				members: Optional.For(members.GetValueOrDefault(this.Members)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -244,9 +244,9 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				name: name,
-				age: age.GetValueOrDefault(DefaultInstance.Age),
-				watch: watch.GetValueOrDefault(DefaultInstance.Watch),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				age: Optional.For(age.GetValueOrDefault(DefaultInstance.Age)),
+				watch: Optional.For(watch.GetValueOrDefault(DefaultInstance.Watch)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String Name {
@@ -267,7 +267,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(name: value);
+			return this.With(name: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Age property set to the specified value.</summary>
@@ -276,7 +276,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(age: value);
+			return this.With(age: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Watch property set to the specified value.</summary>
@@ -285,7 +285,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(watch: value);
+			return this.With(watch: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -296,9 +296,9 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				name: name.GetValueOrDefault(this.Name),
-				age: age.GetValueOrDefault(this.Age),
-				watch: watch.GetValueOrDefault(this.Watch),
-				identity: identity.GetValueOrDefault(this.Identity));
+				age: Optional.For(age.GetValueOrDefault(this.Age)),
+				watch: Optional.For(watch.GetValueOrDefault(this.Watch)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -464,9 +464,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				color: color.GetValueOrDefault(DefaultInstance.Color),
-				size: size.GetValueOrDefault(DefaultInstance.Size),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				color: Optional.For(color.GetValueOrDefault(DefaultInstance.Color)),
+				size: Optional.For(size.GetValueOrDefault(DefaultInstance.Size)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String Color {
@@ -483,7 +483,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(color: value);
+			return this.With(color: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Size property set to the specified value.</summary>
@@ -492,7 +492,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(size: value);
+			return this.With(size: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -501,9 +501,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				color: color.GetValueOrDefault(this.Color),
-				size: size.GetValueOrDefault(this.Size),
-				identity: identity.GetValueOrDefault(this.Identity));
+				color: Optional.For(color.GetValueOrDefault(this.Color)),
+				size: Optional.For(size.GetValueOrDefault(this.Size)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
