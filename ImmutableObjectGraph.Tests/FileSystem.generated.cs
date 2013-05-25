@@ -91,7 +91,7 @@ namespace ImmutableObjectGraph.Tests {
 			return history;
 		}
 		
-		protected virtual FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
+		protected internal virtual FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
 			}
@@ -135,10 +135,11 @@ namespace ImmutableObjectGraph.Tests {
 					return that;
 				}
 			}
-		
-			return FileSystemDirectory.Create(
+
+			return FileSystemDirectory.CreateWithIdentity(
 				pathSegment: this.PathSegment,
-				children: children);
+				children: children,
+				identity: this.Identity);
 		}
 		
 		public Builder ToBuilder() {
@@ -503,7 +504,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemFile(this, root);
 		}
 		
-		protected override FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
+		protected internal override FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherFileSystemFile = other as FileSystemFile;
@@ -775,7 +776,20 @@ namespace ImmutableObjectGraph.Tests {
 				children: children.GetValueOrDefault(DefaultInstance.Children),
 				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
 		}
-	
+
+		internal static FileSystemDirectory CreateWithIdentity(
+			System.String pathSegment,
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
+			Optional<int> identity = default(Optional<int>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+			return DefaultInstance.WithFactory(
+				pathSegment: pathSegment,
+				children: children.GetValueOrDefault(DefaultInstance.Children),
+				identity: identity.Value);
+		}
+
 		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
 			get { return this.children; }
 		}
@@ -939,20 +953,65 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			var history = new System.Collections.Generic.List<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>>();
-		
-			var other = (FileSystemDirectory) priorVersion;
-		
-			var added = this.Children.Except(other.Children);
-			var removed = other.Children.Except(this.Children);
-			var common = from child in this.Children.Intersect(other.Children)
-			             select new { Prior = other.Find(child.Identity), Current = this.Find(child.Identity) };
-		
+
+			var added = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
+			var removed = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
+
+			var other = priorVersion as FileSystemDirectory;
+			if (other != null) {
+				foreach (var prior in other.Children) {
+					var current = this.Find(prior.Identity);
+					if (current == null) {
+						removed.Add(prior);
+					}
+
+					if (!object.ReferenceEquals(prior, current)) {
+						// Some change has been made to this or its descendents.
+						history.AddRange(current.ChangesSince(prior));
+					}
+				}
+
+				foreach (var current in this.Children) {
+					if (other.Find(current.Identity) == null) {
+						added.Add(current);
+					}
+				}
+			}
+
 			history.AddRange(removed.Select(remove => DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Remove(remove)));
-			history.AddRange(base.ChangesSince(other));
-			history.AddRange(common.SelectMany(change => change.Current.ChangesSince(change.Prior)));
+			history.AddRange(base.ChangesSince(priorVersion));
 			history.AddRange(added.Select(add => DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Add(add)));
 		
 			return history;
+		}
+
+		public static class Comparers {
+			public static System.Collections.Generic.IEqualityComparer<FileSystemEntry> Identity {
+				get { return IdentityEqualityComparer.Default; }
+			}
+
+			private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<FileSystemEntry>, System.Collections.Generic.IComparer<FileSystemEntry> {
+				private static readonly IdentityEqualityComparer DefaultInstance = new IdentityEqualityComparer();
+
+				private IdentityEqualityComparer() {
+				}
+
+				public static System.Collections.Generic.IEqualityComparer<FileSystemEntry> Default {
+					get { return DefaultInstance; }
+				}
+
+				public bool Equals(FileSystemEntry x, FileSystemEntry y) {
+					return x.Identity == y.Identity;
+				}
+
+				public int GetHashCode(FileSystemEntry obj) {
+					return obj.Identity.GetHashCode();
+				}
+
+				public int Compare(FileSystemEntry x, FileSystemEntry y) {
+					return x.Identity.CompareTo(y.Identity);
+				}
+			}
 		}
 		
 		public FileSystemDirectory AddDescendent(FileSystemEntry value, FileSystemDirectory parent) {
