@@ -9,7 +9,7 @@ public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.Ty
 		return this;
 	}
 
-	return this.With(<#= field.NameCamelCase #>: value);
+	return this.With(<#= field.NameCamelCase #>: Optional.For(value));
 }
 <#
 	} else { // else field is declared on a base type
@@ -30,7 +30,7 @@ this.HandleRedField += (templateType, field) => {
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
 public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
 	this.ThrowIfDefault();
-	var adapter = (Adapters.IImmutableCollectionAdapter<<#= templateType.GreenType.RecursiveType.TypeName #>>)value;
+	var adapter = (Adapters.IImmutableCollectionAdapter<<#= templateType.GreenType.RecursiveTypeFromFamily.TypeName #>>)value;
 	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(adapter.UnderlyingCollection);
 	return this.NewSpine(mutatedLeaf);
 }

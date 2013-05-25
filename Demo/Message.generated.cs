@@ -78,13 +78,13 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				author: author.GetValueOrDefault(DefaultInstance.Author),
-				to: to.GetValueOrDefault(DefaultInstance.To),
-				cc: cc.GetValueOrDefault(DefaultInstance.Cc),
-				bcc: bcc.GetValueOrDefault(DefaultInstance.Bcc),
-				subject: subject.GetValueOrDefault(DefaultInstance.Subject),
-				body: body.GetValueOrDefault(DefaultInstance.Body),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				author: Optional.For(author.GetValueOrDefault(DefaultInstance.Author)),
+				to: Optional.For(to.GetValueOrDefault(DefaultInstance.To)),
+				cc: Optional.For(cc.GetValueOrDefault(DefaultInstance.Cc)),
+				bcc: Optional.For(bcc.GetValueOrDefault(DefaultInstance.Bcc)),
+				subject: Optional.For(subject.GetValueOrDefault(DefaultInstance.Subject)),
+				body: Optional.For(body.GetValueOrDefault(DefaultInstance.Body)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public Contact Author {
@@ -117,7 +117,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(author: value);
+			return this.With(author: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the To property set to the specified value.</summary>
@@ -126,7 +126,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(to: value);
+			return this.With(to: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the To collection with the specified collection.</summary>
@@ -181,7 +181,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(cc: value);
+			return this.With(cc: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Cc collection with the specified collection.</summary>
@@ -236,7 +236,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(bcc: value);
+			return this.With(bcc: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Bcc collection with the specified collection.</summary>
@@ -291,7 +291,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(subject: value);
+			return this.With(subject: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Body property set to the specified value.</summary>
@@ -300,7 +300,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(body: value);
+			return this.With(body: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -313,13 +313,13 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				author: author.GetValueOrDefault(this.Author),
-				to: to.GetValueOrDefault(this.To),
-				cc: cc.GetValueOrDefault(this.Cc),
-				bcc: bcc.GetValueOrDefault(this.Bcc),
-				subject: subject.GetValueOrDefault(this.Subject),
-				body: body.GetValueOrDefault(this.Body),
-				identity: identity.GetValueOrDefault(this.Identity));
+				author: Optional.For(author.GetValueOrDefault(this.Author)),
+				to: Optional.For(to.GetValueOrDefault(this.To)),
+				cc: Optional.For(cc.GetValueOrDefault(this.Cc)),
+				bcc: Optional.For(bcc.GetValueOrDefault(this.Bcc)),
+				subject: Optional.For(subject.GetValueOrDefault(this.Subject)),
+				body: Optional.For(body.GetValueOrDefault(this.Body)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -560,9 +560,9 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				name: name.GetValueOrDefault(DefaultInstance.Name),
-				email: email.GetValueOrDefault(DefaultInstance.Email),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+				email: Optional.For(email.GetValueOrDefault(DefaultInstance.Email)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String Name {
@@ -579,7 +579,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(name: value);
+			return this.With(name: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Email property set to the specified value.</summary>
@@ -588,7 +588,7 @@ namespace Demo {
 				return this;
 			}
 		
-			return this.With(email: value);
+			return this.With(email: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -597,9 +597,9 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				name: name.GetValueOrDefault(this.Name),
-				email: email.GetValueOrDefault(this.Email),
-				identity: identity.GetValueOrDefault(this.Identity));
+				name: Optional.For(name.GetValueOrDefault(this.Name)),
+				email: Optional.For(email.GetValueOrDefault(this.Email)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>

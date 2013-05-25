@@ -48,7 +48,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(pathSegment: value);
+			return this.With(pathSegment: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -364,8 +364,8 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				pathSegment: pathSegment,
-				attributes: attributes.GetValueOrDefault(DefaultInstance.Attributes),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
@@ -383,7 +383,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(attributes: value);
+			return this.With(attributes: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
@@ -447,8 +447,8 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
-				attributes: attributes.GetValueOrDefault(this.Attributes),
-				identity: identity.GetValueOrDefault(this.Identity));
+				attributes: Optional.For(attributes.GetValueOrDefault(this.Attributes)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -772,8 +772,8 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				pathSegment: pathSegment,
-				children: children.GetValueOrDefault(DefaultInstance.Children),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
@@ -791,7 +791,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(children: value);
+			return this.With(children: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -855,8 +855,8 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
-				children: children.GetValueOrDefault(this.Children),
-				identity: identity.GetValueOrDefault(this.Identity));
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>

@@ -46,7 +46,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(localName: value);
+			return this.With(localName: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -78,7 +78,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return XmlElement.Create(
-				localName: this.LocalName,
+				localName: Optional.For(this.LocalName),
 				namespaceName: namespaceName,
 				children: children);
 		}
@@ -97,7 +97,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return XmlElementWithContent.Create(
-				localName: this.LocalName,
+				localName: Optional.For(this.LocalName),
 				namespaceName: namespaceName,
 				children: children,
 				content: content);
@@ -115,7 +115,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return XmlAttribute.Create(
-				localName: this.LocalName,
+				localName: Optional.For(this.LocalName),
 				namespaceName: namespaceName,
 				value: value);
 		}
@@ -192,10 +192,10 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				children: children.GetValueOrDefault(DefaultInstance.Children),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String NamespaceName {
@@ -217,7 +217,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(namespaceName: value);
+			return this.With(namespaceName: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
@@ -226,7 +226,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(children: value);
+			return this.With(children: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -291,10 +291,10 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				localName: localName.GetValueOrDefault(this.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
-				children: children.GetValueOrDefault(this.Children),
-				identity: identity.GetValueOrDefault(this.Identity));
+				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -412,12 +412,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return newChildSpine.Push(newSelf);
-		}
-		
-		private enum ChangeKind {
-			Added,
-			Removed,
-			Replaced,
 		}
 		
 		/// <summary>
@@ -761,9 +755,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return XmlElementWithContent.Create(
-				localName: this.LocalName,
-				namespaceName: this.NamespaceName,
-				children: this.Children,
+				localName: Optional.For(this.LocalName),
+				namespaceName: Optional.For(this.NamespaceName),
+				children: Optional.For(this.Children),
 				content: content);
 		}
 		
@@ -772,8 +766,8 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 				ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return base.ToXmlElementWithContent(
-					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
-					children: children.GetValueOrDefault(this.Children),
+					namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+					children: Optional.For(children.GetValueOrDefault(this.Children)),
 					content: content);
 		}
 		
@@ -866,11 +860,11 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				children: children.GetValueOrDefault(DefaultInstance.Children),
-				content: content.GetValueOrDefault(DefaultInstance.Content),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				content: Optional.For(content.GetValueOrDefault(DefaultInstance.Content)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String Content {
@@ -944,7 +938,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(content: value);
+			return this.With(content: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -967,11 +961,11 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				localName: localName.GetValueOrDefault(this.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
-				children: children.GetValueOrDefault(this.Children),
-				content: content.GetValueOrDefault(this.Content),
-				identity: identity.GetValueOrDefault(this.Identity));
+				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				content: Optional.For(content.GetValueOrDefault(this.Content)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -1031,9 +1025,9 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public XmlElement ToXmlElement() {
 			return XmlElement.Create(
-				localName: this.LocalName,
-				namespaceName: this.NamespaceName,
-				children: this.Children);
+				localName: Optional.For(this.LocalName),
+				namespaceName: Optional.For(this.NamespaceName),
+				children: Optional.For(this.Children));
 		}
 		
 		public new Builder ToBuilder() {
@@ -1110,10 +1104,10 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				value: value.GetValueOrDefault(DefaultInstance.Value),
-				identity: identity.GetValueOrDefault(DefaultInstance.Identity));
+				localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+				value: Optional.For(value.GetValueOrDefault(DefaultInstance.Value)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String NamespaceName {
@@ -1135,7 +1129,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(namespaceName: value);
+			return this.With(namespaceName: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
@@ -1144,7 +1138,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(value: value);
+			return this.With(value: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -1163,10 +1157,10 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				localName: localName.GetValueOrDefault(this.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
-				value: value.GetValueOrDefault(this.Value),
-				identity: identity.GetValueOrDefault(this.Identity));
+				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+				value: Optional.For(value.GetValueOrDefault(this.Value)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
