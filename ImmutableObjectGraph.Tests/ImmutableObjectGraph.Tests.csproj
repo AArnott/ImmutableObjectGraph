@@ -63,6 +63,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="FileSystemTests.cs" />
+    <Compile Include="ProjectTreeCapabilities.cs" />
+    <Compile Include="ProjectTreeNodeTestBase.cs" />
+    <Compile Include="ProjectTreePartial.cs" />
+    <Compile Include="ProjectTreeSort.cs" />
     <Compile Include="RequiresAndHierarchy.generated.cs">
       <DependentUpon>RequiresAndHierarchy.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -99,6 +103,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="TreeNodeTests.cs" />
+    <Compile Include="ProjectTreeNodeTest.cs" />
+    <Compile Include="ProjectTreeNodeTest2.cs" />
     <Compile Include="XmlNode.generated.cs">
       <DependentUpon>XmlNode.tt</DependentUpon>
       <AutoGen>True</AutoGen>
