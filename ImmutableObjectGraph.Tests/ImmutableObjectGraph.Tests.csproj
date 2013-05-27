@@ -49,6 +49,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProjectTree.generated.cs">
+      <DependentUpon>ProjectTree.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="FileSystem.generated.cs">
       <DependentUpon>FileSystem.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -99,6 +104,10 @@
     <Compile Include="XmlNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ProjectTree.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ProjectTree.generated.cs</LastGenOutput>
+    </None>
     <None Include="FileSystem.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FileSystem.generated.cs</LastGenOutput>
@@ -136,6 +145,10 @@
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
       <Name>ImmutableObjectGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.VisualStudio.ProjectSystem.v12Only\Microsoft.VisualStudio.ProjectSystem.v12Only.csproj">
+      <Project>{91668e84-7b80-45a1-892c-fa2ee381e770}</Project>
+      <Name>Microsoft.VisualStudio.ProjectSystem.v12Only</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

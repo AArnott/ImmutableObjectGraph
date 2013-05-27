@@ -1,0 +1,31 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ assembly name="System.Drawing" #>
+<#@ assembly name="C:\Users\andarno\git\ImmutableObjectGraph\Microsoft.VisualStudio.ProjectSystem.v12Only\bin\Debug\Microsoft.VisualStudio.ProjectSystem.Mocks.dll" #>
+<#@ Import Namespace="System.Drawing" #>
+<#@ import Namespace="Microsoft.VisualStudio.ProjectSystem.Properties" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "ImmutableObjectGraph.Tests";
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	class ProjectTree {
+		[Required]
+		string caption;
+		string filePath;
+		System.Drawing.Image icon;
+		System.Drawing.Image expandedIcon;
+		bool visible;
+		IRule browseObjectProperties;
+		ImmutableHashSet<string> capabilities;
+		ImmutableSortedSet<ProjectTree> children;
+	}
+
+	class ProjectItemTree : ProjectTree {
+		IProjectPropertiesContext projectPropertiesContext;
+		IPropertySheet propertySheet;
+		bool isLinked;
+	}
+#>
