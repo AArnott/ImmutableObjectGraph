@@ -887,12 +887,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public virtual ProjectItemTree ToProjectItemTree(
-			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext> projectPropertiesContext = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
+			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			ProjectItemTree that = this as ProjectItemTree;
 			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemTree))) {
-				if ((!projectPropertiesContext.IsDefined || projectPropertiesContext.Value == that.ProjectPropertiesContext) && 
+				if ((projectPropertiesContext == that.ProjectPropertiesContext) && 
 				    (!propertySheet.IsDefined || propertySheet.Value == that.PropertySheet) && 
 				    (!isLinked.IsDefined || isLinked.Value == that.IsLinked)) {
 					return that;
@@ -1471,7 +1471,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public RootedProjectItemTree ToProjectItemTree(
-			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext> projectPropertiesContext = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
+			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectItemTree(
@@ -1637,6 +1637,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static ProjectItemTree Create(
 			System.String caption,
+			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
 			ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
@@ -1644,7 +1645,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
-			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext> projectPropertiesContext = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var identity = Optional.For(NewIdentity());
@@ -1657,7 +1657,7 @@ namespace ImmutableObjectGraph.Tests {
 				browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(DefaultInstance.BrowseObjectProperties)),
 				capabilities: Optional.For(capabilities.GetValueOrDefault(DefaultInstance.Capabilities)),
 				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
-				projectPropertiesContext: Optional.For(projectPropertiesContext.GetValueOrDefault(DefaultInstance.ProjectPropertiesContext)),
+				projectPropertiesContext: projectPropertiesContext,
 				propertySheet: Optional.For(propertySheet.GetValueOrDefault(DefaultInstance.PropertySheet)),
 				isLinked: Optional.For(isLinked.GetValueOrDefault(DefaultInstance.IsLinked)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
@@ -1881,7 +1881,7 @@ namespace ImmutableObjectGraph.Tests {
 				browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(this.BrowseObjectProperties)),
 				capabilities: Optional.For(capabilities.GetValueOrDefault(this.Capabilities)),
 				children: Optional.For(children.GetValueOrDefault(this.Children)),
-				projectPropertiesContext: Optional.For(projectPropertiesContext.GetValueOrDefault(this.ProjectPropertiesContext)),
+				projectPropertiesContext: projectPropertiesContext.GetValueOrDefault(this.ProjectPropertiesContext),
 				propertySheet: Optional.For(propertySheet.GetValueOrDefault(this.PropertySheet)),
 				isLinked: Optional.For(isLinked.GetValueOrDefault(this.IsLinked)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));

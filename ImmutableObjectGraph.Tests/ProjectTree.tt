@@ -24,6 +24,7 @@
 	}
 
 	class ProjectItemTree : ProjectTree {
+		[Required]
 		IProjectPropertiesContext projectPropertiesContext;
 		IPropertySheet propertySheet;
 		bool isLinked;
