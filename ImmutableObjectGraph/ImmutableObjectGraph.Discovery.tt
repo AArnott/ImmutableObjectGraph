@@ -3,6 +3,7 @@ HiddenTypes.Add(typeof(MetaType));
 HiddenTypes.Add(typeof(ArgSource));
 HiddenTypes.Add(typeof(HandleTypePosition));
 HiddenTypes.Add(typeof(ParameterStyle));
+HiddenTypes.Add(typeof(OptionalStyle));
 
 DiscoverTemplateTypes();
 #><#+
@@ -110,7 +111,13 @@ private enum ArgSource {
 	Missing,
 }
 
-private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3, bool concatenated = false, bool asOptional = false) {
+private enum OptionalStyle {
+	None,
+	WhenNotRequired,
+	Always,
+}
+
+private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource source = ArgSource.Property, int indent = 3, bool concatenated = false, OptionalStyle asOptional = OptionalStyle.None) {
 	PushIndent(new string('\t', indent));
 	bool firstInSequence = !concatenated;
 
@@ -120,7 +127,8 @@ private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource so
 		WriteLine("");
 		Write("{0}: ", field.NameCamelCase); // named arguments are important because the order can vary (due to required fields, etc.)
 
-		if (asOptional && !field.IsRequired) {
+		bool optionalWrap = asOptional != OptionalStyle.None && (asOptional == OptionalStyle.Always || !field.IsRequired);
+		if (optionalWrap) {
 			Write("Optional.For(");
 		}
 
@@ -142,7 +150,7 @@ private void WriteArguments(IEnumerable<MetaType.MetaField> fields, ArgSource so
 				break;
 		}
 
-		if (asOptional && !field.IsRequired) {
+		if (optionalWrap) {
 			Write(")");
 		}
 
@@ -223,7 +231,10 @@ protected class MetaType {
 	}
 
 	public bool IsDerivedFromRecursiveType {
-		get { return this.RecursiveTypeFromFamily.Type.IsAssignableFrom(this.Type); }
+		get {
+			var recursiveType = this.RecursiveTypeFromFamily;
+			return recursiveType != null && recursiveType.Type.IsAssignableFrom(this.Type);
+		}
 	}
 
 	public MetaField RecursiveField {
