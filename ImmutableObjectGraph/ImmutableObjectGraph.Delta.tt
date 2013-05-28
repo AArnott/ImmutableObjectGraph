@@ -7,6 +7,58 @@ this.HandleType += (templateType, position) => {
 			case HandleTypePosition.WithinTypeDeclaration:
 #>
 
+/// <summary>
+/// A description of a change made to an instance of an immutable object.
+/// </summary>
+public struct DiffGram {
+	private DiffGram(<#= templateType.TypeName #> before, <#= templateType.TypeName #> after, ChangeKind kind, <#= enumTypeName #> changes)
+		: this() {
+		this.Before = before;
+		this.After = after;
+		this.Kind = kind;
+		this.Changes = changes;
+	}
+
+	public static DiffGram Change(<#= templateType.TypeName #> before, <#= templateType.TypeName #> after, <#= enumTypeName #> changes) {
+		return new DiffGram(before, after, ChangeKind.Replaced, changes);
+	}
+
+	public static DiffGram Add(<#= templateType.TypeName #> value) {
+		return new DiffGram(null, value, ChangeKind.Added, default(<#= enumTypeName #>));
+	}
+
+	public static DiffGram Remove(<#= templateType.TypeName #> value) {
+		return new DiffGram(value, null, ChangeKind.Removed, default(<#= enumTypeName #>));
+	}
+
+	/// <summary>
+	/// Gets the leaf node before the change.
+	/// </summary>
+	public <#= templateType.TypeName #> Before { get; private set; }
+
+	/// <summary>
+	/// Gets the leaf node after the change.
+	/// </summary>
+	public <#= templateType.TypeName #> After { get; private set; }
+
+	/// <summary>
+	/// Gets the kind of change made to the alterered node.
+	/// </summary>
+	public ChangeKind Kind { get; private set; }
+
+	/// <summary>
+	/// Gets the kinds of changes made to node if <see cref="Kind"/> is <see cref="ChangeKind.Replaced"/>.
+	/// </summary>
+	public <#= enumTypeName #> Changes { get; private set; }
+
+	/// <summary>
+	/// Gets the identity of the affected object.
+	/// </summary>
+	public <#= templateType.RequiredIdentityField.TypeName #> Identity {
+		get { return (this.Before ?? this.After).Identity; }
+	}
+}
+
 public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
 	if (priorVersion == null) {
 		throw new System.ArgumentNullException("priorVersion");
@@ -203,6 +255,6 @@ this.HandleRedType += (templateType, position) => {
 	}
 
 	private string GetDiffGramTypeName(MetaType templateType) {
-		return "DiffGram<" + templateType.TypeName + ", " + GetPropertiesEnumTypeName(templateType) + ">";
+		return templateType.TypeName + ".DiffGram";
 	}
 #>

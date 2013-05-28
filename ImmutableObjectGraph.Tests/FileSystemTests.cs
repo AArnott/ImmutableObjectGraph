@@ -432,7 +432,7 @@
 			var root1 = FileSystemDirectory.Create("c:").AddChildren(
 				FileSystemFile.Create("file1.txt").AddAttributes("att1")).AsRoot;
 			var root2 = root1["file1.txt"].AsFileSystemFile.AddAttributes("att2").Root;
-			IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> changes = root2.ChangesSince(root1);
+			IReadOnlyList<FileSystemEntry.DiffGram> changes = root2.ChangesSince(root1);
 			var changesList = changes.ToList();
 			Assert.Equal(1, changesList.Count);
 			Assert.Same(root1["file1.txt"].FileSystemEntry, changesList[0].Before);
