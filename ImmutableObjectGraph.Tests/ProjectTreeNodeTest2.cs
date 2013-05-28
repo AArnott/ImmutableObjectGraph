@@ -184,14 +184,14 @@ namespace ImmutableObjectGraph.Tests {
 		}
 
 		[Fact]
-		public void Find() {
-			var path = this.node.Find(this.node.Identity).ToList();
+		public void GetSpine() {
+			var path = this.node.GetSpine(this.node.Identity).ToList();
 			Assert.Equal(1, path.Count);
 			Assert.Same(this.node, path[0]);
 
 			ProjectTree child;
 			var parent = this.node.AddChildren(child = this.NewTree("child"));
-			path = parent.Find(child.Identity).ToList();
+			path = parent.GetSpine(child.Identity).ToList();
 			Assert.Equal(2, path.Count);
 			Assert.Same(parent, path[0]);
 			Assert.Same(child, path[1]);
@@ -208,18 +208,18 @@ namespace ImmutableObjectGraph.Tests {
 
 				// Find every single node along the chain from the head to the tail.
 				for (int i = 0; i <= steps; i++) {
-					var actualChain = head.Find(expectedChain[i].Identity).ToList();
+					var actualChain = head.GetSpine(expectedChain[i].Identity).ToList();
 					Assert.Equal(expectedChain.Take(i + 1).Select(n => n.Identity).ToList(), actualChain.Select(n => n.Identity).ToList());
 				}
 
 				// Now find the tail from every node, starting at the tail to get code coverage on the inner-nodes' lazy search-building capabilities.
 				for (int i = steps; i >= 0; i--) {
-					var actualChain = expectedChain[i].Find(expectedChain.Last().Identity).ToList();
+					var actualChain = expectedChain[i].GetSpine(expectedChain.Last().Identity).ToList();
 					Assert.Equal(expectedChain.Skip(i).Select(n => n.Identity).ToList(), actualChain.Select(n => n.Identity).ToList());
 				}
 
 				// And test searches for non-related nodes.
-				Assert.Throws<KeyNotFoundException>(() => head.Find(this.node.Identity));
+				Assert.True(head.GetSpine(this.node.Identity).IsEmpty);
 			}
 		}
 

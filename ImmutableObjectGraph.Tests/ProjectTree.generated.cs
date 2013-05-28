@@ -897,7 +897,7 @@ namespace ImmutableObjectGraph.Tests {
 			return null;
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.Int32 descendent) {
+		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.Int32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<ProjectTree>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
@@ -938,7 +938,7 @@ namespace ImmutableObjectGraph.Tests {
 			return emptySpine;
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(ProjectTree descendent) {
+		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(ProjectTree descendent) {
 			return this.GetSpine(descendent.Identity);
 		}
 		
