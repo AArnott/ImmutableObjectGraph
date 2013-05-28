@@ -177,7 +177,7 @@ namespace ImmutableObjectGraph.Tests {
 			var node2 = this.NewNode(node1);
 			node1.ValidateInternalIntegrity();
 			node2.ValidateInternalIntegrity();
-			Assert.Throws<Exception>(() => {
+			Assert.Throws<RecursiveChildNotUniqueException>(() => {
 				var cycle = node1.AddChildren(node2);
 				cycle.ValidateInternalIntegrity();
 			});
