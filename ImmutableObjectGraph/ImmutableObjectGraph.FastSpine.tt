@@ -86,15 +86,17 @@ private void ContributeDescendentsToLookupTable(<#= templateType.NodeLookupTable
 	}
 }
 
-public <#= templateType.RecursiveType.TypeName #> Find(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+public bool TryFind(<#= templateType.RequiredIdentityField.TypeName #> identity, out <#= templateType.RecursiveType.TypeName #> value) {
 	if (this.Identity.Equals(identity)) {
-		return this;
+		value = this;
+		return true;
 	}
 
 	if (this.LookupTable != null) {
 		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
 		if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-			return lookupValue.Key;
+			value = lookupValue.Key;
+			return true;
 		}
 	} else {
 		// No lookup table means we have to aggressively search each child.
@@ -103,17 +105,29 @@ public <#= templateType.RecursiveType.TypeName #> Find(<#= templateType.Required
 			if (recursiveChild != null) {
 				var result = recursiveChild.Find(identity);
 				if (result != null) {
-					return result;
+					value = result;
+					return true;
 				}
 			} else {
 				if (child.Identity.Equals(identity)) {
-					return child;
+					value = child;
+					return true;
 				}
 			}
 		}
 	}
 
-	return null;
+	value = null;
+	return false;
+}
+
+public <#= templateType.RecursiveType.TypeName #> Find(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+	<#= templateType.RecursiveType.TypeName #> result;
+	if (this.TryFind(identity, out result)) {
+		return result;
+	}
+
+	throw new System.Collections.Generic.KeyNotFoundException();
 }
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
