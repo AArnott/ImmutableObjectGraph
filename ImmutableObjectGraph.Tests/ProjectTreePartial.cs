@@ -29,7 +29,7 @@
 			}
 		}
 
-		public static IReadOnlyList<DiffGram<ProjectTree, ProjectTreeChangedProperties>> GetDelta(ProjectTree before, ProjectTree after) {
+		public static IReadOnlyList<DiffGram> GetDelta(ProjectTree before, ProjectTree after) {
 			return after.ChangesSince(before);
 		}
 	}

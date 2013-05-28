@@ -437,7 +437,59 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedProjectTree(this, root);
 		}
 		
-		public virtual System.Collections.Generic.IReadOnlyList<DiffGram<ProjectTree, ProjectTreeChangedProperties>> ChangesSince(ProjectTree priorVersion) {
+		/// <summary>
+		/// A description of a change made to an instance of an immutable object.
+		/// </summary>
+		public struct DiffGram {
+			private DiffGram(ProjectTree before, ProjectTree after, ChangeKind kind, ProjectTreeChangedProperties changes)
+				: this() {
+				this.Before = before;
+				this.After = after;
+				this.Kind = kind;
+				this.Changes = changes;
+			}
+		
+			public static DiffGram Change(ProjectTree before, ProjectTree after, ProjectTreeChangedProperties changes) {
+				return new DiffGram(before, after, ChangeKind.Replaced, changes);
+			}
+		
+			public static DiffGram Add(ProjectTree value) {
+				return new DiffGram(null, value, ChangeKind.Added, default(ProjectTreeChangedProperties));
+			}
+		
+			public static DiffGram Remove(ProjectTree value) {
+				return new DiffGram(value, null, ChangeKind.Removed, default(ProjectTreeChangedProperties));
+			}
+		
+			/// <summary>
+			/// Gets the leaf node before the change.
+			/// </summary>
+			public ProjectTree Before { get; private set; }
+		
+			/// <summary>
+			/// Gets the leaf node after the change.
+			/// </summary>
+			public ProjectTree After { get; private set; }
+		
+			/// <summary>
+			/// Gets the kind of change made to the alterered node.
+			/// </summary>
+			public ChangeKind Kind { get; private set; }
+		
+			/// <summary>
+			/// Gets the kinds of changes made to node if <see cref="Kind"/> is <see cref="ChangeKind.Replaced"/>.
+			/// </summary>
+			public ProjectTreeChangedProperties Changes { get; private set; }
+		
+			/// <summary>
+			/// Gets the identity of the affected object.
+			/// </summary>
+			public System.Int32 Identity {
+				get { return (this.Before ?? this.After).Identity; }
+			}
+		}
+		
+		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
 			if (priorVersion == null) {
 				throw new System.ArgumentNullException("priorVersion");
 			}
@@ -446,10 +498,10 @@ namespace ImmutableObjectGraph.Tests {
 				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
 			}
 		
-			var history = new System.Collections.Generic.List<DiffGram<ProjectTree, ProjectTreeChangedProperties>>();
+			var history = new System.Collections.Generic.List<ProjectTree.DiffGram>();
 			var changes = this.DiffProperties(priorVersion);
 			if (changes != ProjectTreeChangedProperties.None) {
-				history.Add(DiffGram<ProjectTree, ProjectTreeChangedProperties>.Change(priorVersion, this, changes));
+				history.Add(ProjectTree.DiffGram.Change(priorVersion, this, changes));
 			}
 		
 			return history;
@@ -1465,7 +1517,7 @@ namespace ImmutableObjectGraph.Tests {
 			return this.Children.GetEnumerator();
 		}
 	
-		public System.Collections.Generic.IReadOnlyList<DiffGram<ProjectTree, ProjectTreeChangedProperties>> ChangesSince(RootedProjectTree priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(RootedProjectTree priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.ProjectTree);
 		}
@@ -2515,7 +2567,7 @@ namespace ImmutableObjectGraph.Tests {
 			return newGreenNode.WithRoot(newRoot);
 		}
 	
-		public System.Collections.Generic.IReadOnlyList<DiffGram<ProjectTree, ProjectTreeChangedProperties>> ChangesSince(RootedProjectItemTree priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(RootedProjectItemTree priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.ProjectItemTree);
 		}

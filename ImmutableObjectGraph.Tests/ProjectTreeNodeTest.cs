@@ -132,7 +132,7 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Added, differences[0].Kind);
 			Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
-			Assert.Equal(differences[0].NodeIdentity, node1b.Identity, "The added node in history should be identity-equal to the most recent node.");
+			Assert.Equal(differences[0].Identity, node1b.Identity); // The added node in history should be identity-equal to the most recent node.
 		}
 
 		[Fact]
@@ -149,7 +149,7 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Removed, differences[0].Kind);
 			Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
-			Assert.Equal(differences[0].NodeIdentity, node1b.Identity, "The added node in history should be identity-equal to the most recent node.");
+			Assert.Equal(differences[0].Identity, node1b.Identity); // The added node in history should be identity-equal to the most recent node.
 		}
 
 		[Fact]
@@ -205,7 +205,7 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Added, differences[0].Kind);
 			Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
-			Assert.Equal(differences[0].NodeIdentity, child.Identity, "The added node in history should be identity-equal to the most recent node.");
+			Assert.Equal(differences[0].Identity, child.Identity); // The added node in history should be identity-equal to the most recent node.
 		}
 
 		/// <summary>
@@ -226,7 +226,7 @@ namespace ImmutableObjectGraph.Tests {
 			var differences = ProjectTree.GetDelta(treeRevisions[0], treeRevisions.Last()).ToList();
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Added, differences[0].Kind);
-			Assert.Equal(differences[0].NodeIdentity, child.Identity, "Expected the removed node to be the child node");
+			Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
 		}
 
 		/// <summary>
@@ -252,7 +252,7 @@ namespace ImmutableObjectGraph.Tests {
 			var differences = ProjectTree.GetDelta(originalTree, head).ToList();
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Removed, differences[0].Kind);
-			Assert.Equal(differences[0].NodeIdentity, child.Identity, "Expected the removed node to be the child node");
+			Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
 		}
 
 		/// <summary>
@@ -281,13 +281,13 @@ namespace ImmutableObjectGraph.Tests {
 			var differences = ProjectTree.GetDelta(originalTree, treeRevisions[1]).ToList();
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Added, differences[0].Kind);
-			Assert.Equal(differences[0].NodeIdentity, child.Identity, "Expected the removed node to be the child node");
+			Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
 
 			// Verify that from beginning to very end, still only one change is reported.
 			differences = ProjectTree.GetDelta(originalTree, head).ToList();
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Added, differences[0].Kind);
-			Assert.Equal(differences[0].NodeIdentity, child.Identity, "Expected the removed node to be the child node");
+			Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
 		}
 
 		/// <summary>
@@ -321,7 +321,7 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Removed, differences[0].Kind);
 			Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
-			Assert.Equal(differences[0].NodeIdentity, child.Identity, "The added node in history should be identity-equal to the most recent node.");
+			Assert.Equal(differences[0].Identity, child.Identity); // The added node in history should be identity-equal to the most recent node.
 		}
 
 		/// <summary>
@@ -411,9 +411,9 @@ namespace ImmutableObjectGraph.Tests {
 			var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions[1], (ProjectTree)treeRevisions[2]).ToList();
 			Assert.Equal(2, differences.Count);
 			Assert.Equal(ChangeKind.Removed, differences[0].Kind);
-			Assert.Equal(node1a.Identity, differences[0].NodeIdentity);
+			Assert.Equal(node1a.Identity, differences[0].Identity);
 			Assert.Equal(ChangeKind.Added, differences[1].Kind);
-			Assert.Equal(node1b.Identity, differences[1].NodeIdentity);
+			Assert.Equal(node1b.Identity, differences[1].Identity);
 		}
 	}
 }
