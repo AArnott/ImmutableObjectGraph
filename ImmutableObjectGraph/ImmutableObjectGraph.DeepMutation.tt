@@ -166,9 +166,11 @@ private <#= templateType.NodeLookupTableTypeName #> FixupLookupTable(ImmutableOb
 
 public <#= !templateType.IsRecursiveType ? "override " : "" #>System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> GetSelfAndDescendents() {
 	yield return this;
-	foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>) {
-		foreach (var descendent in child.GetSelfAndDescendents()) {
-			yield return descendent;
+	if (this.<#= templateType.RecursiveField.NamePascalCase #> != null) {
+		foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>) {
+			foreach (var descendent in child.GetSelfAndDescendents()) {
+				yield return descendent;
+			}
 		}
 	}
 }
