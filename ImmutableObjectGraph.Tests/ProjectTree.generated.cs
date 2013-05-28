@@ -699,9 +699,11 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public System.Collections.Generic.IEnumerable<ProjectTree> GetSelfAndDescendents() {
 			yield return this;
-			foreach (var child in this.Children) {
-				foreach (var descendent in child.GetSelfAndDescendents()) {
-					yield return descendent;
+			if (this.Children != null) {
+				foreach (var child in this.Children) {
+					foreach (var descendent in child.GetSelfAndDescendents()) {
+						yield return descendent;
+					}
 				}
 			}
 		}
@@ -793,10 +795,12 @@ namespace ImmutableObjectGraph.Tests {
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
 			} else {
-				foreach (var child in this.children)
-				{
-					var recursiveChild = child as ProjectTree;
-					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				if (this.children != null) {
+					foreach (var child in this.children)
+					{
+						var recursiveChild = child as ProjectTree;
+						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+					}
 				}
 		
 				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
