@@ -103,9 +103,7 @@ public bool TryFind(<#= templateType.RequiredIdentityField.TypeName #> identity,
 		foreach (var child in this.Children) {
 			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
 			if (recursiveChild != null) {
-				var result = recursiveChild.Find(identity);
-				if (result != null) {
-					value = result;
+				if (recursiveChild.TryFind(identity, out value)) {
 					return true;
 				}
 			} else {
@@ -128,6 +126,12 @@ public <#= templateType.RecursiveType.TypeName #> Find(<#= templateType.Required
 	}
 
 	throw new System.Collections.Generic.KeyNotFoundException();
+}
+
+/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
+public bool Contains(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+	<#= templateType.RecursiveType.TypeName #> result;
+	return this.TryFind(identity, out result) && result != this;
 }
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
