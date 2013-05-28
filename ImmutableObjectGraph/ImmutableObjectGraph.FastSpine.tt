@@ -144,7 +144,7 @@ internal <#= templateType.RecursiveParent.TypeName #> GetParent(<#= templateType
 	return null;
 }
 
-internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RequiredIdentityField.TypeName #> descendent) {
+public System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RequiredIdentityField.TypeName #> descendent) {
 	var emptySpine = System.Collections.Immutable.ImmutableStack.Create<<#= templateType.RecursiveType.TypeName #>>();
 	if (this.Identity.Equals(descendent)) {
 		return emptySpine.Push(this);
@@ -185,7 +185,7 @@ internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveT
 	return emptySpine;
 }
 
-internal System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RecursiveType.TypeName #> descendent) {
+public System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RecursiveType.TypeName #> descendent) {
 	return this.GetSpine(descendent.Identity);
 }
 <#
