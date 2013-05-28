@@ -21,7 +21,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.node = (ProjectTree)this.NewTree(Caption, children: this.Children);
 		}
 
-		public override void Cleanup() {
+		protected override void Cleanup() {
 			this.node.ValidateInternalIntegrity();
 			base.Cleanup();
 		}
@@ -177,15 +177,10 @@ namespace ImmutableObjectGraph.Tests {
 			var node2 = this.NewNode(node1);
 			node1.ValidateInternalIntegrity();
 			node2.ValidateInternalIntegrity();
-			using (new AssertDialogSuppression()) {
-				try {
-					var cycle = node1.AddChildren(node2);
-					cycle.ValidateInternalIntegrity();
-					Assert.True(false, "Expected exception not thrown for invalid tree.");
-				} catch (Exception) {
-					// expected
-				}
-			}
+			Assert.Throws<Exception>(() => {
+				var cycle = node1.AddChildren(node2);
+				cycle.ValidateInternalIntegrity();
+			});
 		}
 
 		[Fact]
@@ -214,13 +209,13 @@ namespace ImmutableObjectGraph.Tests {
 				// Find every single node along the chain from the head to the tail.
 				for (int i = 0; i <= steps; i++) {
 					var actualChain = head.Find(expectedChain[i].Identity).ToList();
-					CollectionAssert.AreEqual(expectedChain.Take(i + 1).Select(n => n.Identity).ToList(), actualChain.Select(n => n.Identity).ToList());
+					Assert.Equal(expectedChain.Take(i + 1).Select(n => n.Identity).ToList(), actualChain.Select(n => n.Identity).ToList());
 				}
 
 				// Now find the tail from every node, starting at the tail to get code coverage on the inner-nodes' lazy search-building capabilities.
 				for (int i = steps; i >= 0; i--) {
 					var actualChain = expectedChain[i].Find(expectedChain.Last().Identity).ToList();
-					CollectionAssert.AreEqual(expectedChain.Skip(i).Select(n => n.Identity).ToList(), actualChain.Select(n => n.Identity).ToList());
+					Assert.Equal(expectedChain.Skip(i).Select(n => n.Identity).ToList(), actualChain.Select(n => n.Identity).ToList());
 				}
 
 				// And test searches for non-related nodes.
@@ -244,7 +239,7 @@ namespace ImmutableObjectGraph.Tests {
 
 		[Fact]
 		public void GetHashCodeTest() {
-			var newNode = this.NodeFactory.CreateNode("some caption", oldNode: this.node);
+			var newNode = this.node.WithCaption("some caption");
 			Assert.Equal(this.node.GetHashCode(), newNode.GetHashCode());
 		}
 	}

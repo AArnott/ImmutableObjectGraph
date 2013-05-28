@@ -19,7 +19,7 @@ namespace ImmutableObjectGraph.Tests
         /// An empty set of project tree capabilities with the case-insensitive comparer.
         /// </summary>
         [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Is indeed immutable.")]
-        public static readonly ImmutableHashSet<string> EmptyCapabilities = ImmutableHashSet<string>.Empty.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        public static readonly ImmutableHashSet<string> EmptyCapabilities = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Indicates that this node is the root project node.

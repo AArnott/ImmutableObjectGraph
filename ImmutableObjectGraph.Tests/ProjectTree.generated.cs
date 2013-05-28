@@ -96,7 +96,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				caption: caption,
+				caption: Optional.For(caption),
 				filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
 				icon: Optional.For(icon.GetValueOrDefault(DefaultInstance.Icon)),
 				expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(DefaultInstance.ExpandedIcon)),
@@ -315,7 +315,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				caption: caption.GetValueOrDefault(this.Caption),
+				caption: Optional.For(caption.GetValueOrDefault(this.Caption)),
 				filePath: Optional.For(filePath.GetValueOrDefault(this.FilePath)),
 				icon: Optional.For(icon.GetValueOrDefault(this.Icon)),
 				expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(this.ExpandedIcon)),
@@ -723,7 +723,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// The maximum number of steps allowable for a search to be done among this node's children
 		/// before a faster lookup table will be built.
 		/// </summary>
-		private const int InefficiencyLoadThreshold = 16;
+		internal const int InefficiencyLoadThreshold = 16;
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> LookupTable {
 			get {
@@ -1649,7 +1649,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				caption: caption,
+				caption: Optional.For(caption),
 				filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
 				icon: Optional.For(icon.GetValueOrDefault(DefaultInstance.Icon)),
 				expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(DefaultInstance.ExpandedIcon)),
@@ -1657,7 +1657,7 @@ namespace ImmutableObjectGraph.Tests {
 				browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(DefaultInstance.BrowseObjectProperties)),
 				capabilities: Optional.For(capabilities.GetValueOrDefault(DefaultInstance.Capabilities)),
 				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
-				projectPropertiesContext: projectPropertiesContext,
+				projectPropertiesContext: Optional.For(projectPropertiesContext),
 				propertySheet: Optional.For(propertySheet.GetValueOrDefault(DefaultInstance.PropertySheet)),
 				isLinked: Optional.For(isLinked.GetValueOrDefault(DefaultInstance.IsLinked)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
@@ -1873,7 +1873,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				caption: caption.GetValueOrDefault(this.Caption),
+				caption: Optional.For(caption.GetValueOrDefault(this.Caption)),
 				filePath: Optional.For(filePath.GetValueOrDefault(this.FilePath)),
 				icon: Optional.For(icon.GetValueOrDefault(this.Icon)),
 				expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(this.ExpandedIcon)),
@@ -1881,7 +1881,7 @@ namespace ImmutableObjectGraph.Tests {
 				browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(this.BrowseObjectProperties)),
 				capabilities: Optional.For(capabilities.GetValueOrDefault(this.Capabilities)),
 				children: Optional.For(children.GetValueOrDefault(this.Children)),
-				projectPropertiesContext: projectPropertiesContext.GetValueOrDefault(this.ProjectPropertiesContext),
+				projectPropertiesContext: Optional.For(projectPropertiesContext.GetValueOrDefault(this.ProjectPropertiesContext)),
 				propertySheet: Optional.For(propertySheet.GetValueOrDefault(this.PropertySheet)),
 				isLinked: Optional.For(isLinked.GetValueOrDefault(this.IsLinked)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));

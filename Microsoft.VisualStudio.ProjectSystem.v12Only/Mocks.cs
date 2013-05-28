@@ -13,4 +13,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.Properties {
 
 	public interface IPropertySheet {
 	}
+
+	public class ProjectPropertiesContext : IProjectPropertiesContext {
+	}
 }

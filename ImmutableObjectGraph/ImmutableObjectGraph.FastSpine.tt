@@ -24,7 +24,7 @@ private int inefficiencyLoad;
 /// The maximum number of steps allowable for a search to be done among this node's children
 /// before a faster lookup table will be built.
 /// </summary>
-private const int InefficiencyLoadThreshold = 16;
+internal const int InefficiencyLoadThreshold = 16;
 
 private <#= templateType.NodeLookupTableTypeName #> LookupTable {
 	get {
