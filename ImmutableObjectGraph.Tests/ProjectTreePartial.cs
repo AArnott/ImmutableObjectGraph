@@ -10,10 +10,6 @@
 
 	[DebuggerDisplay("{Caption} ({Identity})")]
 	partial class ProjectTree {
-		public bool Contains(int identity) {
-			return this.Find(identity) != null;
-		}
-
 		/// <summary>
 		/// Walks a project tree starting at a given node, using a breadth-first search pattern.
 		/// </summary>

@@ -161,7 +161,7 @@ namespace ImmutableObjectGraph.Tests {
 			var head = leaf;
 			expectedChain.Add(head);
 			for (int i = 0; i < ProjectTree.InefficiencyLoadThreshold * 3; i++) {
-				head = (ProjectTree)this.NewTree("step " + (i + 1), children: head);
+				head = (ProjectTree)this.NewTree("step " + (i + 1), children: new[] { head });
 				expectedChain.Insert(0, head);
 			}
 

@@ -839,34 +839,52 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public ProjectTree Find(System.Int32 identity) {
+		public bool TryFind(System.Int32 identity, out ProjectTree value) {
 			if (this.Identity.Equals(identity)) {
-				return this;
+				value = this;
+				return true;
 			}
 		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					return lookupValue.Key;
+					value = lookupValue.Key;
+					return true;
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.
 				foreach (var child in this.Children) {
 					var recursiveChild = child as ProjectTree;
 					if (recursiveChild != null) {
-						var result = recursiveChild.Find(identity);
-						if (result != null) {
-							return result;
+						if (recursiveChild.TryFind(identity, out value)) {
+							return true;
 						}
 					} else {
 						if (child.Identity.Equals(identity)) {
-							return child;
+							value = child;
+							return true;
 						}
 					}
 				}
 			}
 		
-			return null;
+			value = null;
+			return false;
+		}
+		
+		public ProjectTree Find(System.Int32 identity) {
+			ProjectTree result;
+			if (this.TryFind(identity, out result)) {
+				return result;
+			}
+		
+			throw new System.Collections.Generic.KeyNotFoundException();
+		}
+		
+		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
+		public bool Contains(System.Int32 identity) {
+			ProjectTree result;
+			return this.TryFind(identity, out result) && result != this;
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
