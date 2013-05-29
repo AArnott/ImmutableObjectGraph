@@ -24,7 +24,8 @@ protected <#= recursiveField.ElementTypeName #> SyncImmediateChildToCurrentVersi
 };
 
 this.HandleField += (templateType, field) => {
-	string keywords = field.DeclaringType.Equals(templateType) ? "" : "new ";
+	bool isNew = !field.DeclaringType.Equals(templateType);
+	string keywords = isNew ? "new " : string.Empty;
 	if (field.IsCollection) {
 		string plural = field.NamePascalCase;
 		string singular = this.PluralService.Singularize(field.NamePascalCase);
@@ -32,27 +33,47 @@ this.HandleField += (templateType, field) => {
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> With<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.With<#= field.NamePascalCase #>(values);
+<#		} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
+<#		} #>
 }
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.With<#= field.NamePascalCase #>(values);
+<#		} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
+<#		} #>
 }
 
 /// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Add<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.Add<#= field.NamePascalCase #>(values);
+<#		} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
+<#		} #>
 }
 
 /// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Add<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.Add<#= field.NamePascalCase #>(values);
+<#		} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
+<#		} #>
 }
 
 /// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Add<#= singular #>(<#= field.ElementTypeName #> value) {
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.Add<#= singular #>(value);
+<#		} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Add(value));
+<#		} #>
 }
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
@@ -84,7 +105,11 @@ public <#= keywords #><#= templateType.TypeName #> Remove<#= singular #>(<#= fie
 
 /// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCase #>() {
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.Remove<#= field.NamePascalCase #>();
+<#		} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Clear());
+<#		} #>
 }
 
 <#
