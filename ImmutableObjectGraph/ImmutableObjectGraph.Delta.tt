@@ -59,6 +59,37 @@ public struct DiffGram {
 	}
 }
 
+public static class Comparers {
+	/// <summary>Gets an equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
+	public static IdentityEqualityComparer Identity {
+		get { return IdentityEqualityComparer.Default; }
+	}
+
+	/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
+	public class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>>, System.Collections.Generic.IComparer<<#= templateType.TypeName #>> {
+		private static readonly IdentityEqualityComparer DefaultInstance = new IdentityEqualityComparer();
+
+		private IdentityEqualityComparer() {
+		}
+
+		internal static IdentityEqualityComparer Default {
+			get { return DefaultInstance; }
+		}
+
+		public bool Equals(<#= templateType.TypeName #> x, <#= templateType.TypeName #> y) {
+			return x.Identity == y.Identity;
+		}
+
+		public int GetHashCode(<#= templateType.TypeName #> obj) {
+			return obj.Identity.GetHashCode();
+		}
+
+		public int Compare(<#= templateType.TypeName #> x, <#= templateType.TypeName #> y) {
+			return x.Identity.CompareTo(y.Identity);
+		}
+	}
+}
+
 public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
 	if (priorVersion == null) {
 		throw new System.ArgumentNullException("priorVersion");
