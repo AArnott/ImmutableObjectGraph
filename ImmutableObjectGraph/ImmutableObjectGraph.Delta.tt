@@ -60,20 +60,26 @@ public struct DiffGram {
 }
 
 public static class Comparers {
-	/// <summary>Gets an equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
-	public static IdentityEqualityComparer Identity {
+	/// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
+	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> Identity {
 		get { return IdentityEqualityComparer.Default; }
 	}
 
+	/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
+	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValue {
+		get { return ValueEqualityComparer.Shallow; }
+	}
+
+	/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
+	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValueWithDescendents {
+		get { return ValueEqualityComparer.Deep; }
+	}
+
 	/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
-	public class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>>, System.Collections.Generic.IComparer<<#= templateType.TypeName #>> {
-		private static readonly IdentityEqualityComparer DefaultInstance = new IdentityEqualityComparer();
+	private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> {
+		internal static readonly System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> Default = new IdentityEqualityComparer();
 
 		private IdentityEqualityComparer() {
-		}
-
-		internal static IdentityEqualityComparer Default {
-			get { return DefaultInstance; }
 		}
 
 		public bool Equals(<#= templateType.TypeName #> x, <#= templateType.TypeName #> y) {
@@ -83,9 +89,37 @@ public static class Comparers {
 		public int GetHashCode(<#= templateType.TypeName #> obj) {
 			return obj.Identity.GetHashCode();
 		}
+	}
 
-		public int Compare(<#= templateType.TypeName #> x, <#= templateType.TypeName #> y) {
-			return x.Identity.CompareTo(y.Identity);
+	private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> {
+		internal static readonly System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> Shallow = new ValueEqualityComparer(false);
+
+		internal static readonly System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> Deep = new ValueEqualityComparer(true);
+
+		private bool includeRecursiveChildren;
+
+		private ValueEqualityComparer(bool includeRecursiveChildren) {
+			this.includeRecursiveChildren = includeRecursiveChildren;
+		}
+
+		public bool Equals(<#= templateType.TypeName #> x, <#= templateType.TypeName #> y) {
+			if (x == null && y == null) {
+				return true;
+			}
+
+			if (x == null ^ y == null) {
+				return false;
+			}
+
+			if (this.includeRecursiveChildren) {
+				throw new System.NotImplementedException();
+			}
+
+			return x.DiffProperties(y) == <#= enumTypeName #>.None;
+		}
+
+		public int GetHashCode(<#= templateType.TypeName #> obj) {
+			return obj.Identity.GetHashCode();
 		}
 	}
 }
