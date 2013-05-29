@@ -1,7 +1,10 @@
 ﻿<#
 this.HandleField += (templateType, field) => {
 	string keywords = field.DeclaringType.Equals(templateType) ? "" : "new ";
-	if (field.IsCollection) { #>
+	if (field.IsCollection) {
+		string plural = field.NamePascalCase;
+		string singular = this.PluralService.Singularize(field.NamePascalCase);
+#>
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> With<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
@@ -24,7 +27,7 @@ public <#= keywords #><#= templateType.TypeName #> Add<#= field.NamePascalCase #
 }
 
 /// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
-public <#= keywords #><#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+public <#= keywords #><#= templateType.TypeName #> Add<#= singular #>(<#= field.ElementTypeName #> value) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Add(value));
 }
 
@@ -39,7 +42,7 @@ public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCas
 }
 
 /// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
-public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+public <#= keywords #><#= templateType.TypeName #> Remove<#= singular #>(<#= field.ElementTypeName #> value) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(value));
 }
 
