@@ -87,7 +87,7 @@ namespace ImmutableObjectGraph.Tests {
 			var child = this.NewNode(grandChild1);
 			var parent = this.NewNode(child);
 
-			var newParent = parent.RemoveChildren(grandChild1);
+			var newParent = parent.RemoveDescendent(grandChild1);
 			Assert.Equal(1, parent.Children[0].Children.Count);
 			Assert.Equal(0, newParent.Children[0].Children.Count);
 		}
