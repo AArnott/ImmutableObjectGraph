@@ -490,20 +490,26 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public static class Comparers {
-			/// <summary>Gets an equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
-			public static IdentityEqualityComparer Identity {
+			/// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
+			public static System.Collections.Generic.IEqualityComparer<ProjectTree> Identity {
 				get { return IdentityEqualityComparer.Default; }
 			}
 		
+			/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
+			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValue {
+				get { return ValueEqualityComparer.Shallow; }
+			}
+		
+			/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
+			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValueWithDescendents {
+				get { return ValueEqualityComparer.Deep; }
+			}
+		
 			/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
-			public class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree>, System.Collections.Generic.IComparer<ProjectTree> {
-				private static readonly IdentityEqualityComparer DefaultInstance = new IdentityEqualityComparer();
+			private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
+				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Default = new IdentityEqualityComparer();
 		
 				private IdentityEqualityComparer() {
-				}
-		
-				internal static IdentityEqualityComparer Default {
-					get { return DefaultInstance; }
 				}
 		
 				public bool Equals(ProjectTree x, ProjectTree y) {
@@ -513,9 +519,37 @@ namespace ImmutableObjectGraph.Tests {
 				public int GetHashCode(ProjectTree obj) {
 					return obj.Identity.GetHashCode();
 				}
+			}
 		
-				public int Compare(ProjectTree x, ProjectTree y) {
-					return x.Identity.CompareTo(y.Identity);
+			private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
+				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Shallow = new ValueEqualityComparer(false);
+		
+				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Deep = new ValueEqualityComparer(true);
+		
+				private bool includeRecursiveChildren;
+		
+				private ValueEqualityComparer(bool includeRecursiveChildren) {
+					this.includeRecursiveChildren = includeRecursiveChildren;
+				}
+		
+				public bool Equals(ProjectTree x, ProjectTree y) {
+					if (x == null && y == null) {
+						return true;
+					}
+		
+					if (x == null ^ y == null) {
+						return false;
+					}
+		
+					if (this.includeRecursiveChildren) {
+						throw new System.NotImplementedException();
+					}
+		
+					return x.DiffProperties(y) == ProjectTreeChangedProperties.None;
+				}
+		
+				public int GetHashCode(ProjectTree obj) {
+					return obj.Identity.GetHashCode();
 				}
 			}
 		}

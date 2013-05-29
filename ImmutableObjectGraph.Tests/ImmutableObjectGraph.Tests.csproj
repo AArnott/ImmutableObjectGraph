@@ -67,6 +67,7 @@
     <Compile Include="ProjectTreeNodeTestBase.cs" />
     <Compile Include="ProjectTreePartial.cs" />
     <Compile Include="ProjectTreeSort.cs" />
+    <Compile Include="ProjectTreeTests.cs" />
     <Compile Include="RequiresAndHierarchy.generated.cs">
       <DependentUpon>RequiresAndHierarchy.tt</DependentUpon>
       <AutoGen>True</AutoGen>
