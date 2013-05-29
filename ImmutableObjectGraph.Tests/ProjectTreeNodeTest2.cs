@@ -76,9 +76,15 @@ namespace ImmutableObjectGraph.Tests {
 		}
 
 		[Fact]
+		public void RemoveChildrenThrowsOnMissingChild() {
+			var newChild = this.NewNode();
+			Assert.Throws<ArgumentException>(() => this.node.RemoveChildren(new [] { newChild }));
+		}
+
+		[Fact]
 		public void RemoveChildThrowsOnMissingChild() {
 			var newChild = this.NewNode();
-			Assert.Throws<ArgumentException>(() => this.node.RemoveChildren(newChild));
+			Assert.Throws<ArgumentException>(() => this.node.RemoveChild(newChild));
 		}
 
 		[Fact]

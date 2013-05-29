@@ -100,13 +100,35 @@ namespace ImmutableObjectGraph.Tests {
 		}
 
 		[Fact]
-		public void MutationIdentityConsistentAcrossVersions() {
+		public void RemoveChildWorksBasedOnIdentity() {
 			var tree1 = this.NewTree("Some tree");
 			var child = this.NewTree(Caption);
 			var tree2 = tree1.AddChildren(child);
 			var newChild = child.WithCaption(ModifiedCaption);
 			var tree3 = tree2.ReplaceDescendent(child, newChild);
-			var tree4 = tree3.RemoveChildren(child);
+			var tree4 = tree3.RemoveChild(child);
+			Assert.Equal(0, tree4.Children.Count);
+		}
+
+		[Fact]
+		public void RemoveChildrenWorksBasedOnIdentity() {
+			var tree1 = this.NewTree("Some tree");
+			var child = this.NewTree(Caption);
+			var tree2 = tree1.AddChildren(child);
+			var newChild = child.WithCaption(ModifiedCaption);
+			var tree3 = tree2.ReplaceDescendent(child, newChild);
+			var tree4 = tree3.RemoveChildren(new [] { child });
+			Assert.Equal(0, tree4.Children.Count);
+		}
+
+		[Fact]
+		public void RemoveDescendentWorksBasedOnIdentity() {
+			var tree1 = this.NewTree("Some tree");
+			var child = this.NewTree(Caption);
+			var tree2 = tree1.AddChildren(child);
+			var newChild = child.WithCaption(ModifiedCaption);
+			var tree3 = tree2.ReplaceDescendent(child, newChild);
+			var tree4 = tree3.RemoveDescendent(child);
 			Assert.Equal(0, tree4.Children.Count);
 		}
 

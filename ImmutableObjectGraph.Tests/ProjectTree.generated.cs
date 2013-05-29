@@ -223,7 +223,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
-		public ProjectTree AddCapabilities(System.String value) {
+		public ProjectTree AddCapability(System.String value) {
 			return this.With(capabilities: this.Capabilities.Add(value));
 		}
 		
@@ -238,7 +238,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
-		public ProjectTree RemoveCapabilities(System.String value) {
+		public ProjectTree RemoveCapability(System.String value) {
 			return this.With(capabilities: this.Capabilities.Remove(value));
 		}
 		
@@ -278,23 +278,23 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public ProjectTree AddChildren(ProjectTree value) {
+		public ProjectTree AddChild(ProjectTree value) {
 			return this.With(children: this.Children.Add(value));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public ProjectTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public ProjectTree RemoveChildren(params ProjectTree[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public ProjectTree RemoveChildren(ProjectTree value) {
-			return this.With(children: this.Children.Remove(value));
+		public ProjectTree RemoveChild(ProjectTree value) {
+			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
@@ -580,6 +580,15 @@ namespace ImmutableObjectGraph.Tests {
 			return propertiesChanged;
 		}
 		
+		protected ProjectTree SyncImmediateChildToCurrentVersion(ProjectTree child) {
+			ProjectTree currentValue;
+			if (!this.TryFindImmediateChild(child.Identity, out currentValue)) {
+				throw new System.ArgumentException();
+			}
+		
+			return currentValue;
+		}
+		
 		public ProjectTree AddDescendent(ProjectTree value, ProjectTree parent) {
 			var spine = this.GetSpine(parent);
 			var newParent = parent.AddChildren(value);
@@ -589,8 +598,9 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public ProjectTree RemoveDescendent(ProjectTree value) {
 			var spine = this.GetSpine(value);
-			var parent = (ProjectTree)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
-			var newParent = parent.RemoveChildren(value);
+			var spineList = spine.ToList();
+			var parent = (ProjectTree)spineList[spineList.Count - 2];
+			var newParent = parent.RemoveChildren(spineList[spineList.Count - 1]);
 		
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create((ProjectTree)newParent);
 			return (ProjectTree)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
@@ -883,7 +893,7 @@ namespace ImmutableObjectGraph.Tests {
 					return true;
 				}
 			} else {
-				// No lookup table means we have to aggressively search each child.
+				// No lookup table means we have to exhaustively search each child and its descendents.
 				foreach (var child in this.Children) {
 					var recursiveChild = child as ProjectTree;
 					if (recursiveChild != null) {
@@ -910,6 +920,27 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			throw new System.Collections.Generic.KeyNotFoundException();
+		}
+		
+		public bool TryFindImmediateChild(System.Int32 identity, out ProjectTree value) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.Identity) {
+					value = lookupValue.Key;
+					return true;
+				}
+			} else {
+				// No lookup table means we have to exhaustively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(identity)) {
+						value = child;
+						return true;
+					}
+				}
+			}
+		
+			value = null;
+			return false;
 		}
 		
 		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
@@ -1836,7 +1867,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
-		public new ProjectItemTree AddCapabilities(System.String value) {
+		public new ProjectItemTree AddCapability(System.String value) {
 			return this.With(capabilities: this.Capabilities.Add(value));
 		}
 		
@@ -1851,7 +1882,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
-		public new ProjectItemTree RemoveCapabilities(System.String value) {
+		public new ProjectItemTree RemoveCapability(System.String value) {
 			return this.With(capabilities: this.Capabilities.Remove(value));
 		}
 		
@@ -1887,23 +1918,23 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public new ProjectItemTree AddChildren(ProjectTree value) {
+		public new ProjectItemTree AddChild(ProjectTree value) {
 			return this.With(children: this.Children.Add(value));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren(params ProjectTree[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public new ProjectItemTree RemoveChildren(ProjectTree value) {
-			return this.With(children: this.Children.Remove(value));
+		public new ProjectItemTree RemoveChild(ProjectTree value) {
+			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
