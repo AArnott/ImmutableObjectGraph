@@ -246,7 +246,7 @@ namespace ImmutableObjectGraph.Tests {
 		[Fact]
 		public void EqualsIdentityComparerTest() {
 			var newNode = this.node.WithCaption("some caption");
-			Assert.NotEqual(this.node, newNode);
+			Assert.NotEqual(this.node, newNode, EqualityComparer<ProjectTree>.Default);
 			Assert.Equal(this.node, newNode, ProjectTree.Comparers.Identity);
 		}
 
