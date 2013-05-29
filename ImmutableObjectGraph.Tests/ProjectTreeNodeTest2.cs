@@ -240,7 +240,20 @@ namespace ImmutableObjectGraph.Tests {
 		[Fact]
 		public void GetHashCodeTest() {
 			var newNode = this.node.WithCaption("some caption");
-			Assert.Equal(this.node.GetHashCode(), newNode.GetHashCode());
+			Assert.NotEqual(this.node.GetHashCode(), newNode.GetHashCode());
+		}
+
+		[Fact]
+		public void EqualsIdentityComparerTest() {
+			var newNode = this.node.WithCaption("some caption");
+			Assert.NotEqual(this.node, newNode);
+			Assert.Equal(this.node, newNode, ProjectTree.Comparers.Identity);
+		}
+
+		[Fact]
+		public void GetHashCodeIdentityComparerTest() {
+			var newNode = this.node.WithCaption("some caption");
+			Assert.Equal(ProjectTree.Comparers.Identity.GetHashCode(this.node), ProjectTree.Comparers.Identity.GetHashCode(newNode));
 		}
 	}
 }

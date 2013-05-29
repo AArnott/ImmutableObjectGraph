@@ -489,6 +489,37 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
+		public static class Comparers {
+			/// <summary>Gets an equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
+			public static IdentityEqualityComparer Identity {
+				get { return IdentityEqualityComparer.Default; }
+			}
+		
+			/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
+			public class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree>, System.Collections.Generic.IComparer<ProjectTree> {
+				private static readonly IdentityEqualityComparer DefaultInstance = new IdentityEqualityComparer();
+		
+				private IdentityEqualityComparer() {
+				}
+		
+				internal static IdentityEqualityComparer Default {
+					get { return DefaultInstance; }
+				}
+		
+				public bool Equals(ProjectTree x, ProjectTree y) {
+					return x.Identity == y.Identity;
+				}
+		
+				public int GetHashCode(ProjectTree obj) {
+					return obj.Identity.GetHashCode();
+				}
+		
+				public int Compare(ProjectTree x, ProjectTree y) {
+					return x.Identity.CompareTo(y.Identity);
+				}
+			}
+		}
+		
 		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
 			if (priorVersion == null) {
 				throw new System.ArgumentNullException("priorVersion");
