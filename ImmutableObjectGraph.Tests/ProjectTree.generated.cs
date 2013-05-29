@@ -1848,47 +1848,47 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public new ProjectItemTree WithCapabilities(params System.String[] values) {
-			return this.With(capabilities: this.Capabilities.ResetContents(values));
+			return (ProjectItemTree)base.WithCapabilities(values);
 		}
 		
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public new ProjectItemTree WithCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
-			return this.With(capabilities: this.Capabilities.ResetContents(values));
+			return (ProjectItemTree)base.WithCapabilities(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree AddCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
-			return this.With(capabilities: this.Capabilities.AddRange(values));
+			return (ProjectItemTree)base.AddCapabilities(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree AddCapabilities(params System.String[] values) {
-			return this.With(capabilities: this.Capabilities.AddRange(values));
+			return (ProjectItemTree)base.AddCapabilities(values);
 		}
 		
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
 		public new ProjectItemTree AddCapability(System.String value) {
-			return this.With(capabilities: this.Capabilities.Add(value));
+			return (ProjectItemTree)base.AddCapability(value);
 		}
 		
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
-			return this.With(capabilities: this.Capabilities.RemoveRange(values));
+			return (ProjectItemTree)base.RemoveCapabilities(values);
 		}
 		
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapabilities(params System.String[] values) {
-			return this.With(capabilities: this.Capabilities.RemoveRange(values));
+			return (ProjectItemTree)base.RemoveCapabilities(values);
 		}
 		
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapability(System.String value) {
-			return this.With(capabilities: this.Capabilities.Remove(value));
+			return (ProjectItemTree)base.RemoveCapability(value);
 		}
 		
 		/// <summary>Clears all elements from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapabilities() {
-			return this.With(capabilities: this.Capabilities.Clear());
+			return (ProjectItemTree)base.RemoveCapabilities();
 		}
 		
 		
@@ -1899,47 +1899,47 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemTree WithChildren(params ProjectTree[] values) {
-			return this.With(children: this.Children.ResetContents(values));
+			return (ProjectItemTree)base.WithChildren(values);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemTree WithChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
-			return this.With(children: this.Children.ResetContents(values));
+			return (ProjectItemTree)base.WithChildren(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public new ProjectItemTree AddChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
-			return this.With(children: this.Children.AddRange(values));
+			return (ProjectItemTree)base.AddChildren(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public new ProjectItemTree AddChildren(params ProjectTree[] values) {
-			return this.With(children: this.Children.AddRange(values));
+			return (ProjectItemTree)base.AddChildren(values);
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public new ProjectItemTree AddChild(ProjectTree value) {
-			return this.With(children: this.Children.Add(value));
+			return (ProjectItemTree)base.AddChild(value);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
-			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
+			return (ProjectItemTree)base.RemoveChildren(values);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren(params ProjectTree[] values) {
-			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
+			return (ProjectItemTree)base.RemoveChildren(values);
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public new ProjectItemTree RemoveChild(ProjectTree value) {
-			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
+			return (ProjectItemTree)base.RemoveChild(value);
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren() {
-			return this.With(children: this.Children.Clear());
+			return (ProjectItemTree)base.RemoveChildren();
 		}
 		
 		

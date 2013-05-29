@@ -81,7 +81,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Members collection.</summary>
-		public Family AddMembers(Person value) {
+		public Family AddMember(Person value) {
 			return this.With(members: this.Members.Add(value));
 		}
 		
@@ -96,7 +96,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Members collection.</summary>
-		public Family RemoveMembers(Person value) {
+		public Family RemoveMember(Person value) {
 			return this.With(members: this.Members.Remove(value));
 		}
 		
@@ -243,7 +243,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				name: name,
+				name: Optional.For(name),
 				age: Optional.For(age.GetValueOrDefault(DefaultInstance.Age)),
 				watch: Optional.For(watch.GetValueOrDefault(DefaultInstance.Watch)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
@@ -295,7 +295,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				name: name.GetValueOrDefault(this.Name),
+				name: Optional.For(name.GetValueOrDefault(this.Name)),
 				age: Optional.For(age.GetValueOrDefault(this.Age)),
 				watch: Optional.For(watch.GetValueOrDefault(this.Watch)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
