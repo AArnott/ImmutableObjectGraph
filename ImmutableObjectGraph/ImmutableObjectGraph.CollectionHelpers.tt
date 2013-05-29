@@ -1,4 +1,28 @@
 ﻿<#
+this.HandleType += (templateType, position) => {
+	switch (position) {
+		case HandleTypePosition.WithinTypeDeclaration:
+			if (templateType.IsRecursiveParent) {
+				var recursiveField = templateType.RecursiveField;
+#>
+
+protected <#= recursiveField.ElementTypeName #> SyncImmediateChildToCurrentVersion(<#= recursiveField.ElementTypeName #> child) {
+	<#= recursiveField.ElementTypeName #> currentValue;
+	if (!this.TryFindImmediateChild(child.<#= templateType.RequiredIdentityField.NamePascalCase #>, out currentValue)) {
+		throw new System.ArgumentException();
+	}
+
+	return currentValue;
+}
+<#
+			} // if IsRecursiveParent
+
+			break;
+		default:
+			break;
+	} // switch
+};
+
 this.HandleField += (templateType, field) => {
 	string keywords = field.DeclaringType.Equals(templateType) ? "" : "new ";
 	if (field.IsCollection) {
@@ -33,17 +57,29 @@ public <#= keywords #><#= templateType.TypeName #> Add<#= singular #>(<#= field.
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+<#	if (field.IsRecursiveCollection) { #>
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
+<#	} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
+<#	} #>
 }
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+<#	if (field.IsRecursiveCollection) { #>
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
+<#	} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
+<#	} #>
 }
 
 /// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Remove<#= singular #>(<#= field.ElementTypeName #> value) {
+<#	if (field.IsRecursiveCollection) { #>
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(this.SyncImmediateChildToCurrentVersion(value)));
+<#	} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(value));
+<#	} #>
 }
 
 /// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>

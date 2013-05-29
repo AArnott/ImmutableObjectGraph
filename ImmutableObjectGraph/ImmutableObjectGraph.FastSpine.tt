@@ -99,7 +99,7 @@ public bool TryFind(<#= templateType.RequiredIdentityField.TypeName #> identity,
 			return true;
 		}
 	} else {
-		// No lookup table means we have to aggressively search each child.
+		// No lookup table means we have to exhaustively search each child and its descendents.
 		foreach (var child in this.Children) {
 			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
 			if (recursiveChild != null) {
@@ -126,6 +126,27 @@ public <#= templateType.RecursiveType.TypeName #> Find(<#= templateType.Required
 	}
 
 	throw new System.Collections.Generic.KeyNotFoundException();
+}
+
+public bool TryFindImmediateChild(<#= templateType.RequiredIdentityField.TypeName #> identity, out <#= templateType.RecursiveType.TypeName #> value) {
+	if (this.LookupTable != null) {
+		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
+		if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.<#= templateType.RequiredIdentityField.NamePascalCase #>) {
+			value = lookupValue.Key;
+			return true;
+		}
+	} else {
+		// No lookup table means we have to exhaustively search each child.
+		foreach (var child in this.Children) {
+			if (child.Identity.Equals(identity)) {
+				value = child;
+				return true;
+			}
+		}
+	}
+
+	value = null;
+	return false;
 }
 
 /// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>

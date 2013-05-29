@@ -25,8 +25,9 @@ public <#= templateType.TypeName #> AddDescendent(<#= templateType.RecursiveType
 
 public <#= templateType.TypeName #> RemoveDescendent(<#= templateType.RecursiveType.TypeName #> value) {
 	var spine = this.GetSpine(value);
-	var parent = (<#= templateType.RecursiveParent.TypeName #>)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
-	var newParent = parent.Remove<#= templateType.RecursiveField.NamePascalCase #>(value);
+	var spineList = spine.ToList();
+	var parent = (<#= templateType.RecursiveParent.TypeName #>)spineList[spineList.Count - 2];
+	var newParent = parent.Remove<#= templateType.RecursiveField.NamePascalCase #>(spineList[spineList.Count - 1]);
 
 	var newSpine = System.Collections.Immutable.ImmutableStack.Create((<#= templateType.RecursiveType.TypeName #>)newParent);
 	return (<#= templateType.RecursiveParent.TypeName #>)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();

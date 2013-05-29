@@ -257,6 +257,10 @@ protected class MetaType {
 		 }
 	}
 
+	public bool IsRecursiveParent {
+		get { return this.Equals(this.RecursiveParent); }
+	}
+
 	public bool IsRecursive {
 		get { return this.LocalFields.Count(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)) == 1; }
 	}
