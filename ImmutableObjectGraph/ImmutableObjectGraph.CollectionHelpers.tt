@@ -78,29 +78,41 @@ public <#= keywords #><#= templateType.TypeName #> Add<#= singular #>(<#= field.
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
-<#	if (field.IsRecursiveCollection) { #>
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.Remove<#= field.NamePascalCase #>(values);
+<#		} else {
+			if (field.IsRecursiveCollection) { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
-<#	} else { #>
+<#			} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
-<#	} #>
+<#			}
+		} #>
 }
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
-<#	if (field.IsRecursiveCollection) { #>
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.Remove<#= field.NamePascalCase #>(values);
+<#		} else {
+			if (field.IsRecursiveCollection) { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
-<#	} else { #>
+<#			} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
-<#	} #>
+<#			}
+		} #>
 }
 
 /// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
 public <#= keywords #><#= templateType.TypeName #> Remove<#= singular #>(<#= field.ElementTypeName #> value) {
-<#	if (field.IsRecursiveCollection) { #>
+<#		if (isNew) { #>
+	return (<#= templateType.TypeName #>)base.Remove<#= singular #>(value);
+<#		} else {
+			if (field.IsRecursiveCollection) { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(this.SyncImmediateChildToCurrentVersion(value)));
-<#	} else { #>
+<#			} else { #>
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(value));
-<#	} #>
+<#			}
+		} #>
 }
 
 /// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>
