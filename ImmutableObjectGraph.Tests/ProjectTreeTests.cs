@@ -21,6 +21,10 @@
 			var changedBackToOriginal = newPath.WithFilePath(tree.FilePath);
 			Assert.Equal(tree, changedBackToOriginal, ProjectTree.Comparers.Identity);
 			Assert.Equal(tree, changedBackToOriginal, ProjectTree.Comparers.ByValue);
+
+			var derivedType = tree.ToProjectItemTree(new ProjectPropertiesContext());
+			Assert.Equal(tree, derivedType, ProjectTree.Comparers.Identity);
+			Assert.NotEqual(tree, derivedType, ProjectTree.Comparers.ByValue);
 		}
 	}
 }
