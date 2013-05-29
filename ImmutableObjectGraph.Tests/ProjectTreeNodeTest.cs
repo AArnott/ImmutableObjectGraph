@@ -52,7 +52,7 @@ namespace ImmutableObjectGraph.Tests {
 		[Fact]
 		public void RemoveDirectChild() {
 			var child = this.NewNode();
-			var tree = this.NewTree("Some tree", child);
+			var tree = this.NewTree("Some tree", new [] { child });
 			var newTree = tree.RemoveChildren(child);
 			Assert.Equal(1, tree.Children.Count);
 			Assert.Equal(0, newTree.Children.Count);
