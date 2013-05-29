@@ -250,23 +250,23 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public XmlElement AddChildren(XmlNode value) {
+		public XmlElement AddChild(XmlNode value) {
 			return this.With(children: this.Children.Add(value));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public XmlElement RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public XmlElement RemoveChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public XmlElement RemoveChildren(XmlNode value) {
-			return this.With(children: this.Children.Remove(value));
+		public XmlElement RemoveChild(XmlNode value) {
+			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
@@ -356,6 +356,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
 		}
 		
+		protected XmlNode SyncImmediateChildToCurrentVersion(XmlNode child) {
+			XmlNode currentValue;
+			if (!this.TryFindImmediateChild(child.Identity, out currentValue)) {
+				throw new System.ArgumentException();
+			}
+		
+			return currentValue;
+		}
+		
 		public XmlElement AddDescendent(XmlNode value, XmlElement parent) {
 			var spine = this.GetSpine(parent);
 			var newParent = parent.AddChildren(value);
@@ -365,8 +374,9 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public XmlElement RemoveDescendent(XmlNode value) {
 			var spine = this.GetSpine(value);
-			var parent = (XmlElement)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
-			var newParent = parent.RemoveChildren(value);
+			var spineList = spine.ToList();
+			var parent = (XmlElement)spineList[spineList.Count - 2];
+			var newParent = parent.RemoveChildren(spineList[spineList.Count - 1]);
 		
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create((XmlNode)newParent);
 			return (XmlElement)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
@@ -506,9 +516,11 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public override System.Collections.Generic.IEnumerable<XmlNode> GetSelfAndDescendents() {
 			yield return this;
-			foreach (var child in this.Children) {
-				foreach (var descendent in child.GetSelfAndDescendents()) {
-					yield return descendent;
+			if (this.Children != null) {
+				foreach (var child in this.Children) {
+					foreach (var descendent in child.GetSelfAndDescendents()) {
+						yield return descendent;
+					}
 				}
 			}
 		}
@@ -582,7 +594,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// The maximum number of steps allowable for a search to be done among this node's children
 		/// before a faster lookup table will be built.
 		/// </summary>
-		private const int InefficiencyLoadThreshold = 16;
+		internal const int InefficiencyLoadThreshold = 16;
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> LookupTable {
 			get {
@@ -600,10 +612,12 @@ namespace ImmutableObjectGraph.Tests {
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
 			} else {
-				foreach (var child in this.children)
-				{
-					var recursiveChild = child as XmlElement;
-					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				if (this.children != null) {
+					foreach (var child in this.children)
+					{
+						var recursiveChild = child as XmlElement;
+						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+					}
 				}
 		
 				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
@@ -642,34 +656,73 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public XmlNode Find(System.Int32 identity) {
+		public bool TryFind(System.Int32 identity, out XmlNode value) {
 			if (this.Identity.Equals(identity)) {
-				return this;
+				value = this;
+				return true;
 			}
 		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					return lookupValue.Key;
+					value = lookupValue.Key;
+					return true;
 				}
 			} else {
-				// No lookup table means we have to aggressively search each child.
+				// No lookup table means we have to exhaustively search each child and its descendents.
 				foreach (var child in this.Children) {
 					var recursiveChild = child as XmlElement;
 					if (recursiveChild != null) {
-						var result = recursiveChild.Find(identity);
-						if (result != null) {
-							return result;
+						if (recursiveChild.TryFind(identity, out value)) {
+							return true;
 						}
 					} else {
 						if (child.Identity.Equals(identity)) {
-							return child;
+							value = child;
+							return true;
 						}
 					}
 				}
 			}
 		
-			return null;
+			value = null;
+			return false;
+		}
+		
+		public XmlNode Find(System.Int32 identity) {
+			XmlNode result;
+			if (this.TryFind(identity, out result)) {
+				return result;
+			}
+		
+			throw new System.Collections.Generic.KeyNotFoundException();
+		}
+		
+		public bool TryFindImmediateChild(System.Int32 identity, out XmlNode value) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.Identity) {
+					value = lookupValue.Key;
+					return true;
+				}
+			} else {
+				// No lookup table means we have to exhaustively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(identity)) {
+						value = child;
+						return true;
+					}
+				}
+			}
+		
+			value = null;
+			return false;
+		}
+		
+		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
+		public bool Contains(System.Int32 identity) {
+			XmlNode result;
+			return this.TryFind(identity, out result) && result != this;
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
@@ -700,7 +753,7 @@ namespace ImmutableObjectGraph.Tests {
 			return null;
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(System.Int32 descendent) {
+		public System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(System.Int32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<XmlNode>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
@@ -741,7 +794,7 @@ namespace ImmutableObjectGraph.Tests {
 			return emptySpine;
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(XmlNode descendent) {
+		public System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(XmlNode descendent) {
 			return this.GetSpine(descendent.Identity);
 		}
 		
@@ -888,47 +941,47 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new XmlElementWithContent WithChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.ResetContents(values));
+			return (XmlElementWithContent)base.WithChildren(values);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new XmlElementWithContent WithChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.ResetContents(values));
+			return (XmlElementWithContent)base.WithChildren(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public new XmlElementWithContent AddChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.AddRange(values));
+			return (XmlElementWithContent)base.AddChildren(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public new XmlElementWithContent AddChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.AddRange(values));
+			return (XmlElementWithContent)base.AddChildren(values);
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public new XmlElementWithContent AddChildren(XmlNode value) {
-			return this.With(children: this.Children.Add(value));
+		public new XmlElementWithContent AddChild(XmlNode value) {
+			return (XmlElementWithContent)base.AddChild(value);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new XmlElementWithContent RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return (XmlElementWithContent)base.RemoveChildren(values);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new XmlElementWithContent RemoveChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return (XmlElementWithContent)base.RemoveChildren(values);
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public new XmlElementWithContent RemoveChildren(XmlNode value) {
-			return this.With(children: this.Children.Remove(value));
+		public new XmlElementWithContent RemoveChild(XmlNode value) {
+			return (XmlElementWithContent)base.RemoveChild(value);
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public new XmlElementWithContent RemoveChildren() {
-			return this.With(children: this.Children.Clear());
+			return (XmlElementWithContent)base.RemoveChildren();
 		}
 		
 		

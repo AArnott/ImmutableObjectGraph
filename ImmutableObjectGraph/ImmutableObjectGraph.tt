@@ -115,6 +115,16 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always);
 #>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
 	}
+
+	internal static <#= templateType.TypeName #> CreateWithIdentity(<# WriteParameters(templateType.AllFields.Concat(templateType.OptionalIdentityField), ParameterStyle.OptionalOrRequired); #>) {
+		if (!<#= templateType.OptionalIdentityField.NameCamelCase #>.IsDefined) {
+			<#= templateType.OptionalIdentityField.NameCamelCase #> = NewIdentity();
+		}
+
+		return DefaultInstance.WithFactory(<#
+		WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always); 
+#>);
+	}
 <#
 	} // !IsAbstract Create factory method
 

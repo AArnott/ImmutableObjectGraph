@@ -8,7 +8,7 @@ this.HandleType += (templateType, position) => {
 #>
 
 public <#= templateType.Ancestor.TypeName#> To<#= templateType.Ancestor.TypeName#>() {
-	return <#= templateType.Ancestor.TypeName #>.Create(<# WriteArguments(templateType.Ancestor.AllFields, indent: 2, asOptional: OptionalStyle.WhenNotRequired); #>);
+	return <#= templateType.Ancestor.TypeName #>.CreateWithIdentity(<# WriteArguments(templateType.Ancestor.AllFields.Concat(templateType.RequiredIdentityField), indent: 2, asOptional: OptionalStyle.WhenNotRequired); #>);
 }
 <#
 	}
@@ -39,8 +39,8 @@ public virtual <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# Writ
 		}
 	}
 
-	return <#= derivedType.TypeName #>.Create(<#
-		WriteArguments(templateType.AllFields, indent: 2, asOptional: OptionalStyle.WhenNotRequired);
+	return <#= derivedType.TypeName #>.CreateWithIdentity(<#
+		WriteArguments(templateType.AllFields.Concat(templateType.RequiredIdentityField), indent: 2, asOptional: OptionalStyle.WhenNotRequired);
 		Write(",");
 		WriteArguments(derivedType.GetFieldsBeyond(templateType), ArgSource.Argument, indent: 2);
 		#>);
