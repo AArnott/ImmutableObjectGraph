@@ -171,8 +171,20 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 	}
 
 	public <#=redType.RecursiveType.TypeName#> Find(<#= templateType.RequiredIdentityField.TypeName #> identity) {
-		var found = this.greenNode.Find(identity);
-		return found != null ? found.WithRoot(this.root) : default(<#=redType.RecursiveType.TypeName#>);
+		this.ThrowIfDefault();
+		return this.greenNode.Find(identity).WithRoot(this.root);
+	}
+
+	public bool TryFind(<#= redType.RequiredIdentityField.TypeName #> identity, out <#= redType.RecursiveType.TypeName #> value) {
+		this.ThrowIfDefault();
+		<#= redType.GreenType.RecursiveType.TypeName #> greenValue;
+		if (this.greenNode.TryFind(identity, out greenValue)) {
+			value = greenValue.WithRoot(this.root);
+			return true;
+		}
+
+		value = default(<#= redType.RecursiveType.TypeName #>);
+		return false;
 	}
 
 	public System.Collections.Generic.IEnumerator<<#=redType.RecursiveType.TypeName#>> GetEnumerator() {

@@ -1103,6 +1103,7 @@ namespace ImmutableObjectGraph.Tests {
 						history.AddRange(current.ChangesSince(prior));
 					}
 				}
+		
 				foreach (var current in this.Children) {
 					if (other.Find(current.Identity) == null) {
 						added.Add(current);
@@ -1820,8 +1821,20 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemEntry Find(System.Int32 identity) {
-			var found = this.greenNode.Find(identity);
-			return found != null ? found.WithRoot(this.root) : default(RootedFileSystemEntry);
+			this.ThrowIfDefault();
+			return this.greenNode.Find(identity).WithRoot(this.root);
+		}
+	
+		public bool TryFind(System.Int32 identity, out RootedFileSystemEntry value) {
+			this.ThrowIfDefault();
+			FileSystemEntry greenValue;
+			if (this.greenNode.TryFind(identity, out greenValue)) {
+				value = greenValue.WithRoot(this.root);
+				return true;
+			}
+	
+			value = default(RootedFileSystemEntry);
+			return false;
 		}
 	
 		public System.Collections.Generic.IEnumerator<RootedFileSystemEntry> GetEnumerator() {

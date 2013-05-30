@@ -186,13 +186,20 @@
 			Assert.Equal(immediateChild, root.Find(immediateChild.Identity));
 			var grandchild = root.Children.First(c => c.IsFileSystemDirectory).AsFileSystemDirectory.Children.First();
 			Assert.Equal(grandchild, root.Find(grandchild.Identity));
+
+			RootedFileSystemEntry found;
+			Assert.True(root.TryFind(grandchild.Identity, out found));
+			Assert.Equal(grandchild, found);
 		}
 
 		[Fact]
 		public void RedNodeFindFailure() {
 			var root = this.root.AsRoot;
-			RootedFileSystemEntry missing = root.Find(1082591875);
-			Assert.Null(missing.FileSystemEntry);
+			Assert.Throws<KeyNotFoundException>(() => root.Find(1082591875));
+
+			RootedFileSystemEntry found;
+			Assert.False(root.TryFind(1082591875, out found));
+			Assert.Null(found.FileSystemEntry);
 		}
 
 		[Fact]
