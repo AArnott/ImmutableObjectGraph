@@ -252,7 +252,18 @@ protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName
 <#
 				}
 
-				if (templateType.Equals(templateType.RecursiveParent)) {
+				break;
+			default:
+				break;
+		} // switch
+	} // if derived from recursive type
+
+	if (templateType.IsRecursiveParent) {
+		MetaType recursiveType = templateType.RecursiveTypeFromFamily;
+		string enumTypeName = GetPropertiesEnumTypeName(recursiveType);
+		string diffTypeName = GetDiffGramTypeName(recursiveType);
+		switch (position) {
+			case HandleTypePosition.WithinTypeDeclaration:
 #>
 
 public override System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= recursiveType.TypeName #> priorVersion) {
@@ -270,28 +281,42 @@ public override System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> Ch
 
 	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
 
-	var other = (<#= templateType.TypeName #>) priorVersion;
+	var added = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
+	var removed = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
 
-	var added = this.<#= templateType.RecursiveField.NamePascalCase #>.Except(other.<#= templateType.RecursiveField.NamePascalCase #>);
-	var removed = other.<#= templateType.RecursiveField.NamePascalCase #>.Except(this.<#= templateType.RecursiveField.NamePascalCase #>);
-	var common = from child in this.<#= templateType.RecursiveField.NamePascalCase #>.Intersect(other.<#= templateType.RecursiveField.NamePascalCase #>)
-	             select new { Prior = other.Find(child.Identity), Current = this.Find(child.Identity) };
+	var other = priorVersion as <#= templateType.TypeName #>;
+	if (other != null) {
+		foreach (var prior in other.<#= templateType.RecursiveField.NamePascalCase #>) {
+			var current = this.Find(prior.<#= templateType.RequiredIdentityField.NamePascalCase #>);
+			if (current == null) {
+				removed.Add(prior);
+			}
+
+			if (!object.ReferenceEquals(prior, current)) {
+				// Some change has been made to this or its descendents.
+				history.AddRange(current.ChangesSince(prior));
+			}
+		}
+
+		foreach (var current in this.<#= templateType.RecursiveField.NamePascalCase #>) {
+			if (other.Find(current.<#= templateType.RequiredIdentityField.NamePascalCase #>) == null) {
+				added.Add(current);
+			}
+		}
+	}
 
 	history.AddRange(removed.Select(remove => <#= diffTypeName #>.Remove(remove)));
-	history.AddRange(base.ChangesSince(other));
-	history.AddRange(common.SelectMany(change => change.Current.ChangesSince(change.Prior)));
+	history.AddRange(base.ChangesSince(priorVersion));
 	history.AddRange(added.Select(add => <#= diffTypeName #>.Add(add)));
 
 	return history;
 }
 <#
-				}
-
 				break;
 			default:
 				break;
 		} // switch
-	} // if derived from recursive type
+	} // if IsRecursiveParent
 }; // green type event handler
 
 this.HandleRedType += (templateType, position) => {

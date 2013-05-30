@@ -73,7 +73,124 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemEntry(this, root);
 		}
 		
-		public virtual System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(FileSystemEntry priorVersion) {
+		/// <summary>
+		/// A description of a change made to an instance of an immutable object.
+		/// </summary>
+		public struct DiffGram {
+			private DiffGram(FileSystemEntry before, FileSystemEntry after, ChangeKind kind, FileSystemEntryChangedProperties changes)
+				: this() {
+				this.Before = before;
+				this.After = after;
+				this.Kind = kind;
+				this.Changes = changes;
+			}
+		
+			public static DiffGram Change(FileSystemEntry before, FileSystemEntry after, FileSystemEntryChangedProperties changes) {
+				return new DiffGram(before, after, ChangeKind.Replaced, changes);
+			}
+		
+			public static DiffGram Add(FileSystemEntry value) {
+				return new DiffGram(null, value, ChangeKind.Added, default(FileSystemEntryChangedProperties));
+			}
+		
+			public static DiffGram Remove(FileSystemEntry value) {
+				return new DiffGram(value, null, ChangeKind.Removed, default(FileSystemEntryChangedProperties));
+			}
+		
+			/// <summary>
+			/// Gets the leaf node before the change.
+			/// </summary>
+			public FileSystemEntry Before { get; private set; }
+		
+			/// <summary>
+			/// Gets the leaf node after the change.
+			/// </summary>
+			public FileSystemEntry After { get; private set; }
+		
+			/// <summary>
+			/// Gets the kind of change made to the alterered node.
+			/// </summary>
+			public ChangeKind Kind { get; private set; }
+		
+			/// <summary>
+			/// Gets the kinds of changes made to node if <see cref="Kind"/> is <see cref="ChangeKind.Replaced"/>.
+			/// </summary>
+			public FileSystemEntryChangedProperties Changes { get; private set; }
+		
+			/// <summary>
+			/// Gets the identity of the affected object.
+			/// </summary>
+			public System.Int32 Identity {
+				get { return (this.Before ?? this.After).Identity; }
+			}
+		}
+		
+		public static class Comparers {
+			/// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
+			public static System.Collections.Generic.IEqualityComparer<FileSystemEntry> Identity {
+				get { return IdentityEqualityComparer.Default; }
+			}
+		
+			/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
+			public static System.Collections.Generic.IEqualityComparer<FileSystemEntry> ByValue {
+				get { return ValueEqualityComparer.Shallow; }
+			}
+		
+			/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
+			public static System.Collections.Generic.IEqualityComparer<FileSystemEntry> ByValueWithDescendents {
+				get { return ValueEqualityComparer.Deep; }
+			}
+		
+			/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
+			private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<FileSystemEntry> {
+				internal static readonly System.Collections.Generic.IEqualityComparer<FileSystemEntry> Default = new IdentityEqualityComparer();
+		
+				private IdentityEqualityComparer() {
+				}
+		
+				public bool Equals(FileSystemEntry x, FileSystemEntry y) {
+					return x.Identity == y.Identity;
+				}
+		
+				public int GetHashCode(FileSystemEntry obj) {
+					return obj.Identity.GetHashCode();
+				}
+			}
+		
+			private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<FileSystemEntry> {
+				internal static readonly System.Collections.Generic.IEqualityComparer<FileSystemEntry> Shallow = new ValueEqualityComparer(false);
+		
+				internal static readonly System.Collections.Generic.IEqualityComparer<FileSystemEntry> Deep = new ValueEqualityComparer(true);
+		
+				private bool includeRecursiveChildren;
+		
+				private ValueEqualityComparer(bool includeRecursiveChildren) {
+					this.includeRecursiveChildren = includeRecursiveChildren;
+				}
+		
+				public bool Equals(FileSystemEntry x, FileSystemEntry y) {
+					if (x == null && y == null) {
+						return true;
+					}
+		
+					if (x == null ^ y == null) {
+						return false;
+					}
+		
+					if (this.includeRecursiveChildren) {
+						throw new System.NotImplementedException();
+					}
+		
+					return x.DiffProperties(y) == FileSystemEntryChangedProperties.None;
+				}
+		
+				public int GetHashCode(FileSystemEntry obj) {
+					return obj.Identity.GetHashCode();
+				}
+			}
+		}
+		
+		public virtual System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(FileSystemEntry priorVersion) {
 			if (priorVersion == null) {
 				throw new System.ArgumentNullException("priorVersion");
 			}
@@ -82,16 +199,16 @@ namespace ImmutableObjectGraph.Tests {
 				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
 			}
 		
-			var history = new System.Collections.Generic.List<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>>();
+			var history = new System.Collections.Generic.List<FileSystemEntry.DiffGram>();
 			var changes = this.DiffProperties(priorVersion);
 			if (changes != FileSystemEntryChangedProperties.None) {
-				history.Add(DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Change(priorVersion, this, changes));
+				history.Add(FileSystemEntry.DiffGram.Change(priorVersion, this, changes));
 			}
 		
 			return history;
 		}
 		
-		protected internal virtual FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
+		protected virtual FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
 			}
@@ -122,8 +239,9 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return FileSystemFile.Create(
+			return FileSystemFile.CreateWithIdentity(
 				pathSegment: this.PathSegment,
+				identity: this.Identity,
 				attributes: attributes);
 		}
 		
@@ -135,11 +253,11 @@ namespace ImmutableObjectGraph.Tests {
 					return that;
 				}
 			}
-
+		
 			return FileSystemDirectory.CreateWithIdentity(
 				pathSegment: this.PathSegment,
-				children: children,
-				identity: this.Identity);
+				identity: this.Identity,
+				children: children);
 		}
 		
 		public Builder ToBuilder() {
@@ -251,7 +369,7 @@ namespace ImmutableObjectGraph.Tests {
 			return newGreenNode.WithRoot(newRoot);
 		}
 	
-		public System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemEntry priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(RootedFileSystemEntry priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.FileSystemEntry);
 		}
@@ -364,7 +482,21 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				pathSegment: pathSegment,
+				pathSegment: Optional.For(pathSegment),
+				attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		internal static FileSystemFile CreateWithIdentity(
+			System.String pathSegment,
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
+			return DefaultInstance.WithFactory(
+				pathSegment: Optional.For(pathSegment),
 				attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
@@ -408,7 +540,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
-		public FileSystemFile AddAttributes(System.String value) {
+		public FileSystemFile AddAttribute(System.String value) {
 			return this.With(attributes: this.Attributes.Add(value));
 		}
 		
@@ -423,7 +555,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
-		public FileSystemFile RemoveAttributes(System.String value) {
+		public FileSystemFile RemoveAttribute(System.String value) {
 			return this.With(attributes: this.Attributes.Remove(value));
 		}
 		
@@ -447,7 +579,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
+				pathSegment: Optional.For(pathSegment.GetValueOrDefault(this.PathSegment)),
 				attributes: Optional.For(attributes.GetValueOrDefault(this.Attributes)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
@@ -504,7 +636,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemFile(this, root);
 		}
 		
-		protected internal override FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
+		protected override FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherFileSystemFile = other as FileSystemFile;
@@ -698,7 +830,7 @@ namespace ImmutableObjectGraph.Tests {
 			return newGreenNode.WithRoot(newRoot);
 		}
 	
-		public System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemFile priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(RootedFileSystemFile priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.FileSystemFile);
 		}
@@ -772,24 +904,25 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
-				pathSegment: pathSegment,
+				pathSegment: Optional.For(pathSegment),
 				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-
+	
 		internal static FileSystemDirectory CreateWithIdentity(
 			System.String pathSegment,
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
-			Optional<int> identity = default(Optional<int>)) {
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
+	
 			return DefaultInstance.WithFactory(
-				pathSegment: pathSegment,
-				children: children.GetValueOrDefault(DefaultInstance.Children),
-				identity: identity.Value);
+				pathSegment: Optional.For(pathSegment),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-
+	
 		public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children {
 			get { return this.children; }
 		}
@@ -829,23 +962,23 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public FileSystemDirectory AddChildren(FileSystemEntry value) {
+		public FileSystemDirectory AddChild(FileSystemEntry value) {
 			return this.With(children: this.Children.Add(value));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren(params FileSystemEntry[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public FileSystemDirectory RemoveChildren(FileSystemEntry value) {
-			return this.With(children: this.Children.Remove(value));
+		public FileSystemDirectory RemoveChild(FileSystemEntry value) {
+			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
@@ -868,7 +1001,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
-				pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
+				pathSegment: Optional.For(pathSegment.GetValueOrDefault(this.PathSegment)),
 				children: Optional.For(children.GetValueOrDefault(this.Children)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
@@ -939,24 +1072,24 @@ namespace ImmutableObjectGraph.Tests {
 			return new RootedFileSystemDirectory(this, root);
 		}
 		
-		public override System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(FileSystemEntry priorVersion) {
+		public override System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(FileSystemEntry priorVersion) {
 			if (priorVersion == null) {
 				throw new System.ArgumentNullException("priorVersion");
 			}
 		
 			if (this == priorVersion) {
-				return System.Collections.Immutable.ImmutableList.Create<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>>();
+				return System.Collections.Immutable.ImmutableList.Create<FileSystemEntry.DiffGram>();
 			}
 		
 			if (priorVersion.Identity != this.Identity) {
 				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
 			}
 		
-			var history = new System.Collections.Generic.List<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>>();
-
+			var history = new System.Collections.Generic.List<FileSystemEntry.DiffGram>();
+		
 			var added = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
 			var removed = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
-
+		
 			var other = priorVersion as FileSystemDirectory;
 			if (other != null) {
 				foreach (var prior in other.Children) {
@@ -964,54 +1097,33 @@ namespace ImmutableObjectGraph.Tests {
 					if (current == null) {
 						removed.Add(prior);
 					}
-
+		
 					if (!object.ReferenceEquals(prior, current)) {
 						// Some change has been made to this or its descendents.
 						history.AddRange(current.ChangesSince(prior));
 					}
 				}
-
 				foreach (var current in this.Children) {
 					if (other.Find(current.Identity) == null) {
 						added.Add(current);
 					}
 				}
 			}
-
-			history.AddRange(removed.Select(remove => DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Remove(remove)));
+		
+			history.AddRange(removed.Select(remove => FileSystemEntry.DiffGram.Remove(remove)));
 			history.AddRange(base.ChangesSince(priorVersion));
-			history.AddRange(added.Select(add => DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>.Add(add)));
+			history.AddRange(added.Select(add => FileSystemEntry.DiffGram.Add(add)));
 		
 			return history;
 		}
-
-		public static class Comparers {
-			public static System.Collections.Generic.IEqualityComparer<FileSystemEntry> Identity {
-				get { return IdentityEqualityComparer.Default; }
+		
+		protected FileSystemEntry SyncImmediateChildToCurrentVersion(FileSystemEntry child) {
+			FileSystemEntry currentValue;
+			if (!this.TryFindImmediateChild(child.Identity, out currentValue)) {
+				throw new System.ArgumentException();
 			}
-
-			private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<FileSystemEntry>, System.Collections.Generic.IComparer<FileSystemEntry> {
-				private static readonly IdentityEqualityComparer DefaultInstance = new IdentityEqualityComparer();
-
-				private IdentityEqualityComparer() {
-				}
-
-				public static System.Collections.Generic.IEqualityComparer<FileSystemEntry> Default {
-					get { return DefaultInstance; }
-				}
-
-				public bool Equals(FileSystemEntry x, FileSystemEntry y) {
-					return x.Identity == y.Identity;
-				}
-
-				public int GetHashCode(FileSystemEntry obj) {
-					return obj.Identity.GetHashCode();
-				}
-
-				public int Compare(FileSystemEntry x, FileSystemEntry y) {
-					return x.Identity.CompareTo(y.Identity);
-				}
-			}
+		
+			return currentValue;
 		}
 		
 		public FileSystemDirectory AddDescendent(FileSystemEntry value, FileSystemDirectory parent) {
@@ -1023,8 +1135,9 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public FileSystemDirectory RemoveDescendent(FileSystemEntry value) {
 			var spine = this.GetSpine(value);
-			var parent = (FileSystemDirectory)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
-			var newParent = parent.RemoveChildren(value);
+			var spineList = spine.ToList();
+			var parent = (FileSystemDirectory)spineList[spineList.Count - 2];
+			var newParent = parent.RemoveChildren(spineList[spineList.Count - 1]);
 		
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create((FileSystemEntry)newParent);
 			return (FileSystemDirectory)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
@@ -1164,9 +1277,11 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public override System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
 			yield return this;
-			foreach (var child in this.Children) {
-				foreach (var descendent in child.GetSelfAndDescendents()) {
-					yield return descendent;
+			if (this.Children != null) {
+				foreach (var child in this.Children) {
+					foreach (var descendent in child.GetSelfAndDescendents()) {
+						yield return descendent;
+					}
 				}
 			}
 		}
@@ -1240,7 +1355,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// The maximum number of steps allowable for a search to be done among this node's children
 		/// before a faster lookup table will be built.
 		/// </summary>
-		private const int InefficiencyLoadThreshold = 16;
+		internal const int InefficiencyLoadThreshold = 16;
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>> LookupTable {
 			get {
@@ -1258,10 +1373,12 @@ namespace ImmutableObjectGraph.Tests {
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
 			} else {
-				foreach (var child in this.children)
-				{
-					var recursiveChild = child as FileSystemDirectory;
-					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				if (this.children != null) {
+					foreach (var child in this.children)
+					{
+						var recursiveChild = child as FileSystemDirectory;
+						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+					}
 				}
 		
 				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
@@ -1300,34 +1417,73 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public FileSystemEntry Find(System.Int32 identity) {
+		public bool TryFind(System.Int32 identity, out FileSystemEntry value) {
 			if (this.Identity.Equals(identity)) {
-				return this;
+				value = this;
+				return true;
 			}
 		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					return lookupValue.Key;
+					value = lookupValue.Key;
+					return true;
 				}
 			} else {
-				// No lookup table means we have to aggressively search each child.
+				// No lookup table means we have to exhaustively search each child and its descendents.
 				foreach (var child in this.Children) {
 					var recursiveChild = child as FileSystemDirectory;
 					if (recursiveChild != null) {
-						var result = recursiveChild.Find(identity);
-						if (result != null) {
-							return result;
+						if (recursiveChild.TryFind(identity, out value)) {
+							return true;
 						}
 					} else {
 						if (child.Identity.Equals(identity)) {
-							return child;
+							value = child;
+							return true;
 						}
 					}
 				}
 			}
 		
-			return null;
+			value = null;
+			return false;
+		}
+		
+		public FileSystemEntry Find(System.Int32 identity) {
+			FileSystemEntry result;
+			if (this.TryFind(identity, out result)) {
+				return result;
+			}
+		
+			throw new System.Collections.Generic.KeyNotFoundException();
+		}
+		
+		public bool TryFindImmediateChild(System.Int32 identity, out FileSystemEntry value) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.Identity) {
+					value = lookupValue.Key;
+					return true;
+				}
+			} else {
+				// No lookup table means we have to exhaustively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(identity)) {
+						value = child;
+						return true;
+					}
+				}
+			}
+		
+			value = null;
+			return false;
+		}
+		
+		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
+		public bool Contains(System.Int32 identity) {
+			FileSystemEntry result;
+			return this.TryFind(identity, out result) && result != this;
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
@@ -1358,7 +1514,7 @@ namespace ImmutableObjectGraph.Tests {
 			return null;
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(System.Int32 descendent) {
+		public System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(System.Int32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<FileSystemEntry>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
@@ -1399,7 +1555,7 @@ namespace ImmutableObjectGraph.Tests {
 			return emptySpine;
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(FileSystemEntry descendent) {
+		public System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(FileSystemEntry descendent) {
 			return this.GetSpine(descendent.Identity);
 		}
 		
@@ -1672,7 +1828,7 @@ namespace ImmutableObjectGraph.Tests {
 			return this.Children.GetEnumerator();
 		}
 	
-		public System.Collections.Generic.IReadOnlyList<DiffGram<FileSystemEntry, FileSystemEntryChangedProperties>> ChangesSince(RootedFileSystemDirectory priorVersion) {
+		public System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(RootedFileSystemDirectory priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.FileSystemDirectory);
 		}
