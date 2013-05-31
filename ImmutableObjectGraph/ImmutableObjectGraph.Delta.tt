@@ -281,8 +281,8 @@ public override System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> Ch
 
 	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
 
-	var added = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
-	var removed = new System.Collections.Generic.HashSet<FileSystemEntry>(Comparers.Identity);
+	var added = new System.Collections.Generic.HashSet<<#= templateType.TypeName #>>(Comparers.Identity);
+	var removed = new System.Collections.Generic.HashSet<<#= templateType.TypeName #>>(Comparers.Identity);
 
 	var other = priorVersion as <#= templateType.TypeName #>;
 	if (other != null) {
