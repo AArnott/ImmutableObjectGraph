@@ -580,24 +580,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
-			if (priorVersion == null) {
-				throw new System.ArgumentNullException("priorVersion");
-			}
-		
-			if (priorVersion.Identity != this.Identity) {
-				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
-			}
-		
-			var history = new System.Collections.Generic.List<ProjectTree.DiffGram>();
-			var changes = this.DiffProperties(priorVersion);
-			if (changes != ProjectTreeChangedProperties.None) {
-				history.Add(ProjectTree.DiffGram.Change(priorVersion, this, changes));
-			}
-		
-			return history;
-		}
-		
 		protected virtual ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
@@ -638,6 +620,57 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return propertiesChanged;
+		}
+		
+		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
+			if (priorVersion == null) {
+				throw new System.ArgumentNullException("priorVersion");
+			}
+		
+			if (this == priorVersion) {
+				return System.Collections.Immutable.ImmutableList.Create<ProjectTree.DiffGram>();
+			}
+		
+			if (priorVersion.Identity != this.Identity) {
+				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
+			}
+		
+			var history = new System.Collections.Generic.List<ProjectTree.DiffGram>();
+		
+			var added = new System.Collections.Generic.HashSet<ProjectTree>(Comparers.Identity);
+			var removed = new System.Collections.Generic.HashSet<ProjectTree>(Comparers.Identity);
+		
+			var other = priorVersion as ProjectTree;
+			if (other != null) {
+				foreach (var prior in other.Children) {
+					var current = this.Find(prior.Identity);
+					if (current == null) {
+						removed.Add(prior);
+					}
+		
+					if (!object.ReferenceEquals(prior, current)) {
+						// Some change has been made to this or its descendents.
+						history.AddRange(current.ChangesSince(prior));
+					}
+				}
+		
+				foreach (var current in this.Children) {
+					if (other.Find(current.Identity) == null) {
+						added.Add(current);
+					}
+				}
+			}
+		
+			history.AddRange(removed.Select(remove => ProjectTree.DiffGram.Remove(remove)));
+		
+			var localChanges = this.DiffProperties(priorVersion);
+			if (localChanges != ProjectTreeChangedProperties.None) {
+				history.Add(DiffGram.Change(priorVersion, this, localChanges));
+			}
+		
+			history.AddRange(added.Select(add => ProjectTree.DiffGram.Add(add)));
+		
+			return history;
 		}
 		
 		protected ProjectTree SyncImmediateChildToCurrentVersion(ProjectTree child) {
@@ -1654,8 +1687,20 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectTree Find(System.Int32 identity) {
-			var found = this.greenNode.Find(identity);
-			return found != null ? found.WithRoot(this.root) : default(RootedProjectTree);
+			this.ThrowIfDefault();
+			return this.greenNode.Find(identity).WithRoot(this.root);
+		}
+	
+		public bool TryFind(System.Int32 identity, out RootedProjectTree value) {
+			this.ThrowIfDefault();
+			ProjectTree greenValue;
+			if (this.greenNode.TryFind(identity, out greenValue)) {
+				value = greenValue.WithRoot(this.root);
+				return true;
+			}
+	
+			value = default(RootedProjectTree);
+			return false;
 		}
 	
 		public System.Collections.Generic.IEnumerator<RootedProjectTree> GetEnumerator() {
