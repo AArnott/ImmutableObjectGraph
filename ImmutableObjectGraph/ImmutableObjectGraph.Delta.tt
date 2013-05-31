@@ -123,6 +123,7 @@ public static class Comparers {
 		}
 	}
 }
+<# if (!templateType.IsRecursiveParent) { #>
 
 public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
 	if (priorVersion == null) {
@@ -141,6 +142,7 @@ public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> Cha
 
 	return history;
 }
+<# } #>
 
 protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #> other) {
 	if (other == null) {
@@ -264,9 +266,10 @@ protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName
 		string diffTypeName = GetDiffGramTypeName(recursiveType);
 		switch (position) {
 			case HandleTypePosition.WithinTypeDeclaration:
+				string changesSinceKeyword = templateType.HasAncestor ? "override " : "virtual ";
 #>
 
-public override System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= recursiveType.TypeName #> priorVersion) {
+public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= recursiveType.TypeName #> priorVersion) {
 	if (priorVersion == null) {
 		throw new System.ArgumentNullException("priorVersion");
 	}
@@ -281,8 +284,8 @@ public override System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> Ch
 
 	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
 
-	var added = new System.Collections.Generic.HashSet<<#= templateType.TypeName #>>(Comparers.Identity);
-	var removed = new System.Collections.Generic.HashSet<<#= templateType.TypeName #>>(Comparers.Identity);
+	var added = new System.Collections.Generic.HashSet<<#= templateType.RecursiveType.TypeName #>>(Comparers.Identity);
+	var removed = new System.Collections.Generic.HashSet<<#= templateType.RecursiveType.TypeName #>>(Comparers.Identity);
 
 	var other = priorVersion as <#= templateType.TypeName #>;
 	if (other != null) {
@@ -306,7 +309,12 @@ public override System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> Ch
 	}
 
 	history.AddRange(removed.Select(remove => <#= diffTypeName #>.Remove(remove)));
-	history.AddRange(base.ChangesSince(priorVersion));
+
+	var localChanges = this.DiffProperties(priorVersion);
+	if (localChanges != <#= enumTypeName #>.None) {
+		history.Add(DiffGram.Change(priorVersion, this, localChanges));
+	}
+
 	history.AddRange(added.Select(add => <#= diffTypeName #>.Add(add)));
 
 	return history;

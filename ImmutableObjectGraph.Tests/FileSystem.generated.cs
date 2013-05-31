@@ -1112,7 +1112,12 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			history.AddRange(removed.Select(remove => FileSystemEntry.DiffGram.Remove(remove)));
-			history.AddRange(base.ChangesSince(priorVersion));
+		
+			var localChanges = this.DiffProperties(priorVersion);
+			if (localChanges != FileSystemEntryChangedProperties.None) {
+				history.Add(DiffGram.Change(priorVersion, this, localChanges));
+			}
+		
 			history.AddRange(added.Select(add => FileSystemEntry.DiffGram.Add(add)));
 		
 			return history;
