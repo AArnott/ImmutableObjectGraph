@@ -174,8 +174,7 @@
 
 		[Fact]
 		public void FindFailure() {
-			FileSystemEntry missing = this.root.Find(1025890195);
-			Assert.Null(missing);
+			Assert.Throws<KeyNotFoundException>(() => this.root.Find(1025890195));
 		}
 
 		[Fact]
