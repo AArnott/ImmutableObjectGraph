@@ -241,7 +241,7 @@ namespace ImmutableObjectGraph.Tests {
 			ProjectTree child, grandchild;
 			treeRevisions.Add(head = head.AddChildren(child = this.NewTree("child")));
 			treeRevisions.Add(head = head.AddDescendent(grandchild = this.NewTree("grand-child"), child));
-			grandchild = head.Find(grandchild.Identity).Last();
+			grandchild = head.Find(grandchild.Identity);
 			treeRevisions.Add(head = head.ReplaceDescendent(grandchild, grandchild.WithVisible(false)));
 
 			// Verify that from beginning to very end, still only one change is reported.
@@ -265,10 +265,10 @@ namespace ImmutableObjectGraph.Tests {
 			treeRevisions.Add(head = head.AddDescendent(grandchild = this.NewTree("grand-child"), child));
 			ProjectTree originalTree = head;
 
-			grandchild = head.Find(grandchild.Identity).Last();
+			grandchild = head.Find(grandchild.Identity);
 			treeRevisions.Add(head = head.ReplaceDescendent(grandchild, grandchild.WithVisible(false)));
 
-			child = head.Find(child.Identity).Last();
+			child = head.Find(child.Identity);
 			treeRevisions.Add(head = head.RemoveChildren(child));
 
 			var differences = ProjectTree.GetDelta(originalTree, head).ToList();
@@ -296,7 +296,7 @@ namespace ImmutableObjectGraph.Tests {
 			treeRevisions.Add(head = head.AddChildren(child)); // 1
 
 			// Also change the grandchild again
-			grandchild = head.Find(grandchild.Identity).Last();
+			grandchild = head.Find(grandchild.Identity);
 			treeRevisions.Add(head = head.ReplaceDescendent(grandchild, grandchild.WithCapabilities("sc"))); // 2
 
 			// Verify that up to when the subtree was added, only one change is reported.
