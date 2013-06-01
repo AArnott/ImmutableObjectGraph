@@ -1093,19 +1093,19 @@ namespace ImmutableObjectGraph.Tests {
 			var other = priorVersion as FileSystemDirectory;
 			if (other != null) {
 				foreach (var prior in other.Children) {
-					var current = this.Find(prior.Identity);
-					if (current == null) {
+					FileSystemEntry current;
+					if (this.TryFind(prior.Identity, out current)) {
+						if (!object.ReferenceEquals(prior, current)) {
+							// Some change has been made to this or its descendents.
+							history.AddRange(current.ChangesSince(prior));
+						}
+					} else {
 						removed.Add(prior);
-					}
-		
-					if (!object.ReferenceEquals(prior, current)) {
-						// Some change has been made to this or its descendents.
-						history.AddRange(current.ChangesSince(prior));
 					}
 				}
 		
 				foreach (var current in this.Children) {
-					if (other.Find(current.Identity) == null) {
+					if (!other.Contains(current.Identity)) {
 						added.Add(current);
 					}
 				}

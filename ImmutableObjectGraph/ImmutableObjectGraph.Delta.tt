@@ -290,19 +290,19 @@ public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= di
 	var other = priorVersion as <#= templateType.TypeName #>;
 	if (other != null) {
 		foreach (var prior in other.<#= templateType.RecursiveField.NamePascalCase #>) {
-			var current = this.Find(prior.<#= templateType.RequiredIdentityField.NamePascalCase #>);
-			if (current == null) {
+			<#= templateType.RecursiveType.TypeName #> current;
+			if (this.TryFind(prior.<#= templateType.RequiredIdentityField.NamePascalCase #>, out current)) {
+				if (!object.ReferenceEquals(prior, current)) {
+					// Some change has been made to this or its descendents.
+					history.AddRange(current.ChangesSince(prior));
+				}
+			} else {
 				removed.Add(prior);
-			}
-
-			if (!object.ReferenceEquals(prior, current)) {
-				// Some change has been made to this or its descendents.
-				history.AddRange(current.ChangesSince(prior));
 			}
 		}
 
 		foreach (var current in this.<#= templateType.RecursiveField.NamePascalCase #>) {
-			if (other.Find(current.<#= templateType.RequiredIdentityField.NamePascalCase #>) == null) {
+			if (!other.Contains(current.<#= templateType.RequiredIdentityField.NamePascalCase #>)) {
 				added.Add(current);
 			}
 		}
