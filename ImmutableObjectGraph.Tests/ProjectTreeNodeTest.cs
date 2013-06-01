@@ -400,14 +400,11 @@ namespace ImmutableObjectGraph.Tests {
 
 			var differences = ProjectTree.GetDelta(treeRevisions[1], treeRevisions.Last()).ToList();
 
-			// If such time ever came that we compacted the history into just one diff element instead of two, fine.
 			// The point of this test is however to verify that if a given node changes multiple times along a tree's history
 			// that each changed property is only reported once, rather than once each time the node changes at all.
-			Assert.Equal(2, differences.Count);
+			Assert.Equal(1, differences.Count);
 			Assert.Equal(ChangeKind.Replaced, differences[0].Kind);
-			Assert.Equal(ProjectTreeChangedProperties.Visible, differences[0].Changes);
-			Assert.Equal(ChangeKind.Replaced, differences[1].Kind);
-			Assert.Equal(ProjectTreeChangedProperties.Capabilities, differences[1].Changes);
+			Assert.Equal(ProjectTreeChangedProperties.Visible | ProjectTreeChangedProperties.Capabilities, differences[0].Changes);
 		}
 
 		[Fact(Skip = "obsolete as long as itemids are no longer affinitized to item contexts.")]

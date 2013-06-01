@@ -35,6 +35,7 @@
 		static partial void CreateDefaultTemplate(ref ProjectTree.Template template) {
 			template.Children = ImmutableSortedSet.Create(ProjectTreeSort.Default);
 			template.Capabilities = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
+			template.Visible = true;
 		}
 	}
 }
