@@ -1097,21 +1097,21 @@ namespace ImmutableObjectGraph.Tests {
 		
 			var other = priorVersion as FileSystemDirectory;
 			if (other != null) {
-				foreach (var prior in other.Children) {
-					FileSystemEntry current;
-					if (this.TryFind(prior.Identity, out current)) {
-						if (!object.ReferenceEquals(prior, current)) {
+				foreach (var priorChild in other.Children) {
+					FileSystemEntry currentChild;
+					if (this.TryFind(priorChild.Identity, out currentChild)) {
+						if (!object.ReferenceEquals(priorChild, currentChild)) {
 							// Some change has been made to this or its descendents.
-							history.AddRange(current.ChangesSince(prior));
+							history.AddRange(currentChild.ChangesSince(priorChild));
 						}
 					} else {
-						removed.Add(prior);
+						removed.Add(priorChild);
 					}
 				}
 		
-				foreach (var current in this.Children) {
-					if (!other.Contains(current.Identity)) {
-						added.Add(current);
+				foreach (var currentChild in this.Children) {
+					if (!other.Contains(currentChild.Identity)) {
+						added.Add(currentChild);
 					}
 				}
 			}

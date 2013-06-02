@@ -294,21 +294,21 @@ public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= di
 
 	var other = priorVersion as <#= templateType.TypeName #>;
 	if (other != null) {
-		foreach (var prior in other.<#= templateType.RecursiveField.NamePascalCase #>) {
-			<#= templateType.RecursiveType.TypeName #> current;
-			if (this.TryFind(prior.<#= templateType.RequiredIdentityField.NamePascalCase #>, out current)) {
-				if (!object.ReferenceEquals(prior, current)) {
+		foreach (var priorChild in other.<#= templateType.RecursiveField.NamePascalCase #>) {
+			<#= templateType.RecursiveType.TypeName #> currentChild;
+			if (this.TryFind(priorChild.<#= templateType.RequiredIdentityField.NamePascalCase #>, out currentChild)) {
+				if (!object.ReferenceEquals(priorChild, currentChild)) {
 					// Some change has been made to this or its descendents.
-					history.AddRange(current.ChangesSince(prior));
+					history.AddRange(currentChild.ChangesSince(priorChild));
 				}
 			} else {
-				removed.Add(prior);
+				removed.Add(priorChild);
 			}
 		}
 
-		foreach (var current in this.<#= templateType.RecursiveField.NamePascalCase #>) {
-			if (!other.Contains(current.<#= templateType.RequiredIdentityField.NamePascalCase #>)) {
-				added.Add(current);
+		foreach (var currentChild in this.<#= templateType.RecursiveField.NamePascalCase #>) {
+			if (!other.Contains(currentChild.<#= templateType.RequiredIdentityField.NamePascalCase #>)) {
+				added.Add(currentChild);
 			}
 		}
 	}
