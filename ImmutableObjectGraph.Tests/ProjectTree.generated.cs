@@ -1829,7 +1829,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>
 		/// All flags in this enum.
 		/// </summary>
-		All = Type | PositionUnderParent | Caption | FilePath | Icon | ExpandedIcon | Visible | BrowseObjectProperties | Capabilities | ProjectPropertiesContext | PropertySheet | IsLinked,
+		All = Type | PositionUnderParent | Parent | Caption | FilePath | Icon | ExpandedIcon | Visible | BrowseObjectProperties | Capabilities | ProjectPropertiesContext | PropertySheet | IsLinked,
 	}
 	
 	public interface IProjectItemTree : IProjectTree {

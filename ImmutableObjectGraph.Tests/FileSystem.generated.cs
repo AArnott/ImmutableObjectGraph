@@ -436,21 +436,26 @@ namespace ImmutableObjectGraph.Tests {
 		/// The node's position within its parent's list of children changed.
 		/// </summary>
 		PositionUnderParent = 0x2,
+		
+		/// <summary>
+		/// The node was removed and reappeared in a new position in the tree (with a different parent).
+		/// </summary>
+		Parent = 0x4,
 	
 		/// <summary>
 		/// The <see cref="FileSystemEntry.PathSegment" /> property was changed.
 		/// </summary>
-		PathSegment = 0x4,
+		PathSegment = 0x8,
 	
 		/// <summary>
 		/// The <see cref="FileSystemFile.Attributes" /> property was changed.
 		/// </summary>
-		Attributes = 0x8,
+		Attributes = 0x10,
 	
 		/// <summary>
 		/// All flags in this enum.
 		/// </summary>
-		All = Type | PositionUnderParent | PathSegment | Attributes,
+		All = Type | PositionUnderParent | Parent | PathSegment | Attributes,
 	}
 	
 	public interface IFileSystemFile : IFileSystemEntry {

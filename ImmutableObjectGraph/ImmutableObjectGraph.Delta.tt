@@ -216,7 +216,7 @@ public enum <#= enumTypeName #> {
 	/// <summary>
 	/// All flags in this enum.
 	/// </summary>
-	All = Type | PositionUnderParent<#
+	All = Type | PositionUnderParent | Parent<#
 	foreach (var field in fields) {
 		Write(" | ");
 		Write(field.NamePascalCase);
