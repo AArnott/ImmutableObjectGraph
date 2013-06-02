@@ -463,7 +463,7 @@ namespace ImmutableObjectGraph.Tests {
 			var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
 
 			var history = moved.ChangesSince(root);
-			Assert.Equal(2, history.Count);
+			Assert.Equal(1, history.Count);
 			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
 			Assert.Equal(ProjectTreeChangedProperties.Parent | ProjectTreeChangedProperties.Visible, history[0].Changes);
 			Assert.Same(aa, history[0].Before);
