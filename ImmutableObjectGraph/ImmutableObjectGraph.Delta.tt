@@ -123,9 +123,13 @@ public static class Comparers {
 		}
 	}
 }
+
+public System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
+	return this.ChangesSince(priorVersion, positionUnderParentChanged: false);
+}
 <# if (!templateType.IsRecursiveParent) { #>
 
-public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
+protected internal virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion, bool positionUnderParentChanged) {
 	if (priorVersion == null) {
 		throw new System.ArgumentNullException("priorVersion");
 	}
@@ -274,7 +278,7 @@ protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName
 				string changesSinceKeyword = templateType.HasAncestor ? "override " : "virtual ";
 #>
 
-public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= recursiveType.TypeName #> priorVersion) {
+protected internal <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= recursiveType.TypeName #> priorVersion, bool positionUnderParentChanged) {
 	if (priorVersion == null) {
 		throw new System.ArgumentNullException("priorVersion");
 	}
@@ -298,8 +302,20 @@ public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= di
 			<#= templateType.RecursiveType.TypeName #> currentChild;
 			if (this.TryFind(priorChild.<#= templateType.RequiredIdentityField.NamePascalCase #>, out currentChild)) {
 				if (!object.ReferenceEquals(priorChild, currentChild)) {
+					bool positionChanged = false;
+					if (this.<#= templateType.RecursiveField.NamePascalCase #>.KeyComparer.Compare(currentChild, priorChild) != 0) {
+						// Calculate where the node was, and where it would go in the old tree.
+						int beforeIndex = other.<#= templateType.RecursiveField.NamePascalCase #>.IndexOf(priorChild);
+						int afterIndex = ~other.<#= templateType.RecursiveField.NamePascalCase #>.IndexOf(currentChild);
+
+						// If the indices are the same, the new one would come "just before" the old one.
+						// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
+						// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
+						positionChanged = afterIndex != beforeIndex && afterIndex != beforeIndex + 1;
+					}
+
 					// Some change has been made to this or its descendents.
-					history.AddRange(currentChild.ChangesSince(priorChild));
+					history.AddRange(currentChild.ChangesSince(priorChild, positionChanged));
 				}
 			} else {
 				removed.Add(priorChild);
@@ -316,6 +332,10 @@ public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= di
 	history.AddRange(removed.Select(remove => <#= diffTypeName #>.Remove(remove)));
 
 	var localChanges = this.DiffProperties(priorVersion);
+	if (positionUnderParentChanged) {
+		localChanges |= <#= enumTypeName #>.PositionUnderParent;
+	}
+
 	if (localChanges != <#= enumTypeName #>.None) {
 		history.Add(DiffGram.Change(priorVersion, this, localChanges));
 	}

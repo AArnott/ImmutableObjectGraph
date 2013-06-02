@@ -580,6 +580,10 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
+		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
+			return this.ChangesSince(priorVersion, positionUnderParentChanged: false);
+		}
+		
 		protected virtual ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
@@ -622,7 +626,7 @@ namespace ImmutableObjectGraph.Tests {
 			return propertiesChanged;
 		}
 		
-		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
+		protected internal virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion, bool positionUnderParentChanged) {
 			if (priorVersion == null) {
 				throw new System.ArgumentNullException("priorVersion");
 			}
@@ -646,8 +650,20 @@ namespace ImmutableObjectGraph.Tests {
 					ProjectTree currentChild;
 					if (this.TryFind(priorChild.Identity, out currentChild)) {
 						if (!object.ReferenceEquals(priorChild, currentChild)) {
+							bool positionChanged = false;
+							if (this.Children.KeyComparer.Compare(currentChild, priorChild) != 0) {
+								// Calculate where the node was, and where it would go in the old tree.
+								int beforeIndex = other.Children.IndexOf(priorChild);
+								int afterIndex = ~other.Children.IndexOf(currentChild);
+		
+								// If the indices are the same, the new one would come "just before" the old one.
+								// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
+								// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
+								positionChanged = afterIndex != beforeIndex && afterIndex != beforeIndex + 1;
+							}
+		
 							// Some change has been made to this or its descendents.
-							history.AddRange(currentChild.ChangesSince(priorChild));
+							history.AddRange(currentChild.ChangesSince(priorChild, positionChanged));
 						}
 					} else {
 						removed.Add(priorChild);
@@ -664,6 +680,10 @@ namespace ImmutableObjectGraph.Tests {
 			history.AddRange(removed.Select(remove => ProjectTree.DiffGram.Remove(remove)));
 		
 			var localChanges = this.DiffProperties(priorVersion);
+			if (positionUnderParentChanged) {
+				localChanges |= ProjectTreeChangedProperties.PositionUnderParent;
+			}
+		
 			if (localChanges != ProjectTreeChangedProperties.None) {
 				history.Add(DiffGram.Change(priorVersion, this, localChanges));
 			}
