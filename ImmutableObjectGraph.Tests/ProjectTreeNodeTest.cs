@@ -52,7 +52,7 @@ namespace ImmutableObjectGraph.Tests {
 		[Fact]
 		public void RemoveDirectChild() {
 			var child = this.NewNode();
-			var tree = this.NewTree("Some tree", new [] { child });
+			var tree = this.NewTree("Some tree", new[] { child });
 			var newTree = tree.RemoveChildren(child);
 			Assert.Equal(1, tree.Children.Count);
 			Assert.Equal(0, newTree.Children.Count);
@@ -117,7 +117,7 @@ namespace ImmutableObjectGraph.Tests {
 			var tree2 = tree1.AddChildren(child);
 			var newChild = child.WithCaption(ModifiedCaption);
 			var tree3 = tree2.ReplaceDescendent(child, newChild);
-			var tree4 = tree3.RemoveChildren(new [] { child });
+			var tree4 = tree3.RemoveChildren(new[] { child });
 			Assert.Equal(0, tree4.Children.Count);
 		}
 
@@ -433,6 +433,59 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(node1a.Identity, differences[0].Identity);
 			Assert.Equal(ChangeKind.Added, differences[1].Kind);
 			Assert.Equal(node1b.Identity, differences[1].Identity);
+		}
+
+		[Fact]
+		public void MovingNodeAroundHierarchy() {
+			ProjectTree aa, ab;
+			var root = ProjectTree.Create("A").WithChildren(
+				aa = ProjectTree.Create("AA"),
+				ab = ProjectTree.Create("AB"));
+
+			var moved = root.RemoveDescendent(aa).AddDescendent(aa, ab);
+
+			var history = moved.ChangesSince(root);
+			Assert.Equal(1, history.Count);
+			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
+			Assert.Same(aa, history[0].Before);
+			Assert.Same(aa, history[0].After);
+			Assert.Equal(ProjectTreeChangedProperties.Parent, history[0].Changes);
+		}
+
+		[Fact]
+		public void MovingNodeAroundHierarchyWithOtherChanges() {
+			ProjectTree aa, ab;
+			var root = ProjectTree.Create("A").WithChildren(
+				aa = ProjectTree.Create("AA"),
+				ab = ProjectTree.Create("AB"));
+
+			var aaModified = aa.WithVisible(false);
+			var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
+
+			var history = moved.ChangesSince(root);
+			Assert.Equal(2, history.Count);
+			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
+			Assert.Equal(ProjectTreeChangedProperties.Parent | ProjectTreeChangedProperties.Visible, history[0].Changes);
+			Assert.Same(aa, history[0].Before);
+			Assert.Same(aa, history[0].After);
+			Assert.Equal(aa.Identity, history[0].Identity);
+		}
+
+		[Fact]
+		public void RepositioningNodeWithinParentsChildren() {
+			ProjectTree aa, ab;
+			var root = ProjectTree.Create("A").WithChildren(
+				aa = ProjectTree.Create("AA"),
+				ab = ProjectTree.Create("AB"));
+			var ac = aa.WithCaption("AC");
+			var modified = root.ReplaceDescendent(aa, ac);
+
+			var history = modified.ChangesSince(root);
+			Assert.Equal(1, history.Count);
+			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
+			Assert.Equal(ProjectTreeChangedProperties.Caption | ProjectTreeChangedProperties.PositionUnderParent, history[0].Changes);
+			Assert.Same(aa, history[0].Before);
+			Assert.Same(ac, history[0].After);
 		}
 	}
 }

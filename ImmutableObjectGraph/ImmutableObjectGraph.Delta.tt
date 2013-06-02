@@ -189,8 +189,13 @@ public enum <#= enumTypeName #> {
 	/// The node's position within its parent's list of children changed.
 	/// </summary>
 	PositionUnderParent = 0x2,
+	
+	/// <summary>
+	/// The node was removed and reappeared in a new position in the tree (with a different parent).
+	/// </summary>
+	Parent = 0x4,
 <#
-				int counter = 2;
+				int counter = 3;
 				// We're interested in enumerating the union of all fields on this and derived types,
 				// excluding the recursive collection itself.
 				var fields = templateType.Concat(templateType.Descendents)

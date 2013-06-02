@@ -1770,56 +1770,61 @@ namespace ImmutableObjectGraph.Tests {
 		/// The node's position within its parent's list of children changed.
 		/// </summary>
 		PositionUnderParent = 0x2,
+		
+		/// <summary>
+		/// The node was removed and reappeared in a new position in the tree (with a different parent).
+		/// </summary>
+		Parent = 0x4,
 	
 		/// <summary>
 		/// The <see cref="ProjectTree.Caption" /> property was changed.
 		/// </summary>
-		Caption = 0x4,
+		Caption = 0x8,
 	
 		/// <summary>
 		/// The <see cref="ProjectTree.FilePath" /> property was changed.
 		/// </summary>
-		FilePath = 0x8,
+		FilePath = 0x10,
 	
 		/// <summary>
 		/// The <see cref="ProjectTree.Icon" /> property was changed.
 		/// </summary>
-		Icon = 0x10,
+		Icon = 0x20,
 	
 		/// <summary>
 		/// The <see cref="ProjectTree.ExpandedIcon" /> property was changed.
 		/// </summary>
-		ExpandedIcon = 0x20,
+		ExpandedIcon = 0x40,
 	
 		/// <summary>
 		/// The <see cref="ProjectTree.Visible" /> property was changed.
 		/// </summary>
-		Visible = 0x40,
+		Visible = 0x80,
 	
 		/// <summary>
 		/// The <see cref="ProjectTree.BrowseObjectProperties" /> property was changed.
 		/// </summary>
-		BrowseObjectProperties = 0x80,
+		BrowseObjectProperties = 0x100,
 	
 		/// <summary>
 		/// The <see cref="ProjectTree.Capabilities" /> property was changed.
 		/// </summary>
-		Capabilities = 0x100,
+		Capabilities = 0x200,
 	
 		/// <summary>
 		/// The <see cref="ProjectItemTree.ProjectPropertiesContext" /> property was changed.
 		/// </summary>
-		ProjectPropertiesContext = 0x200,
+		ProjectPropertiesContext = 0x400,
 	
 		/// <summary>
 		/// The <see cref="ProjectItemTree.PropertySheet" /> property was changed.
 		/// </summary>
-		PropertySheet = 0x400,
+		PropertySheet = 0x800,
 	
 		/// <summary>
 		/// The <see cref="ProjectItemTree.IsLinked" /> property was changed.
 		/// </summary>
-		IsLinked = 0x800,
+		IsLinked = 0x1000,
 	
 		/// <summary>
 		/// All flags in this enum.
