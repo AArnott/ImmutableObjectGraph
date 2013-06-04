@@ -437,9 +437,7 @@ this.HandleRedType += (templateType, position) => {
 			break;
 	}
 }; // red type event handler
-#>
-
-<#+
+#><#+
 	private string GetPropertiesEnumTypeName(MetaType templateType) {
 		return templateType.TypeName + "ChangedProperties";
 	}
