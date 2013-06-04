@@ -444,6 +444,55 @@ namespace ImmutableObjectGraph.Tests {
 		}
 
 		[Fact]
+		public void MovingNodeAroundHierarchyWithChildAdds() {
+			ProjectTree aa, ab;
+			var root = ProjectTree.Create("A").WithChildren(
+				aa = ProjectTree.Create("AA"),
+				ab = ProjectTree.Create("AB"));
+
+			var aaModified = aa.AddChild(ProjectTree.Create("AAA"));
+			var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
+
+			var history = moved.ChangesSince(root);
+			Assert.Equal(2, history.Count);
+			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
+			Assert.Equal(ProjectTreeChangedProperties.Parent, history[0].Changes);
+			Assert.Same(aa, history[0].Before);
+			Assert.Same(aaModified, history[0].After);
+			Assert.Equal(aa.Identity, history[0].Identity);
+
+			Assert.Equal(ChangeKind.Added, history[1].Kind);
+			Assert.Same(aaModified.Children[0], history[1].After);
+			Assert.Null(history[1].Before);
+			Assert.Equal(aaModified.Children[0].Identity, history[1].Identity);
+		}
+
+		[Fact]
+		public void MovingNodeAroundHierarchyWithChildRemoves() {
+			ProjectTree aa, ab;
+			var root = ProjectTree.Create("A").WithChildren(
+				aa = ProjectTree.Create("AA").WithChildren(
+					ProjectTree.Create("AAA")),
+				ab = ProjectTree.Create("AB"));
+
+			var aaModified = aa.RemoveChild(aa.Children[0]);
+			var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
+
+			var history = moved.ChangesSince(root);
+			Assert.Equal(2, history.Count);
+			Assert.Equal(ChangeKind.Removed, history[0].Kind);
+			Assert.Same(aa.Children[0], history[0].Before);
+			Assert.Null(history[0].After);
+			Assert.Equal(aa.Children[0].Identity, history[0].Identity);
+	
+			Assert.Equal(ChangeKind.Replaced, history[1].Kind);
+			Assert.Equal(ProjectTreeChangedProperties.Parent, history[1].Changes);
+			Assert.Same(aa, history[1].Before);
+			Assert.Same(aaModified, history[1].After);
+			Assert.Equal(aa.Identity, history[1].Identity);
+		}
+
+		[Fact]
 		public void RepositioningNodeWithinParentsChildren() {
 			ProjectTree aa, ab;
 			var root = ProjectTree.Create("A").WithChildren(
