@@ -421,7 +421,7 @@
 			var changes = changedRoot.ChangesSince(this.root);
 			Assert.Equal(1, changes.Count);
 			Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
-			Assert.Equal(FileSystemEntryChangedProperties.PathSegment, changes[0].Changes);
+			Assert.Equal(FileSystemEntryChangedProperties.PathSegment | FileSystemEntryChangedProperties.PositionUnderParent, changes[0].Changes);
 		}
 
 		[Fact]

@@ -407,34 +407,6 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(ProjectTreeChangedProperties.Visible | ProjectTreeChangedProperties.Capabilities, differences[0].Changes);
 		}
 
-		[Fact(Skip = "obsolete as long as itemids are no longer affinitized to item contexts.")]
-		public void HistoryShowsReplaceAsRemoveAndAddWhenIdIsChanged() {
-			var context = new ProjectPropertiesContext();
-
-			var head = this.NewTree("some tree");
-			var treeRevisions = new List<ProjectTree>();
-			treeRevisions.Add(head);
-			ProjectTree node1a, node1b;
-			treeRevisions.Add(head = head.AddChildren(node1a = this.NewTree("node1a")));
-
-			// Make some substantial change that will force the node to assume a new identity despite
-			// the replacement semantic here.
-			ProjectItemTree.Create("wastednode", context); // creating this forces an itemid to be dedicated to this item, so that when we "replace" an existing one to this one, a change in itemid is required.
-			treeRevisions.Add(head = head.ReplaceDescendent(node1a, node1b = node1a.WithCaption("node1b").ToProjectItemTree(context)));
-
-			if (node1a.Identity == node1b.Identity) {
-				// Test inconclusive
-				Assert.True(false, "The replacement node needs a different ID for this test to be useful.");
-			}
-
-			var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions[1], (ProjectTree)treeRevisions[2]).ToList();
-			Assert.Equal(2, differences.Count);
-			Assert.Equal(ChangeKind.Removed, differences[0].Kind);
-			Assert.Equal(node1a.Identity, differences[0].Identity);
-			Assert.Equal(ChangeKind.Added, differences[1].Kind);
-			Assert.Equal(node1b.Identity, differences[1].Identity);
-		}
-
 		[Fact]
 		public void MovingNodeAroundHierarchy() {
 			ProjectTree aa, ab;
@@ -467,8 +439,57 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
 			Assert.Equal(ProjectTreeChangedProperties.Parent | ProjectTreeChangedProperties.Visible, history[0].Changes);
 			Assert.Same(aa, history[0].Before);
-			Assert.Same(aa, history[0].After);
+			Assert.Same(aaModified, history[0].After);
 			Assert.Equal(aa.Identity, history[0].Identity);
+		}
+
+		[Fact]
+		public void MovingNodeAroundHierarchyWithChildAdds() {
+			ProjectTree aa, ab;
+			var root = ProjectTree.Create("A").WithChildren(
+				aa = ProjectTree.Create("AA"),
+				ab = ProjectTree.Create("AB"));
+
+			var aaModified = aa.AddChild(ProjectTree.Create("AAA"));
+			var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
+
+			var history = moved.ChangesSince(root);
+			Assert.Equal(2, history.Count);
+			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
+			Assert.Equal(ProjectTreeChangedProperties.Parent, history[0].Changes);
+			Assert.Same(aa, history[0].Before);
+			Assert.Same(aaModified, history[0].After);
+			Assert.Equal(aa.Identity, history[0].Identity);
+
+			Assert.Equal(ChangeKind.Added, history[1].Kind);
+			Assert.Same(aaModified.Children[0], history[1].After);
+			Assert.Null(history[1].Before);
+			Assert.Equal(aaModified.Children[0].Identity, history[1].Identity);
+		}
+
+		[Fact]
+		public void MovingNodeAroundHierarchyWithChildRemoves() {
+			ProjectTree aa, ab;
+			var root = ProjectTree.Create("A").WithChildren(
+				aa = ProjectTree.Create("AA").WithChildren(
+					ProjectTree.Create("AAA")),
+				ab = ProjectTree.Create("AB"));
+
+			var aaModified = aa.RemoveChild(aa.Children[0]);
+			var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
+
+			var history = moved.ChangesSince(root);
+			Assert.Equal(2, history.Count);
+			Assert.Equal(ChangeKind.Removed, history[0].Kind);
+			Assert.Same(aa.Children[0], history[0].Before);
+			Assert.Null(history[0].After);
+			Assert.Equal(aa.Children[0].Identity, history[0].Identity);
+	
+			Assert.Equal(ChangeKind.Replaced, history[1].Kind);
+			Assert.Equal(ProjectTreeChangedProperties.Parent, history[1].Changes);
+			Assert.Same(aa, history[1].Before);
+			Assert.Same(aaModified, history[1].After);
+			Assert.Equal(aa.Identity, history[1].Identity);
 		}
 
 		[Fact]
