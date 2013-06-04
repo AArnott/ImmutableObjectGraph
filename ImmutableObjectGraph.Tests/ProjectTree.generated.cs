@@ -601,10 +601,6 @@ namespace ImmutableObjectGraph.Tests {
 
 		}
 		
-		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
-			return this.ChangesSince(priorVersion, positionUnderParentChanged: false);
-		}
-		
 		protected virtual ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
@@ -649,7 +645,7 @@ namespace ImmutableObjectGraph.Tests {
 			return propertiesChanged;
 		}
 		
-		protected internal virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion, bool positionUnderParentChanged) {
+		protected internal virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
 			if (priorVersion == null) {
 				throw new System.ArgumentNullException("priorVersion");
 			}
@@ -669,6 +665,8 @@ namespace ImmutableObjectGraph.Tests {
 			var removed = new System.Collections.Generic.HashSet<ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
 			var changed = new System.Collections.Generic.Dictionary<ParentedProjectTree, ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
 
+			var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<ProjectTree>(Comparers.Identity);
+
 			foreach (var fromBefore in before) {
 				if (after.Contains(fromBefore)) {
 					var fromAfter = this.GetParentedNode(fromBefore.Value.Identity);
@@ -686,8 +684,12 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 
+			foreach (var topLevelOperation in added.Concat(removed)) {
+				descendentsOfAddOrRemove.UnionWith(topLevelOperation.Value.GetSelfAndDescendents().Skip(1));
+			}
+
 			var history = new System.Collections.Generic.List<ProjectTree.DiffGram>();
-			history.AddRange(removed.Select(r => DiffGram.Remove(r.Value)));
+			history.AddRange(removed.Where(r => !descendentsOfAddOrRemove.Contains(r.Value)).Select(r => DiffGram.Remove(r.Value)));
 
 			foreach (var changedNode in changed) {
 				var oldNode = changedNode.Key;
@@ -699,7 +701,7 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 
-			history.AddRange(added.Select(a => DiffGram.Add(a.Value)));
+			history.AddRange(added.Where(a => !descendentsOfAddOrRemove.Contains(a.Value)).Select(a => DiffGram.Add(a.Value)));
 			return history;
 		}
 		
