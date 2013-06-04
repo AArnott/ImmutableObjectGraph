@@ -644,7 +644,57 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return propertiesChanged;
 		}
-		
+
+		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
+		internal struct ParentedProjectTree {
+			public ParentedProjectTree(ProjectTree value, ProjectTree parent)
+				: this() {
+				if (value == null) {
+					throw new System.ArgumentNullException("value");
+				}
+
+				this.Value = value;
+				this.Parent = parent;
+			}
+
+			public ProjectTree Value { get; private set; }
+
+			public ProjectTree Parent { get; private set; }
+
+			public ProjectTreeChangedProperties DiffProperties(ParentedProjectTree other) {
+				ProjectTreeChangedProperties changes = this.Value.DiffProperties(other.Value);
+				if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.Identity != other.Parent.Identity)) {
+					changes |= ProjectTreeChangedProperties.Parent;
+				} else if (this.Value != other.Value && this.Parent != null && other.Parent != null) {
+					if (this.Parent.Children.KeyComparer.Compare(this.Value, other.Value) != 0) {
+						// Calculate where the node was, and where it would go in the old tree.
+						int beforeIndex = other.Parent.Children.IndexOf(other.Value);
+						int afterIndex = ~other.Parent.Children.IndexOf(this.Value);
+
+						// If the indices are the same, the new one would come "just before" the old one.
+						// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
+						// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
+						if (afterIndex != beforeIndex && afterIndex != beforeIndex + 1) {
+							changes |= ProjectTreeChangedProperties.PositionUnderParent;
+						}
+					}
+				}
+
+				return changes;
+			}
+		}
+
+		internal System.Collections.Generic.IEnumerable<ParentedProjectTree> GetSelfAndDescendentsWithParents(ProjectTree parent) {
+			yield return new ParentedProjectTree(this, parent);
+			if (this.Children != null) {
+				foreach (var child in this.Children) {
+					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
+						yield return descendent;
+					}
+				}
+			}
+		}
+
 		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
 			if (priorVersion == null) {
 				throw new System.ArgumentNullException("priorVersion");
@@ -868,56 +918,6 @@ namespace ImmutableObjectGraph.Tests {
 			if (this.Children != null) {
 				foreach (var child in this.Children) {
 					foreach (var descendent in child.GetSelfAndDescendents()) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-
-		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
-		internal struct ParentedProjectTree {
-			public ParentedProjectTree(ProjectTree value, ProjectTree parent)
-				: this() {
-				if (value == null) {
-					throw new System.ArgumentNullException("value");
-				}
-
-				this.Value = value;
-				this.Parent = parent;
-			}
-
-			public ProjectTree Value { get; private set; }
-
-			public ProjectTree Parent { get; private set; }
-
-			public ProjectTreeChangedProperties DiffProperties(ParentedProjectTree other) {
-				ProjectTreeChangedProperties changes = this.Value.DiffProperties(other.Value);
-				if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.Identity != other.Parent.Identity)) {
-					changes |= ProjectTreeChangedProperties.Parent;
-				} else if (this.Value != other.Value && this.Parent != null && other.Parent != null) {
-					if (this.Parent.Children.KeyComparer.Compare(this.Value, other.Value) != 0) {
-						// Calculate where the node was, and where it would go in the old tree.
-						int beforeIndex = other.Parent.Children.IndexOf(other.Value);
-						int afterIndex = ~other.Parent.Children.IndexOf(this.Value);
-
-						// If the indices are the same, the new one would come "just before" the old one.
-						// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
-						// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
-						if (afterIndex != beforeIndex && afterIndex != beforeIndex + 1) {
-							changes |= ProjectTreeChangedProperties.PositionUnderParent;
-						}
-					}
-				}
-
-				return changes;
-			}
-		}
-
-		internal System.Collections.Generic.IEnumerable<ParentedProjectTree> GetSelfAndDescendentsWithParents(ProjectTree parent) {
-			yield return new ParentedProjectTree(this, parent);
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
 						yield return descendent;
 					}
 				}
