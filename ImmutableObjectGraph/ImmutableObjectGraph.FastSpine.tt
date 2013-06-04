@@ -156,22 +156,22 @@ public bool Contains(<#= templateType.RequiredIdentityField.TypeName #> identity
 }
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-internal Parented<#= templateType.RecursiveParent.TypeName #> GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+internal Parented<#= templateType.RecursiveType.TypeName #> GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
 	if (this.Identity == identity) {
-		return new Parented<#= templateType.RecursiveParent.TypeName #>(this, null);
+		return new Parented<#= templateType.RecursiveType.TypeName #>(this, null);
 	}
 
 	if (this.LookupTable != null) {
 		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
 		if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 			var parentIdentity = lookupValue.Value;
-			return new Parented<#= templateType.RecursiveParent.TypeName #>(this.LookupTable[identity].Key, (<#= templateType.RecursiveParent.TypeName #>)this.LookupTable[parentIdentity].Key);
+			return new Parented<#= templateType.RecursiveType.TypeName #>(this.LookupTable[identity].Key, (<#= templateType.RecursiveParent.TypeName #>)this.LookupTable[parentIdentity].Key);
 		}
 	} else {
 		// No lookup table means we have to aggressively search each child.
 		foreach (var child in this.Children) {
 			if (child.Identity.Equals(identity)) {
-				return new Parented<#= templateType.RecursiveParent.TypeName #>(child, this);
+				return new Parented<#= templateType.RecursiveType.TypeName #>(child, this);
 			}
 
 			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
@@ -184,12 +184,12 @@ internal Parented<#= templateType.RecursiveParent.TypeName #> GetParentedNode(<#
 		}
 	}
 
-	return default(Parented<#= templateType.RecursiveParent.TypeName #>);
+	return default(Parented<#= templateType.RecursiveType.TypeName #>);
 }
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 internal <#= templateType.RecursiveParent.TypeName #> GetParent(<#= templateType.RecursiveType.TypeName #> descendent) {
-	return this.GetParentedNode(descendent.identity).Parent;
+	return this.GetParentedNode(descendent.<#= templateType.RequiredIdentityField.NamePascalCase #>).Parent;
 }
 
 public System.Collections.Immutable.ImmutableStack<<#= templateType.RecursiveType.TypeName #>> GetSpine(<#= templateType.RequiredIdentityField.TypeName #> descendent) {

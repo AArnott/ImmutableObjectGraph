@@ -685,10 +685,14 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal System.Collections.Generic.IEnumerable<ParentedProjectTree> GetSelfAndDescendentsWithParents(ProjectTree parent) {
 			yield return new ParentedProjectTree(this, parent);
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
-						yield return descendent;
+		
+			var self = this as ProjectTree;
+			if (self != null) {
+				if (self.Children != null) {
+					foreach (var child in self.Children) {
+						foreach (var descendent in child.GetSelfAndDescendentsWithParents(self)) {
+							yield return descendent;
+						}
 					}
 				}
 			}
@@ -1158,7 +1162,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		internal ProjectTree GetParent(ProjectTree descendent) {
-			return this.GetParentedNode(descendent.identity).Parent;
+			return this.GetParentedNode(descendent.Identity).Parent;
 		}
 		
 		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.Int32 descendent) {

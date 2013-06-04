@@ -145,7 +145,7 @@ public static class Comparers {
 }
 <# if (!templateType.IsRecursiveParent) { #>
 
-protected internal virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion, bool positionUnderParentChanged) {
+public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
 	if (priorVersion == null) {
 		throw new System.ArgumentNullException("priorVersion");
 	}
@@ -212,10 +212,10 @@ internal struct Parented<#= templateType.TypeName #> {
 		if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #> != other.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #>)) {
 			changes |= <#= enumTypeName #>.Parent;
 		} else if (this.Value != other.Value && this.Parent != null && other.Parent != null) {
-			if (this.Parent.<#= templateType.RecursiveField.NamePascalCase #>.KeyComparer.Compare(this.Value, other.Value) != 0) {
+			if (this.Parent.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>.KeyComparer.Compare(this.Value, other.Value) != 0) {
 				// Calculate where the node was, and where it would go in the old tree.
-				int beforeIndex = other.Parent.<#= templateType.RecursiveField.NamePascalCase #>.IndexOf(other.Value);
-				int afterIndex = ~other.Parent.<#= templateType.RecursiveField.NamePascalCase #>.IndexOf(this.Value);
+				int beforeIndex = other.Parent.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>.IndexOf(other.Value);
+				int afterIndex = ~other.Parent.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>.IndexOf(this.Value);
 
 				// If the indices are the same, the new one would come "just before" the old one.
 				// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
@@ -232,10 +232,14 @@ internal struct Parented<#= templateType.TypeName #> {
 
 internal System.Collections.Generic.IEnumerable<Parented<#= templateType.TypeName #>> GetSelfAndDescendentsWithParents(<#= templateType.RecursiveParent.TypeName #> parent) {
 	yield return new Parented<#= templateType.TypeName #>(this, parent);
-	if (this.<#= templateType.RecursiveField.NamePascalCase #> != null) {
-		foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>) {
-			foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
-				yield return descendent;
+
+	var self = this as <#= templateType.RecursiveParent.TypeName #>;
+	if (self != null) {
+		if (self.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #> != null) {
+			foreach (var child in self.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>) {
+				foreach (var descendent in child.GetSelfAndDescendentsWithParents(self)) {
+					yield return descendent;
+				}
 			}
 		}
 	}
@@ -341,7 +345,7 @@ protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName
 		MetaType recursiveType = templateType.RecursiveTypeFromFamily;
 		string enumTypeName = GetPropertiesEnumTypeName(recursiveType);
 		string diffTypeName = GetDiffGramTypeName(recursiveType);
-		string parentedTemplateType = "Parented" + templateType.TypeName;
+		string parentedTemplateType = "Parented" + templateType.RecursiveType.TypeName;
 		switch (position) {
 			case HandleTypePosition.WithinTypeDeclaration:
 				string changesSinceKeyword = templateType.HasAncestor ? "override " : "virtual ";
@@ -367,7 +371,7 @@ public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= di
 	var removed = new System.Collections.Generic.HashSet<<#= parentedTemplateType #>>(Comparers.<#= parentedTemplateType #><#= templateType.RequiredIdentityField.NamePascalCase #>);
 	var changed = new System.Collections.Generic.Dictionary<<#= parentedTemplateType #>, <#= parentedTemplateType #>>(Comparers.<#= parentedTemplateType #><#= templateType.RequiredIdentityField.NamePascalCase #>);
 
-	var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<<#= templateType.TypeName #>>(Comparers.<#= templateType.RequiredIdentityField.NamePascalCase #>);
+	var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<<#= templateType.RecursiveType.TypeName #>>(Comparers.<#= templateType.RequiredIdentityField.NamePascalCase #>);
 	
 	foreach (var fromBefore in before) {
 		if (after.Contains(fromBefore)) {
