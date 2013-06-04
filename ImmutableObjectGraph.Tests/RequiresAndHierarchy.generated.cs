@@ -55,20 +55,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static ReqAndHierL1 CreateWithIdentity(
-			System.String l1Field2,
-			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
-				l1Field2: Optional.For(l1Field2),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public System.String L1Field1 {
 			get { return this.l1Field1; }
 		}
@@ -156,6 +142,20 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String L1Field1 { get; set; }
 	
 			internal System.String L1Field2 { get; set; }
+		}
+		
+		internal static ReqAndHierL1 CreateWithIdentity(
+				System.String l1Field2,
+				ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
+					l1Field2: Optional.For(l1Field2),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public virtual ReqAndHierL2 ToReqAndHierL2(
@@ -264,24 +264,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.WithFactory(
-				l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
-				l1Field2: Optional.For(l1Field2),
-				l2Field1: Optional.For(l2Field1.GetValueOrDefault(DefaultInstance.L2Field1)),
-				l2Field2: Optional.For(l2Field2),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
-		internal static ReqAndHierL2 CreateWithIdentity(
-			System.String l1Field2,
-			System.String l2Field2,
-			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
 			return DefaultInstance.WithFactory(
 				l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
 				l1Field2: Optional.For(l1Field2),
@@ -405,6 +387,24 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String L2Field1 { get; set; }
 	
 			internal System.String L2Field2 { get; set; }
+		}
+		
+		internal static ReqAndHierL2 CreateWithIdentity(
+				System.String l1Field2,
+				System.String l2Field2,
+				ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
+					l1Field2: Optional.For(l1Field2),
+					l2Field1: Optional.For(l2Field1.GetValueOrDefault(DefaultInstance.L2Field1)),
+					l2Field2: Optional.For(l2Field2),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public ReqAndHierL1 ToReqAndHierL1() {

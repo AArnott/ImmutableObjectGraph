@@ -4,6 +4,21 @@ this.HandleType += (templateType, position) => {
 		return;
 	}
 
+	if (!templateType.IsAbstract && (templateType.HasAncestor || templateType.Descendents.Any())) {
+#>
+
+internal static <#= templateType.TypeName #> CreateWithIdentity(<# WriteParameters(templateType.AllFields.Concat(templateType.OptionalIdentityField), ParameterStyle.OptionalOrRequired); #>) {
+	if (!<#= templateType.OptionalIdentityField.NameCamelCase #>.IsDefined) {
+		<#= templateType.OptionalIdentityField.NameCamelCase #> = NewIdentity();
+	}
+
+	return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.WithFactory(<#
+	WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always); 
+#>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
+}
+<#
+	}
+
 	if (templateType.HasAncestor && !templateType.Ancestor.IsAbstract) {
 #>
 

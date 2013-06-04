@@ -55,20 +55,6 @@ namespace Demo {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static Fruit CreateWithIdentity(
-			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				color: Optional.For(color.GetValueOrDefault(DefaultInstance.Color)),
-				skinThickness: Optional.For(skinThickness.GetValueOrDefault(DefaultInstance.SkinThickness)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public System.String Color {
 			get { return this.color; }
 		}

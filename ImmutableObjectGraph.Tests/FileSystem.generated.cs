@@ -557,20 +557,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static FileSystemFile CreateWithIdentity(
-			System.String pathSegment,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				pathSegment: Optional.For(pathSegment),
-				attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Attributes {
 			get { return this.attributes; }
 		}
@@ -717,6 +703,20 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return propertiesChanged;
+		}
+		
+		internal static FileSystemFile CreateWithIdentity(
+				System.String pathSegment,
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					pathSegment: Optional.For(pathSegment),
+					attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public new Builder ToBuilder() {
@@ -973,20 +973,6 @@ namespace ImmutableObjectGraph.Tests {
 			System.String pathSegment,
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.WithFactory(
-				pathSegment: Optional.For(pathSegment),
-				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
-		internal static FileSystemDirectory CreateWithIdentity(
-			System.String pathSegment,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
 			return DefaultInstance.WithFactory(
 				pathSegment: Optional.For(pathSegment),
 				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
@@ -1664,6 +1650,20 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public System.Collections.Immutable.ImmutableStack<FileSystemEntry> GetSpine(FileSystemEntry descendent) {
 			return this.GetSpine(descendent.Identity);
+		}
+		
+		internal static FileSystemDirectory CreateWithIdentity(
+				System.String pathSegment,
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					pathSegment: Optional.For(pathSegment),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public new Builder ToBuilder() {

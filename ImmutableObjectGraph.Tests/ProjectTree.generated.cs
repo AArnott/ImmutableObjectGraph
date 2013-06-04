@@ -105,32 +105,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static ProjectTree CreateWithIdentity(
-			System.String caption,
-			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
-			ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
-			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				caption: Optional.For(caption),
-				filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
-				icon: Optional.For(icon.GetValueOrDefault(DefaultInstance.Icon)),
-				expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(DefaultInstance.ExpandedIcon)),
-				visible: Optional.For(visible.GetValueOrDefault(DefaultInstance.Visible)),
-				browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(DefaultInstance.BrowseObjectProperties)),
-				capabilities: Optional.For(capabilities.GetValueOrDefault(DefaultInstance.Capabilities)),
-				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public System.String Caption {
 			get { return this.caption; }
 		}
@@ -1207,6 +1181,32 @@ namespace ImmutableObjectGraph.Tests {
 			return this.GetSpine(descendent.Identity);
 		}
 		
+		internal static ProjectTree CreateWithIdentity(
+				System.String caption,
+				ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+				ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+				ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+				ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					caption: Optional.For(caption),
+					filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
+					icon: Optional.For(icon.GetValueOrDefault(DefaultInstance.Icon)),
+					expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(DefaultInstance.ExpandedIcon)),
+					visible: Optional.For(visible.GetValueOrDefault(DefaultInstance.Visible)),
+					browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(DefaultInstance.BrowseObjectProperties)),
+					capabilities: Optional.For(capabilities.GetValueOrDefault(DefaultInstance.Capabilities)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
 		public virtual ProjectItemTree ToProjectItemTree(
 			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
@@ -2002,38 +2002,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static ProjectItemTree CreateWithIdentity(
-			System.String caption,
-			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
-			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
-			ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
-			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
-			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
-			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				caption: Optional.For(caption),
-				filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
-				icon: Optional.For(icon.GetValueOrDefault(DefaultInstance.Icon)),
-				expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(DefaultInstance.ExpandedIcon)),
-				visible: Optional.For(visible.GetValueOrDefault(DefaultInstance.Visible)),
-				browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(DefaultInstance.BrowseObjectProperties)),
-				capabilities: Optional.For(capabilities.GetValueOrDefault(DefaultInstance.Capabilities)),
-				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
-				projectPropertiesContext: Optional.For(projectPropertiesContext),
-				propertySheet: Optional.For(propertySheet.GetValueOrDefault(DefaultInstance.PropertySheet)),
-				isLinked: Optional.For(isLinked.GetValueOrDefault(DefaultInstance.IsLinked)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext ProjectPropertiesContext {
 			get { return this.projectPropertiesContext; }
 		}
@@ -2383,6 +2351,38 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return propertiesChanged;
+		}
+		
+		internal static ProjectItemTree CreateWithIdentity(
+				System.String caption,
+				Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
+				ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+				ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+				ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+				ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
+				ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
+				ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					caption: Optional.For(caption),
+					filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
+					icon: Optional.For(icon.GetValueOrDefault(DefaultInstance.Icon)),
+					expandedIcon: Optional.For(expandedIcon.GetValueOrDefault(DefaultInstance.ExpandedIcon)),
+					visible: Optional.For(visible.GetValueOrDefault(DefaultInstance.Visible)),
+					browseObjectProperties: Optional.For(browseObjectProperties.GetValueOrDefault(DefaultInstance.BrowseObjectProperties)),
+					capabilities: Optional.For(capabilities.GetValueOrDefault(DefaultInstance.Capabilities)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					projectPropertiesContext: Optional.For(projectPropertiesContext),
+					propertySheet: Optional.For(propertySheet.GetValueOrDefault(DefaultInstance.PropertySheet)),
+					isLinked: Optional.For(isLinked.GetValueOrDefault(DefaultInstance.IsLinked)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public ProjectTree ToProjectTree() {

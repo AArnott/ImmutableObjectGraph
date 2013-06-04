@@ -47,18 +47,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static A CreateWithIdentity(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public System.Int32 Field1 {
 			get { return this.field1; }
 		}
@@ -125,6 +113,18 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.Int32 Field1 { get; set; }
+		}
+		
+		internal static A CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public virtual B ToB(
@@ -246,20 +246,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static B CreateWithIdentity(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
-				field2: Optional.For(field2.GetValueOrDefault(DefaultInstance.Field2)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public System.Int32 Field2 {
 			get { return this.field2; }
 		}
@@ -338,6 +324,20 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Int32 Field1 { get; set; }
 	
 			internal System.Int32 Field2 { get; set; }
+		}
+		
+		internal static B CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
+					field2: Optional.For(field2.GetValueOrDefault(DefaultInstance.Field2)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public A ToA() {
@@ -467,22 +467,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
-		internal static C1 CreateWithIdentity(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
-			return DefaultInstance.WithFactory(
-				field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
-				field2: Optional.For(field2.GetValueOrDefault(DefaultInstance.Field2)),
-				field3: Optional.For(field3.GetValueOrDefault(DefaultInstance.Field3)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
 		public System.Int32 Field3 {
 			get { return this.field3; }
 		}
@@ -578,6 +562,22 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Int32 Field3 { get; set; }
 		}
 		
+		internal static C1 CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
+					field2: Optional.For(field2.GetValueOrDefault(DefaultInstance.Field2)),
+					field3: Optional.For(field3.GetValueOrDefault(DefaultInstance.Field3)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
 		public B ToB() {
 			return B.CreateWithIdentity(
 				field1: Optional.For(this.Field1),
@@ -652,22 +652,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance.WithFactory(
-				field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
-				field2: Optional.For(field2.GetValueOrDefault(DefaultInstance.Field2)),
-				field3: Optional.For(field3.GetValueOrDefault(DefaultInstance.Field3)),
-				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-	
-		internal static C2 CreateWithIdentity(
-			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			if (!identity.IsDefined) {
-				identity = NewIdentity();
-			}
-	
 			return DefaultInstance.WithFactory(
 				field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
 				field2: Optional.For(field2.GetValueOrDefault(DefaultInstance.Field2)),
@@ -768,6 +752,22 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Int32 Field2 { get; set; }
 	
 			internal System.Int32 Field3 { get; set; }
+		}
+		
+		internal static C2 CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					field1: Optional.For(field1.GetValueOrDefault(DefaultInstance.Field1)),
+					field2: Optional.For(field2.GetValueOrDefault(DefaultInstance.Field2)),
+					field3: Optional.For(field3.GetValueOrDefault(DefaultInstance.Field3)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public B ToB() {
