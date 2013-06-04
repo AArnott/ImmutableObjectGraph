@@ -407,34 +407,6 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(ProjectTreeChangedProperties.Visible | ProjectTreeChangedProperties.Capabilities, differences[0].Changes);
 		}
 
-		[Fact(Skip = "obsolete as long as itemids are no longer affinitized to item contexts.")]
-		public void HistoryShowsReplaceAsRemoveAndAddWhenIdIsChanged() {
-			var context = new ProjectPropertiesContext();
-
-			var head = this.NewTree("some tree");
-			var treeRevisions = new List<ProjectTree>();
-			treeRevisions.Add(head);
-			ProjectTree node1a, node1b;
-			treeRevisions.Add(head = head.AddChildren(node1a = this.NewTree("node1a")));
-
-			// Make some substantial change that will force the node to assume a new identity despite
-			// the replacement semantic here.
-			ProjectItemTree.Create("wastednode", context); // creating this forces an itemid to be dedicated to this item, so that when we "replace" an existing one to this one, a change in itemid is required.
-			treeRevisions.Add(head = head.ReplaceDescendent(node1a, node1b = node1a.WithCaption("node1b").ToProjectItemTree(context)));
-
-			if (node1a.Identity == node1b.Identity) {
-				// Test inconclusive
-				Assert.True(false, "The replacement node needs a different ID for this test to be useful.");
-			}
-
-			var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions[1], (ProjectTree)treeRevisions[2]).ToList();
-			Assert.Equal(2, differences.Count);
-			Assert.Equal(ChangeKind.Removed, differences[0].Kind);
-			Assert.Equal(node1a.Identity, differences[0].Identity);
-			Assert.Equal(ChangeKind.Added, differences[1].Kind);
-			Assert.Equal(node1b.Identity, differences[1].Identity);
-		}
-
 		[Fact]
 		public void MovingNodeAroundHierarchy() {
 			ProjectTree aa, ab;
