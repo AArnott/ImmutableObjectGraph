@@ -51,7 +51,21 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
-				l1Field2: l1Field2,
+				l1Field2: Optional.For(l1Field2),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		internal static ReqAndHierL1 CreateWithIdentity(
+			System.String l1Field2,
+			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
+			return DefaultInstance.WithFactory(
+				l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
+				l1Field2: Optional.For(l1Field2),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
@@ -88,7 +102,7 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				l1Field1: Optional.For(l1Field1.GetValueOrDefault(this.L1Field1)),
-				l1Field2: l1Field2.GetValueOrDefault(this.L1Field2),
+				l1Field2: Optional.For(l1Field2.GetValueOrDefault(this.L1Field2)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
@@ -155,9 +169,10 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return ReqAndHierL2.Create(
+			return ReqAndHierL2.CreateWithIdentity(
 				l1Field1: Optional.For(this.L1Field1),
 				l1Field2: this.L1Field2,
+				identity: this.Identity,
 				l2Field1: l2Field1,
 				l2Field2: l2Field2);
 		}
@@ -251,9 +266,27 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
-				l1Field2: l1Field2,
+				l1Field2: Optional.For(l1Field2),
 				l2Field1: Optional.For(l2Field1.GetValueOrDefault(DefaultInstance.L2Field1)),
-				l2Field2: l2Field2,
+				l2Field2: Optional.For(l2Field2),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		internal static ReqAndHierL2 CreateWithIdentity(
+			System.String l1Field2,
+			System.String l2Field2,
+			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
+			return DefaultInstance.WithFactory(
+				l1Field1: Optional.For(l1Field1.GetValueOrDefault(DefaultInstance.L1Field1)),
+				l1Field2: Optional.For(l1Field2),
+				l2Field1: Optional.For(l2Field1.GetValueOrDefault(DefaultInstance.L2Field1)),
+				l2Field2: Optional.For(l2Field2),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
@@ -313,9 +346,9 @@ namespace ImmutableObjectGraph.Tests {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				l1Field1: Optional.For(l1Field1.GetValueOrDefault(this.L1Field1)),
-				l1Field2: l1Field2.GetValueOrDefault(this.L1Field2),
+				l1Field2: Optional.For(l1Field2.GetValueOrDefault(this.L1Field2)),
 				l2Field1: Optional.For(l2Field1.GetValueOrDefault(this.L2Field1)),
-				l2Field2: l2Field2.GetValueOrDefault(this.L2Field2),
+				l2Field2: Optional.For(l2Field2.GetValueOrDefault(this.L2Field2)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
@@ -375,9 +408,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public ReqAndHierL1 ToReqAndHierL1() {
-			return ReqAndHierL1.Create(
+			return ReqAndHierL1.CreateWithIdentity(
 				l1Field1: Optional.For(this.L1Field1),
-				l1Field2: this.L1Field2);
+				l1Field2: this.L1Field2,
+				identity: this.Identity);
 		}
 		
 		public new Builder ToBuilder() {

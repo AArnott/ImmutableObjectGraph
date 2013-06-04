@@ -191,22 +191,7 @@ protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #
 	return propertiesChanged;
 }
 
-[DebuggerDisplay("{Value.Caption} ({Value.<#= templateType.RequiredIdentityField.NamePascalCase #>})")]
-internal struct Parented<#= templateType.TypeName #> {
-	public Parented<#= templateType.TypeName #>(<#= templateType.TypeName #> value, <#= templateType.RecursiveParent.TypeName #> parent)
-		: this() {
-		if (value == null) {
-			throw new System.ArgumentNullException("value");
-		}
-
-		this.Value = value;
-		this.Parent = parent;
-	}
-
-	public <#= templateType.TypeName #> Value { get; private set; }
-
-	public <#= templateType.RecursiveParent.TypeName #> Parent { get; private set; }
-
+partial struct Parented<#= templateType.TypeName #> {
 	public <#= enumTypeName #> DiffProperties(Parented<#= templateType.TypeName #> other) {
 		<#= enumTypeName #> changes = this.Value.DiffProperties(other.Value);
 		if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #> != other.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #>)) {
@@ -227,21 +212,6 @@ internal struct Parented<#= templateType.TypeName #> {
 		}
 
 		return changes;
-	}
-}
-
-internal System.Collections.Generic.IEnumerable<Parented<#= templateType.TypeName #>> GetSelfAndDescendentsWithParents(<#= templateType.RecursiveParent.TypeName #> parent) {
-	yield return new Parented<#= templateType.TypeName #>(this, parent);
-
-	var self = this as <#= templateType.RecursiveParent.TypeName #>;
-	if (self != null) {
-		if (self.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #> != null) {
-			foreach (var child in self.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>) {
-				foreach (var descendent in child.GetSelfAndDescendentsWithParents(self)) {
-					yield return descendent;
-				}
-			}
-		}
 	}
 }
 <#

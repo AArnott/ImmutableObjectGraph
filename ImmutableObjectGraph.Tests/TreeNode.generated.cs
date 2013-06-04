@@ -81,6 +81,26 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
+		internal static TreeNode CreateWithIdentity(
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<TreeNode>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
+			return DefaultInstance.WithFactory(
+				caption: Optional.For(caption.GetValueOrDefault(DefaultInstance.Caption)),
+				filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
+				visible: Optional.For(visible.GetValueOrDefault(DefaultInstance.Visible)),
+				attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
 		public System.String Caption {
 			get { return this.caption; }
 		}
@@ -158,7 +178,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
-		public TreeNode AddAttributes(System.String value) {
+		public TreeNode AddAttribute(System.String value) {
 			return this.With(attributes: this.Attributes.Add(value));
 		}
 		
@@ -173,7 +193,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
-		public TreeNode RemoveAttributes(System.String value) {
+		public TreeNode RemoveAttribute(System.String value) {
 			return this.With(attributes: this.Attributes.Remove(value));
 		}
 		
@@ -213,23 +233,23 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public TreeNode AddChildren(TreeNode value) {
+		public TreeNode AddChild(TreeNode value) {
 			return this.With(children: this.Children.Add(value));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public TreeNode RemoveChildren(System.Collections.Generic.IEnumerable<TreeNode> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public TreeNode RemoveChildren(params TreeNode[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public TreeNode RemoveChildren(TreeNode value) {
-			return this.With(children: this.Children.Remove(value));
+		public TreeNode RemoveChild(TreeNode value) {
+			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
@@ -335,6 +355,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<TreeNode> Children { get; set; }
 		}
 		
+		protected TreeNode SyncImmediateChildToCurrentVersion(TreeNode child) {
+			TreeNode currentValue;
+			if (!this.TryFindImmediateChild(child.Identity, out currentValue)) {
+				throw new System.ArgumentException();
+			}
+		
+			return currentValue;
+		}
+		
 		public TreeNode AddDescendent(TreeNode value, TreeNode parent) {
 			var spine = this.GetSpine(parent);
 			var newParent = parent.AddChildren(value);
@@ -344,8 +373,9 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public TreeNode RemoveDescendent(TreeNode value) {
 			var spine = this.GetSpine(value);
-			var parent = (TreeNode)spine.Reverse().Skip(1).First(); // second-to-last element in spine.
-			var newParent = parent.RemoveChildren(value);
+			var spineList = spine.ToList();
+			var parent = (TreeNode)spineList[spineList.Count - 2];
+			var newParent = parent.RemoveChildren(spineList[spineList.Count - 1]);
 		
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create((TreeNode)newParent);
 			return (TreeNode)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
@@ -485,9 +515,23 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public System.Collections.Generic.IEnumerable<TreeNode> GetSelfAndDescendents() {
 			yield return this;
-			foreach (var child in this.Children) {
-				foreach (var descendent in child.GetSelfAndDescendents()) {
-					yield return descendent;
+			if (this.Children != null) {
+				foreach (var child in this.Children) {
+					foreach (var descendent in child.GetSelfAndDescendents()) {
+						yield return descendent;
+					}
+				}
+			}
+		}
+		
+		internal System.Collections.Generic.IEnumerable<ParentedTreeNode> GetSelfAndDescendentsWithParents(TreeNode parent) {
+			yield return new ParentedTreeNode(this, parent);
+		
+			if (this.Children != null) {
+				foreach (var child in this.Children) {
+					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
+						yield return descendent;
+					}
 				}
 			}
 		}
@@ -551,6 +595,23 @@ namespace ImmutableObjectGraph.Tests {
 		
 		
 		
+		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
+		protected internal partial struct ParentedTreeNode {
+			public ParentedTreeNode(TreeNode value, TreeNode parent)
+				: this() {
+				if (value == null) {
+					throw new System.ArgumentNullException("value");
+				}
+		
+				this.Value = value;
+				this.Parent = parent;
+			}
+		
+			public TreeNode Value { get; private set; }
+		
+			public TreeNode Parent { get; private set; }
+		}
+		
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>());
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> lookupTable;
@@ -561,7 +622,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// The maximum number of steps allowable for a search to be done among this node's children
 		/// before a faster lookup table will be built.
 		/// </summary>
-		private const int InefficiencyLoadThreshold = 16;
+		internal const int InefficiencyLoadThreshold = 16;
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> LookupTable {
 			get {
@@ -579,10 +640,12 @@ namespace ImmutableObjectGraph.Tests {
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
 			} else {
-				foreach (var child in this.children)
-				{
-					var recursiveChild = child as TreeNode;
-					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				if (this.children != null) {
+					foreach (var child in this.children)
+					{
+						var recursiveChild = child as TreeNode;
+						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+					}
 				}
 		
 				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
@@ -621,65 +684,113 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public TreeNode Find(System.Int32 identity) {
+		public bool TryFind(System.Int32 identity, out TreeNode value) {
 			if (this.Identity.Equals(identity)) {
-				return this;
+				value = this;
+				return true;
 			}
 		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					return lookupValue.Key;
+					value = lookupValue.Key;
+					return true;
 				}
 			} else {
-				// No lookup table means we have to aggressively search each child.
+				// No lookup table means we have to exhaustively search each child and its descendents.
 				foreach (var child in this.Children) {
 					var recursiveChild = child as TreeNode;
 					if (recursiveChild != null) {
-						var result = recursiveChild.Find(identity);
-						if (result != null) {
-							return result;
+						if (recursiveChild.TryFind(identity, out value)) {
+							return true;
 						}
 					} else {
 						if (child.Identity.Equals(identity)) {
-							return child;
+							value = child;
+							return true;
 						}
 					}
 				}
 			}
 		
-			return null;
+			value = null;
+			return false;
+		}
+		
+		public TreeNode Find(System.Int32 identity) {
+			TreeNode result;
+			if (this.TryFind(identity, out result)) {
+				return result;
+			}
+		
+			throw new System.Collections.Generic.KeyNotFoundException();
+		}
+		
+		public bool TryFindImmediateChild(System.Int32 identity, out TreeNode value) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.Identity) {
+					value = lookupValue.Key;
+					return true;
+				}
+			} else {
+				// No lookup table means we have to exhaustively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(identity)) {
+						value = child;
+						return true;
+					}
+				}
+			}
+		
+			value = null;
+			return false;
+		}
+		
+		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
+		public bool Contains(System.Int32 identity) {
+			TreeNode result;
+			return this.TryFind(identity, out result) && result != this;
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal TreeNode GetParent(TreeNode descendent) {
+		internal ParentedTreeNode GetParentedNode(System.Int32 identity) {
+			if (this.Identity == identity) {
+				return new ParentedTreeNode(this, null);
+			}
+		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
-				if (this.LookupTable.TryGetValue(descendent.Identity, out lookupValue)) {
+				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
-					return (TreeNode)this.LookupTable[parentIdentity].Key;
+					return new ParentedTreeNode(this.LookupTable[identity].Key, (TreeNode)this.LookupTable[parentIdentity].Key);
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.
 				foreach (var child in this.Children) {
-					if (child.Identity.Equals(descendent.Identity)) {
-						return this;
+					if (child.Identity.Equals(identity)) {
+						return new ParentedTreeNode(child, this);
 					}
 		
 					var recursiveChild = child as TreeNode;
 					if (recursiveChild != null) {
-						var childResult = recursiveChild.GetParent(descendent);
-						if (childResult != null) {
+						var childResult = recursiveChild.GetParentedNode(identity);
+						if (childResult.Value != null) {
 							return childResult;
 						}
 					} 
 				}
 			}
 		
-			return null;
+			return default(ParentedTreeNode);
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(System.Int32 descendent) {
+		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
+		internal TreeNode GetParent(TreeNode descendent) {
+			return this.GetParentedNode(descendent.Identity).Parent;
+		}
+		
+		public System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(System.Int32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<TreeNode>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
@@ -720,7 +831,7 @@ namespace ImmutableObjectGraph.Tests {
 			return emptySpine;
 		}
 		
-		internal System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(TreeNode descendent) {
+		public System.Collections.Immutable.ImmutableStack<TreeNode> GetSpine(TreeNode descendent) {
 			return this.GetSpine(descendent.Identity);
 		}
 		

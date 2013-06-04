@@ -47,6 +47,18 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
+		internal static Family CreateWithIdentity(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
+			return DefaultInstance.WithFactory(
+				members: Optional.For(members.GetValueOrDefault(DefaultInstance.Members)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
 		public System.Collections.Immutable.ImmutableSortedSet<Person> Members {
 			get { return this.members; }
 		}
@@ -242,6 +254,22 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
 			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				name: Optional.For(name),
+				age: Optional.For(age.GetValueOrDefault(DefaultInstance.Age)),
+				watch: Optional.For(watch.GetValueOrDefault(DefaultInstance.Watch)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		internal static Person CreateWithIdentity(
+			System.String name,
+			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
 			return DefaultInstance.WithFactory(
 				name: Optional.For(name),
 				age: Optional.For(age.GetValueOrDefault(DefaultInstance.Age)),
@@ -463,6 +491,20 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				color: Optional.For(color.GetValueOrDefault(DefaultInstance.Color)),
+				size: Optional.For(size.GetValueOrDefault(DefaultInstance.Size)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		internal static Watch CreateWithIdentity(
+			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
 			return DefaultInstance.WithFactory(
 				color: Optional.For(color.GetValueOrDefault(DefaultInstance.Color)),
 				size: Optional.For(size.GetValueOrDefault(DefaultInstance.Size)),

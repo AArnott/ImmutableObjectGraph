@@ -87,6 +87,28 @@ namespace Demo {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
+		internal static Message CreateWithIdentity(
+			ImmutableObjectGraph.Optional<Contact> author = default(ImmutableObjectGraph.Optional<Contact>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> to = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> cc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
+			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
+			return DefaultInstance.WithFactory(
+				author: Optional.For(author.GetValueOrDefault(DefaultInstance.Author)),
+				to: Optional.For(to.GetValueOrDefault(DefaultInstance.To)),
+				cc: Optional.For(cc.GetValueOrDefault(DefaultInstance.Cc)),
+				bcc: Optional.For(bcc.GetValueOrDefault(DefaultInstance.Bcc)),
+				subject: Optional.For(subject.GetValueOrDefault(DefaultInstance.Subject)),
+				body: Optional.For(body.GetValueOrDefault(DefaultInstance.Body)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
 		public Contact Author {
 			get { return this.author; }
 		}
@@ -559,6 +581,20 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+				email: Optional.For(email.GetValueOrDefault(DefaultInstance.Email)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		internal static Contact CreateWithIdentity(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+	
 			return DefaultInstance.WithFactory(
 				name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
 				email: Optional.For(email.GetValueOrDefault(DefaultInstance.Email)),

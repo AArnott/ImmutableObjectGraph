@@ -246,22 +246,7 @@ namespace ImmutableObjectGraph.Tests {
 			return propertiesChanged;
 		}
 		
-		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
-		internal struct ParentedFileSystemEntry {
-			public ParentedFileSystemEntry(FileSystemEntry value, FileSystemDirectory parent)
-				: this() {
-				if (value == null) {
-					throw new System.ArgumentNullException("value");
-				}
-		
-				this.Value = value;
-				this.Parent = parent;
-			}
-		
-			public FileSystemEntry Value { get; private set; }
-		
-			public FileSystemDirectory Parent { get; private set; }
-		
+		partial struct ParentedFileSystemEntry {
 			public FileSystemEntryChangedProperties DiffProperties(ParentedFileSystemEntry other) {
 				FileSystemEntryChangedProperties changes = this.Value.DiffProperties(other.Value);
 				if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.Identity != other.Parent.Identity)) {
@@ -285,23 +270,29 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		internal System.Collections.Generic.IEnumerable<ParentedFileSystemEntry> GetSelfAndDescendentsWithParents(FileSystemDirectory parent) {
-			yield return new ParentedFileSystemEntry(this, parent);
-		
-			var self = this as FileSystemDirectory;
-			if (self != null) {
-				if (self.Children != null) {
-					foreach (var child in self.Children) {
-						foreach (var descendent in child.GetSelfAndDescendentsWithParents(self)) {
-							yield return descendent;
-						}
-					}
-				}
-			}
-		}
-		
 		public virtual System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
 			yield return this;
+		}
+		
+		internal virtual System.Collections.Generic.IEnumerable<ParentedFileSystemEntry> GetSelfAndDescendentsWithParents(FileSystemDirectory parent) {
+			yield return new ParentedFileSystemEntry(this, parent);
+		}
+		
+		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
+		protected internal partial struct ParentedFileSystemEntry {
+			public ParentedFileSystemEntry(FileSystemEntry value, FileSystemDirectory parent)
+				: this() {
+				if (value == null) {
+					throw new System.ArgumentNullException("value");
+				}
+		
+				this.Value = value;
+				this.Parent = parent;
+			}
+		
+			public FileSystemEntry Value { get; private set; }
+		
+			public FileSystemDirectory Parent { get; private set; }
 		}
 		
 		public virtual FileSystemFile ToFileSystemFile(
@@ -1375,6 +1366,18 @@ namespace ImmutableObjectGraph.Tests {
 			if (this.Children != null) {
 				foreach (var child in this.Children) {
 					foreach (var descendent in child.GetSelfAndDescendents()) {
+						yield return descendent;
+					}
+				}
+			}
+		}
+		
+		internal override System.Collections.Generic.IEnumerable<ParentedFileSystemEntry> GetSelfAndDescendentsWithParents(FileSystemDirectory parent) {
+			yield return new ParentedFileSystemEntry(this, parent);
+		
+			if (this.Children != null) {
+				foreach (var child in this.Children) {
+					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
 						yield return descendent;
 					}
 				}

@@ -11,6 +11,29 @@ this.HandleType += (templateType, position) => {
 			break;
 
 		case HandleTypePosition.WithinTypeDeclaration:
+			if (templateType.IsRecursiveType) {
+				var recursiveType = templateType.RecursiveTypeFromFamily;
+#>
+
+[DebuggerDisplay("{Value.Caption} ({Value.<#= templateType.RequiredIdentityField.NamePascalCase #>})")]
+protected internal partial struct Parented<#= recursiveType.TypeName #> {
+	public Parented<#= recursiveType.TypeName #>(<#= recursiveType.TypeName #> value, <#= templateType.RecursiveParent.TypeName #> parent)
+		: this() {
+		if (value == null) {
+			throw new System.ArgumentNullException("value");
+		}
+
+		this.Value = value;
+		this.Parent = parent;
+	}
+
+	public <#= recursiveType.TypeName #> Value { get; private set; }
+
+	public <#= templateType.RecursiveParent.TypeName #> Parent { get; private set; }
+}
+<#
+			}
+
 			if (templateType.IsRecursive) {
 #>
 

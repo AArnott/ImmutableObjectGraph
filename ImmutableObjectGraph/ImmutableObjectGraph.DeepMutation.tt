@@ -10,6 +10,10 @@ this.HandleType += (templateType, position) => {
 public virtual System.Collections.Generic.IEnumerable<<#= templateType.TypeName #>> GetSelfAndDescendents() {
 	yield return this;
 }
+
+internal virtual System.Collections.Generic.IEnumerable<Parented<#= templateType.TypeName #>> GetSelfAndDescendentsWithParents(<#= templateType.RecursiveParent.TypeName #> parent) {
+	yield return new Parented<#= templateType.TypeName #>(this, parent);
+}
 <#
 	}
 
@@ -170,6 +174,18 @@ public <#= !templateType.IsRecursiveType ? "override " : "" #>System.Collections
 	if (this.<#= templateType.RecursiveField.NamePascalCase #> != null) {
 		foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>) {
 			foreach (var descendent in child.GetSelfAndDescendents()) {
+				yield return descendent;
+			}
+		}
+	}
+}
+
+internal <#= !templateType.IsRecursiveType ? "override " : "" #>System.Collections.Generic.IEnumerable<Parented<#= templateType.RecursiveType.TypeName #>> GetSelfAndDescendentsWithParents(<#= templateType.RecursiveParent.TypeName #> parent) {
+	yield return new Parented<#= templateType.RecursiveType.TypeName #>(this, parent);
+
+	if (this.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #> != null) {
+		foreach (var child in this.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>) {
+			foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
 				yield return descendent;
 			}
 		}
