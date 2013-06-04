@@ -467,7 +467,7 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Equal(ChangeKind.Replaced, history[0].Kind);
 			Assert.Equal(ProjectTreeChangedProperties.Parent | ProjectTreeChangedProperties.Visible, history[0].Changes);
 			Assert.Same(aa, history[0].Before);
-			Assert.Same(aa, history[0].After);
+			Assert.Same(aaModified, history[0].After);
 			Assert.Equal(aa.Identity, history[0].Identity);
 		}
 
