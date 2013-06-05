@@ -16,9 +16,14 @@
 			return ParentedIdentityEqualityComparer<TRecursiveParent, TRecursiveType>.Default;
 		}
 
+		/// <summary>Gets an equatable comparer that compares all properties (and possibly descendents) between two instances.</summary>
+		public static IEqualityComparer<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>> ByValue<TPropertiesEnum, TDiffGram>(bool deep) {
+			return deep ? ValueEqualityComparer<TPropertiesEnum, TDiffGram>.Deep : ValueEqualityComparer<TPropertiesEnum, TDiffGram>.Shallow;
+		}
+
 		/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
 		private class IdentityEqualityComparer : IEqualityComparer<IRecursiveType> {
-			internal static readonly System.Collections.Generic.IEqualityComparer<IRecursiveType> Default = new IdentityEqualityComparer();
+			internal static readonly IEqualityComparer<IRecursiveType> Default = new IdentityEqualityComparer();
 			private IdentityEqualityComparer() {
 			}
 
@@ -45,6 +50,38 @@
 
 			public int GetHashCode(ParentedRecursiveType<TRecursiveParent, TRecursiveType> obj) {
 				return obj.Value.Identity;
+			}
+		}
+
+		private class ValueEqualityComparer<TPropertiesEnum, TDiffGram> : IEqualityComparer<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>> {
+			internal static readonly IEqualityComparer<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>> Shallow = new ValueEqualityComparer<TPropertiesEnum, TDiffGram>(false);
+
+			internal static readonly IEqualityComparer<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>> Deep = new ValueEqualityComparer<TPropertiesEnum, TDiffGram>(true);
+
+			private bool includeRecursiveChildren;
+
+			private ValueEqualityComparer(bool includeRecursiveChildren) {
+				this.includeRecursiveChildren = includeRecursiveChildren;
+			}
+
+			public bool Equals(IRecursiveDiffingType<TPropertiesEnum, TDiffGram> x, IRecursiveDiffingType<TPropertiesEnum, TDiffGram> y) {
+				if (x == null && y == null) {
+					return true;
+				}
+
+				if (x == null ^ y == null) {
+					return false;
+				}
+
+				if (this.includeRecursiveChildren) {
+					throw new System.NotImplementedException();
+				}
+
+				return x.Equals(x.DiffProperties(y), default(TPropertiesEnum));
+			}
+
+			public int GetHashCode(IRecursiveDiffingType<TPropertiesEnum, TDiffGram> obj) {
+				return obj.Identity.GetHashCode();
 			}
 		}
 	}

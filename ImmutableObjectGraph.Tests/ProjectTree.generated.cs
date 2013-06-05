@@ -496,48 +496,16 @@ namespace ImmutableObjectGraph.Tests {
 
 			/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValue {
-				get { return ValueEqualityComparer.Shallow; }
+				get { return ImmutableObjectGraph.Comparers.ByValue<ProjectTreeChangedProperties, DiffGram>(deep: false); }
 			}
 
 			/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValueWithDescendents {
-				get { return ValueEqualityComparer.Deep; }
+				get { return ImmutableObjectGraph.Comparers.ByValue<ProjectTreeChangedProperties, DiffGram>(deep: true); }
 			}
 
 			internal static System.Collections.Generic.IEqualityComparer<ParentedRecursiveType<ProjectTree, ProjectTree>> ParentedProjectTreeIdentity {
 				get { return ImmutableObjectGraph.Comparers.Parented<ProjectTree, ProjectTree>(); }
-			}
-
-			private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
-				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Shallow = new ValueEqualityComparer(false);
-
-				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Deep = new ValueEqualityComparer(true);
-
-				private bool includeRecursiveChildren;
-
-				private ValueEqualityComparer(bool includeRecursiveChildren) {
-					this.includeRecursiveChildren = includeRecursiveChildren;
-				}
-
-				public bool Equals(ProjectTree x, ProjectTree y) {
-					if (x == null && y == null) {
-						return true;
-					}
-
-					if (x == null ^ y == null) {
-						return false;
-					}
-
-					if (this.includeRecursiveChildren) {
-						throw new System.NotImplementedException();
-					}
-
-					return x.DiffProperties(y) == ProjectTreeChangedProperties.None;
-				}
-
-				public int GetHashCode(ProjectTree obj) {
-					return obj.Identity.GetHashCode();
-				}
 			}
 		}
 
