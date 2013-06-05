@@ -12,7 +12,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Diagnostics;
 	using System.Linq;
 	using ImmutableObjectGraph;
-	
+
 	public interface IProjectTree {
 		System.String Caption { get; }
 		System.String FilePath { get; }
@@ -23,40 +23,40 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableHashSet<System.String> Capabilities { get; }
 		System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; }
 	}
-	
-	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree> {
+
+	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParent, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTree DefaultInstance = GetDefaultTemplate();
-		
+
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String caption;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String filePath;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Drawing.Image icon;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Drawing.Image expandedIcon;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Boolean visible;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly Microsoft.VisualStudio.ProjectSystem.Properties.IRule browseObjectProperties;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableHashSet<System.String> capabilities;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableSortedSet<ProjectTree> children;
-	
+
 		private readonly System.Int32 identity;
-	
+
 		/// <summary>Initializes a new instance of the ProjectTree class.</summary>
 		protected ProjectTree(
 			System.Int32 identity,
@@ -82,7 +82,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.Validate();
 			this.InitializeLookup(lookupTable);
 		}
-	
+
 		public static ProjectTree Create(
 			System.String caption,
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
@@ -104,203 +104,203 @@ namespace ImmutableObjectGraph.Tests {
 				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-	
+
 		public System.String Caption {
 			get { return this.caption; }
 		}
-	
+
 		public System.String FilePath {
 			get { return this.filePath; }
 		}
-	
+
 		public System.Drawing.Image Icon {
 			get { return this.icon; }
 		}
-	
+
 		public System.Drawing.Image ExpandedIcon {
 			get { return this.expandedIcon; }
 		}
-	
+
 		public System.Boolean Visible {
 			get { return this.visible; }
 		}
-	
+
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IRule BrowseObjectProperties {
 			get { return this.browseObjectProperties; }
 		}
-	
+
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Capabilities {
 			get { return this.capabilities; }
 		}
-	
+
 		public System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children {
 			get { return this.children; }
 		}
-		
+
 		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
 		public ProjectTree WithCaption(System.String value) {
 			if (value == this.Caption) {
 				return this;
 			}
-		
+
 			return this.With(caption: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
 		public ProjectTree WithFilePath(System.String value) {
 			if (value == this.FilePath) {
 				return this;
 			}
-		
+
 			return this.With(filePath: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the Icon property set to the specified value.</summary>
 		public ProjectTree WithIcon(System.Drawing.Image value) {
 			if (value == this.Icon) {
 				return this;
 			}
-		
+
 			return this.With(icon: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the ExpandedIcon property set to the specified value.</summary>
 		public ProjectTree WithExpandedIcon(System.Drawing.Image value) {
 			if (value == this.ExpandedIcon) {
 				return this;
 			}
-		
+
 			return this.With(expandedIcon: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
 		public ProjectTree WithVisible(System.Boolean value) {
 			if (value == this.Visible) {
 				return this;
 			}
-		
+
 			return this.With(visible: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the BrowseObjectProperties property set to the specified value.</summary>
 		public ProjectTree WithBrowseObjectProperties(Microsoft.VisualStudio.ProjectSystem.Properties.IRule value) {
 			if (value == this.BrowseObjectProperties) {
 				return this;
 			}
-		
+
 			return this.With(browseObjectProperties: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the Capabilities property set to the specified value.</summary>
 		public ProjectTree WithCapabilities(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			if (value == this.Capabilities) {
 				return this;
 			}
-		
+
 			return this.With(capabilities: Optional.For(value));
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public ProjectTree WithCapabilities(params System.String[] values) {
 			return this.With(capabilities: this.Capabilities.ResetContents(values));
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public ProjectTree WithCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			return this.With(capabilities: this.Capabilities.ResetContents(values));
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public ProjectTree AddCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			return this.With(capabilities: this.Capabilities.AddRange(values));
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public ProjectTree AddCapabilities(params System.String[] values) {
 			return this.With(capabilities: this.Capabilities.AddRange(values));
 		}
-		
+
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
 		public ProjectTree AddCapability(System.String value) {
 			return this.With(capabilities: this.Capabilities.Add(value));
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public ProjectTree RemoveCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			return this.With(capabilities: this.Capabilities.RemoveRange(values));
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public ProjectTree RemoveCapabilities(params System.String[] values) {
 			return this.With(capabilities: this.Capabilities.RemoveRange(values));
 		}
-		
+
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
 		public ProjectTree RemoveCapability(System.String value) {
 			return this.With(capabilities: this.Capabilities.Remove(value));
 		}
-		
+
 		/// <summary>Clears all elements from the Capabilities collection.</summary>
 		public ProjectTree RemoveCapabilities() {
 			return this.With(capabilities: this.Capabilities.Clear());
 		}
-		
-		
+
+
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public ProjectTree WithChildren(System.Collections.Immutable.ImmutableSortedSet<ProjectTree> value) {
 			if (value == this.Children) {
 				return this;
 			}
-		
+
 			return this.With(children: Optional.For(value));
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public ProjectTree WithChildren(params ProjectTree[] values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public ProjectTree WithChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			return this.With(children: this.Children.ResetContents(values));
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public ProjectTree AddChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public ProjectTree AddChildren(params ProjectTree[] values) {
 			return this.With(children: this.Children.AddRange(values));
 		}
-		
+
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public ProjectTree AddChild(ProjectTree value) {
 			return this.With(children: this.Children.Add(value));
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public ProjectTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public ProjectTree RemoveChildren(params ProjectTree[] values) {
 			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
-		
+
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public ProjectTree RemoveChild(ProjectTree value) {
 			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
 		}
-		
+
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public ProjectTree RemoveChildren() {
 			return this.With(children: this.Children.Clear());
 		}
-		
-		
+
+
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual ProjectTree With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -323,7 +323,7 @@ namespace ImmutableObjectGraph.Tests {
 				children: Optional.For(children.GetValueOrDefault(this.Children)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
-	
+
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private ProjectTree WithFactory(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -336,14 +336,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
-				(identity.IsDefined && identity.Value != this.Identity) || 
-				(caption.IsDefined && caption.Value != this.Caption) || 
-				(filePath.IsDefined && filePath.Value != this.FilePath) || 
-				(icon.IsDefined && icon.Value != this.Icon) || 
-				(expandedIcon.IsDefined && expandedIcon.Value != this.ExpandedIcon) || 
-				(visible.IsDefined && visible.Value != this.Visible) || 
-				(browseObjectProperties.IsDefined && browseObjectProperties.Value != this.BrowseObjectProperties) || 
-				(capabilities.IsDefined && capabilities.Value != this.Capabilities) || 
+				(identity.IsDefined && identity.Value != this.Identity) ||
+				(caption.IsDefined && caption.Value != this.Caption) ||
+				(filePath.IsDefined && filePath.Value != this.FilePath) ||
+				(icon.IsDefined && icon.Value != this.Icon) ||
+				(expandedIcon.IsDefined && expandedIcon.Value != this.ExpandedIcon) ||
+				(visible.IsDefined && visible.Value != this.Visible) ||
+				(browseObjectProperties.IsDefined && browseObjectProperties.Value != this.BrowseObjectProperties) ||
+				(capabilities.IsDefined && capabilities.Value != this.Capabilities) ||
 				(children.IsDefined && children.Value != this.Children)) {
 				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>) : Optional.For(this.lookupTable);
 				return new ProjectTree(
@@ -361,80 +361,80 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		}
-	
+
 		protected internal System.Int32 Identity {
 			get { return this.identity; }
 		}
-	
+
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
 		protected static System.Int32 NewIdentity() {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
-	
+
 		public System.Collections.Generic.IEnumerator<ProjectTree> GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
-	
+
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
-	
+
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
-	
+
 		/// <summary>Provides defaults for fields.</summary>
 		/// <param name="template">The struct to set default values on.</param>
 		static partial void CreateDefaultTemplate(ref Template template);
-	
+
 		/// <summary>Returns a newly instantiated ProjectTree whose fields are initialized with default values.</summary>
 		private static ProjectTree GetDefaultTemplate() {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectTree(
-				default(System.Int32), 
-				template.Caption, 
-				template.FilePath, 
-				template.Icon, 
-				template.ExpandedIcon, 
-				template.Visible, 
-				template.BrowseObjectProperties, 
-				template.Capabilities, 
+				default(System.Int32),
+				template.Caption,
+				template.FilePath,
+				template.Icon,
+				template.ExpandedIcon,
+				template.Visible,
+				template.BrowseObjectProperties,
+				template.Capabilities,
 				template.Children);
 		}
-	
+
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.String Caption { get; set; }
-	
+
 			internal System.String FilePath { get; set; }
-	
+
 			internal System.Drawing.Image Icon { get; set; }
-	
+
 			internal System.Drawing.Image ExpandedIcon { get; set; }
-	
+
 			internal System.Boolean Visible { get; set; }
-	
+
 			internal Microsoft.VisualStudio.ProjectSystem.Properties.IRule BrowseObjectProperties { get; set; }
-	
+
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Capabilities { get; set; }
-	
+
 			internal System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; set; }
 		}
-		
+
 		public RootedProjectTree AsRoot {
 			get { return new RootedProjectTree(this, this); }
 		}
-		
+
 		public RootedProjectTree WithRoot(ProjectTree root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
 				throw new System.ArgumentException("Root does not belong to the same tree.");
 			}
-		
+
 			return new RootedProjectTree(this, root);
 		}
-		
+
 		/// <summary>
 		/// A description of a change made to an instance of an immutable object.
 		/// </summary>
@@ -447,39 +447,39 @@ namespace ImmutableObjectGraph.Tests {
 				this.Kind = kind;
 				this.Changes = changes;
 			}
-		
+
 			public static DiffGram Change(ProjectTree before, ProjectTree after, ProjectTreeChangedProperties changes) {
 				return new DiffGram(before, after, ChangeKind.Replaced, changes);
 			}
-		
+
 			public static DiffGram Add(ProjectTree value) {
 				return new DiffGram(null, value, ChangeKind.Added, default(ProjectTreeChangedProperties));
 			}
-		
+
 			public static DiffGram Remove(ProjectTree value) {
 				return new DiffGram(value, null, ChangeKind.Removed, default(ProjectTreeChangedProperties));
 			}
-		
+
 			/// <summary>
 			/// Gets the leaf node before the change.
 			/// </summary>
 			public ProjectTree Before { get; private set; }
-		
+
 			/// <summary>
 			/// Gets the leaf node after the change.
 			/// </summary>
 			public ProjectTree After { get; private set; }
-		
+
 			/// <summary>
 			/// Gets the kind of change made to the alterered node.
 			/// </summary>
 			public ChangeKind Kind { get; private set; }
-		
+
 			/// <summary>
 			/// Gets the kinds of changes made to node if <see cref="Kind"/> is <see cref="ChangeKind.Replaced"/>.
 			/// </summary>
 			public ProjectTreeChangedProperties Changes { get; private set; }
-		
+
 			/// <summary>
 			/// Gets the identity of the affected object.
 			/// </summary>
@@ -487,257 +487,172 @@ namespace ImmutableObjectGraph.Tests {
 				get { return (this.Before ?? this.After).Identity; }
 			}
 		}
-		
+
 		public static class Comparers {
 			/// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> Identity {
 				get { return IdentityEqualityComparer.Default; }
 			}
-		
+
 			/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValue {
 				get { return ValueEqualityComparer.Shallow; }
 			}
-		
+
 			/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValueWithDescendents {
 				get { return ValueEqualityComparer.Deep; }
 			}
-		
+
 			internal static System.Collections.Generic.IEqualityComparer<ParentedProjectTree> ParentedProjectTreeIdentity {
 				get { return ParentedProjectTreeEqualityComparer.Default; }
 			}
-		
+
 			/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
 			private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
 				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Default = new IdentityEqualityComparer();
-		
+
 				private IdentityEqualityComparer() {
 				}
-		
+
 				public bool Equals(ProjectTree x, ProjectTree y) {
 					return x.Identity == y.Identity;
 				}
-		
+
 				public int GetHashCode(ProjectTree obj) {
 					return obj.Identity.GetHashCode();
 				}
 			}
-		
+
 			private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
 				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Shallow = new ValueEqualityComparer(false);
-		
+
 				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Deep = new ValueEqualityComparer(true);
-		
+
 				private bool includeRecursiveChildren;
-		
+
 				private ValueEqualityComparer(bool includeRecursiveChildren) {
 					this.includeRecursiveChildren = includeRecursiveChildren;
 				}
-		
+
 				public bool Equals(ProjectTree x, ProjectTree y) {
 					if (x == null && y == null) {
 						return true;
 					}
-		
+
 					if (x == null ^ y == null) {
 						return false;
 					}
-		
+
 					if (this.includeRecursiveChildren) {
 						throw new System.NotImplementedException();
 					}
-		
+
 					return x.DiffProperties(y) == ProjectTreeChangedProperties.None;
 				}
-		
+
 				public int GetHashCode(ProjectTree obj) {
 					return obj.Identity.GetHashCode();
 				}
 			}
-		
+
 			private class ParentedProjectTreeEqualityComparer : System.Collections.Generic.IEqualityComparer<ParentedProjectTree> {
 				internal static readonly System.Collections.Generic.IEqualityComparer<ParentedProjectTree> Default = new ParentedProjectTreeEqualityComparer();
-		
+
 				private ParentedProjectTreeEqualityComparer() {
 				}
-				
+
 				public bool Equals(ParentedProjectTree x, ParentedProjectTree y) {
 					return x.Value.Identity == y.Value.Identity;
 				}
-		
+
 				public int GetHashCode(ParentedProjectTree obj) {
 					return obj.Value.Identity;
 				}
 			}
 		}
-		
+
 		protected virtual ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
 			}
-		
+
 			var propertiesChanged = ProjectTreeChangedProperties.None;
-		
+
 			if (this != other) {
 				if (!this.GetType().IsEquivalentTo(other.GetType())) {
 					propertiesChanged |= ProjectTreeChangedProperties.Type;
 				}
-		
+
 				if (this.Caption != other.Caption) {
 					propertiesChanged |= ProjectTreeChangedProperties.Caption;
 				}
-		
+
 				if (this.FilePath != other.FilePath) {
 					propertiesChanged |= ProjectTreeChangedProperties.FilePath;
 				}
-		
+
 				if (this.Icon != other.Icon) {
 					propertiesChanged |= ProjectTreeChangedProperties.Icon;
 				}
-		
+
 				if (this.ExpandedIcon != other.ExpandedIcon) {
 					propertiesChanged |= ProjectTreeChangedProperties.ExpandedIcon;
 				}
-		
+
 				if (this.Visible != other.Visible) {
 					propertiesChanged |= ProjectTreeChangedProperties.Visible;
 				}
-		
+
 				if (this.BrowseObjectProperties != other.BrowseObjectProperties) {
 					propertiesChanged |= ProjectTreeChangedProperties.BrowseObjectProperties;
 				}
-		
+
 				if (this.Capabilities != other.Capabilities) {
 					propertiesChanged |= ProjectTreeChangedProperties.Capabilities;
 				}
 			}
-		
+
 			return propertiesChanged;
 		}
-		
-		partial struct ParentedProjectTree {
-			public ProjectTreeChangedProperties DiffProperties(ParentedProjectTree other) {
-				ProjectTreeChangedProperties changes = this.Value.DiffProperties(other.Value);
-				if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.Identity != other.Parent.Identity)) {
-					changes |= ProjectTreeChangedProperties.Parent;
-				} else if (this.Value != other.Value && this.Parent != null && other.Parent != null) {
-					if (this.Parent.Children.KeyComparer.Compare(this.Value, other.Value) != 0) {
-						// Calculate where the node was, and where it would go in the old tree.
-						int beforeIndex = other.Parent.Children.IndexOf(other.Value);
-						int afterIndex = ~other.Parent.Children.IndexOf(this.Value);
-		
-						// If the indices are the same, the new one would come "just before" the old one.
-						// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
-						// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
-						if (afterIndex != beforeIndex && afterIndex != beforeIndex + 1) {
-							changes |= ProjectTreeChangedProperties.PositionUnderParent;
-						}
-					}
-				}
-		
-				return changes;
-			}
-		}
-		
-		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
-			if (priorVersion == null) {
-				throw new System.ArgumentNullException("priorVersion");
-			}
-		
-			if (this == priorVersion) {
-				return System.Collections.Immutable.ImmutableList.Create<ProjectTree.DiffGram>();
-			}
-		
-			if (priorVersion.Identity != this.Identity) {
-				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
-			}
-		
-			var before = new System.Collections.Generic.HashSet<ParentedProjectTree>(priorVersion.GetSelfAndDescendentsWithParents(null), Comparers.ParentedProjectTreeIdentity);
-			var after = new System.Collections.Generic.HashSet<ParentedProjectTree>(this.GetSelfAndDescendentsWithParents(null), Comparers.ParentedProjectTreeIdentity);
-		
-			var added = new System.Collections.Generic.HashSet<ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
-			var removed = new System.Collections.Generic.HashSet<ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
-			var changed = new System.Collections.Generic.Dictionary<ParentedProjectTree, ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
-		
-			var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<ProjectTree>(Comparers.Identity);
-			
-			foreach (var fromBefore in before) {
-				if (after.Contains(fromBefore)) {
-					var fromAfter = this.GetParentedNode(fromBefore.Value.Identity);
-					if (!object.ReferenceEquals(fromBefore.Value, fromAfter.Value) || fromBefore.Parent.Identity != fromAfter.Parent.Identity) {
-						changed.Add(fromBefore, fromAfter);
-					}
-				} else {
-					removed.Add(fromBefore);
-				}
-			}
-		
-			foreach (var fromAfter in after) {
-				if (!before.Contains(fromAfter)) {
-					added.Add(fromAfter);
-				}
-			}
-		
-			foreach (var topLevelOperation in added.Concat(removed)) {
-				descendentsOfAddOrRemove.UnionWith(topLevelOperation.Value.GetSelfAndDescendents().Skip(1));
-			}
-				
-			var history = new System.Collections.Generic.List<ProjectTree.DiffGram>();
-			history.AddRange(removed.Where(r => !descendentsOfAddOrRemove.Contains(r.Value)).Select(r => ProjectTree.DiffGram.Remove(r.Value)));
-		
-			foreach (var changedNode in changed) {
-				var oldNode = changedNode.Key;
-				var newNode = changedNode.Value;
-				
-				ProjectTreeChangedProperties diff = newNode.DiffProperties(oldNode);
-				if (diff != ProjectTreeChangedProperties.None) {
-					history.Add(ProjectTree.DiffGram.Change(oldNode.Value, newNode.Value, diff));
-				}
-			}
-		
-			history.AddRange(added.Where(a => !descendentsOfAddOrRemove.Contains(a.Value)).Select(a => ProjectTree.DiffGram.Add(a.Value)));
-		
-			return history;
-		}
-		
+
 		protected ProjectTree SyncImmediateChildToCurrentVersion(ProjectTree child) {
 			ProjectTree currentValue;
 			if (!this.TryFindImmediateChild(child.Identity, out currentValue)) {
 				throw new System.ArgumentException();
 			}
-		
+
 			return currentValue;
 		}
-		
+
 		public ProjectTree AddDescendent(ProjectTree value, ProjectTree parent) {
 			var spine = this.GetSpine(parent);
 			var newParent = parent.AddChildren(value);
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create(value, newParent);
 			return (ProjectTree)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: false).Peek();
 		}
-		
+
 		public ProjectTree RemoveDescendent(ProjectTree value) {
 			var spine = this.GetSpine(value);
 			var spineList = spine.ToList();
 			var parent = (ProjectTree)spineList[spineList.Count - 2];
 			var newParent = parent.RemoveChildren(spineList[spineList.Count - 1]);
-		
+
 			var newSpine = System.Collections.Immutable.ImmutableStack.Create((ProjectTree)newParent);
 			return (ProjectTree)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 		}
-		
+
 		public ProjectTree ReplaceDescendent(ProjectTree current, ProjectTree replacement) {
 			var spine = this.GetSpine(current);
-		
+
 			if (spine.IsEmpty) {
 				// The descendent was not found.
 				throw new System.ArgumentException("Old value not found");
 			}
-		
+
 			return (ProjectTree)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
 		}
-		
+
 		private System.Collections.Immutable.ImmutableStack<ProjectTree> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<ProjectTree> spine, System.Collections.Immutable.ImmutableStack<ProjectTree> replacementStackTip, bool spineIncludesDeletedElement) {
 			Debug.Assert(this == spine.Peek());
 			var remainingSpine = spine.Pop();
@@ -745,7 +660,7 @@ namespace ImmutableObjectGraph.Tests {
 				// This is the instance to be changed.
 				return replacementStackTip;
 			}
-		
+
 			System.Collections.Immutable.ImmutableStack<ProjectTree> newChildSpine;
 			var child = remainingSpine.Peek();
 			var recursiveChild = child as ProjectTree;
@@ -756,7 +671,7 @@ namespace ImmutableObjectGraph.Tests {
 				Debug.Assert(this.Children.Contains(child));
 				newChildSpine = replacementStackTip;
 			}
-		
+
 			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
 			var newSelf = this.WithChildren(newChildren);
 			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
@@ -765,10 +680,10 @@ namespace ImmutableObjectGraph.Tests {
 				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
 				newSelf.ValidateInternalIntegrityDebugOnly();
 			}
-		
+
 			return newChildSpine.Push(newSelf);
 		}
-		
+
 		/// <summary>
 		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
 		/// </summary>
@@ -788,15 +703,15 @@ namespace ImmutableObjectGraph.Tests {
 				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
 				return lookupTableLazySentinal;
 			}
-		
+
 			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
 				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
 				// No changes were actually made.
 				return this.lookupTable;
 			}
-		
+
 			var lookupTable = this.lookupTable.ToBuilder();
-		
+
 			// Classify the kind of change that has just occurred.
 			var oldSpineTail = oldSpine.PeekTail();
 			var newSpineTail = updatedSpine.PeekTail();
@@ -818,7 +733,7 @@ namespace ImmutableObjectGraph.Tests {
 			{
 				changeKind = ChangeKind.Removed;
 			}
-		
+
 			// Trim the lookup table of any entries for nodes that have been removed from the tree.
 			if (childrenChanged || changeKind == ChangeKind.Removed) {
 				// We need to remove all descendents of the old tail node.
@@ -827,7 +742,7 @@ namespace ImmutableObjectGraph.Tests {
 				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
 				// from our lookup table in this case.
 				lookupTable.Remove(oldSpineTail.Identity);
-		
+
 				// We also need to update any immediate children of the old spine tail
 				// because the identity of their parent has changed.
 				var oldSpineTailRecursive = oldSpineTail as ProjectTree;
@@ -837,7 +752,7 @@ namespace ImmutableObjectGraph.Tests {
 					}
 				}
 			}
-		
+
 			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
 			ProjectTree parent = this;
 			foreach (var node in updatedSpine) {
@@ -847,7 +762,7 @@ namespace ImmutableObjectGraph.Tests {
 				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<ProjectTree, int>(node, parent.Identity));
 				parent = node;
 			}
-		
+
 			// There may be children on the added node that we should include.
 			if (childrenChanged || changeKind == ChangeKind.Added) {
 				var recursiveParent = parent as ProjectTree;
@@ -855,33 +770,10 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
 				}
 			}
-		
+
 			return lookupTable.ToImmutable();
 		}
-		
-		public System.Collections.Generic.IEnumerable<ProjectTree> GetSelfAndDescendents() {
-			yield return this;
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendents()) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
-		internal System.Collections.Generic.IEnumerable<ParentedProjectTree> GetSelfAndDescendentsWithParents(ProjectTree parent) {
-			yield return new ParentedProjectTree(this, parent);
-		
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
+
 		/// <summary>
 		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
 		/// </summary>
@@ -889,7 +781,7 @@ namespace ImmutableObjectGraph.Tests {
 		private void ValidateInternalIntegrityDebugOnly() {
 			this.ValidateInternalIntegrity();
 		}
-		
+
 		/// <summary>
 		/// Validates this node and all its descendents.
 		/// </summary>
@@ -901,7 +793,7 @@ namespace ImmutableObjectGraph.Tests {
 					throw new RecursiveChildNotUniqueException(node.Identity);
 				}
 			}
-		
+
 			// The lookup table (if any) accurately describes the contents of this tree.
 			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
 				// The table should have one entry for every *descendent* of this node (not this node itself).
@@ -910,37 +802,37 @@ namespace ImmutableObjectGraph.Tests {
 				if (actualCount != expectedCount) {
 					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
 				}
-		
+
 				this.ValidateLookupTable(this.lookupTable);
 			}
 		}
-		
+
 		/// <summary>
 		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
 		/// </summary>
 		/// <param name="lookupTable">The lookup table being validated.</param>
 		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTable) {
 			const string ErrorString = "Lookup table integrity failure.";
-		
+
 			foreach (var child in this.Children) {
 				var entry = lookupTable[child.Identity];
 				if (!object.ReferenceEquals(entry.Key, child)) {
 					throw new System.ApplicationException(ErrorString);
 				}
-		
+
 				if (entry.Value != this.Identity) {
 					throw new System.ApplicationException(ErrorString);
 				}
-		
+
 				var recursiveChild = child as ProjectTree;
 				if (recursiveChild != null) {
 					recursiveChild.ValidateLookupTable(lookupTable);
 				}
 			}
 		}
-		
-		
-		
+
+
+
 		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
 		protected internal partial struct ParentedProjectTree {
 			public ParentedProjectTree(ProjectTree value, ProjectTree parent)
@@ -948,39 +840,39 @@ namespace ImmutableObjectGraph.Tests {
 				if (value == null) {
 					throw new System.ArgumentNullException("value");
 				}
-		
+
 				this.Value = value;
 				this.Parent = parent;
 			}
-		
+
 			public ProjectTree Value { get; private set; }
-		
+
 			public ProjectTree Parent { get; private set; }
 		}
-		
+
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>());
-		
+
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTable;
-		
+
 		private int inefficiencyLoad;
-		
+
 		/// <summary>
 		/// The maximum number of steps allowable for a search to be done among this node's children
 		/// before a faster lookup table will be built.
 		/// </summary>
 		internal const int InefficiencyLoadThreshold = 16;
-		
+
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> LookupTable {
 			get {
 				if (this.lookupTable == lookupTableLazySentinal) {
 					this.lookupTable = this.CreateLookupTable();
 					this.inefficiencyLoad = 1;
 				}
-		
+
 				return this.lookupTable;
 			}
 		}
-		
+
 		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>)) {
 			this.inefficiencyLoad = 1;
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
@@ -993,16 +885,16 @@ namespace ImmutableObjectGraph.Tests {
 						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
 					}
 				}
-		
+
 				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
 					this.inefficiencyLoad = 1;
 					this.lookupTable = lookupTableLazySentinal;
 				}
 			}
-		
+
 			this.ValidateInternalIntegrityDebugOnly();
 		}
-		
+
 		/// <summary>
 		/// Creates the lookup table that will contain all this node's children.
 		/// </summary>
@@ -1012,7 +904,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.ContributeDescendentsToLookupTable(table);
 			return table.ToImmutable();
 		}
-		
+
 		/// <summary>
 		/// Adds this node's children (recursively) to the lookup table.
 		/// </summary>
@@ -1029,13 +921,13 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		}
-		
+
 		public bool TryFind(System.Int32 identity, out ProjectTree value) {
 			if (this.Identity.Equals(identity)) {
 				value = this;
 				return true;
 			}
-		
+
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
@@ -1058,20 +950,20 @@ namespace ImmutableObjectGraph.Tests {
 					}
 				}
 			}
-		
+
 			value = null;
 			return false;
 		}
-		
+
 		public ProjectTree Find(System.Int32 identity) {
 			ProjectTree result;
 			if (this.TryFind(identity, out result)) {
 				return result;
 			}
-		
+
 			throw new System.Collections.Generic.KeyNotFoundException();
 		}
-		
+
 		public bool TryFindImmediateChild(System.Int32 identity, out ProjectTree value) {
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
@@ -1088,23 +980,23 @@ namespace ImmutableObjectGraph.Tests {
 					}
 				}
 			}
-		
+
 			value = null;
 			return false;
 		}
-		
+
 		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
 		public bool Contains(System.Int32 identity) {
 			ProjectTree result;
 			return this.TryFind(identity, out result) && result != this;
 		}
-		
+
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		internal ParentedProjectTree GetParentedNode(System.Int32 identity) {
 			if (this.Identity == identity) {
 				return new ParentedProjectTree(this, null);
 			}
-		
+
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
@@ -1117,31 +1009,31 @@ namespace ImmutableObjectGraph.Tests {
 					if (child.Identity.Equals(identity)) {
 						return new ParentedProjectTree(child, this);
 					}
-		
+
 					var recursiveChild = child as ProjectTree;
 					if (recursiveChild != null) {
 						var childResult = recursiveChild.GetParentedNode(identity);
 						if (childResult.Value != null) {
 							return childResult;
 						}
-					} 
+					}
 				}
 			}
-		
+
 			return default(ParentedProjectTree);
 		}
-		
+
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		internal ProjectTree GetParent(ProjectTree descendent) {
 			return this.GetParentedNode(descendent.Identity).Parent;
 		}
-		
+
 		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.Int32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<ProjectTree>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
 			}
-		
+
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
@@ -1166,21 +1058,21 @@ namespace ImmutableObjectGraph.Tests {
 					} else if (child.Identity.Equals(descendent)) {
 						spine = spine.Push(child);
 					}
-		
+
 					if (!spine.IsEmpty) {
 						return spine.Push(this);
 					}
 				}
 			}
-		
+
 			// The descendent is not in this sub-tree.
 			return emptySpine;
 		}
-		
+
 		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(ProjectTree descendent) {
 			return this.GetSpine(descendent.Identity);
 		}
-		
+
 		internal static ProjectTree CreateWithIdentity(
 				System.String caption,
 				ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
@@ -1194,7 +1086,7 @@ namespace ImmutableObjectGraph.Tests {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
-		
+
 			return DefaultInstance.WithFactory(
 					caption: Optional.For(caption),
 					filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
@@ -1206,20 +1098,20 @@ namespace ImmutableObjectGraph.Tests {
 					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
+
 		public virtual ProjectItemTree ToProjectItemTree(
 			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			ProjectItemTree that = this as ProjectItemTree;
 			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemTree))) {
-				if ((projectPropertiesContext == that.ProjectPropertiesContext) && 
-				    (!propertySheet.IsDefined || propertySheet.Value == that.PropertySheet) && 
-				    (!isLinked.IsDefined || isLinked.Value == that.IsLinked)) {
+				if ((projectPropertiesContext == that.ProjectPropertiesContext) &&
+					(!propertySheet.IsDefined || propertySheet.Value == that.PropertySheet) &&
+					(!isLinked.IsDefined || isLinked.Value == that.IsLinked)) {
 					return that;
 				}
 			}
-		
+
 			return ProjectItemTree.CreateWithIdentity(
 				caption: this.Caption,
 				filePath: Optional.For(this.FilePath),
@@ -1234,42 +1126,42 @@ namespace ImmutableObjectGraph.Tests {
 				propertySheet: propertySheet,
 				isLinked: isLinked);
 		}
-		
+
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
-		
+
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private ProjectTree immutable;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String caption;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String filePath;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.Drawing.Image icon;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.Drawing.Image expandedIcon;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.Boolean visible;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected Microsoft.VisualStudio.ProjectSystem.Properties.IRule browseObjectProperties;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>.Builder> capabilities;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>.Builder> children;
-		
+
 			internal Builder(ProjectTree immutable) {
 				this.immutable = immutable;
-		
+
 				this.caption = immutable.Caption;
 				this.filePath = immutable.FilePath;
 				this.icon = immutable.Icon;
@@ -1277,95 +1169,95 @@ namespace ImmutableObjectGraph.Tests {
 				this.visible = immutable.Visible;
 				this.browseObjectProperties = immutable.BrowseObjectProperties;
 			}
-		
+
 			public System.String Caption {
 				get {
 					return this.caption;
 				}
-		
+
 				set {
 					this.caption = value;
 				}
 			}
-		
+
 			public System.String FilePath {
 				get {
 					return this.filePath;
 				}
-		
+
 				set {
 					this.filePath = value;
 				}
 			}
-		
+
 			public System.Drawing.Image Icon {
 				get {
 					return this.icon;
 				}
-		
+
 				set {
 					this.icon = value;
 				}
 			}
-		
+
 			public System.Drawing.Image ExpandedIcon {
 				get {
 					return this.expandedIcon;
 				}
-		
+
 				set {
 					this.expandedIcon = value;
 				}
 			}
-		
+
 			public System.Boolean Visible {
 				get {
 					return this.visible;
 				}
-		
+
 				set {
 					this.visible = value;
 				}
 			}
-		
+
 			public Microsoft.VisualStudio.ProjectSystem.Properties.IRule BrowseObjectProperties {
 				get {
 					return this.browseObjectProperties;
 				}
-		
+
 				set {
 					this.browseObjectProperties = value;
 				}
 			}
-		
+
 			public System.Collections.Immutable.ImmutableHashSet<System.String>.Builder Capabilities {
 				get {
 					if (!this.capabilities.IsDefined) {
 						this.capabilities = this.immutable.capabilities != null ? this.immutable.capabilities.ToBuilder() : null;
 					}
-		
+
 					return this.capabilities.Value;
 				}
-		
+
 				set {
 					this.capabilities = value;
 				}
 			}
-		
+
 			public System.Collections.Immutable.ImmutableSortedSet<ProjectTree>.Builder Children {
 				get {
 					if (!this.children.IsDefined) {
 						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
 					}
-		
+
 					return this.children.Value;
 				}
-		
+
 				set {
 					this.children = value;
 				}
 			}
-		
+
 			public ProjectTree ToImmutable() {
 				var capabilities = this.capabilities.IsDefined ? (this.capabilities.Value != null ? this.capabilities.Value.ToImmutable() : null) : this.immutable.Capabilities;
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
@@ -1380,23 +1272,78 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(children));
 			}
 		}
+
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get { return this.Children; }
+		}
+
+
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			var parented = this.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		}
+
+		int IRecursiveParent.IndexOf(IRecursiveType value) {
+			return this.Children.IndexOf((ProjectTree)value);
+		}
+
+		int IRecursiveType.Identity {
+			get { return this.Identity; }
+		}
+
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.ParentProperty {
+			get { return ProjectTreeChangedProperties.Parent; }
+		}
+
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.PositionUnderParentProperty {
+			get { return ProjectTreeChangedProperties.PositionUnderParent; }
+		}
+
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.DiffProperties(IRecursiveType other) {
+			return this.DiffProperties((ProjectTree)other);
+		}
+
+		ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Change(IRecursiveType before, IRecursiveType after, ProjectTreeChangedProperties diff) {
+			return DiffGram.Change((ProjectTree)before, (ProjectTree)after, diff);
+		}
+
+		ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Add(IRecursiveType after) {
+			return DiffGram.Add((ProjectTree)after);
+		}
+
+		ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Remove(IRecursiveType before) {
+			return DiffGram.Remove((ProjectTree)before);
+		}
+
+		bool IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Equals(ProjectTreeChangedProperties first, ProjectTreeChangedProperties second) {
+			return first == second;
+		}
+
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Union(ProjectTreeChangedProperties first, ProjectTreeChangedProperties second) {
+			return first | second;
+		}
+
+
+		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
+			return this.Children.KeyComparer.Compare((ProjectTree)first, (ProjectTree)second);
+		}
 	}
-	
+
 	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree> {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
 		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
-	
+
 		private readonly ProjectTree greenNode;
-	
+
 		private readonly ProjectTree root;
 		private Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>> children;
-	
+
 		internal RootedProjectTree(ProjectTree projectTree, ProjectTree root) {
 			this.greenNode = projectTree;
 			this.root = root;
 			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
 		}
-	
+
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectTree Parent {
 			get {
@@ -1405,202 +1352,202 @@ namespace ImmutableObjectGraph.Tests {
 				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectTree);
 			}
 		}
-	
+
 		public RootedProjectTree Root {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectTree); }
 		}
-	
+
 		public System.Int32 Identity {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Identity;
 			}
 		}
-	
+
 		public bool IsProjectItemTree {
 			get { return this.greenNode is ProjectItemTree; }
 		}
-	
+
 		public RootedProjectItemTree AsProjectItemTree {
 			get { return this.greenNode != null ? ((ProjectItemTree)this.greenNode).WithRoot(this.root) : default(RootedProjectItemTree); }
 		}
-	
+
 		public bool IsRoot {
 			get { return this.root == this.greenNode; }
 		}
-	
+
 		public System.String Caption {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Caption;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
 		public RootedProjectTree WithCaption(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCaption(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.String FilePath {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.FilePath;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
 		public RootedProjectTree WithFilePath(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithFilePath(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Drawing.Image Icon {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Icon;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Icon property set to the specified value.</summary>
 		public RootedProjectTree WithIcon(System.Drawing.Image value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithIcon(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Drawing.Image ExpandedIcon {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.ExpandedIcon;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the ExpandedIcon property set to the specified value.</summary>
 		public RootedProjectTree WithExpandedIcon(System.Drawing.Image value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithExpandedIcon(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Boolean Visible {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Visible;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
 		public RootedProjectTree WithVisible(System.Boolean value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithVisible(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IRule BrowseObjectProperties {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.BrowseObjectProperties;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the BrowseObjectProperties property set to the specified value.</summary>
 		public RootedProjectTree WithBrowseObjectProperties(Microsoft.VisualStudio.ProjectSystem.Properties.IRule value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithBrowseObjectProperties(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Capabilities {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Capabilities;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Capabilities property set to the specified value.</summary>
 		public RootedProjectTree WithCapabilities(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public RootedProjectTree WithCapabilities(params System.String[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public RootedProjectTree WithCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public RootedProjectTree AddCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public RootedProjectTree AddCapabilities(params System.String[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
 		public RootedProjectTree AddCapabilities(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public RootedProjectTree RemoveCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public RootedProjectTree RemoveCapabilities(params System.String[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
 		public RootedProjectTree RemoveCapabilities(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Clears all elements from the Capabilities collection.</summary>
 		public RootedProjectTree RemoveCapabilities() {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities();
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Collections.Immutable.IImmutableSet<RootedProjectTree> Children {
 			get {
 				if (!this.children.IsDefined) {
 					this.ThrowIfDefault();
 					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
 				}
-	
+
 				return this.children.Value;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectTree WithChildren(System.Collections.Immutable.IImmutableSet<RootedProjectTree> value) {
 			this.ThrowIfDefault();
@@ -1608,131 +1555,131 @@ namespace ImmutableObjectGraph.Tests {
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectTree WithChildren(params RootedProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectTree WithChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectTree AddChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectTree AddChildren(params RootedProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public RootedProjectTree AddChildren(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectTree RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectTree RemoveChildren(params RootedProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public RootedProjectTree RemoveChildren(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectTree WithChildren(params ProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectTree WithChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectTree AddChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectTree AddChildren(params ProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public RootedProjectTree AddChildren(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectTree RemoveChildren(params ProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public RootedProjectTree RemoveChildren(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public RootedProjectTree RemoveChildren() {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren();
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public ProjectTree ProjectTree {
 			get { return this.greenNode; }
 		}
-	
+
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedProjectTree With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -1756,7 +1703,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-	
+
 		public static RootedProjectTree Create(
 			System.String caption,
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
@@ -1777,12 +1724,12 @@ namespace ImmutableObjectGraph.Tests {
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>));
 			return greenNode.AsRoot;
 		}
-	
+
 		public RootedProjectTree Find(System.Int32 identity) {
 			this.ThrowIfDefault();
 			return this.greenNode.Find(identity).WithRoot(this.root);
 		}
-	
+
 		public bool TryFind(System.Int32 identity, out RootedProjectTree value) {
 			this.ThrowIfDefault();
 			ProjectTree greenValue;
@@ -1790,20 +1737,20 @@ namespace ImmutableObjectGraph.Tests {
 				value = greenValue.WithRoot(this.root);
 				return true;
 			}
-	
+
 			value = default(RootedProjectTree);
 			return false;
 		}
-	
+
 		public System.Collections.Generic.IEnumerator<RootedProjectTree> GetEnumerator() {
 			return this.Children.GetEnumerator();
 		}
-	
+
 		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(RootedProjectTree priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.ProjectTree);
 		}
-		
+
 		public RootedProjectItemTree ToProjectItemTree(
 			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
@@ -1815,29 +1762,29 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-	
+
 		public override bool Equals(object obj) {
 			if (obj is RootedProjectTree) {
 				var other = (RootedProjectTree)obj;
 				return this.Equals(other);
 			}
-	
+
 			return false;
 		}
-	
+
 		public bool Equals(RootedProjectTree other) {
 			return this.greenNode == other.greenNode && this.root == other.root;
 		}
-	
+
 		public override int GetHashCode() {
 			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
 		}
-	
+
 		private RootedProjectTree NewSpine(ProjectTree leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
 		}
-	
+
 		/// <summary>Throws an exception if this struct does not have a backing ProjectTree.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -1845,104 +1792,104 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	}
-	
+
 	[System.Flags]
 	public enum ProjectTreeChangedProperties {
 		/// <summary>
 		/// No change was made to the node.  It was either entirely added or removed. 
 		/// </summary>
 		None = 0x0,
-	
+
 		/// <summary>
 		/// The type of the node was changed.
 		/// </summary>
 		Type = 0x1,
-	
+
 		/// <summary>
 		/// The node's position within its parent's list of children changed.
 		/// </summary>
 		PositionUnderParent = 0x2,
-		
+
 		/// <summary>
 		/// The node was removed and reappeared in a new position in the tree (with a different parent).
 		/// </summary>
 		Parent = 0x4,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectTree.Caption" /> property was changed.
 		/// </summary>
 		Caption = 0x8,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectTree.FilePath" /> property was changed.
 		/// </summary>
 		FilePath = 0x10,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectTree.Icon" /> property was changed.
 		/// </summary>
 		Icon = 0x20,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectTree.ExpandedIcon" /> property was changed.
 		/// </summary>
 		ExpandedIcon = 0x40,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectTree.Visible" /> property was changed.
 		/// </summary>
 		Visible = 0x80,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectTree.BrowseObjectProperties" /> property was changed.
 		/// </summary>
 		BrowseObjectProperties = 0x100,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectTree.Capabilities" /> property was changed.
 		/// </summary>
 		Capabilities = 0x200,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectItemTree.ProjectPropertiesContext" /> property was changed.
 		/// </summary>
 		ProjectPropertiesContext = 0x400,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectItemTree.PropertySheet" /> property was changed.
 		/// </summary>
 		PropertySheet = 0x800,
-	
+
 		/// <summary>
 		/// The <see cref="ProjectItemTree.IsLinked" /> property was changed.
 		/// </summary>
 		IsLinked = 0x1000,
-	
+
 		/// <summary>
 		/// All flags in this enum.
 		/// </summary>
 		All = Type | PositionUnderParent | Parent | Caption | FilePath | Icon | ExpandedIcon | Visible | BrowseObjectProperties | Capabilities | ProjectPropertiesContext | PropertySheet | IsLinked,
 	}
-	
+
 	public interface IProjectItemTree : IProjectTree {
 		Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext ProjectPropertiesContext { get; }
 		Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet PropertySheet { get; }
 		System.Boolean IsLinked { get; }
 	}
-	
+
 	public partial class ProjectItemTree : ProjectTree, IProjectItemTree {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectItemTree DefaultInstance = GetDefaultTemplate();
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet propertySheet;
-	
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Boolean isLinked;
-	
+
 		/// <summary>Initializes a new instance of the ProjectItemTree class.</summary>
 		protected ProjectItemTree(
 			System.Int32 identity,
@@ -1973,7 +1920,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.isLinked = isLinked;
 			this.Validate();
 		}
-	
+
 		public static ProjectItemTree Create(
 			System.String caption,
 			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
@@ -2001,178 +1948,178 @@ namespace ImmutableObjectGraph.Tests {
 				isLinked: Optional.For(isLinked.GetValueOrDefault(DefaultInstance.IsLinked)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-	
+
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext ProjectPropertiesContext {
 			get { return this.projectPropertiesContext; }
 		}
-	
+
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet PropertySheet {
 			get { return this.propertySheet; }
 		}
-	
+
 		public System.Boolean IsLinked {
 			get { return this.isLinked; }
 		}
-		
+
 		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
 		public new ProjectItemTree WithCaption(System.String value) {
 			return (ProjectItemTree)base.WithCaption(value);
 		}
-		
+
 		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
 		public new ProjectItemTree WithFilePath(System.String value) {
 			return (ProjectItemTree)base.WithFilePath(value);
 		}
-		
+
 		/// <summary>Returns a new instance with the Icon property set to the specified value.</summary>
 		public new ProjectItemTree WithIcon(System.Drawing.Image value) {
 			return (ProjectItemTree)base.WithIcon(value);
 		}
-		
+
 		/// <summary>Returns a new instance with the ExpandedIcon property set to the specified value.</summary>
 		public new ProjectItemTree WithExpandedIcon(System.Drawing.Image value) {
 			return (ProjectItemTree)base.WithExpandedIcon(value);
 		}
-		
+
 		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
 		public new ProjectItemTree WithVisible(System.Boolean value) {
 			return (ProjectItemTree)base.WithVisible(value);
 		}
-		
+
 		/// <summary>Returns a new instance with the BrowseObjectProperties property set to the specified value.</summary>
 		public new ProjectItemTree WithBrowseObjectProperties(Microsoft.VisualStudio.ProjectSystem.Properties.IRule value) {
 			return (ProjectItemTree)base.WithBrowseObjectProperties(value);
 		}
-		
+
 		/// <summary>Returns a new instance with the Capabilities property set to the specified value.</summary>
 		public new ProjectItemTree WithCapabilities(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			return (ProjectItemTree)base.WithCapabilities(value);
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public new ProjectItemTree WithCapabilities(params System.String[] values) {
 			return (ProjectItemTree)base.WithCapabilities(values);
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public new ProjectItemTree WithCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			return (ProjectItemTree)base.WithCapabilities(values);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree AddCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			return (ProjectItemTree)base.AddCapabilities(values);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree AddCapabilities(params System.String[] values) {
 			return (ProjectItemTree)base.AddCapabilities(values);
 		}
-		
+
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
 		public new ProjectItemTree AddCapability(System.String value) {
 			return (ProjectItemTree)base.AddCapability(value);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			return (ProjectItemTree)base.RemoveCapabilities(values);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapabilities(params System.String[] values) {
 			return (ProjectItemTree)base.RemoveCapabilities(values);
 		}
-		
+
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapability(System.String value) {
 			return (ProjectItemTree)base.RemoveCapability(value);
 		}
-		
+
 		/// <summary>Clears all elements from the Capabilities collection.</summary>
 		public new ProjectItemTree RemoveCapabilities() {
 			return (ProjectItemTree)base.RemoveCapabilities();
 		}
-		
-		
+
+
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public new ProjectItemTree WithChildren(System.Collections.Immutable.ImmutableSortedSet<ProjectTree> value) {
 			return (ProjectItemTree)base.WithChildren(value);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemTree WithChildren(params ProjectTree[] values) {
 			return (ProjectItemTree)base.WithChildren(values);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemTree WithChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			return (ProjectItemTree)base.WithChildren(values);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public new ProjectItemTree AddChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			return (ProjectItemTree)base.AddChildren(values);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public new ProjectItemTree AddChildren(params ProjectTree[] values) {
 			return (ProjectItemTree)base.AddChildren(values);
 		}
-		
+
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public new ProjectItemTree AddChild(ProjectTree value) {
 			return (ProjectItemTree)base.AddChild(value);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			return (ProjectItemTree)base.RemoveChildren(values);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren(params ProjectTree[] values) {
 			return (ProjectItemTree)base.RemoveChildren(values);
 		}
-		
+
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public new ProjectItemTree RemoveChild(ProjectTree value) {
 			return (ProjectItemTree)base.RemoveChild(value);
 		}
-		
+
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public new ProjectItemTree RemoveChildren() {
 			return (ProjectItemTree)base.RemoveChildren();
 		}
-		
-		
+
+
 		/// <summary>Returns a new instance with the ProjectPropertiesContext property set to the specified value.</summary>
 		public ProjectItemTree WithProjectPropertiesContext(Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext value) {
 			if (value == this.ProjectPropertiesContext) {
 				return this;
 			}
-		
+
 			return this.With(projectPropertiesContext: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the PropertySheet property set to the specified value.</summary>
 		public ProjectItemTree WithPropertySheet(Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet value) {
 			if (value == this.PropertySheet) {
 				return this;
 			}
-		
+
 			return this.With(propertySheet: Optional.For(value));
 		}
-		
+
 		/// <summary>Returns a new instance with the IsLinked property set to the specified value.</summary>
 		public ProjectItemTree WithIsLinked(System.Boolean value) {
 			if (value == this.IsLinked) {
 				return this;
 			}
-		
+
 			return this.With(isLinked: Optional.For(value));
 		}
-	
+
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public override ProjectTree With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -2196,7 +2143,7 @@ namespace ImmutableObjectGraph.Tests {
 				propertySheet: default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 				isLinked: default(ImmutableObjectGraph.Optional<System.Boolean>));
 		}
-			
+
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public virtual ProjectItemTree With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -2225,7 +2172,7 @@ namespace ImmutableObjectGraph.Tests {
 				isLinked: Optional.For(isLinked.GetValueOrDefault(this.IsLinked)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
-	
+
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private ProjectItemTree WithFactory(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -2241,17 +2188,17 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
-				(identity.IsDefined && identity.Value != this.Identity) || 
-				(caption.IsDefined && caption.Value != this.Caption) || 
-				(filePath.IsDefined && filePath.Value != this.FilePath) || 
-				(icon.IsDefined && icon.Value != this.Icon) || 
-				(expandedIcon.IsDefined && expandedIcon.Value != this.ExpandedIcon) || 
-				(visible.IsDefined && visible.Value != this.Visible) || 
-				(browseObjectProperties.IsDefined && browseObjectProperties.Value != this.BrowseObjectProperties) || 
-				(capabilities.IsDefined && capabilities.Value != this.Capabilities) || 
-				(children.IsDefined && children.Value != this.Children) || 
-				(projectPropertiesContext.IsDefined && projectPropertiesContext.Value != this.ProjectPropertiesContext) || 
-				(propertySheet.IsDefined && propertySheet.Value != this.PropertySheet) || 
+				(identity.IsDefined && identity.Value != this.Identity) ||
+				(caption.IsDefined && caption.Value != this.Caption) ||
+				(filePath.IsDefined && filePath.Value != this.FilePath) ||
+				(icon.IsDefined && icon.Value != this.Icon) ||
+				(expandedIcon.IsDefined && expandedIcon.Value != this.ExpandedIcon) ||
+				(visible.IsDefined && visible.Value != this.Visible) ||
+				(browseObjectProperties.IsDefined && browseObjectProperties.Value != this.BrowseObjectProperties) ||
+				(capabilities.IsDefined && capabilities.Value != this.Capabilities) ||
+				(children.IsDefined && children.Value != this.Children) ||
+				(projectPropertiesContext.IsDefined && projectPropertiesContext.Value != this.ProjectPropertiesContext) ||
+				(propertySheet.IsDefined && propertySheet.Value != this.PropertySheet) ||
 				(isLinked.IsDefined && isLinked.Value != this.IsLinked)) {
 				return new ProjectItemTree(
 					identity: identity.GetValueOrDefault(this.Identity),
@@ -2270,89 +2217,89 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		}
-	
+
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
-	
+
 		/// <summary>Provides defaults for fields.</summary>
 		/// <param name="template">The struct to set default values on.</param>
 		static partial void CreateDefaultTemplate(ref Template template);
-	
+
 		/// <summary>Returns a newly instantiated ProjectItemTree whose fields are initialized with default values.</summary>
 		private static ProjectItemTree GetDefaultTemplate() {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemTree(
-				default(System.Int32), 
-				template.Caption, 
-				template.FilePath, 
-				template.Icon, 
-				template.ExpandedIcon, 
-				template.Visible, 
-				template.BrowseObjectProperties, 
-				template.Capabilities, 
-				template.Children, 
-				template.ProjectPropertiesContext, 
-				template.PropertySheet, 
+				default(System.Int32),
+				template.Caption,
+				template.FilePath,
+				template.Icon,
+				template.ExpandedIcon,
+				template.Visible,
+				template.BrowseObjectProperties,
+				template.Capabilities,
+				template.Children,
+				template.ProjectPropertiesContext,
+				template.PropertySheet,
 				template.IsLinked);
 		}
-	
+
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.String Caption { get; set; }
-	
+
 			internal System.String FilePath { get; set; }
-	
+
 			internal System.Drawing.Image Icon { get; set; }
-	
+
 			internal System.Drawing.Image ExpandedIcon { get; set; }
-	
+
 			internal System.Boolean Visible { get; set; }
-	
+
 			internal Microsoft.VisualStudio.ProjectSystem.Properties.IRule BrowseObjectProperties { get; set; }
-	
+
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Capabilities { get; set; }
-	
+
 			internal System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; set; }
-	
+
 			internal Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext ProjectPropertiesContext { get; set; }
-	
+
 			internal Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet PropertySheet { get; set; }
-	
+
 			internal System.Boolean IsLinked { get; set; }
 		}
-		
+
 		public new RootedProjectItemTree WithRoot(ProjectTree root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
 				throw new System.ArgumentException("Root does not belong to the same tree.");
 			}
-		
+
 			return new RootedProjectItemTree(this, root);
 		}
-		
+
 		protected override ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
 			var propertiesChanged = base.DiffProperties(other);
-		
+
 			var otherProjectItemTree = other as ProjectItemTree;
 			if (otherProjectItemTree != null) {
 				if (this.ProjectPropertiesContext != otherProjectItemTree.ProjectPropertiesContext) {
 					propertiesChanged |= ProjectTreeChangedProperties.ProjectPropertiesContext;
 				}
-		
+
 				if (this.PropertySheet != otherProjectItemTree.PropertySheet) {
 					propertiesChanged |= ProjectTreeChangedProperties.PropertySheet;
 				}
-		
+
 				if (this.IsLinked != otherProjectItemTree.IsLinked) {
 					propertiesChanged |= ProjectTreeChangedProperties.IsLinked;
 				}
 			}
-		
+
 			return propertiesChanged;
 		}
-		
+
 		internal static ProjectItemTree CreateWithIdentity(
 				System.String caption,
 				Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
@@ -2369,7 +2316,7 @@ namespace ImmutableObjectGraph.Tests {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
-		
+
 			return DefaultInstance.WithFactory(
 					caption: Optional.For(caption),
 					filePath: Optional.For(filePath.GetValueOrDefault(DefaultInstance.FilePath)),
@@ -2384,7 +2331,7 @@ namespace ImmutableObjectGraph.Tests {
 					isLinked: Optional.For(isLinked.GetValueOrDefault(DefaultInstance.IsLinked)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
+
 		public ProjectTree ToProjectTree() {
 			return ProjectTree.CreateWithIdentity(
 				caption: this.Caption,
@@ -2397,62 +2344,62 @@ namespace ImmutableObjectGraph.Tests {
 				children: Optional.For(this.Children),
 				identity: this.Identity);
 		}
-		
+
 		public new Builder ToBuilder() {
 			return new Builder(this);
 		}
-		
+
 		public new partial class Builder : ProjectTree.Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private ProjectItemTree immutable;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet propertySheet;
-		
+
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.Boolean isLinked;
-		
+
 			internal Builder(ProjectItemTree immutable) : base(immutable) {
 				this.immutable = immutable;
-		
+
 				this.projectPropertiesContext = immutable.ProjectPropertiesContext;
 				this.propertySheet = immutable.PropertySheet;
 				this.isLinked = immutable.IsLinked;
 			}
-		
+
 			public Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext ProjectPropertiesContext {
 				get {
 					return this.projectPropertiesContext;
 				}
-		
+
 				set {
 					this.projectPropertiesContext = value;
 				}
 			}
-		
+
 			public Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet PropertySheet {
 				get {
 					return this.propertySheet;
 				}
-		
+
 				set {
 					this.propertySheet = value;
 				}
 			}
-		
+
 			public System.Boolean IsLinked {
 				get {
 					return this.isLinked;
 				}
-		
+
 				set {
 					this.isLinked = value;
 				}
 			}
-		
+
 			public new ProjectItemTree ToImmutable() {
 				var capabilities = this.capabilities.IsDefined ? (this.capabilities.Value != null ? this.capabilities.Value.ToImmutable() : null) : this.immutable.Capabilities;
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
@@ -2471,22 +2418,22 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	}
-	
+
 	public partial struct RootedProjectItemTree : System.IEquatable<RootedProjectItemTree> {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
 		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
-	
+
 		private readonly ProjectItemTree greenNode;
-	
+
 		private readonly ProjectTree root;
 		private Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>> children;
-	
+
 		internal RootedProjectItemTree(ProjectItemTree projectItemTree, ProjectTree root) {
 			this.greenNode = projectItemTree;
 			this.root = root;
 			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
 		}
-	
+
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectTree Parent {
 			get {
@@ -2495,194 +2442,194 @@ namespace ImmutableObjectGraph.Tests {
 				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectTree);
 			}
 		}
-	
+
 		public RootedProjectTree Root {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectTree); }
 		}
-	
+
 		public System.Int32 Identity {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Identity;
 			}
 		}
-	
+
 		public RootedProjectTree AsProjectTree {
 			get { return this.greenNode != null ? ((ProjectTree)this.greenNode).WithRoot(this.root) : default(RootedProjectTree); }
 		}
-	
+
 		public System.String Caption {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Caption;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
 		public RootedProjectItemTree WithCaption(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCaption(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.String FilePath {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.FilePath;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
 		public RootedProjectItemTree WithFilePath(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithFilePath(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Drawing.Image Icon {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Icon;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Icon property set to the specified value.</summary>
 		public RootedProjectItemTree WithIcon(System.Drawing.Image value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithIcon(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Drawing.Image ExpandedIcon {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.ExpandedIcon;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the ExpandedIcon property set to the specified value.</summary>
 		public RootedProjectItemTree WithExpandedIcon(System.Drawing.Image value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithExpandedIcon(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Boolean Visible {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Visible;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
 		public RootedProjectItemTree WithVisible(System.Boolean value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithVisible(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IRule BrowseObjectProperties {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.BrowseObjectProperties;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the BrowseObjectProperties property set to the specified value.</summary>
 		public RootedProjectItemTree WithBrowseObjectProperties(Microsoft.VisualStudio.ProjectSystem.Properties.IRule value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithBrowseObjectProperties(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Collections.Immutable.ImmutableHashSet<System.String> Capabilities {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Capabilities;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Capabilities property set to the specified value.</summary>
 		public RootedProjectItemTree WithCapabilities(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public RootedProjectItemTree WithCapabilities(params System.String[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
 		public RootedProjectItemTree WithCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public RootedProjectItemTree AddCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
 		public RootedProjectItemTree AddCapabilities(params System.String[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
 		public RootedProjectItemTree AddCapabilities(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public RootedProjectItemTree RemoveCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
 		public RootedProjectItemTree RemoveCapabilities(params System.String[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
 		public RootedProjectItemTree RemoveCapabilities(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Clears all elements from the Capabilities collection.</summary>
 		public RootedProjectItemTree RemoveCapabilities() {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities();
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Collections.Immutable.IImmutableSet<RootedProjectTree> Children {
 			get {
 				if (!this.children.IsDefined) {
 					this.ThrowIfDefault();
 					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
 				}
-	
+
 				return this.children.Value;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectItemTree WithChildren(System.Collections.Immutable.IImmutableSet<RootedProjectTree> value) {
 			this.ThrowIfDefault();
@@ -2690,173 +2637,173 @@ namespace ImmutableObjectGraph.Tests {
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectItemTree WithChildren(params RootedProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectItemTree WithChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree AddChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree AddChildren(params RootedProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public RootedProjectItemTree AddChildren(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree RemoveChildren(params RootedProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectTree));
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public RootedProjectItemTree RemoveChildren(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectItemTree WithChildren(params ProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RootedProjectItemTree WithChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree AddChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree AddChildren(params ProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public RootedProjectItemTree AddChildren(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public RootedProjectItemTree RemoveChildren(params ProjectTree[] values) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(values);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public RootedProjectItemTree RemoveChildren(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-		
+
 		/// <summary>Clears all elements from the Children collection.</summary>
 		public RootedProjectItemTree RemoveChildren() {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren();
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext ProjectPropertiesContext {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.ProjectPropertiesContext;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the ProjectPropertiesContext property set to the specified value.</summary>
 		public RootedProjectItemTree WithProjectPropertiesContext(Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithProjectPropertiesContext(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet PropertySheet {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.PropertySheet;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the PropertySheet property set to the specified value.</summary>
 		public RootedProjectItemTree WithPropertySheet(Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithPropertySheet(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		public System.Boolean IsLinked {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.IsLinked;
 			}
 		}
-		
+
 		/// <summary>Returns a new instance with the IsLinked property set to the specified value.</summary>
 		public RootedProjectItemTree WithIsLinked(System.Boolean value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithIsLinked(value);
 			return this.NewSpine(mutatedLeaf);
 		}
-	
+
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public ProjectItemTree ProjectItemTree {
 			get { return this.greenNode; }
 		}
-	
+
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedProjectItemTree With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
@@ -2886,40 +2833,40 @@ namespace ImmutableObjectGraph.Tests {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-	
+
 		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(RootedProjectItemTree priorVersion) {
 			this.ThrowIfDefault();
 			return this.greenNode.ChangesSince(priorVersion.ProjectItemTree);
 		}
-		
+
 		public RootedProjectTree ToProjectTree() {
 			var newGreenNode = this.greenNode.ToProjectTree();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
-	
+
 		public override bool Equals(object obj) {
 			if (obj is RootedProjectItemTree) {
 				var other = (RootedProjectItemTree)obj;
 				return this.Equals(other);
 			}
-	
+
 			return false;
 		}
-	
+
 		public bool Equals(RootedProjectItemTree other) {
 			return this.greenNode == other.greenNode && this.root == other.root;
 		}
-	
+
 		public override int GetHashCode() {
 			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
 		}
-	
+
 		private RootedProjectItemTree NewSpine(ProjectItemTree leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
 		}
-	
+
 		/// <summary>Throws an exception if this struct does not have a backing ProjectItemTree.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {

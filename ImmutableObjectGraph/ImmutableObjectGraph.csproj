@@ -64,10 +64,12 @@
     <Compile Include="Adapters\ImmutableSetRootAdapter.cs" />
     <Compile Include="ImmutableDeque.cs" />
     <Compile Include="ImmutableDeque`1.cs" />
+    <Compile Include="IRecursiveCollection.cs" />
     <Compile Include="Optional.cs" />
     <Compile Include="Optional`1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecursiveChildNotUniqueException.cs" />
+    <Compile Include="RecursiveTypeExtensions.cs" />
     <Compile Include="RequiredAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
