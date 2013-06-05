@@ -74,14 +74,14 @@
 
 			var currentAsParent = current as IRecursiveParent;
 
-			var before = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(priorVersion.GetSelfAndDescendentsWithParents<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>(), ParentedIdentityEqualityComparer<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>.Default);
-			var after = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(current.GetSelfAndDescendentsWithParents<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>(), ParentedIdentityEqualityComparer<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>.Default);
+			var before = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(priorVersion.GetSelfAndDescendentsWithParents<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>(), Comparers.Parented<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+			var after = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(current.GetSelfAndDescendentsWithParents<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>(), Comparers.Parented<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
 
-			var added = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(ParentedIdentityEqualityComparer<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>.Default);
-			var removed = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(ParentedIdentityEqualityComparer<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>.Default);
-			var changed = new System.Collections.Generic.Dictionary<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(ParentedIdentityEqualityComparer<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>.Default);
+			var added = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(Comparers.Parented<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+			var removed = new System.Collections.Generic.HashSet<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(Comparers.Parented<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+			var changed = new System.Collections.Generic.Dictionary<ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, ParentedRecursiveType<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(Comparers.Parented<IRecursiveParent, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
 
-			var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<IRecursiveType>(IdentityEqualityComparer.Default);
+			var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<IRecursiveType>(Comparers.Identity);
 
 			foreach (var fromBefore in before) {
 				if (after.Contains(fromBefore)) {
@@ -150,37 +150,6 @@
 			}
 
 			return changes;
-		}
-
-		private class IdentityEqualityComparer : IEqualityComparer<IRecursiveType> {
-			internal static readonly System.Collections.Generic.IEqualityComparer<IRecursiveType> Default = new IdentityEqualityComparer();
-			private IdentityEqualityComparer() {
-			}
-
-			public bool Equals(IRecursiveType x, IRecursiveType y) {
-				return x.Identity == y.Identity;
-			}
-
-			public int GetHashCode(IRecursiveType obj) {
-				return obj.Identity.GetHashCode();
-			}
-		}
-
-		private class ParentedIdentityEqualityComparer<TRecursiveParent, TRecursiveType> : IEqualityComparer<ParentedRecursiveType<TRecursiveParent, TRecursiveType>>
-			where TRecursiveType : class, IRecursiveType
-			where TRecursiveParent : class, IRecursiveParent {
-			internal static readonly IEqualityComparer<ParentedRecursiveType<TRecursiveParent, TRecursiveType>> Default = new ParentedIdentityEqualityComparer<TRecursiveParent, TRecursiveType>();
-
-			private ParentedIdentityEqualityComparer() {
-			}
-
-			public bool Equals(ParentedRecursiveType<TRecursiveParent, TRecursiveType> x, ParentedRecursiveType<TRecursiveParent, TRecursiveType> y) {
-				return x.Value.Identity == y.Value.Identity;
-			}
-
-			public int GetHashCode(ParentedRecursiveType<TRecursiveParent, TRecursiveType> obj) {
-				return obj.Value.Identity;
-			}
 		}
 	}
 }

@@ -62,6 +62,7 @@
     <Compile Include="ChangeKind.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="Adapters\ImmutableSetRootAdapter.cs" />
+    <Compile Include="Comparers.cs" />
     <Compile Include="ImmutableDeque.cs" />
     <Compile Include="ImmutableDeque`1.cs" />
     <Compile Include="IRecursiveCollection.cs" />

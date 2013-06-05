@@ -491,7 +491,7 @@ namespace ImmutableObjectGraph.Tests {
 		public static class Comparers {
 			/// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> Identity {
-				get { return IdentityEqualityComparer.Default; }
+				get { return ImmutableObjectGraph.Comparers.Identity; }
 			}
 
 			/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
@@ -504,24 +504,8 @@ namespace ImmutableObjectGraph.Tests {
 				get { return ValueEqualityComparer.Deep; }
 			}
 
-			internal static System.Collections.Generic.IEqualityComparer<ParentedProjectTree> ParentedProjectTreeIdentity {
-				get { return ParentedProjectTreeEqualityComparer.Default; }
-			}
-
-			/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
-			private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
-				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Default = new IdentityEqualityComparer();
-
-				private IdentityEqualityComparer() {
-				}
-
-				public bool Equals(ProjectTree x, ProjectTree y) {
-					return x.Identity == y.Identity;
-				}
-
-				public int GetHashCode(ProjectTree obj) {
-					return obj.Identity.GetHashCode();
-				}
+			internal static System.Collections.Generic.IEqualityComparer<ParentedRecursiveType<ProjectTree, ProjectTree>> ParentedProjectTreeIdentity {
+				get { return ImmutableObjectGraph.Comparers.Parented<ProjectTree, ProjectTree>(); }
 			}
 
 			private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
@@ -553,21 +537,6 @@ namespace ImmutableObjectGraph.Tests {
 
 				public int GetHashCode(ProjectTree obj) {
 					return obj.Identity.GetHashCode();
-				}
-			}
-
-			private class ParentedProjectTreeEqualityComparer : System.Collections.Generic.IEqualityComparer<ParentedProjectTree> {
-				internal static readonly System.Collections.Generic.IEqualityComparer<ParentedProjectTree> Default = new ParentedProjectTreeEqualityComparer();
-
-				private ParentedProjectTreeEqualityComparer() {
-				}
-
-				public bool Equals(ParentedProjectTree x, ParentedProjectTree y) {
-					return x.Value.Identity == y.Value.Identity;
-				}
-
-				public int GetHashCode(ParentedProjectTree obj) {
-					return obj.Value.Identity;
 				}
 			}
 		}
@@ -831,25 +800,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 
-
-
-		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
-		protected internal partial struct ParentedProjectTree {
-			public ParentedProjectTree(ProjectTree value, ProjectTree parent)
-				: this() {
-				if (value == null) {
-					throw new System.ArgumentNullException("value");
-				}
-
-				this.Value = value;
-				this.Parent = parent;
-			}
-
-			public ProjectTree Value { get; private set; }
-
-			public ProjectTree Parent { get; private set; }
-		}
-
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>());
 
 		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTable;
@@ -992,22 +942,22 @@ namespace ImmutableObjectGraph.Tests {
 		}
 
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedProjectTree GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<ProjectTree, ProjectTree> GetParentedNode(System.Int32 identity) {
 			if (this.Identity == identity) {
-				return new ParentedProjectTree(this, null);
+				return new ParentedRecursiveType<ProjectTree, ProjectTree>(this, null);
 			}
 
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
-					return new ParentedProjectTree(this.LookupTable[identity].Key, (ProjectTree)this.LookupTable[parentIdentity].Key);
+					return new ParentedRecursiveType<ProjectTree, ProjectTree>(this.LookupTable[identity].Key, (ProjectTree)this.LookupTable[parentIdentity].Key);
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.
 				foreach (var child in this.Children) {
 					if (child.Identity.Equals(identity)) {
-						return new ParentedProjectTree(child, this);
+						return new ParentedRecursiveType<ProjectTree, ProjectTree>(child, this);
 					}
 
 					var recursiveChild = child as ProjectTree;
@@ -1020,7 +970,7 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 
-			return default(ParentedProjectTree);
+			return default(ParentedRecursiveType<ProjectTree, ProjectTree>);
 		}
 
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
