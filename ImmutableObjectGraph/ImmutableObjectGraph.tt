@@ -41,9 +41,21 @@ namespace <#= this.Namespace #> {
 	this.PushIndent("\t");
 	foreach(var templateType in TemplateTypes) {
 		this.OnHandleType(templateType, HandleTypePosition.BeforeTypeDeclaration);
+
+		var baseTypes = new List<string>();
+		if (templateType.HasAncestor) {
+			baseTypes.Add(templateType.Ancestor.TypeName);
+		}
+
+		baseTypes.Add("I" + templateType.TypeName);
+		if (templateType.IsRecursive) {
+			baseTypes.Add("System.Collections.Generic.IEnumerable<" + templateType.RecursiveType.TypeName + ">");
+			baseTypes.Add("IRecursiveParent");
+			baseTypes.Add("IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>");
+		}
 #>
 
-public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.TypeName #> : <#= templateType.HasAncestor ? (templateType.Ancestor.TypeName + ", ") : "" #>I<#= templateType.TypeName #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.RecursiveType.TypeName#>><# } #> {
+public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.TypeName #> : <#= String.Join(", ", baseTypes) #> {
 <#	if (!templateType.IsAbstract) { #>
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 	private static readonly <#= templateType.TypeName #> DefaultInstance = GetDefaultTemplate();
