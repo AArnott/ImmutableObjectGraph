@@ -21,7 +21,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableList<TreeNode> Children { get; }
 	}
 	
-	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode>, IRecursiveParent, IRecursiveType {
+	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode>, IRecursiveParentWithOrderedChildren, IRecursiveType {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly TreeNode DefaultInstance = GetDefaultTemplate();
 		
@@ -881,6 +881,9 @@ namespace ImmutableObjectGraph.Tests {
 		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		}
+		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
+			return this.Children.IndexOf((TreeNode)value);
 		}
 	
 		int IRecursiveType.Identity {

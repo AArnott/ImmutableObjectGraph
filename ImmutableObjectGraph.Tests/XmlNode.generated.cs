@@ -62,14 +62,6 @@ namespace ImmutableObjectGraph.Tests {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
-		public virtual System.Collections.Generic.IEnumerable<XmlNode> GetSelfAndDescendents() {
-			yield return this;
-		}
-		
-		internal virtual System.Collections.Generic.IEnumerable<ParentedRecursiveType<XmlElement, XmlNode>> GetSelfAndDescendentsWithParents(XmlElement parent) {
-			yield return new ParentedRecursiveType<XmlElement, XmlNode>(this, parent);
-		}
-		
 		public virtual XmlElement ToXmlElement(
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
@@ -910,7 +902,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
 		}
 		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
-			return this.Children.IndexOf((XmlElement)value);
+			return this.Children.IndexOf((XmlNode)value);
 		}
 	}
 	

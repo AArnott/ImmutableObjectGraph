@@ -541,7 +541,6 @@ namespace ImmutableObjectGraph.Tests {
 			return first | second;
 		}
 		
-		
 		protected virtual ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
