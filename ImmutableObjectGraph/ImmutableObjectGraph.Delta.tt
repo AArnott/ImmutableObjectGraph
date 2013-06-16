@@ -119,27 +119,6 @@ bool IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= te
 	return first | second;
 }
 
-<# if (!templateType.IsRecursiveParent) { #>
-
-public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
-	if (priorVersion == null) {
-		throw new System.ArgumentNullException("priorVersion");
-	}
-
-	if (priorVersion.<#= templateType.RequiredIdentityField.NamePascalCase #> != this.<#= templateType.RequiredIdentityField.NamePascalCase #>) {
-		throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
-	}
-
-	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
-	var changes = this.DiffProperties(priorVersion);
-	if (changes != <#= enumTypeName #>.None) {
-		history.Add(<#= diffTypeName #>.Change(priorVersion, this, changes));
-	}
-
-	return history;
-}
-<# } #>
-
 protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #> other) {
 	if (other == null) {
 		throw new System.ArgumentNullException("other");

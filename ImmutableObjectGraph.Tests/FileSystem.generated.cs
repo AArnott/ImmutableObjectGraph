@@ -177,25 +177,6 @@ namespace ImmutableObjectGraph.Tests {
 			return first | second;
 		}
 		
-		
-		public virtual System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(FileSystemEntry priorVersion) {
-			if (priorVersion == null) {
-				throw new System.ArgumentNullException("priorVersion");
-			}
-		
-			if (priorVersion.Identity != this.Identity) {
-				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
-			}
-		
-			var history = new System.Collections.Generic.List<FileSystemEntry.DiffGram>();
-			var changes = this.DiffProperties(priorVersion);
-			if (changes != FileSystemEntryChangedProperties.None) {
-				history.Add(FileSystemEntry.DiffGram.Change(priorVersion, this, changes));
-			}
-		
-			return history;
-		}
-		
 		protected virtual FileSystemEntryChangedProperties DiffProperties(FileSystemEntry other) {
 			if (other == null) {
 				throw new System.ArgumentNullException("other");
@@ -1563,7 +1544,7 @@ namespace ImmutableObjectGraph.Tests {
 			return this.Children.IndexOf((FileSystemDirectory)value);
 		}
 		int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
-			return this.Children.KeyComparer.Compare((FileSystemDirectory)first, (FileSystemDirectory)second);
+			return this.Children.KeyComparer.Compare((FileSystemEntry)first, (FileSystemEntry)second);
 		}
 	}
 	

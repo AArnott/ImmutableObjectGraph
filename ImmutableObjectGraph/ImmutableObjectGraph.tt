@@ -303,7 +303,7 @@ if (!templateType.IsAbstract) { #>
 			if (templateType.ChildrenAreSorted) {
 #>
 	int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
-		return this.Children.KeyComparer.Compare((<#= templateType.TypeName #>)first, (<#= templateType.TypeName #>)second);
+		return this.Children.KeyComparer.Compare((<#= templateType.RecursiveType.TypeName #>)first, (<#= templateType.RecursiveType.TypeName #>)second);
 	}
 <#
 			} // children are sorted
