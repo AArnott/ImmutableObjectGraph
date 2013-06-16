@@ -21,7 +21,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableList<TreeNode> Children { get; }
 	}
 	
-	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode> {
+	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode>, IRecursiveParentWithOrderedChildren, IRecursiveType {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly TreeNode DefaultInstance = GetDefaultTemplate();
 		
@@ -493,29 +493,6 @@ namespace ImmutableObjectGraph.Tests {
 			return lookupTable.ToImmutable();
 		}
 		
-		public System.Collections.Generic.IEnumerable<TreeNode> GetSelfAndDescendents() {
-			yield return this;
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendents()) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
-		internal System.Collections.Generic.IEnumerable<ParentedTreeNode> GetSelfAndDescendentsWithParents(TreeNode parent) {
-			yield return new ParentedTreeNode(this, parent);
-		
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
 		/// </summary>
@@ -571,25 +548,6 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveChild.ValidateLookupTable(lookupTable);
 				}
 			}
-		}
-		
-		
-		
-		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
-		protected internal partial struct ParentedTreeNode {
-			public ParentedTreeNode(TreeNode value, TreeNode parent)
-				: this() {
-				if (value == null) {
-					throw new System.ArgumentNullException("value");
-				}
-		
-				this.Value = value;
-				this.Parent = parent;
-			}
-		
-			public TreeNode Value { get; private set; }
-		
-			public TreeNode Parent { get; private set; }
 		}
 		
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>());
@@ -734,22 +692,22 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedTreeNode GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<TreeNode, TreeNode> GetParentedNode(System.Int32 identity) {
 			if (this.Identity == identity) {
-				return new ParentedTreeNode(this, null);
+				return new ParentedRecursiveType<TreeNode, TreeNode>(this, null);
 			}
 		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<TreeNode, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
-					return new ParentedTreeNode(this.LookupTable[identity].Key, (TreeNode)this.LookupTable[parentIdentity].Key);
+					return new ParentedRecursiveType<TreeNode, TreeNode>(this.LookupTable[identity].Key, (TreeNode)this.LookupTable[parentIdentity].Key);
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.
 				foreach (var child in this.Children) {
 					if (child.Identity.Equals(identity)) {
-						return new ParentedTreeNode(child, this);
+						return new ParentedRecursiveType<TreeNode, TreeNode>(child, this);
 					}
 		
 					var recursiveChild = child as TreeNode;
@@ -762,7 +720,7 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return default(ParentedTreeNode);
+			return default(ParentedRecursiveType<TreeNode, TreeNode>);
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
@@ -914,6 +872,22 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(attributes),
 					ImmutableObjectGraph.Optional.For(children));
 			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			var parented = this.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		}
+		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
+			return this.Children.IndexOf((TreeNode)value);
+		}
+	
+		int IRecursiveType.Identity {
+			get { return this.Identity; }
 		}
 	}
 }

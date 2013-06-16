@@ -41,9 +41,32 @@ namespace <#= this.Namespace #> {
 	this.PushIndent("\t");
 	foreach(var templateType in TemplateTypes) {
 		this.OnHandleType(templateType, HandleTypePosition.BeforeTypeDeclaration);
+
+		var baseTypes = new List<string>();
+		if (templateType.HasAncestor) {
+			baseTypes.Add(templateType.Ancestor.TypeName);
+		}
+
+		baseTypes.Add("I" + templateType.TypeName);
+		if (templateType.IsRecursiveParent) {
+			baseTypes.Add("System.Collections.Generic.IEnumerable<" + templateType.RecursiveType.TypeName + ">");
+			if (templateType.ChildrenAreSorted) {
+				baseTypes.Add("IRecursiveParentWithSortedChildren");
+			} else if (templateType.ChildrenAreOrdered) {
+				baseTypes.Add("IRecursiveParentWithOrderedChildren");
+			} else {
+				baseTypes.Add("IRecursiveParent");
+			}
+		}
+
+		if (templateType.IsRecursiveType) {
+			baseTypes.Add("IRecursiveType");
+		}
+
+		OnContributeBaseTypes(templateType, baseTypes);
 #>
 
-public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.TypeName #> : <#= templateType.HasAncestor ? (templateType.Ancestor.TypeName + ", ") : "" #>I<#= templateType.TypeName #><# if (templateType.IsRecursive) { #>, System.Collections.Generic.IEnumerable<<#=templateType.RecursiveType.TypeName#>><# } #> {
+public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.TypeName #> : <#= String.Join(", ", baseTypes) #> {
 <#	if (!templateType.IsAbstract) { #>
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 	private static readonly <#= templateType.TypeName #> DefaultInstance = GetDefaultTemplate();
@@ -258,6 +281,43 @@ if (!templateType.IsAbstract) { #>
 <#	} /* !IsAbstract */
 
 	this.OnHandleType(templateType, HandleTypePosition.WithinTypeDeclaration, indent: 1);
+
+	if (templateType.IsRecursiveParent) {
+#>
+
+	System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+		get { return this.Children; }
+	}
+
+	ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		var parented = this.GetParentedNode(identity);
+		return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+	}
+<#
+		if (templateType.ChildrenAreOrdered) {
+#>
+	int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
+		return this.Children.IndexOf((<#= templateType.RecursiveType.TypeName #>)value);
+	}
+<#
+			if (templateType.ChildrenAreSorted) {
+#>
+	int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
+		return this.Children.KeyComparer.Compare((<#= templateType.RecursiveType.TypeName #>)first, (<#= templateType.RecursiveType.TypeName #>)second);
+	}
+<#
+			} // children are sorted
+		} // children are ordered
+	}
+
+	if (templateType.IsRecursiveType) {
+#>
+
+	int IRecursiveType.Identity {
+		get { return this.Identity; }
+	}
+<#
+	}
 #>
 }
 <#
@@ -285,11 +345,20 @@ if (!templateType.IsAbstract) { #>
 
 	protected event Action<MetaType, HandleTypePosition> HandleType;
 
+	protected event Action<MetaType, List<string>> ContributeBaseTypes;
+
 	protected event Action<MetaType, HandleTypePosition> HandleRedType;
 
 	protected event Action<MetaType, MetaType.MetaField> HandleField;
 
 	protected event Action<MetaType, MetaType.MetaField> HandleRedField;
+
+	protected void OnContributeBaseTypes(MetaType type, List<string> baseTypes) {
+		var handler = this.ContributeBaseTypes;
+		if (handler != null) {
+			handler(type, baseTypes);
+		}
+	}
 
 	protected void OnHandleType(MetaType type, HandleTypePosition position, int indent = 0) {
 		var handleType = this.HandleType;

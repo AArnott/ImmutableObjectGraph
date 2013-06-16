@@ -13,25 +13,6 @@ this.HandleType += (templateType, position) => {
 		case HandleTypePosition.WithinTypeDeclaration:
 			if (templateType.IsRecursiveType) {
 				var recursiveType = templateType.RecursiveTypeFromFamily;
-#>
-
-[DebuggerDisplay("{Value.Caption} ({Value.<#= templateType.RequiredIdentityField.NamePascalCase #>})")]
-protected internal partial struct Parented<#= recursiveType.TypeName #> {
-	public Parented<#= recursiveType.TypeName #>(<#= recursiveType.TypeName #> value, <#= templateType.RecursiveParent.TypeName #> parent)
-		: this() {
-		if (value == null) {
-			throw new System.ArgumentNullException("value");
-		}
-
-		this.Value = value;
-		this.Parent = parent;
-	}
-
-	public <#= recursiveType.TypeName #> Value { get; private set; }
-
-	public <#= templateType.RecursiveParent.TypeName #> Parent { get; private set; }
-}
-<#
 			}
 
 			if (templateType.IsRecursive) {
@@ -179,22 +160,22 @@ public bool Contains(<#= templateType.RequiredIdentityField.TypeName #> identity
 }
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-internal Parented<#= templateType.RecursiveType.TypeName #> GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+internal ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>> GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
 	if (this.Identity == identity) {
-		return new Parented<#= templateType.RecursiveType.TypeName #>(this, null);
+		return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(this, null);
 	}
 
 	if (this.LookupTable != null) {
 		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
 		if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 			var parentIdentity = lookupValue.Value;
-			return new Parented<#= templateType.RecursiveType.TypeName #>(this.LookupTable[identity].Key, (<#= templateType.RecursiveParent.TypeName #>)this.LookupTable[parentIdentity].Key);
+			return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(this.LookupTable[identity].Key, (<#= templateType.RecursiveParent.TypeName #>)this.LookupTable[parentIdentity].Key);
 		}
 	} else {
 		// No lookup table means we have to aggressively search each child.
 		foreach (var child in this.Children) {
 			if (child.Identity.Equals(identity)) {
-				return new Parented<#= templateType.RecursiveType.TypeName #>(child, this);
+				return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(child, this);
 			}
 
 			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
@@ -207,7 +188,7 @@ internal Parented<#= templateType.RecursiveType.TypeName #> GetParentedNode(<#= 
 		}
 	}
 
-	return default(Parented<#= templateType.RecursiveType.TypeName #>);
+	return default(ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>);
 }
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>

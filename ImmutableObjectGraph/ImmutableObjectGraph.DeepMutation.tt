@@ -4,19 +4,6 @@ this.HandleType += (templateType, position) => {
 		return;
 	}
 
-	if (templateType.IsRecursiveType && templateType.RecursiveField == null) {
-#>
-
-public virtual System.Collections.Generic.IEnumerable<<#= templateType.TypeName #>> GetSelfAndDescendents() {
-	yield return this;
-}
-
-internal virtual System.Collections.Generic.IEnumerable<Parented<#= templateType.TypeName #>> GetSelfAndDescendentsWithParents(<#= templateType.RecursiveParent.TypeName #> parent) {
-	yield return new Parented<#= templateType.TypeName #>(this, parent);
-}
-<#
-	}
-
 	if (templateType.IsRecursive) {
 #>
 
@@ -169,29 +156,6 @@ private <#= templateType.NodeLookupTableTypeName #> FixupLookupTable(ImmutableOb
 	return lookupTable.ToImmutable();
 }
 
-public <#= !templateType.IsRecursiveType ? "override " : "" #>System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> GetSelfAndDescendents() {
-	yield return this;
-	if (this.<#= templateType.RecursiveField.NamePascalCase #> != null) {
-		foreach (var child in this.<#= templateType.RecursiveField.NamePascalCase #>) {
-			foreach (var descendent in child.GetSelfAndDescendents()) {
-				yield return descendent;
-			}
-		}
-	}
-}
-
-internal <#= !templateType.IsRecursiveType ? "override " : "" #>System.Collections.Generic.IEnumerable<Parented<#= templateType.RecursiveType.TypeName #>> GetSelfAndDescendentsWithParents(<#= templateType.RecursiveParent.TypeName #> parent) {
-	yield return new Parented<#= templateType.RecursiveType.TypeName #>(this, parent);
-
-	if (this.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #> != null) {
-		foreach (var child in this.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>) {
-			foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
-				yield return descendent;
-			}
-		}
-	}
-}
-
 /// <summary>
 /// Validates this node and all its descendents <em>only in DEBUG builds</em>.
 /// </summary>
@@ -248,8 +212,6 @@ private void ValidateLookupTable(<#= templateType.NodeLookupTableTypeName #> loo
 		}
 	}
 }
-
-
 <#
 	}
 }; // event handler

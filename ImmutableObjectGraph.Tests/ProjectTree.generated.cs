@@ -24,7 +24,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; }
 	}
 	
-	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree> {
+	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTree DefaultInstance = GetDefaultTemplate();
 		
@@ -491,85 +491,54 @@ namespace ImmutableObjectGraph.Tests {
 		public static class Comparers {
 			/// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> Identity {
-				get { return IdentityEqualityComparer.Default; }
+				get { return ImmutableObjectGraph.Comparers.Identity; }
 			}
 		
 			/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValue {
-				get { return ValueEqualityComparer.Shallow; }
+				get { return ImmutableObjectGraph.Comparers.ByValue<ProjectTreeChangedProperties, DiffGram>(deep: false); }
 			}
 		
 			/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
 			public static System.Collections.Generic.IEqualityComparer<ProjectTree> ByValueWithDescendents {
-				get { return ValueEqualityComparer.Deep; }
+				get { return ImmutableObjectGraph.Comparers.ByValue<ProjectTreeChangedProperties, DiffGram>(deep: true); }
 			}
 		
-			internal static System.Collections.Generic.IEqualityComparer<ParentedProjectTree> ParentedProjectTreeIdentity {
-				get { return ParentedProjectTreeEqualityComparer.Default; }
+			internal static System.Collections.Generic.IEqualityComparer<ParentedRecursiveType<ProjectTree, ProjectTree>> ParentedProjectTreeIdentity {
+				get { return ImmutableObjectGraph.Comparers.Parented<ProjectTree, ProjectTree>(); }
 			}
+		}
 		
-			/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
-			private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
-				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Default = new IdentityEqualityComparer();
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.ParentProperty {
+			get { return ProjectTreeChangedProperties.Parent; }
+		}
 		
-				private IdentityEqualityComparer() {
-				}
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.PositionUnderParentProperty {
+			get { return ProjectTreeChangedProperties.PositionUnderParent; }
+		}
 		
-				public bool Equals(ProjectTree x, ProjectTree y) {
-					return x.Identity == y.Identity;
-				}
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.DiffProperties(IRecursiveType other) {
+			return this.DiffProperties((ProjectTree)other);
+		}
 		
-				public int GetHashCode(ProjectTree obj) {
-					return obj.Identity.GetHashCode();
-				}
-			}
+		ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Change(IRecursiveType before, IRecursiveType after, ProjectTreeChangedProperties diff) {
+			return DiffGram.Change((ProjectTree)before, (ProjectTree)after, diff);
+		}
 		
-			private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<ProjectTree> {
-				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Shallow = new ValueEqualityComparer(false);
+		ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Add(IRecursiveType after) {
+			return DiffGram.Add((ProjectTree)after);
+		}
 		
-				internal static readonly System.Collections.Generic.IEqualityComparer<ProjectTree> Deep = new ValueEqualityComparer(true);
+		ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Remove(IRecursiveType before) {
+			return DiffGram.Remove((ProjectTree)before);
+		}
 		
-				private bool includeRecursiveChildren;
+		bool IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Equals(ProjectTreeChangedProperties first, ProjectTreeChangedProperties second) {
+			return first == second;
+		}
 		
-				private ValueEqualityComparer(bool includeRecursiveChildren) {
-					this.includeRecursiveChildren = includeRecursiveChildren;
-				}
-		
-				public bool Equals(ProjectTree x, ProjectTree y) {
-					if (x == null && y == null) {
-						return true;
-					}
-		
-					if (x == null ^ y == null) {
-						return false;
-					}
-		
-					if (this.includeRecursiveChildren) {
-						throw new System.NotImplementedException();
-					}
-		
-					return x.DiffProperties(y) == ProjectTreeChangedProperties.None;
-				}
-		
-				public int GetHashCode(ProjectTree obj) {
-					return obj.Identity.GetHashCode();
-				}
-			}
-		
-			private class ParentedProjectTreeEqualityComparer : System.Collections.Generic.IEqualityComparer<ParentedProjectTree> {
-				internal static readonly System.Collections.Generic.IEqualityComparer<ParentedProjectTree> Default = new ParentedProjectTreeEqualityComparer();
-		
-				private ParentedProjectTreeEqualityComparer() {
-				}
-				
-				public bool Equals(ParentedProjectTree x, ParentedProjectTree y) {
-					return x.Value.Identity == y.Value.Identity;
-				}
-		
-				public int GetHashCode(ParentedProjectTree obj) {
-					return obj.Value.Identity;
-				}
-			}
+		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Union(ProjectTreeChangedProperties first, ProjectTreeChangedProperties second) {
+			return first | second;
 		}
 		
 		protected virtual ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
@@ -614,91 +583,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return propertiesChanged;
-		}
-		
-		partial struct ParentedProjectTree {
-			public ProjectTreeChangedProperties DiffProperties(ParentedProjectTree other) {
-				ProjectTreeChangedProperties changes = this.Value.DiffProperties(other.Value);
-				if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.Identity != other.Parent.Identity)) {
-					changes |= ProjectTreeChangedProperties.Parent;
-				} else if (this.Value != other.Value && this.Parent != null && other.Parent != null) {
-					if (this.Parent.Children.KeyComparer.Compare(this.Value, other.Value) != 0) {
-						// Calculate where the node was, and where it would go in the old tree.
-						int beforeIndex = other.Parent.Children.IndexOf(other.Value);
-						int afterIndex = ~other.Parent.Children.IndexOf(this.Value);
-		
-						// If the indices are the same, the new one would come "just before" the old one.
-						// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
-						// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
-						if (afterIndex != beforeIndex && afterIndex != beforeIndex + 1) {
-							changes |= ProjectTreeChangedProperties.PositionUnderParent;
-						}
-					}
-				}
-		
-				return changes;
-			}
-		}
-		
-		public virtual System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(ProjectTree priorVersion) {
-			if (priorVersion == null) {
-				throw new System.ArgumentNullException("priorVersion");
-			}
-		
-			if (this == priorVersion) {
-				return System.Collections.Immutable.ImmutableList.Create<ProjectTree.DiffGram>();
-			}
-		
-			if (priorVersion.Identity != this.Identity) {
-				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
-			}
-		
-			var before = new System.Collections.Generic.HashSet<ParentedProjectTree>(priorVersion.GetSelfAndDescendentsWithParents(null), Comparers.ParentedProjectTreeIdentity);
-			var after = new System.Collections.Generic.HashSet<ParentedProjectTree>(this.GetSelfAndDescendentsWithParents(null), Comparers.ParentedProjectTreeIdentity);
-		
-			var added = new System.Collections.Generic.HashSet<ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
-			var removed = new System.Collections.Generic.HashSet<ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
-			var changed = new System.Collections.Generic.Dictionary<ParentedProjectTree, ParentedProjectTree>(Comparers.ParentedProjectTreeIdentity);
-		
-			var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<ProjectTree>(Comparers.Identity);
-			
-			foreach (var fromBefore in before) {
-				if (after.Contains(fromBefore)) {
-					var fromAfter = this.GetParentedNode(fromBefore.Value.Identity);
-					if (!object.ReferenceEquals(fromBefore.Value, fromAfter.Value) || fromBefore.Parent.Identity != fromAfter.Parent.Identity) {
-						changed.Add(fromBefore, fromAfter);
-					}
-				} else {
-					removed.Add(fromBefore);
-				}
-			}
-		
-			foreach (var fromAfter in after) {
-				if (!before.Contains(fromAfter)) {
-					added.Add(fromAfter);
-				}
-			}
-		
-			foreach (var topLevelOperation in added.Concat(removed)) {
-				descendentsOfAddOrRemove.UnionWith(topLevelOperation.Value.GetSelfAndDescendents().Skip(1));
-			}
-				
-			var history = new System.Collections.Generic.List<ProjectTree.DiffGram>();
-			history.AddRange(removed.Where(r => !descendentsOfAddOrRemove.Contains(r.Value)).Select(r => ProjectTree.DiffGram.Remove(r.Value)));
-		
-			foreach (var changedNode in changed) {
-				var oldNode = changedNode.Key;
-				var newNode = changedNode.Value;
-				
-				ProjectTreeChangedProperties diff = newNode.DiffProperties(oldNode);
-				if (diff != ProjectTreeChangedProperties.None) {
-					history.Add(ProjectTree.DiffGram.Change(oldNode.Value, newNode.Value, diff));
-				}
-			}
-		
-			history.AddRange(added.Where(a => !descendentsOfAddOrRemove.Contains(a.Value)).Select(a => ProjectTree.DiffGram.Add(a.Value)));
-		
-			return history;
 		}
 		
 		protected ProjectTree SyncImmediateChildToCurrentVersion(ProjectTree child) {
@@ -859,29 +743,6 @@ namespace ImmutableObjectGraph.Tests {
 			return lookupTable.ToImmutable();
 		}
 		
-		public System.Collections.Generic.IEnumerable<ProjectTree> GetSelfAndDescendents() {
-			yield return this;
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendents()) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
-		internal System.Collections.Generic.IEnumerable<ParentedProjectTree> GetSelfAndDescendentsWithParents(ProjectTree parent) {
-			yield return new ParentedProjectTree(this, parent);
-		
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
 		/// </summary>
@@ -937,25 +798,6 @@ namespace ImmutableObjectGraph.Tests {
 					recursiveChild.ValidateLookupTable(lookupTable);
 				}
 			}
-		}
-		
-		
-		
-		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
-		protected internal partial struct ParentedProjectTree {
-			public ParentedProjectTree(ProjectTree value, ProjectTree parent)
-				: this() {
-				if (value == null) {
-					throw new System.ArgumentNullException("value");
-				}
-		
-				this.Value = value;
-				this.Parent = parent;
-			}
-		
-			public ProjectTree Value { get; private set; }
-		
-			public ProjectTree Parent { get; private set; }
 		}
 		
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>());
@@ -1100,22 +942,22 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedProjectTree GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<ProjectTree, ProjectTree> GetParentedNode(System.Int32 identity) {
 			if (this.Identity == identity) {
-				return new ParentedProjectTree(this, null);
+				return new ParentedRecursiveType<ProjectTree, ProjectTree>(this, null);
 			}
 		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
-					return new ParentedProjectTree(this.LookupTable[identity].Key, (ProjectTree)this.LookupTable[parentIdentity].Key);
+					return new ParentedRecursiveType<ProjectTree, ProjectTree>(this.LookupTable[identity].Key, (ProjectTree)this.LookupTable[parentIdentity].Key);
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.
 				foreach (var child in this.Children) {
 					if (child.Identity.Equals(identity)) {
-						return new ParentedProjectTree(child, this);
+						return new ParentedRecursiveType<ProjectTree, ProjectTree>(child, this);
 					}
 		
 					var recursiveChild = child as ProjectTree;
@@ -1128,7 +970,7 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return default(ParentedProjectTree);
+			return default(ParentedRecursiveType<ProjectTree, ProjectTree>);
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
@@ -1379,6 +1221,25 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(capabilities),
 					ImmutableObjectGraph.Optional.For(children));
 			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			var parented = this.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		}
+		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
+			return this.Children.IndexOf((ProjectTree)value);
+		}
+		int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
+			return this.Children.KeyComparer.Compare((ProjectTree)first, (ProjectTree)second);
+		}
+	
+		int IRecursiveType.Identity {
+			get { return this.Identity; }
 		}
 	}
 	

@@ -1,4 +1,10 @@
 ﻿<#
+this.ContributeBaseTypes += (templateType, baseTypes) => {
+	if (templateType.IsRecursiveType) {
+		baseTypes.Add("IRecursiveDiffingType<" + templateType.TypeName + "ChangedProperties, " + templateType.TypeName + ".DiffGram>");
+	}
+};
+
 this.HandleType += (templateType, position) => {
 	if (templateType.IsRecursiveType) {
 		string enumTypeName = GetPropertiesEnumTypeName(templateType);
@@ -63,106 +69,55 @@ public struct DiffGram {
 public static class Comparers {
 	/// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
 	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> <#= templateType.RequiredIdentityField.NamePascalCase #> {
-		get { return IdentityEqualityComparer.Default; }
+		get { return ImmutableObjectGraph.Comparers.Identity; }
 	}
 
 	/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
 	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValue {
-		get { return ValueEqualityComparer.Shallow; }
+		get { return ImmutableObjectGraph.Comparers.ByValue<<#= templateType.TypeName #>ChangedProperties, DiffGram>(deep: false); }
 	}
 
 	/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
 	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValueWithDescendents {
-		get { return ValueEqualityComparer.Deep; }
+		get { return ImmutableObjectGraph.Comparers.ByValue<<#= templateType.TypeName #>ChangedProperties, DiffGram>(deep: true); }
 	}
 
-	internal static System.Collections.Generic.IEqualityComparer<Parented<#= templateType.TypeName #>> Parented<#= templateType.TypeName #><#= templateType.RequiredIdentityField.NamePascalCase #> {
-		get { return Parented<#= templateType.TypeName #>EqualityComparer.Default; }
-	}
-
-	/// <summary>An equatable and sorting comparer that considers only the persistent identity of a pair of values.</summary>
-	private class IdentityEqualityComparer : System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> {
-		internal static readonly System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> Default = new IdentityEqualityComparer();
-
-		private IdentityEqualityComparer() {
-		}
-
-		public bool Equals(<#= templateType.TypeName #> x, <#= templateType.TypeName #> y) {
-			return x.<#= templateType.RequiredIdentityField.NamePascalCase #> == y.<#= templateType.RequiredIdentityField.NamePascalCase #>;
-		}
-
-		public int GetHashCode(<#= templateType.TypeName #> obj) {
-			return obj.<#= templateType.RequiredIdentityField.NamePascalCase #>.GetHashCode();
-		}
-	}
-
-	private class ValueEqualityComparer : System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> {
-		internal static readonly System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> Shallow = new ValueEqualityComparer(false);
-
-		internal static readonly System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> Deep = new ValueEqualityComparer(true);
-
-		private bool includeRecursiveChildren;
-
-		private ValueEqualityComparer(bool includeRecursiveChildren) {
-			this.includeRecursiveChildren = includeRecursiveChildren;
-		}
-
-		public bool Equals(<#= templateType.TypeName #> x, <#= templateType.TypeName #> y) {
-			if (x == null && y == null) {
-				return true;
-			}
-
-			if (x == null ^ y == null) {
-				return false;
-			}
-
-			if (this.includeRecursiveChildren) {
-				throw new System.NotImplementedException();
-			}
-
-			return x.DiffProperties(y) == <#= enumTypeName #>.None;
-		}
-
-		public int GetHashCode(<#= templateType.TypeName #> obj) {
-			return obj.<#= templateType.RequiredIdentityField.NamePascalCase #>.GetHashCode();
-		}
-	}
-
-	private class Parented<#= templateType.TypeName #>EqualityComparer : System.Collections.Generic.IEqualityComparer<Parented<#= templateType.TypeName #>> {
-		internal static readonly System.Collections.Generic.IEqualityComparer<Parented<#= templateType.TypeName #>> Default = new Parented<#= templateType.TypeName #>EqualityComparer();
-
-		private Parented<#= templateType.TypeName #>EqualityComparer() {
-		}
-		
-		public bool Equals(Parented<#= templateType.TypeName #> x, Parented<#= templateType.TypeName #> y) {
-			return x.Value.<#= templateType.RequiredIdentityField.NamePascalCase #> == y.Value.<#= templateType.RequiredIdentityField.NamePascalCase #>;
-		}
-
-		public int GetHashCode(Parented<#= templateType.TypeName #> obj) {
-			return obj.Value.<#= templateType.RequiredIdentityField.NamePascalCase #>;
-		}
+	internal static System.Collections.Generic.IEqualityComparer<ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>> Parented<#= templateType.TypeName #><#= templateType.RequiredIdentityField.NamePascalCase #> {
+		get { return ImmutableObjectGraph.Comparers.Parented<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.TypeName #>>(); }
 	}
 }
-<# if (!templateType.IsRecursiveParent) { #>
 
-public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {
-	if (priorVersion == null) {
-		throw new System.ArgumentNullException("priorVersion");
-	}
-
-	if (priorVersion.<#= templateType.RequiredIdentityField.NamePascalCase #> != this.<#= templateType.RequiredIdentityField.NamePascalCase #>) {
-		throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
-	}
-
-	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
-	var changes = this.DiffProperties(priorVersion);
-	if (changes != <#= enumTypeName #>.None) {
-		history.Add(<#= diffTypeName #>.Change(priorVersion, this, changes));
-	}
-
-	return history;
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.ParentProperty {
+	get { return <#= templateType.TypeName #>ChangedProperties.Parent; }
 }
-<# } #>
+
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.PositionUnderParentProperty {
+	get { return <#= templateType.TypeName #>ChangedProperties.PositionUnderParent; }
+}
+
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.DiffProperties(IRecursiveType other) {
+	return this.DiffProperties((<#= templateType.TypeName #>)other);
+}
+
+<#= templateType.TypeName #>.DiffGram IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Change(IRecursiveType before, IRecursiveType after, <#= templateType.TypeName #>ChangedProperties diff) {
+	return DiffGram.Change((<#= templateType.TypeName #>)before, (<#= templateType.TypeName #>)after, diff);
+}
+
+<#= templateType.TypeName #>.DiffGram IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Add(IRecursiveType after) {
+	return DiffGram.Add((<#= templateType.TypeName #>)after);
+}
+
+<#= templateType.TypeName #>.DiffGram IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Remove(IRecursiveType before) {
+	return DiffGram.Remove((<#= templateType.TypeName #>)before);
+}
+
+bool IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Equals(<#= templateType.TypeName #>ChangedProperties first, <#= templateType.TypeName #>ChangedProperties second) {
+	return first == second;
+}
+
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Union(<#= templateType.TypeName #>ChangedProperties first, <#= templateType.TypeName #>ChangedProperties second) {
+	return first | second;
+}
 
 protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #> other) {
 	if (other == null) {
@@ -189,30 +144,6 @@ protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #
 	}
 
 	return propertiesChanged;
-}
-
-partial struct Parented<#= templateType.TypeName #> {
-	public <#= enumTypeName #> DiffProperties(Parented<#= templateType.TypeName #> other) {
-		<#= enumTypeName #> changes = this.Value.DiffProperties(other.Value);
-		if ((this.Parent == null ^ other.Parent == null) || (this.Parent != null && other.Parent != null && this.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #> != other.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #>)) {
-			changes |= <#= enumTypeName #>.Parent;
-		} else if (this.Value != other.Value && this.Parent != null && other.Parent != null) {
-			if (this.Parent.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>.KeyComparer.Compare(this.Value, other.Value) != 0) {
-				// Calculate where the node was, and where it would go in the old tree.
-				int beforeIndex = other.Parent.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>.IndexOf(other.Value);
-				int afterIndex = ~other.Parent.<#= templateType.RecursiveParent.RecursiveField.NamePascalCase #>.IndexOf(this.Value);
-
-				// If the indices are the same, the new one would come "just before" the old one.
-				// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
-				// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
-				if (afterIndex != beforeIndex && afterIndex != beforeIndex + 1) {
-					changes |= <#= enumTypeName #>.PositionUnderParent;
-				}
-			}
-		}
-
-		return changes;
-	}
 }
 <#
 				break;
@@ -319,69 +250,6 @@ protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName
 		switch (position) {
 			case HandleTypePosition.WithinTypeDeclaration:
 				string changesSinceKeyword = templateType.HasAncestor ? "override " : "virtual ";
-#>
-
-public <#= changesSinceKeyword #>System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= recursiveType.TypeName #> priorVersion) {
-	if (priorVersion == null) {
-		throw new System.ArgumentNullException("priorVersion");
-	}
-
-	if (this == priorVersion) {
-		return System.Collections.Immutable.ImmutableList.Create<<#= diffTypeName #>>();
-	}
-
-	if (priorVersion.<#= templateType.RequiredIdentityField.NamePascalCase #> != this.<#= templateType.RequiredIdentityField.NamePascalCase #>) {
-		throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
-	}
-
-	var before = new System.Collections.Generic.HashSet<<#= parentedTemplateType #>>(priorVersion.GetSelfAndDescendentsWithParents(null), Comparers.<#= parentedTemplateType #><#= templateType.RequiredIdentityField.NamePascalCase #>);
-	var after = new System.Collections.Generic.HashSet<<#= parentedTemplateType #>>(this.GetSelfAndDescendentsWithParents(null), Comparers.<#= parentedTemplateType #><#= templateType.RequiredIdentityField.NamePascalCase #>);
-
-	var added = new System.Collections.Generic.HashSet<<#= parentedTemplateType #>>(Comparers.<#= parentedTemplateType #><#= templateType.RequiredIdentityField.NamePascalCase #>);
-	var removed = new System.Collections.Generic.HashSet<<#= parentedTemplateType #>>(Comparers.<#= parentedTemplateType #><#= templateType.RequiredIdentityField.NamePascalCase #>);
-	var changed = new System.Collections.Generic.Dictionary<<#= parentedTemplateType #>, <#= parentedTemplateType #>>(Comparers.<#= parentedTemplateType #><#= templateType.RequiredIdentityField.NamePascalCase #>);
-
-	var descendentsOfAddOrRemove = new System.Collections.Generic.HashSet<<#= templateType.RecursiveType.TypeName #>>(Comparers.<#= templateType.RequiredIdentityField.NamePascalCase #>);
-	
-	foreach (var fromBefore in before) {
-		if (after.Contains(fromBefore)) {
-			var fromAfter = this.GetParentedNode(fromBefore.Value.<#= templateType.RequiredIdentityField.NamePascalCase #>);
-			if (!object.ReferenceEquals(fromBefore.Value, fromAfter.Value) || fromBefore.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #> != fromAfter.Parent.<#= templateType.RequiredIdentityField.NamePascalCase #>) {
-				changed.Add(fromBefore, fromAfter);
-			}
-		} else {
-			removed.Add(fromBefore);
-		}
-	}
-
-	foreach (var fromAfter in after) {
-		if (!before.Contains(fromAfter)) {
-			added.Add(fromAfter);
-		}
-	}
-
-	foreach (var topLevelOperation in added.Concat(removed)) {
-		descendentsOfAddOrRemove.UnionWith(topLevelOperation.Value.GetSelfAndDescendents().Skip(1));
-	}
-		
-	var history = new System.Collections.Generic.List<<#= diffTypeName #>>();
-	history.AddRange(removed.Where(r => !descendentsOfAddOrRemove.Contains(r.Value)).Select(r => <#= diffTypeName #>.Remove(r.Value)));
-
-	foreach (var changedNode in changed) {
-		var oldNode = changedNode.Key;
-		var newNode = changedNode.Value;
-		
-		<#= enumTypeName #> diff = newNode.DiffProperties(oldNode);
-		if (diff != <#= enumTypeName #>.None) {
-			history.Add(<#= diffTypeName #>.Change(oldNode.Value, newNode.Value, diff));
-		}
-	}
-
-	history.AddRange(added.Where(a => !descendentsOfAddOrRemove.Contains(a.Value)).Select(a => <#= diffTypeName #>.Add(a.Value)));
-
-	return history;
-}
-<#
 				break;
 			default:
 				break;
