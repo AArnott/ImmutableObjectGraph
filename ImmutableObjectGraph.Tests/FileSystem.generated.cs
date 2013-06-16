@@ -1533,7 +1533,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
 		}
 		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
-			return this.Children.IndexOf((FileSystemDirectory)value);
+			return this.Children.IndexOf((FileSystemEntry)value);
 		}
 		int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
 			return this.Children.KeyComparer.Compare((FileSystemEntry)first, (FileSystemEntry)second);

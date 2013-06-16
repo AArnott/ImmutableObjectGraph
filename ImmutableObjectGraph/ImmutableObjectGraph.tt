@@ -297,7 +297,7 @@ if (!templateType.IsAbstract) { #>
 		if (templateType.ChildrenAreOrdered) {
 #>
 	int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
-		return this.Children.IndexOf((<#= templateType.TypeName #>)value);
+		return this.Children.IndexOf((<#= templateType.RecursiveType.TypeName #>)value);
 	}
 <#
 			if (templateType.ChildrenAreSorted) {
