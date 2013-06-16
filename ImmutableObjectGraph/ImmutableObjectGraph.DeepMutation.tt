@@ -4,19 +4,6 @@ this.HandleType += (templateType, position) => {
 		return;
 	}
 
-	if (templateType.IsRecursiveType && templateType.RecursiveField == null) {
-#>
-
-public virtual System.Collections.Generic.IEnumerable<<#= templateType.TypeName #>> GetSelfAndDescendents() {
-	yield return this;
-}
-
-internal virtual System.Collections.Generic.IEnumerable<ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>> GetSelfAndDescendentsWithParents(<#= templateType.RecursiveParent.TypeName #> parent) {
-	yield return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(this, parent);
-}
-<#
-	}
-
 	if (templateType.IsRecursive) {
 #>
 

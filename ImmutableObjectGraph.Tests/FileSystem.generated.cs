@@ -197,14 +197,6 @@ namespace ImmutableObjectGraph.Tests {
 			return propertiesChanged;
 		}
 		
-		public virtual System.Collections.Generic.IEnumerable<FileSystemEntry> GetSelfAndDescendents() {
-			yield return this;
-		}
-		
-		internal virtual System.Collections.Generic.IEnumerable<ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>> GetSelfAndDescendentsWithParents(FileSystemDirectory parent) {
-			yield return new ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>(this, parent);
-		}
-		
 		public virtual FileSystemFile ToFileSystemFile(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			FileSystemFile that = this as FileSystemFile;
