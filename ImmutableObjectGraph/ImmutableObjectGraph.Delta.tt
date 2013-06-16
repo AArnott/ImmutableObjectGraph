@@ -1,4 +1,10 @@
 ﻿<#
+this.ContributeBaseTypes += (templateType, baseTypes) => {
+	if (templateType.IsRecursiveType) {
+		baseTypes.Add("IRecursiveDiffingType<" + templateType.TypeName + "ChangedProperties, " + templateType.TypeName + ".DiffGram>");
+	}
+};
+
 this.HandleType += (templateType, position) => {
 	if (templateType.IsRecursiveType) {
 		string enumTypeName = GetPropertiesEnumTypeName(templateType);
@@ -68,73 +74,51 @@ public static class Comparers {
 
 	/// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
 	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValue {
-		get { return ImmutableObjectGraph.Comparers.ByValue<ProjectTreeChangedProperties, DiffGram>(deep: false); }
+		get { return ImmutableObjectGraph.Comparers.ByValue<<#= templateType.TypeName #>ChangedProperties, DiffGram>(deep: false); }
 	}
 
 	/// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
 	public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValueWithDescendents {
-		get { return ImmutableObjectGraph.Comparers.ByValue<ProjectTreeChangedProperties, DiffGram>(deep: true); }
+		get { return ImmutableObjectGraph.Comparers.ByValue<<#= templateType.TypeName #>ChangedProperties, DiffGram>(deep: true); }
 	}
 
-	internal static System.Collections.Generic.IEqualityComparer<ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.TypeName #>>> Parented<#= templateType.TypeName #><#= templateType.RequiredIdentityField.NamePascalCase #> {
+	internal static System.Collections.Generic.IEqualityComparer<ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>> Parented<#= templateType.TypeName #><#= templateType.RequiredIdentityField.NamePascalCase #> {
 		get { return ImmutableObjectGraph.Comparers.Parented<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.TypeName #>>(); }
 	}
 }
 
-System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
-	get { return this.Children; }
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.ParentProperty {
+	get { return <#= templateType.TypeName #>ChangedProperties.Parent; }
 }
 
-
-ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
-	var parented = this.GetParentedNode(identity);
-	return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.PositionUnderParentProperty {
+	get { return <#= templateType.TypeName #>ChangedProperties.PositionUnderParent; }
 }
 
-int IRecursiveParent.IndexOf(IRecursiveType value) {
-	return this.Children.IndexOf((ProjectTree)value);
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.DiffProperties(IRecursiveType other) {
+	return this.DiffProperties((<#= templateType.TypeName #>)other);
 }
 
-int IRecursiveType.Identity {
-	get { return this.Identity; }
+<#= templateType.TypeName #>.DiffGram IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Change(IRecursiveType before, IRecursiveType after, <#= templateType.TypeName #>ChangedProperties diff) {
+	return DiffGram.Change((<#= templateType.TypeName #>)before, (<#= templateType.TypeName #>)after, diff);
 }
 
-ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.ParentProperty {
-	get { return ProjectTreeChangedProperties.Parent; }
+<#= templateType.TypeName #>.DiffGram IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Add(IRecursiveType after) {
+	return DiffGram.Add((<#= templateType.TypeName #>)after);
 }
 
-ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.PositionUnderParentProperty {
-	get { return ProjectTreeChangedProperties.PositionUnderParent; }
+<#= templateType.TypeName #>.DiffGram IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Remove(IRecursiveType before) {
+	return DiffGram.Remove((<#= templateType.TypeName #>)before);
 }
 
-ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.DiffProperties(IRecursiveType other) {
-	return this.DiffProperties((ProjectTree)other);
-}
-
-ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Change(IRecursiveType before, IRecursiveType after, ProjectTreeChangedProperties diff) {
-	return DiffGram.Change((ProjectTree)before, (ProjectTree)after, diff);
-}
-
-ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Add(IRecursiveType after) {
-	return DiffGram.Add((ProjectTree)after);
-}
-
-ProjectTree.DiffGram IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Remove(IRecursiveType before) {
-	return DiffGram.Remove((ProjectTree)before);
-}
-
-bool IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Equals(ProjectTreeChangedProperties first, ProjectTreeChangedProperties second) {
+bool IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Equals(<#= templateType.TypeName #>ChangedProperties first, <#= templateType.TypeName #>ChangedProperties second) {
 	return first == second;
 }
 
-ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.Union(ProjectTreeChangedProperties first, ProjectTreeChangedProperties second) {
+<#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, <#= templateType.TypeName #>.DiffGram>.Union(<#= templateType.TypeName #>ChangedProperties first, <#= templateType.TypeName #>ChangedProperties second) {
 	return first | second;
 }
 
-
-int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
-	return this.Children.KeyComparer.Compare((ProjectTree)first, (ProjectTree)second);
-}
 <# if (!templateType.IsRecursiveParent) { #>
 
 public virtual System.Collections.Generic.IReadOnlyList<<#= diffTypeName #>> ChangesSince(<#= templateType.TypeName #> priorVersion) {

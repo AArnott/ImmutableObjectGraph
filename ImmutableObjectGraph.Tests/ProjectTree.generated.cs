@@ -24,7 +24,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; }
 	}
 	
-	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParent, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram> {
+	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParent, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTree DefaultInstance = GetDefaultTemplate();
 		
@@ -509,24 +509,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
-			get { return this.Children; }
-		}
-		
-		
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
-			var parented = this.GetParentedNode(identity);
-			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
-		}
-		
-		int IRecursiveParent.IndexOf(IRecursiveType value) {
-			return this.Children.IndexOf((ProjectTree)value);
-		}
-		
-		int IRecursiveType.Identity {
-			get { return this.Identity; }
-		}
-		
 		ProjectTreeChangedProperties IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>.ParentProperty {
 			get { return ProjectTreeChangedProperties.Parent; }
 		}
@@ -559,10 +541,6 @@ namespace ImmutableObjectGraph.Tests {
 			return first | second;
 		}
 		
-		
-		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
-			return this.Children.KeyComparer.Compare((ProjectTree)first, (ProjectTree)second);
-		}
 		
 		protected virtual ProjectTreeChangedProperties DiffProperties(ProjectTree other) {
 			if (other == null) {
@@ -1244,6 +1222,27 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(capabilities),
 					ImmutableObjectGraph.Optional.For(children));
 			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			var parented = this.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		}
+	
+		int IRecursiveParent.IndexOf(IRecursiveType value) {
+			return this.Children.IndexOf((ProjectTree)value);
+		}
+	
+		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
+			return this.Children.KeyComparer.Compare((ProjectTree)first, (ProjectTree)second);
+		}
+	
+		int IRecursiveType.Identity {
+			get { return this.Identity; }
 		}
 	}
 	

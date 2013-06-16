@@ -17,7 +17,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.String LocalName { get; }
 	}
 	
-	public abstract partial class XmlNode : IXmlNode {
+	public abstract partial class XmlNode : IXmlNode, IRecursiveType {
 		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
@@ -66,25 +66,8 @@ namespace ImmutableObjectGraph.Tests {
 			yield return this;
 		}
 		
-		internal virtual System.Collections.Generic.IEnumerable<ParentedXmlNode> GetSelfAndDescendentsWithParents(XmlElement parent) {
-			yield return new ParentedXmlNode(this, parent);
-		}
-		
-		[DebuggerDisplay("{Value.Caption} ({Value.Identity})")]
-		protected internal partial struct ParentedXmlNode {
-			public ParentedXmlNode(XmlNode value, XmlElement parent)
-				: this() {
-				if (value == null) {
-					throw new System.ArgumentNullException("value");
-				}
-		
-				this.Value = value;
-				this.Parent = parent;
-			}
-		
-			public XmlNode Value { get; private set; }
-		
-			public XmlElement Parent { get; private set; }
+		internal virtual System.Collections.Generic.IEnumerable<ParentedRecursiveType<XmlElement, XmlNode>> GetSelfAndDescendentsWithParents(XmlElement parent) {
+			yield return new ParentedRecursiveType<XmlElement, XmlNode>(this, parent);
 		}
 		
 		public virtual XmlElement ToXmlElement(
@@ -176,6 +159,10 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.LocalName));
 			}
 		}
+	
+		int IRecursiveType.Identity {
+			get { return this.Identity; }
+		}
 	}
 	
 	public interface IXmlElement : IXmlNode {
@@ -183,7 +170,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableList<XmlNode> Children { get; }
 	}
 	
-	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode> {
+	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode>, IRecursiveParent {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlElement DefaultInstance = GetDefaultTemplate();
 	
@@ -538,29 +525,6 @@ namespace ImmutableObjectGraph.Tests {
 			return lookupTable.ToImmutable();
 		}
 		
-		public override System.Collections.Generic.IEnumerable<XmlNode> GetSelfAndDescendents() {
-			yield return this;
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendents()) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
-		internal override System.Collections.Generic.IEnumerable<ParentedXmlNode> GetSelfAndDescendentsWithParents(XmlElement parent) {
-			yield return new ParentedXmlNode(this, parent);
-		
-			if (this.Children != null) {
-				foreach (var child in this.Children) {
-					foreach (var descendent in child.GetSelfAndDescendentsWithParents(this)) {
-						yield return descendent;
-					}
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
 		/// </summary>
@@ -617,8 +581,6 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		}
-		
-		
 		
 		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>());
 		
@@ -762,22 +724,22 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedXmlNode GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<XmlElement, XmlNode> GetParentedNode(System.Int32 identity) {
 			if (this.Identity == identity) {
-				return new ParentedXmlNode(this, null);
+				return new ParentedRecursiveType<XmlElement, XmlNode>(this, null);
 			}
 		
 			if (this.LookupTable != null) {
 				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
-					return new ParentedXmlNode(this.LookupTable[identity].Key, (XmlElement)this.LookupTable[parentIdentity].Key);
+					return new ParentedRecursiveType<XmlElement, XmlNode>(this.LookupTable[identity].Key, (XmlElement)this.LookupTable[parentIdentity].Key);
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.
 				foreach (var child in this.Children) {
 					if (child.Identity.Equals(identity)) {
-						return new ParentedXmlNode(child, this);
+						return new ParentedRecursiveType<XmlElement, XmlNode>(child, this);
 					}
 		
 					var recursiveChild = child as XmlElement;
@@ -790,7 +752,7 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return default(ParentedXmlNode);
+			return default(ParentedRecursiveType<XmlElement, XmlNode>);
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
@@ -937,6 +899,23 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.NamespaceName),
 					ImmutableObjectGraph.Optional.For(children));
 			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			var parented = this.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		}
+	
+		int IRecursiveParent.IndexOf(IRecursiveType value) {
+			return this.Children.IndexOf((XmlElement)value);
+		}
+	
+		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
+			return this.Children.KeyComparer.Compare((XmlElement)first, (XmlElement)second);
 		}
 	}
 	
