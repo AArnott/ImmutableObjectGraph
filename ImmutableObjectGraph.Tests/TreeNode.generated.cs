@@ -883,14 +883,6 @@ namespace ImmutableObjectGraph.Tests {
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
 		}
 	
-		int IRecursiveParent.IndexOf(IRecursiveType value) {
-			return this.Children.IndexOf((TreeNode)value);
-		}
-	
-		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
-			return this.Children.KeyComparer.Compare((TreeNode)first, (TreeNode)second);
-		}
-	
 		int IRecursiveType.Identity {
 			get { return this.Identity; }
 		}

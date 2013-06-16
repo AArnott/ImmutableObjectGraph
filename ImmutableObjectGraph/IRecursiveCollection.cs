@@ -14,9 +14,13 @@
 		IEnumerable<IRecursiveType> Children { get; }
 
 		ParentedRecursiveType<IRecursiveParent, IRecursiveType> GetParentedNode(int identity);
+	}
 
+	public interface IRecursiveParentWithOrderedChildren : IRecursiveParent {
 		int IndexOf(IRecursiveType value);
+	}
 
+	public interface IRecursiveParentWithSortedChildren : IRecursiveParentWithOrderedChildren {
 		int Compare(IRecursiveType first, IRecursiveType second);
 	}
 

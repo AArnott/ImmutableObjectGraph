@@ -880,7 +880,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; }
 	}
 	
-	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntry>, IRecursiveParent {
+	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntry>, IRecursiveParentWithSortedChildren {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly FileSystemDirectory DefaultInstance = GetDefaultTemplate();
 	
@@ -1559,12 +1559,10 @@ namespace ImmutableObjectGraph.Tests {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
 		}
-	
-		int IRecursiveParent.IndexOf(IRecursiveType value) {
+		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 			return this.Children.IndexOf((FileSystemDirectory)value);
 		}
-	
-		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
+		int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
 			return this.Children.KeyComparer.Compare((FileSystemDirectory)first, (FileSystemDirectory)second);
 		}
 	}

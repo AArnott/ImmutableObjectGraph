@@ -24,7 +24,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; }
 	}
 	
-	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParent, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram> {
+	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTree DefaultInstance = GetDefaultTemplate();
 		
@@ -1232,12 +1232,10 @@ namespace ImmutableObjectGraph.Tests {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
 		}
-	
-		int IRecursiveParent.IndexOf(IRecursiveType value) {
+		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 			return this.Children.IndexOf((ProjectTree)value);
 		}
-	
-		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
+		int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
 			return this.Children.KeyComparer.Compare((ProjectTree)first, (ProjectTree)second);
 		}
 	

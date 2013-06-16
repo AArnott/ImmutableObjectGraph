@@ -170,7 +170,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableList<XmlNode> Children { get; }
 	}
 	
-	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode>, IRecursiveParent {
+	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode>, IRecursiveParentWithOrderedChildren {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlElement DefaultInstance = GetDefaultTemplate();
 	
@@ -909,13 +909,8 @@ namespace ImmutableObjectGraph.Tests {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
 		}
-	
-		int IRecursiveParent.IndexOf(IRecursiveType value) {
+		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 			return this.Children.IndexOf((XmlElement)value);
-		}
-	
-		int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
-			return this.Children.KeyComparer.Compare((XmlElement)first, (XmlElement)second);
 		}
 	}
 	

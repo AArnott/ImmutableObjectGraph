@@ -135,16 +135,26 @@
 			if ((self.Parent == null ^ other.Parent == null) || (self.Parent != null && other.Parent != null && self.Parent.Identity != other.Parent.Identity)) {
 				changes = self.Value.Union(changes, self.Value.ParentProperty);
 			} else if (self.Value != other.Value && self.Parent != null && other.Parent != null) {
-				if (self.Parent.Compare(self.Value, other.Value) != 0) {
-					// Calculate where the node was, and where it would go in the old tree.
-					int beforeIndex = other.Parent.IndexOf(other.Value);
-					int afterIndex = ~other.Parent.IndexOf(self.Value);
-
-					// If the indices are the same, the new one would come "just before" the old one.
-					// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
-					// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
-					if (afterIndex != beforeIndex && afterIndex != beforeIndex + 1) {
-						changes = self.Value.Union(changes, self.Value.PositionUnderParentProperty);
+				var selfParentOrdered = self.Parent as IRecursiveParentWithOrderedChildren;
+				if (selfParentOrdered != null) {
+					var selfParentSorted = selfParentOrdered as IRecursiveParentWithSortedChildren;
+					if (selfParentSorted != null) {
+						if (selfParentSorted.Compare(self.Value, other.Value) != 0) {
+							// Calculate where the node was, and where it would go in the old tree.
+							var otherParentSorted = (IRecursiveParentWithSortedChildren)other.Parent;
+							int beforeIndex = otherParentSorted.IndexOf(other.Value);
+							int afterIndex = ~otherParentSorted.IndexOf(self.Value);
+							
+							// If the indices are the same, the new one would come "just before" the old one.
+							// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
+							// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
+							if (afterIndex != beforeIndex && afterIndex != beforeIndex + 1) {
+								changes = self.Value.Union(changes, self.Value.PositionUnderParentProperty);
+							}
+						}
+					} else {
+						// Calculate whether items were reordered without leveraging a sorting comparer.
+						throw new NotImplementedException();
 					}
 				}
 			}

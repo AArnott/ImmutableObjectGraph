@@ -50,7 +50,13 @@ namespace <#= this.Namespace #> {
 		baseTypes.Add("I" + templateType.TypeName);
 		if (templateType.IsRecursiveParent) {
 			baseTypes.Add("System.Collections.Generic.IEnumerable<" + templateType.RecursiveType.TypeName + ">");
-			baseTypes.Add("IRecursiveParent");
+			if (templateType.ChildrenAreSorted) {
+				baseTypes.Add("IRecursiveParentWithSortedChildren");
+			} else if (templateType.ChildrenAreOrdered) {
+				baseTypes.Add("IRecursiveParentWithOrderedChildren");
+			} else {
+				baseTypes.Add("IRecursiveParent");
+			}
 		}
 
 		if (templateType.IsRecursiveType) {
@@ -287,15 +293,21 @@ if (!templateType.IsAbstract) { #>
 		var parented = this.GetParentedNode(identity);
 		return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
 	}
-
-	int IRecursiveParent.IndexOf(IRecursiveType value) {
+<#
+		if (templateType.ChildrenAreOrdered) {
+#>
+	int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 		return this.Children.IndexOf((<#= templateType.TypeName #>)value);
 	}
-
-	int IRecursiveParent.Compare(IRecursiveType first, IRecursiveType second) {
+<#
+			if (templateType.ChildrenAreSorted) {
+#>
+	int IRecursiveParentWithSortedChildren.Compare(IRecursiveType first, IRecursiveType second) {
 		return this.Children.KeyComparer.Compare((<#= templateType.TypeName #>)first, (<#= templateType.TypeName #>)second);
 	}
 <#
+			} // children are sorted
+		} // children are ordered
 	}
 
 	if (templateType.IsRecursiveType) {
