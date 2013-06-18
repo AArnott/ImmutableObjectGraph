@@ -169,7 +169,7 @@ internal ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#=
 		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
 		if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 			var parentIdentity = lookupValue.Value;
-			return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(this.LookupTable[identity].Key, (<#= templateType.RecursiveParent.TypeName #>)this.LookupTable[parentIdentity].Key);
+			return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(this.LookupTable[identity].Key, (<#= templateType.RecursiveParent.TypeName #>)this.Find(parentIdentity));
 		}
 	} else {
 		// No lookup table means we have to aggressively search each child.

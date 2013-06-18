@@ -1,6 +1,7 @@
 ﻿namespace ImmutableObjectGraph {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Text;
 	using System.Threading.Tasks;
@@ -144,7 +145,7 @@
 							var otherParentSorted = (IRecursiveParentWithSortedChildren)other.Parent;
 							int beforeIndex = otherParentSorted.IndexOf(other.Value);
 							int afterIndex = ~otherParentSorted.IndexOf(self.Value);
-							
+
 							// If the indices are the same, the new one would come "just before" the old one.
 							// If the new index is just 1 greater than the old index, the new one would come "just after" the old one.
 							// In either of these cases, since the old one will be gone in the new tree, the position hasn't changed.
@@ -160,6 +161,27 @@
 			}
 
 			return changes;
+		}
+
+		public static void Write(this IRecursiveParent root, TextWriter writer) {
+			Requires.NotNull(root, "root");
+			Requires.NotNull(writer, "writer");
+			const string Indent = "  ";
+
+			writer.Write(root);
+
+			writer.NewLine += Indent;
+			foreach (var child in root.Children) {
+				writer.WriteLine();
+				var childAsParent = child as IRecursiveParent;
+				if (childAsParent != null) {
+					Write(childAsParent, writer);
+				} else {
+					writer.Write(child);
+				}
+			}
+
+			writer.NewLine = writer.NewLine.Substring(0, writer.NewLine.Length - Indent.Length);
 		}
 	}
 }

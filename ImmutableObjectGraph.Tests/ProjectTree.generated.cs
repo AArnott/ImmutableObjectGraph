@@ -951,7 +951,7 @@ namespace ImmutableObjectGraph.Tests {
 				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
-					return new ParentedRecursiveType<ProjectTree, ProjectTree>(this.LookupTable[identity].Key, (ProjectTree)this.LookupTable[parentIdentity].Key);
+					return new ParentedRecursiveType<ProjectTree, ProjectTree>(this.LookupTable[identity].Key, (ProjectTree)this.Find(parentIdentity));
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.

@@ -19,5 +19,9 @@
 			template.Capabilities = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
 			template.Visible = true;
 		}
+
+		public override string ToString() {
+			return this.Caption;
+		}
 	}
 }
