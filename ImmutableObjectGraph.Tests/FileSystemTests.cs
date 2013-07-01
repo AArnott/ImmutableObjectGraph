@@ -373,7 +373,7 @@
 			Assert.Equal(@"c:\c\d.cs", this.root.AsRoot.Children.Last().AsFileSystemDirectory.Children.Single().FullPath);
 		}
 
-		[Fact]
+		[Fact] // NOTE: this test currently passes only in DEBUG
 		public void ChildAddedTwiceThrowsWithMutation() {
 			var root = FileSystemDirectory.Create("c:");
 			var child = FileSystemFile.Create("a.txt");
