@@ -64,10 +64,15 @@
         [Fact]
         public void ConstructLargeTreeSuboptimal()
         {
-            int seed = Environment.TickCount;
-            Console.WriteLine("Random seed: {0}", seed);
-            var random = new Random(seed);
-            var templateTree = ConstructVeryLargeTree(random, 4, 100, 1000);
+            this.ConstructLargeTreeSuboptimal(null, 1000);
+        }
+
+        public void ConstructLargeTreeSuboptimal(int? seed = null, int maxSize = 1000)
+        {
+            int randSeed = seed.HasValue ? seed.Value : Environment.TickCount;
+            Console.WriteLine("Random seed: {0}", randSeed);
+            var random = new Random(randSeed);
+            var templateTree = ConstructVeryLargeTree(random, 4, 100, maxSize);
 
             var root = RootedProjectTree.Create(templateTree.Caption);
             var rootWithChildren = RecursiveAddChildren(templateTree.ProjectTree, root);
