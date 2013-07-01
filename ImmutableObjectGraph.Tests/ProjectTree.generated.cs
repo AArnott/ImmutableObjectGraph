@@ -1417,7 +1417,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
-		public RootedProjectTree AddCapabilities(System.String value) {
+		public RootedProjectTree AddCapability(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
@@ -1499,7 +1499,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectTree AddChildren(RootedProjectTree value) {
+		public RootedProjectTree AddChild(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
@@ -1555,7 +1555,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectTree AddChildren(ProjectTree value) {
+		public RootedProjectTree AddChild(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
 			return this.NewSpine(mutatedLeaf);
@@ -2499,7 +2499,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Capabilities collection.</summary>
-		public RootedProjectItemTree AddCapabilities(System.String value) {
+		public RootedProjectItemTree AddCapability(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
@@ -2581,7 +2581,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectItemTree AddChildren(RootedProjectTree value) {
+		public RootedProjectItemTree AddChild(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
@@ -2637,7 +2637,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectItemTree AddChildren(ProjectTree value) {
+		public RootedProjectItemTree AddChild(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
 			return this.NewSpine(mutatedLeaf);

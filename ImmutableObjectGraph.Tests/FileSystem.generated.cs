@@ -755,7 +755,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
-		public RootedFileSystemFile AddAttributes(System.String value) {
+		public RootedFileSystemFile AddAttribute(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddAttributes(value);
 			return this.NewSpine(mutatedLeaf);
@@ -1400,7 +1400,7 @@ namespace ImmutableObjectGraph.Tests {
 				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
-					return new ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>(this.LookupTable[identity].Key, (FileSystemDirectory)this.LookupTable[parentIdentity].Key);
+					return new ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>(this.LookupTable[identity].Key, (FileSystemDirectory)this.Find(parentIdentity));
 				}
 			} else {
 				// No lookup table means we have to aggressively search each child.
@@ -1645,7 +1645,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedFileSystemDirectory AddChildren(RootedFileSystemEntry value) {
+		public RootedFileSystemDirectory AddChild(RootedFileSystemEntry value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.FileSystemEntry);
 			return this.NewSpine(mutatedLeaf);
@@ -1701,7 +1701,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedFileSystemDirectory AddChildren(FileSystemEntry value) {
+		public RootedFileSystemDirectory AddChild(FileSystemEntry value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
 			return this.NewSpine(mutatedLeaf);

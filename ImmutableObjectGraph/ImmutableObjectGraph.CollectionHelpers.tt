@@ -130,6 +130,8 @@ public <#= keywords #><#= templateType.TypeName #> Remove<#= field.NamePascalCas
 
 this.HandleRedField += (templateType, redField) => {
 	if (redField.IsCollection) {
+		string plural = redField.NamePascalCase;
+		string singular = this.PluralService.Singularize(redField.NamePascalCase);
 		var fieldTypes = new List<MetaType.MetaField> { redField };
 		if (redField.GreenField.TypeName != redField.TypeName) {
 			fieldTypes.Add(redField.GreenField);
@@ -169,7 +171,7 @@ public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(params <#= fi
 }
 
 /// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+public <#= templateType.TypeName #> Add<#= singular #>(<#= field.ElementTypeName #> value) {
 	this.ThrowIfDefault();
 	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(value<#= translateOne #>);
 	return this.NewSpine(mutatedLeaf);
