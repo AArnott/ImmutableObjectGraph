@@ -64,10 +64,10 @@
         [Fact]
         public void ConstructLargeTreeSuboptimal()
         {
-            this.ConstructLargeTreeSuboptimal(null, 1000);
+            this.ConstructLargeTreeSuboptimalHelper(null, 1000);
         }
 
-        public void ConstructLargeTreeSuboptimal(int? seed = null, int maxSize = 1000)
+        public void ConstructLargeTreeSuboptimalHelper(int? seed = null, int maxSize = 1000)
         {
             int randSeed = seed.HasValue ? seed.Value : Environment.TickCount;
             Console.WriteLine("Random seed: {0}", randSeed);
