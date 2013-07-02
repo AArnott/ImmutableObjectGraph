@@ -43,8 +43,8 @@
 	}
 
 	public struct ParentedRecursiveType<TRecursiveParent, TRecursiveType>
-		where TRecursiveParent : class, IRecursiveParent
-		where TRecursiveType : class, IRecursiveType {
+		where TRecursiveParent : IRecursiveParent
+		where TRecursiveType : IRecursiveType {
 		public ParentedRecursiveType(TRecursiveType value, TRecursiveParent parent = default(TRecursiveParent))
 			: this() {
 			this.Value = value;

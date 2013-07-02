@@ -84,7 +84,7 @@
             foreach (var templateChild in template)
             {
                 var clonedTemplateChild = ProjectTree.Create(templateChild.Caption);
-                var asChild = latest.AddChildren(clonedTemplateChild).Find(clonedTemplateChild.Identity);
+                var asChild = latest.AddChild(clonedTemplateChild).Value;
                 var childWithChildren = RecursiveAddChildren(templateChild, asChild);
                 latest = childWithChildren.Parent;
             }

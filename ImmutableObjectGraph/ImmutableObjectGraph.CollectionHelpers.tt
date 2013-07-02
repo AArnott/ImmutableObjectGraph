@@ -169,6 +169,21 @@ public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(params <#= fi
 	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(values<#= translateCollection #>);
 	return this.NewSpine(mutatedLeaf);
 }
+<#
+	if (field.IsRecursiveCollection) {
+#>
+
+/// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
+public ParentedRecursiveType<<#= templateType.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>> Add<#= singular #>(<#= field.ElementTypeName #> value) {
+	this.ThrowIfDefault();
+	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(value<#= translateOne #>);
+	var newParent = this.NewSpine(mutatedLeaf);
+	var newChild = new <#= templateType.RecursiveTypeFromFamily.TypeName #>(value<#= translateOne #>, newParent.Root<#="." + templateType.RecursiveTypeFromFamily.GreenType.TypeName#>);
+	return new ParentedRecursiveType<<#= templateType.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(newChild, newParent);
+}
+<#
+	} else {
+#>
 
 /// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
 public <#= templateType.TypeName #> Add<#= singular #>(<#= field.ElementTypeName #> value) {
@@ -176,6 +191,9 @@ public <#= templateType.TypeName #> Add<#= singular #>(<#= field.ElementTypeName
 	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(value<#= translateOne #>);
 	return this.NewSpine(mutatedLeaf);
 }
+<#
+	}
+#>
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
@@ -192,7 +210,7 @@ public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#=
 }
 
 /// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+public <#= templateType.TypeName #> Remove<#= singular #>(<#= field.ElementTypeName #> value) {
 	this.ThrowIfDefault();
 	var mutatedLeaf = this.greenNode.Remove<#= field.NamePascalCase #>(value<#= translateOne #>);
 	return this.NewSpine(mutatedLeaf);

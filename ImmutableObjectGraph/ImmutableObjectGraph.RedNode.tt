@@ -27,11 +27,14 @@ public <#= redType.HasAncestor ? "new " : "" #><#= redType.TypeName #> WithRoot(
 			break;
 		case HandleTypePosition.AfterTypeDeclaration:
 			this.OnHandleRedType(redType, HandleTypePosition.BeforeTypeDeclaration);
+			var recursiveParent = redType.SelfAndAncestors.FirstOrDefault(a => a.Equals(redType.RecursiveParent));
+			var baseTypes = new List<string>();
+			baseTypes.Add("System.IEquatable<" + redType.TypeName + ">");
+			baseTypes.Add(recursiveParent != null ? "IRecursiveParent" : "IRecursiveType");
 #>
 
-public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.TypeName #>> {
+public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes) #> {
 <#
-			var recursiveParent = redType.SelfAndAncestors.FirstOrDefault(a => a.Equals(redType.RecursiveParent));
 			if (recursiveParent != null) {
 #>
 	private static readonly System.Func<<#=recursiveParent.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveType.TypeName#>> toUnrooted = r => r.<#=recursiveParent.GreenType.RecursiveType.TypeName#>;
@@ -223,6 +226,25 @@ public partial struct <#= redType.TypeName #> : System.IEquatable<<#= redType.Ty
 		if (this.greenNode == null) {
 			throw new System.InvalidOperationException();
 		}
+	}
+<#
+	if (recursiveParent != null) {
+#>
+
+	System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+		get {
+			this.ThrowIfDefault();
+			return this.greenNode.Children;
+		}
+	}
+<#
+	}
+#>
+
+	ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		this.ThrowIfDefault();
+		var result = this.greenNode.GetParentedNode(identity);
+		return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 	}
 }
 <#

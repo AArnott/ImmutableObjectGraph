@@ -1243,7 +1243,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree> {
+	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree>, IRecursiveParent {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
 		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -1438,7 +1438,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
-		public RootedProjectTree RemoveCapabilities(System.String value) {
+		public RootedProjectTree RemoveCapability(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
@@ -1499,10 +1499,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectTree AddChild(RootedProjectTree value) {
+		public ParentedRecursiveType<RootedProjectTree, RootedProjectTree> AddChild(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.ProjectTree);
-			return this.NewSpine(mutatedLeaf);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectTree(value.ProjectTree, newParent.Root.ProjectTree);
+			return new ParentedRecursiveType<RootedProjectTree, RootedProjectTree>(newChild, newParent);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
@@ -1520,7 +1522,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public RootedProjectTree RemoveChildren(RootedProjectTree value) {
+		public RootedProjectTree RemoveChild(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
@@ -1555,10 +1557,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectTree AddChild(ProjectTree value) {
+		public ParentedRecursiveType<RootedProjectTree, RootedProjectTree> AddChild(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
-			return this.NewSpine(mutatedLeaf);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectTree(value, newParent.Root.ProjectTree);
+			return new ParentedRecursiveType<RootedProjectTree, RootedProjectTree>(newChild, newParent);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
@@ -1576,7 +1580,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public RootedProjectTree RemoveChildren(ProjectTree value) {
+		public RootedProjectTree RemoveChild(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value);
 			return this.NewSpine(mutatedLeaf);
@@ -1704,6 +1708,19 @@ namespace ImmutableObjectGraph.Tests {
 			if (this.greenNode == null) {
 				throw new System.InvalidOperationException();
 			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -2333,7 +2350,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedProjectItemTree : System.IEquatable<RootedProjectItemTree> {
+	public partial struct RootedProjectItemTree : System.IEquatable<RootedProjectItemTree>, IRecursiveParent {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
 		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -2520,7 +2537,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Capabilities collection.</summary>
-		public RootedProjectItemTree RemoveCapabilities(System.String value) {
+		public RootedProjectItemTree RemoveCapability(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveCapabilities(value);
 			return this.NewSpine(mutatedLeaf);
@@ -2581,10 +2598,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectItemTree AddChild(RootedProjectTree value) {
+		public ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree> AddChild(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.ProjectTree);
-			return this.NewSpine(mutatedLeaf);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectTree(value.ProjectTree, newParent.Root.ProjectTree);
+			return new ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree>(newChild, newParent);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
@@ -2602,7 +2621,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public RootedProjectItemTree RemoveChildren(RootedProjectTree value) {
+		public RootedProjectItemTree RemoveChild(RootedProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value.ProjectTree);
 			return this.NewSpine(mutatedLeaf);
@@ -2637,10 +2656,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedProjectItemTree AddChild(ProjectTree value) {
+		public ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree> AddChild(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
-			return this.NewSpine(mutatedLeaf);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectTree(value, newParent.Root.ProjectTree);
+			return new ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree>(newChild, newParent);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
@@ -2658,7 +2679,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public RootedProjectItemTree RemoveChildren(ProjectTree value) {
+		public RootedProjectItemTree RemoveChild(ProjectTree value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value);
 			return this.NewSpine(mutatedLeaf);
@@ -2786,6 +2807,19 @@ namespace ImmutableObjectGraph.Tests {
 			if (this.greenNode == null) {
 				throw new System.InvalidOperationException();
 			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 }
