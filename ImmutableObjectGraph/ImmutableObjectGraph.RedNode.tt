@@ -237,15 +237,15 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 			return this.greenNode.Children;
 		}
 	}
-<#
-	}
-#>
 
 	ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 		this.ThrowIfDefault();
 		var result = this.greenNode.GetParentedNode(identity);
 		return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 	}
+<#
+	}
+#>
 }
 <#
 			this.OnHandleRedType(redType, HandleTypePosition.AfterTypeDeclaration);

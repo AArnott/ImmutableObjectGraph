@@ -178,7 +178,7 @@ public ParentedRecursiveType<<#= templateType.TypeName #>, <#= templateType.Recu
 	this.ThrowIfDefault();
 	var mutatedLeaf = this.greenNode.Add<#= field.NamePascalCase #>(value<#= translateOne #>);
 	var newParent = this.NewSpine(mutatedLeaf);
-	var newChild = new <#= templateType.RecursiveTypeFromFamily.TypeName #>(value<#= translateOne #>, newParent.Root<#="." + templateType.RecursiveTypeFromFamily.GreenType.TypeName#>);
+	var newChild = new <#= templateType.RecursiveTypeFromFamily.TypeName #>(value<#= translateOne #>, newParent.Root<#="." + templateType.RecursiveParent.GreenType.TypeName #>);
 	return new ParentedRecursiveType<<#= templateType.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(newChild, newParent);
 }
 <#

@@ -265,7 +265,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedFileSystemEntry : System.IEquatable<RootedFileSystemEntry> {
+	public partial struct RootedFileSystemEntry : System.IEquatable<RootedFileSystemEntry>, IRecursiveType {
 		private readonly FileSystemEntry greenNode;
 	
 		private readonly FileSystemDirectory root;
@@ -664,7 +664,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedFileSystemFile : System.IEquatable<RootedFileSystemFile> {
+	public partial struct RootedFileSystemFile : System.IEquatable<RootedFileSystemFile>, IRecursiveType {
 		private readonly FileSystemFile greenNode;
 	
 		private readonly FileSystemDirectory root;
@@ -776,7 +776,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
-		public RootedFileSystemFile RemoveAttributes(System.String value) {
+		public RootedFileSystemFile RemoveAttribute(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveAttributes(value);
 			return this.NewSpine(mutatedLeaf);
@@ -1540,7 +1540,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedFileSystemDirectory : System.IEquatable<RootedFileSystemDirectory> {
+	public partial struct RootedFileSystemDirectory : System.IEquatable<RootedFileSystemDirectory>, IRecursiveParent {
 		private static readonly System.Func<RootedFileSystemEntry, FileSystemEntry> toUnrooted = r => r.FileSystemEntry;
 		private static readonly System.Func<FileSystemEntry, FileSystemDirectory, RootedFileSystemEntry> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -1645,10 +1645,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedFileSystemDirectory AddChild(RootedFileSystemEntry value) {
+		public ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry> AddChild(RootedFileSystemEntry value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value.FileSystemEntry);
-			return this.NewSpine(mutatedLeaf);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedFileSystemEntry(value.FileSystemEntry, newParent.Root.FileSystemDirectory);
+			return new ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry>(newChild, newParent);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
@@ -1666,7 +1668,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public RootedFileSystemDirectory RemoveChildren(RootedFileSystemEntry value) {
+		public RootedFileSystemDirectory RemoveChild(RootedFileSystemEntry value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value.FileSystemEntry);
 			return this.NewSpine(mutatedLeaf);
@@ -1701,10 +1703,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public RootedFileSystemDirectory AddChild(FileSystemEntry value) {
+		public ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry> AddChild(FileSystemEntry value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.AddChildren(value);
-			return this.NewSpine(mutatedLeaf);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedFileSystemEntry(value, newParent.Root.FileSystemDirectory);
+			return new ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry>(newChild, newParent);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
@@ -1722,7 +1726,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public RootedFileSystemDirectory RemoveChildren(FileSystemEntry value) {
+		public RootedFileSystemDirectory RemoveChild(FileSystemEntry value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.RemoveChildren(value);
 			return this.NewSpine(mutatedLeaf);
@@ -1822,6 +1826,19 @@ namespace ImmutableObjectGraph.Tests {
 			if (this.greenNode == null) {
 				throw new System.InvalidOperationException();
 			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 }
