@@ -90,6 +90,13 @@
 			get { return this.underlyingCollection.Count; }
 		}
 
+		public bool TryGetValue(TRooted equalValue, out TRooted actualValue) {
+			TUnrooted outValue;
+			bool result = this.underlyingCollection.TryGetValue(this.unroot(equalValue), out outValue);
+			actualValue = this.root(outValue, this.rootObject);
+			return result;
+		}
+
 		public IEnumerator<TRooted> GetEnumerator() {
 			foreach (var element in this.underlyingCollection) {
 				yield return this.root(element, this.rootObject);
