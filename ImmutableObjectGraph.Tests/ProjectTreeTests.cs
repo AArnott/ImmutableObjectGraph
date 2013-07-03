@@ -53,23 +53,65 @@
 			Assert.Equal(changedNodeIdentity, changes[0].Identity);
 		}
 
+		[Fact]
+		public void ConstructLargeTreeOptimal() {
+			this.ConstructLargeTreeOptimalHelper(null, 1000);
+		}
+
 		/// <summary>
 		/// Constructs a tree based on a template in top down order (root to leaf),
 		/// instead of the optimal leaf to roof order.
 		/// </summary>
 		[Fact]
-		public void ConstructLargeTreeSuboptimal() {
-			this.ConstructLargeTreeSuboptimalHelper(null, 1000);
+		public void ConstructLargeTreeSuboptimalWithoutBuilder() {
+			this.CloneProjectTreeRootToLeafWithoutBuilders(ConstructLargeTreeOptimalHelper());
 		}
 
-		public void ConstructLargeTreeSuboptimalHelper(int? seed = null, int maxSize = 1000) {
+		/// <summary>
+		/// Constructs a tree based on a template in top down order (root to leaf),
+		/// instead of the optimal leaf to roof order.
+		/// </summary>
+		[Fact]
+		public void ConstructLargeTreeSuboptimalUsingBuilder() {
+			this.CloneProjectTreeRootToLeafWithBuilders(ConstructLargeTreeOptimalHelper());
+		}
+
+		public RootedProjectTree ConstructLargeTreeOptimalHelper(int? seed = null, int maxSize = 1000) {
 			int randSeed = seed.HasValue ? seed.Value : Environment.TickCount;
 			Console.WriteLine("Random seed: {0}", randSeed);
 			var random = new Random(randSeed);
-			var templateTree = ConstructVeryLargeTree(random, 4, 100, maxSize);
+			return ConstructVeryLargeTree(random, 4, 100, maxSize);
+		}
 
+		public RootedProjectTree CloneProjectTreeLeafToRoot(RootedProjectTree templateTree) {
+			var clone = ProjectTree.Create(templateTree.Caption).AddChildren(templateTree.ProjectTree.Children.Select(this.CloneProjectTreeLeafToRoot));
+			return clone.AsRoot;
+		}
+
+		public ProjectTree CloneProjectTreeLeafToRoot(ProjectTree templateTree) {
+			var clone = ProjectTree.Create(templateTree.Caption).AddChildren(templateTree.Children.Select(this.CloneProjectTreeLeafToRoot));
+			return clone;
+		}
+
+		public RootedProjectTree CloneProjectTreeRootToLeafWithoutBuilders(RootedProjectTree templateTree) {
 			var root = RootedProjectTree.Create(templateTree.Caption);
 			var rootWithChildren = RecursiveAddChildren(templateTree.ProjectTree, root);
+			return rootWithChildren;
+		}
+
+		public RootedProjectTree CloneProjectTreeRootToLeafWithBuilders(RootedProjectTree templateTree) {
+			var rootBuilder = ProjectTree.Create(templateTree.Caption).ToBuilder();
+			RecursiveAddChildren(templateTree.ProjectTree, rootBuilder);
+			var root = rootBuilder.ToImmutable();
+			return root.AsRoot;
+		}
+
+		private static void RecursiveAddChildren(ProjectTree template, ProjectTree.Builder receiver) {
+			foreach (var templateChild in template) {
+				var clonedTemplateChild = ProjectTree.Create(templateChild.Caption).ToBuilder();
+				RecursiveAddChildren(templateChild, clonedTemplateChild);
+				receiver.Children.Add(clonedTemplateChild.ToImmutable());
+			}
 		}
 
 		private static RootedProjectTree RecursiveAddChildren(ProjectTree template, RootedProjectTree receiver) {
@@ -84,7 +126,7 @@
 			return latest;
 		}
 
-		private static RootedProjectTree ConstructVeryLargeTree(Random random, int depth, int maxImmediateChildrenCount, int totalNodeCount, Func<string> counter = null) {
+		public static RootedProjectTree ConstructVeryLargeTree(Random random, int depth, int maxImmediateChildrenCount, int totalNodeCount, Func<string> counter = null) {
 			Requires.NotNull(random, "random");
 			Requires.Range(depth > 0, "maxDepth");
 			Requires.Range(totalNodeCount > 0, "totalNodeCount");
