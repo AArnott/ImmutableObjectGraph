@@ -9,8 +9,14 @@
 	public class EmptyTests {
 		[Fact]
 		public void EmptyConstruction() {
-			var empty= Empty.Create();
+			var empty = Empty.Create();
 			Assert.NotNull(empty);
+		}
+
+		[Fact]
+		public void EmptyDerivedConstruction() {
+			var derivedEmpty = EmptyDerived.Create();
+			Assert.NotNull(derivedEmpty);
 		}
 	}
 }
