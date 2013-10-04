@@ -45,7 +45,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.12-beta\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.27\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
