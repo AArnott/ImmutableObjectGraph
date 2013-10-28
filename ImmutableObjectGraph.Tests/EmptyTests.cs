@@ -30,5 +30,12 @@
 			Assert.Equal(empty.Identity, newInstance.Identity);
 			Assert.Equal(empty.Identity, newInstanceAsBase.Identity);
 		}
+
+		[Fact]
+		public void EmptyDerivedFromNonEmptyBaseReinstantiatesCorrectType() {
+			EmptyDerivedFromNonEmptyBase value = EmptyDerivedFromNonEmptyBase.Create();
+			EmptyDerivedFromNonEmptyBase updatedValue = value.WithOneField(true);
+			EmptyDerivedFromNonEmptyBase updatedValue2 = value.With(true);
+		}
 	}
 }

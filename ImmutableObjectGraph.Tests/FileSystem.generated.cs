@@ -538,10 +538,9 @@ namespace ImmutableObjectGraph.Tests {
 		protected override FileSystemEntry WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.WithFactory(
-				pathSegment: pathSegment,
-				attributes: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>));
+				pathSegment: pathSegment);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public FileSystemFile With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
@@ -969,10 +968,9 @@ namespace ImmutableObjectGraph.Tests {
 		protected override FileSystemEntry WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.WithFactory(
-				pathSegment: pathSegment,
-				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+				pathSegment: pathSegment);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public FileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),

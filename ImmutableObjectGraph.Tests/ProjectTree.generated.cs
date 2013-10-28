@@ -2090,12 +2090,9 @@ namespace ImmutableObjectGraph.Tests {
 				visible: visible,
 				browseObjectProperties: browseObjectProperties,
 				capabilities: capabilities,
-				children: children,
-				projectPropertiesContext: default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
-				propertySheet: default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
-				isLinked: default(ImmutableObjectGraph.Optional<System.Boolean>));
+				children: children);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public ProjectItemTree With(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),

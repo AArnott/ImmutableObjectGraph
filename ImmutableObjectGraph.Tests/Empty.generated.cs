@@ -497,6 +497,35 @@ namespace ImmutableObjectGraph.Tests {
 			return (EmptyDerivedFromNonEmptyBase)base.WithOneField(value);
 		}
 	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override NonEmptyBase WithCore(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return this.WithFactory(
+				oneField: oneField);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public EmptyDerivedFromNonEmptyBase With(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return (EmptyDerivedFromNonEmptyBase)this.WithCore(
+				oneField: oneField);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private EmptyDerivedFromNonEmptyBase WithFactory(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(oneField.IsDefined && oneField.Value != this.OneField)) {
+				return new EmptyDerivedFromNonEmptyBase(
+					identity: identity.GetValueOrDefault(this.Identity),
+					oneField: oneField.GetValueOrDefault(this.OneField));
+			} else {
+				return this;
+			}
+		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -690,7 +719,7 @@ namespace ImmutableObjectGraph.Tests {
 			return this.WithFactory(
 				oneField: oneField);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public EmptyDerivedFromAbstract With(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {

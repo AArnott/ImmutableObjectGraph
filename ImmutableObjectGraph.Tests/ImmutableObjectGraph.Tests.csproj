@@ -54,6 +54,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractClassFamiliesTests.cs" />
+    <Compile Include="AbstractClassFamilies.generated.cs">
+      <DependentUpon>AbstractClassFamilies.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ProjectTree.generated.cs">
       <DependentUpon>ProjectTree.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -116,6 +122,10 @@
     <Compile Include="XmlNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AbstractClassFamilies.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AbstractClassFamilies.generated.cs</LastGenOutput>
+    </None>
     <None Include="ProjectTree.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ProjectTree.generated.cs</LastGenOutput>

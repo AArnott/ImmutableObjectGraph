@@ -153,18 +153,21 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		this.OnHandleField(templateType, field);
 	}
 
-	if (templateType.LocalFields.Count > 0 || (templateType.HasAncestor && templateType.Ancestor.IsAbstract)) {
-		if (templateType.HasAncestor && templateType.Ancestor.AllFields.Any() && !templateType.IsAbstract) {
+	if (!templateType.IsAbstract) {
+		foreach (var ancestor in templateType.Ancestors.Reverse().Where(a => a.LocalFields.Any())) {
 #>
+
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-	protected override <#= templateType.Ancestor.TypeName #> WithCore(<# WriteParameters(templateType.Ancestor.AllFields, ParameterStyle.Optional); #>) {
+	protected override <#= ancestor.TypeName #> WithCore(<# WriteParameters(ancestor.AllFields, ParameterStyle.Optional); #>) {
 		return this.WithFactory(<#
-			WriteArguments(templateType.Ancestor.AllFields, ArgSource.Argument);
-			if (templateType.Ancestor.AllFields.Any() && templateType.LocalFields.Any()) { Write(","); }
-			WriteArguments(templateType.LocalFields, ArgSource.Missing);
+			WriteArguments(ancestor.AllFields, ArgSource.Argument);
 #>);
 	}
-	<# } /* templateType.HasAncestor */ #>
+<#
+		} // foreach ancestor
+	} // templateType.HasAncestor
+
+	if (templateType.AllFields.Any()) { #>
 
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 	public <#= templateType.TypeName #> With(<#
@@ -182,8 +185,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		var <#= templateType.RequiredIdentityField.NameCamelCase #> = default(<#= templateType.RequiredIdentityField.OptionalTypeName#>);
 		return this.WithFactory(<# WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrProperty, asOptional: OptionalStyle.Always); #>);
 	}
-<#	} // if LocalFields.Any()
-		} /* if isAbstract */
+<#	} // else !IsAbstract
+		} /* if LocalFields.Any() */
 
 		if (!templateType.IsAbstract) {
  #>
@@ -218,7 +221,7 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	}
 <#
 		}
-	} /* templateType.LocalFields.Count > 0 */
+	} /* templateType.AllFields.Count > 0 */
 	
 	if (!templateType.HasAncestor) {
 #>

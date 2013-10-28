@@ -275,10 +275,9 @@ namespace ImmutableObjectGraph.Tests {
 		protected override A WithCore(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.WithFactory(
-				field1: field1,
-				field2: default(ImmutableObjectGraph.Optional<System.Int32>));
+				field1: field1);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public B With(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
@@ -507,15 +506,21 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override A WithCore(
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return this.WithFactory(
+				field1: field1);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override B WithCore(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.WithFactory(
 				field1: field1,
-				field2: field2,
-				field3: default(ImmutableObjectGraph.Optional<System.Int32>));
+				field2: field2);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public C1 With(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
@@ -710,15 +715,21 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override A WithCore(
+			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return this.WithFactory(
+				field1: field1);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override B WithCore(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			return this.WithFactory(
 				field1: field1,
-				field2: field2,
-				field3: default(ImmutableObjectGraph.Optional<System.Int32>));
+				field2: field2);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public C2 With(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),

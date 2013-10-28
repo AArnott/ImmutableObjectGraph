@@ -323,11 +323,9 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return this.WithFactory(
 				l1Field1: l1Field1,
-				l1Field2: l1Field2,
-				l2Field1: default(ImmutableObjectGraph.Optional<System.String>),
-				l2Field2: default(ImmutableObjectGraph.Optional<System.String>));
+				l1Field2: l1Field2);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public ReqAndHierL2 With(
 			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
