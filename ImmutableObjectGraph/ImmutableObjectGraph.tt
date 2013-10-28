@@ -154,9 +154,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	}
 
 	if (templateType.LocalFields.Count > 0 || (templateType.HasAncestor && templateType.Ancestor.IsAbstract)) {
-		if (templateType.HasAncestor && templateType.Ancestor.AllFields.Any()) {
+		if (templateType.HasAncestor && templateType.Ancestor.AllFields.Any() && !templateType.IsAbstract) {
 #>
-
 	/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 	protected override <#= templateType.Ancestor.TypeName #> WithCore(<# WriteParameters(templateType.Ancestor.AllFields, ParameterStyle.Optional); #>) {
 		return this.WithFactory(<#
