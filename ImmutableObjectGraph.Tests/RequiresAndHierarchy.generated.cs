@@ -80,9 +80,18 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(l1Field2: Optional.For(value));
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual ReqAndHierL1 With(
+		public ReqAndHierL1 With(
+			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (ReqAndHierL1)this.WithCore(
+				l1Field1: l1Field1,
+				l1Field2: l1Field2);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ReqAndHierL1 WithCore(
 			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
@@ -309,18 +318,31 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override ReqAndHierL1 With(
+		protected override ReqAndHierL1 WithCore(
 			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return this.With(
+			return this.WithFactory(
 				l1Field1: l1Field1,
 				l1Field2: l1Field2,
 				l2Field1: default(ImmutableObjectGraph.Optional<System.String>),
 				l2Field2: default(ImmutableObjectGraph.Optional<System.String>));
 		}
-			
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual ReqAndHierL2 With(
+		public ReqAndHierL2 With(
+			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> l2Field2 = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (ReqAndHierL2)this.WithCore(
+				l1Field1: l1Field1,
+				l1Field2: l1Field2,
+				l2Field1: l2Field1,
+				l2Field2: l2Field2);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ReqAndHierL2 WithCore(
 			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),

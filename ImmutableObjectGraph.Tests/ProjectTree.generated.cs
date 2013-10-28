@@ -300,9 +300,30 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(children: this.Children.Clear());
 		}
 		
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual ProjectTree With(
+		public ProjectTree With(
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+			ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>)) {
+			return (ProjectTree)this.WithCore(
+				caption: caption,
+				filePath: filePath,
+				icon: icon,
+				expandedIcon: expandedIcon,
+				visible: visible,
+				browseObjectProperties: browseObjectProperties,
+				capabilities: capabilities,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectTree WithCore(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
@@ -2052,7 +2073,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override ProjectTree With(
+		protected override ProjectTree WithCore(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
@@ -2061,7 +2082,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>)) {
-			return this.With(
+			return this.WithFactory(
 				caption: caption,
 				filePath: filePath,
 				icon: icon,
@@ -2074,9 +2095,36 @@ namespace ImmutableObjectGraph.Tests {
 				propertySheet: default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 				isLinked: default(ImmutableObjectGraph.Optional<System.Boolean>));
 		}
-			
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual ProjectItemTree With(
+		public ProjectItemTree With(
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+			ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
+			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext> projectPropertiesContext = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
+			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
+			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return (ProjectItemTree)this.WithCore(
+				caption: caption,
+				filePath: filePath,
+				icon: icon,
+				expandedIcon: expandedIcon,
+				visible: visible,
+				browseObjectProperties: browseObjectProperties,
+				capabilities: capabilities,
+				children: children,
+				projectPropertiesContext: projectPropertiesContext,
+				propertySheet: propertySheet,
+				isLinked: isLinked);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectItemTree WithCore(
 			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),

@@ -18,5 +18,17 @@
 			var derivedEmpty = EmptyDerived.Create();
 			Assert.NotNull(derivedEmpty);
 		}
+
+		[Fact]
+		public void EmptyWithRegeneratesType() {
+			var empty = EmptyDerivedFromAbstract.Create();
+			AbstractNonEmpty emptyAsBase = empty;
+
+			EmptyDerivedFromAbstract newInstance = empty.With(oneField: true);
+			AbstractNonEmpty newInstanceAsBase = emptyAsBase.With(oneField: true);
+
+			Assert.Equal(empty.Identity, newInstance.Identity);
+			Assert.Equal(empty.Identity, newInstanceAsBase.Identity);
+		}
 	}
 }

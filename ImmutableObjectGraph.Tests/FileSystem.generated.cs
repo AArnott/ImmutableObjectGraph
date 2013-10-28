@@ -48,9 +48,16 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(pathSegment: Optional.For(value));
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public abstract FileSystemEntry With(
+		public FileSystemEntry With(
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (FileSystemEntry)this.WithCore(
+				pathSegment: pathSegment);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected abstract FileSystemEntry WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
 	
 		protected internal System.Int32 Identity {
@@ -528,15 +535,24 @@ namespace ImmutableObjectGraph.Tests {
 		
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override FileSystemEntry With(
+		protected override FileSystemEntry WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return this.With(
+			return this.WithFactory(
 				pathSegment: pathSegment,
 				attributes: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>));
 		}
-			
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual FileSystemFile With(
+		public FileSystemFile With(
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
+			return (FileSystemFile)this.WithCore(
+				pathSegment: pathSegment,
+				attributes: attributes);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual FileSystemFile WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
@@ -950,15 +966,24 @@ namespace ImmutableObjectGraph.Tests {
 		
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override FileSystemEntry With(
+		protected override FileSystemEntry WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return this.With(
+			return this.WithFactory(
 				pathSegment: pathSegment,
 				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 		}
-			
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual FileSystemDirectory With(
+		public FileSystemDirectory With(
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
+			return (FileSystemDirectory)this.WithCore(
+				pathSegment: pathSegment,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual FileSystemDirectory WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);

@@ -197,9 +197,16 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(oneField: Optional.For(value));
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual NotSoEmptyDerived With(
+		public NotSoEmptyDerived With(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return (NotSoEmptyDerived)this.WithCore(
+				oneField: oneField);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual NotSoEmptyDerived WithCore(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
@@ -341,9 +348,16 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(oneField: Optional.For(value));
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual NonEmptyBase With(
+		public NonEmptyBase With(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return (NonEmptyBase)this.WithCore(
+				oneField: oneField);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual NonEmptyBase WithCore(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
@@ -535,6 +549,216 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			public new EmptyDerivedFromNonEmptyBase ToImmutable() {
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IAbstractNonEmpty {
+		System.Boolean OneField { get; }
+	}
+	
+	public abstract partial class AbstractNonEmpty : IAbstractNonEmpty {
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.Boolean oneField;
+	
+		private readonly System.Int32 identity;
+	
+		/// <summary>Initializes a new instance of the AbstractNonEmpty class.</summary>
+		protected AbstractNonEmpty(
+			System.Int32 identity,
+			System.Boolean oneField)
+		{
+			this.identity = identity;
+			this.oneField = oneField;
+		}
+	
+		public System.Boolean OneField {
+			get { return this.oneField; }
+		}
+		
+		/// <summary>Returns a new instance with the OneField property set to the specified value.</summary>
+		public AbstractNonEmpty WithOneField(System.Boolean value) {
+			if (value == this.OneField) {
+				return this;
+			}
+		
+			return this.With(oneField: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public AbstractNonEmpty With(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return (AbstractNonEmpty)this.WithCore(
+				oneField: oneField);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected abstract AbstractNonEmpty WithCore(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>));
+	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
+	
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		}
+		
+		public virtual EmptyDerivedFromAbstract ToEmptyDerivedFromAbstract() {
+			EmptyDerivedFromAbstract that = this as EmptyDerivedFromAbstract;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(EmptyDerivedFromAbstract))) {
+				return that;
+			}
+		
+			return EmptyDerivedFromAbstract.CreateWithIdentity(
+				oneField: Optional.For(this.OneField),
+				identity: this.Identity);
+		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private AbstractNonEmpty immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Boolean oneField;
+		
+			internal Builder(AbstractNonEmpty immutable) {
+				this.immutable = immutable;
+		
+				this.oneField = immutable.OneField;
+			}
+		
+			public System.Boolean OneField {
+				get {
+					return this.oneField;
+				}
+		
+				set {
+					this.oneField = value;
+				}
+			}
+		
+			public AbstractNonEmpty ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.OneField));
+			}
+		}
+	}
+	
+	public interface IEmptyDerivedFromAbstract : IAbstractNonEmpty {
+	}
+	
+	public partial class EmptyDerivedFromAbstract : AbstractNonEmpty, IEmptyDerivedFromAbstract {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly EmptyDerivedFromAbstract DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the EmptyDerivedFromAbstract class.</summary>
+		protected EmptyDerivedFromAbstract(
+			System.Int32 identity,
+			System.Boolean oneField)
+			: base(
+				identity: identity,
+				oneField: oneField)
+		{
+			this.Validate();
+		}
+	
+		public static EmptyDerivedFromAbstract Create(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the OneField property set to the specified value.</summary>
+		public new EmptyDerivedFromAbstract WithOneField(System.Boolean value) {
+			return (EmptyDerivedFromAbstract)base.WithOneField(value);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override AbstractNonEmpty WithCore(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return this.WithFactory(
+				oneField: oneField);
+		}
+		
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public EmptyDerivedFromAbstract With(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			return (EmptyDerivedFromAbstract)this.WithCore(
+				oneField: oneField);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private EmptyDerivedFromAbstract WithFactory(
+			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(oneField.IsDefined && oneField.Value != this.OneField)) {
+				return new EmptyDerivedFromAbstract(
+					identity: identity.GetValueOrDefault(this.Identity),
+					oneField: oneField.GetValueOrDefault(this.OneField));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated EmptyDerivedFromAbstract whose fields are initialized with default values.</summary>
+		private static EmptyDerivedFromAbstract GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new EmptyDerivedFromAbstract(
+				default(System.Int32), 
+				template.OneField);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.Boolean OneField { get; set; }
+		}
+		
+		internal static EmptyDerivedFromAbstract CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : AbstractNonEmpty.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private EmptyDerivedFromAbstract immutable;
+		
+			internal Builder(EmptyDerivedFromAbstract immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new EmptyDerivedFromAbstract ToImmutable() {
 				return this.immutable = this.immutable;
 			}
 		}

@@ -48,9 +48,16 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(localName: Optional.For(value));
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public abstract XmlNode With(
+		public XmlNode With(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (XmlNode)this.WithCore(
+				localName: localName);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected abstract XmlNode WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>));
 	
 		protected internal System.Int32 Identity {
@@ -279,16 +286,27 @@ namespace ImmutableObjectGraph.Tests {
 		
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override XmlNode With(
+		protected override XmlNode WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return this.With(
+			return this.WithFactory(
 				localName: localName,
 				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
 				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>));
 		}
-			
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual XmlElement With(
+		public XmlElement With(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
+			return (XmlElement)this.WithCore(
+				localName: localName,
+				namespaceName: namespaceName,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual XmlElement WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
@@ -1023,19 +1041,32 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override XmlElement With(
+		protected override XmlElement WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
-			return this.With(
+			return this.WithFactory(
 				localName: localName,
 				namespaceName: namespaceName,
 				children: children,
 				content: default(ImmutableObjectGraph.Optional<System.String>));
 		}
-			
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual XmlElementWithContent With(
+		public XmlElementWithContent With(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (XmlElementWithContent)this.WithCore(
+				localName: localName,
+				namespaceName: namespaceName,
+				children: children,
+				content: content);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual XmlElementWithContent WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
@@ -1242,16 +1273,27 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override XmlNode With(
+		protected override XmlNode WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return this.With(
+			return this.WithFactory(
 				localName: localName,
 				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
 				value: default(ImmutableObjectGraph.Optional<System.String>));
 		}
-			
+		
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual XmlAttribute With(
+		public XmlAttribute With(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (XmlAttribute)this.WithCore(
+				localName: localName,
+				namespaceName: namespaceName,
+				value: value);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual XmlAttribute WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {

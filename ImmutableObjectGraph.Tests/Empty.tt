@@ -21,4 +21,11 @@
 
 	class EmptyDerivedFromNonEmptyBase : NonEmptyBase {
 	}
+
+	abstract class AbstractNonEmpty {
+		bool OneField;
+	}
+
+	class EmptyDerivedFromAbstract : AbstractNonEmpty {
+	}
 #>
