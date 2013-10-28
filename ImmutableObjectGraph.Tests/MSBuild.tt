@@ -1,0 +1,83 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "ImmutableObjectGraph.Tests";
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	class ElementLocation {
+		int column;
+		int line;
+		string file;
+		string locationString;
+	}
+
+	abstract class ProjectElement {
+		string condition;
+		ElementLocation conditionLocation;
+
+		string label;
+		ElementLocation labelLocation;
+
+		ElementLocation location;
+	}
+
+	abstract class ProjectElementContainer : ProjectElement {
+		ImmutableList<ProjectElement> children;
+	}
+
+	class ProjectRootElement : ProjectElementContainer {
+		string fullPath;
+		Encoding encoding;
+
+		string toolsVersion;
+		ElementLocation toolsVersionLocation;
+		
+		string defaultTargets;
+		ElementLocation defaultTargetsLocation;
+
+		string initialTargets;
+		ElementLocation initialTargetsLocation;
+
+		bool treatAsLocalProperty;
+		ElementLocation treatAsLocalPropertylocation;
+	}
+
+	class ProjectPropertyGroupElement : ProjectElementContainer {
+	}
+
+	class ProjectPropertyElement : ProjectElement {
+		string name;
+		string value;
+	}
+
+	class ProjectItemElement : ProjectElement {
+		string Exclude;
+		ElementLocation ExcludeLocation;
+
+		string Include;
+		ElementLocation IncludeLocation;
+
+		string ItemType;
+
+		string KeepDuplicates;
+		ElementLocation KeepDuplicatesLocation;
+
+		string KeepMetadata;
+		ElementLocation KeepMetadataLocation;
+
+		//[ImmutableObjectGraph.NotRecursiveAttribute]
+		//ImmutableList<ProjectMetadataElement> Metadata;
+
+		string Remove;
+		ElementLocation RemoveLocation;
+
+		string RemoveMetadata;
+		ElementLocation RemoveMetadataLocation;
+	}
+
+	class ProjectMetadataElement : ProjectElement {
+		string name;
+		string value;
+	}
+#>

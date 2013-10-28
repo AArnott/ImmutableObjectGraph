@@ -65,6 +65,7 @@
     <Compile Include="ImmutableDeque.cs" />
     <Compile Include="ImmutableDeque`1.cs" />
     <Compile Include="IRecursiveCollection.cs" />
+    <Compile Include="NotRecursiveAttribute.cs" />
     <Compile Include="Optional.cs" />
     <Compile Include="Optional`1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -238,7 +238,7 @@ protected class MetaType {
 	}
 
 	public MetaField RecursiveField {
-		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)); }
+		get { return this.LocalFields.SingleOrDefault(f => f.IsCollection && !f.IsDefinitelyNotRecursive && this.RootAncestorOrThisType.Type.IsAssignableFrom(f.ElementType)); }
 	}
 
 	public virtual MetaType RecursiveType {
@@ -450,6 +450,10 @@ protected class MetaType {
 
 		public bool IsRequired {
 			get { return this.Field.IsDefined(typeof(RequiredAttribute), false); }
+		}
+
+		public bool IsDefinitelyNotRecursive {
+			get { return this.Field.IsDefined(typeof(NotRecursiveAttribute), false); }
 		}
 
 		public bool IsCollection {
