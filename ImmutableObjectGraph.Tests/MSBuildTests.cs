@@ -15,11 +15,14 @@
 			Microsoft.Build.Construction.ProjectElementContainer pec;
 			Microsoft.Build.Construction.ProjectPropertyGroupElement ppge;
 			Microsoft.Build.Construction.ProjectPropertyElement ppe;
-			Microsoft.Build.Construction.ProjectMetadataElement pie;
+			Microsoft.Build.Construction.ProjectMetadataElement pme;
 			Microsoft.Build.Construction.ProjectItemGroupElement pige;
+			Microsoft.Build.Construction.ProjectItemElement pie;
 
 			ProjectRootElement ipre;
 			ProjectElementContainer ipec;
+			ProjectItemElement ipie;
+			
 			//ProjectPropertyGroupElement ippge;
 		}
 	}
