@@ -1,0 +1,24 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "ImmutableObjectGraph.Tests.NonRecursive";
+#>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	abstract class RootRecursive {
+	}
+
+	abstract class RecursiveContainer : RootRecursive {
+		ImmutableList<RootRecursive> children;
+	}
+
+	class ContainerOfNonRecursiveCollection : RootRecursive {
+		[ImmutableObjectGraph.NotRecursiveAttribute]
+		ImmutableList<NonRecursiveElement> Metadata;
+	}
+
+	class NonRecursiveElement : RootRecursive {
+		string name;
+		string value;
+	}
+#>

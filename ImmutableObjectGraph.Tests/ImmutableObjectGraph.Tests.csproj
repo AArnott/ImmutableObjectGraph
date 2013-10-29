@@ -62,6 +62,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="NonRecursive.generated.cs">
+      <DependentUpon>NonRecursive.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="MSBuildTests.cs" />
     <Compile Include="ProjectTree.generated.cs">
       <DependentUpon>ProjectTree.tt</DependentUpon>
@@ -133,6 +138,10 @@
     <None Include="AbstractClassFamilies.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AbstractClassFamilies.generated.cs</LastGenOutput>
+    </None>
+    <None Include="NonRecursive.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NonRecursive.generated.cs</LastGenOutput>
     </None>
     <None Include="ProjectTree.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
