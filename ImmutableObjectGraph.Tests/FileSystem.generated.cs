@@ -772,7 +772,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
 		public RootedFileSystemFile AddAttribute(System.String value) {
 			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.AddAttributes(value);
+			var mutatedLeaf = this.greenNode.AddAttribute(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
@@ -793,7 +793,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
 		public RootedFileSystemFile RemoveAttribute(System.String value) {
 			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.RemoveAttributes(value);
+			var mutatedLeaf = this.greenNode.RemoveAttribute(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
@@ -1670,7 +1670,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry> AddChild(RootedFileSystemEntry value) {
 			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.AddChildren(value.FileSystemEntry);
+			var mutatedLeaf = this.greenNode.AddChild(value.FileSystemEntry);
 			var newParent = this.NewSpine(mutatedLeaf);
 			var newChild = new RootedFileSystemEntry(value.FileSystemEntry, newParent.Root.FileSystemDirectory);
 			return new ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry>(newChild, newParent);
@@ -1693,7 +1693,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public RootedFileSystemDirectory RemoveChild(RootedFileSystemEntry value) {
 			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.RemoveChildren(value.FileSystemEntry);
+			var mutatedLeaf = this.greenNode.RemoveChild(value.FileSystemEntry);
 			return this.NewSpine(mutatedLeaf);
 		}
 		
@@ -1728,7 +1728,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Adds the specified element from the Children collection.</summary>
 		public ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry> AddChild(FileSystemEntry value) {
 			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.AddChildren(value);
+			var mutatedLeaf = this.greenNode.AddChild(value);
 			var newParent = this.NewSpine(mutatedLeaf);
 			var newChild = new RootedFileSystemEntry(value, newParent.Root.FileSystemDirectory);
 			return new ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry>(newChild, newParent);
@@ -1751,7 +1751,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Removes the specified element from the Children collection.</summary>
 		public RootedFileSystemDirectory RemoveChild(FileSystemEntry value) {
 			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.RemoveChildren(value);
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 		

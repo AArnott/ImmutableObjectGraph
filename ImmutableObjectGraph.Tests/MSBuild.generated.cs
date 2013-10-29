@@ -538,6 +538,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -553,6 +554,7 @@ namespace ImmutableObjectGraph.Tests {
 				    (!keepDuplicatesLocation.IsDefined || keepDuplicatesLocation.Value == that.KeepDuplicatesLocation) && 
 				    (!keepMetadata.IsDefined || keepMetadata.Value == that.KeepMetadata) && 
 				    (!keepMetadataLocation.IsDefined || keepMetadataLocation.Value == that.KeepMetadataLocation) && 
+				    (!metadata.IsDefined || metadata.Value == that.Metadata) && 
 				    (!remove.IsDefined || remove.Value == that.Remove) && 
 				    (!removeLocation.IsDefined || removeLocation.Value == that.RemoveLocation) && 
 				    (!removeMetadata.IsDefined || removeMetadata.Value == that.RemoveMetadata) && 
@@ -577,6 +579,7 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: keepDuplicatesLocation,
 				keepMetadata: keepMetadata,
 				keepMetadataLocation: keepMetadataLocation,
+				metadata: metadata,
 				remove: remove,
 				removeLocation: removeLocation,
 				removeMetadata: removeMetadata,
@@ -2856,6 +2859,7 @@ namespace ImmutableObjectGraph.Tests {
 		ElementLocation KeepDuplicatesLocation { get; }
 		System.String KeepMetadata { get; }
 		ElementLocation KeepMetadataLocation { get; }
+		System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; }
 		System.String Remove { get; }
 		ElementLocation RemoveLocation { get; }
 		System.String RemoveMetadata { get; }
@@ -2894,6 +2898,9 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ElementLocation keepMetadataLocation;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String remove;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -2922,6 +2929,7 @@ namespace ImmutableObjectGraph.Tests {
 			ElementLocation keepDuplicatesLocation,
 			System.String keepMetadata,
 			ElementLocation keepMetadataLocation,
+			System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata,
 			System.String remove,
 			ElementLocation removeLocation,
 			System.String removeMetadata,
@@ -2943,6 +2951,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.keepDuplicatesLocation = keepDuplicatesLocation;
 			this.keepMetadata = keepMetadata;
 			this.keepMetadataLocation = keepMetadataLocation;
+			this.metadata = metadata;
 			this.remove = remove;
 			this.removeLocation = removeLocation;
 			this.removeMetadata = removeMetadata;
@@ -2965,6 +2974,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -2985,6 +2995,7 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: Optional.For(keepDuplicatesLocation.GetValueOrDefault(DefaultInstance.KeepDuplicatesLocation)),
 				keepMetadata: Optional.For(keepMetadata.GetValueOrDefault(DefaultInstance.KeepMetadata)),
 				keepMetadataLocation: Optional.For(keepMetadataLocation.GetValueOrDefault(DefaultInstance.KeepMetadataLocation)),
+				metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
 				remove: Optional.For(remove.GetValueOrDefault(DefaultInstance.Remove)),
 				removeLocation: Optional.For(removeLocation.GetValueOrDefault(DefaultInstance.RemoveLocation)),
 				removeMetadata: Optional.For(removeMetadata.GetValueOrDefault(DefaultInstance.RemoveMetadata)),
@@ -3026,6 +3037,10 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public ElementLocation KeepMetadataLocation {
 			get { return this.keepMetadataLocation; }
+		}
+	
+		public System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata {
+			get { return this.metadata; }
 		}
 	
 		public System.String Remove {
@@ -3150,6 +3165,61 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(keepMetadataLocation: Optional.For(value));
 		}
 		
+		/// <summary>Returns a new instance with the Metadata property set to the specified value.</summary>
+		public ProjectItemElement WithMetadata(System.Collections.Immutable.ImmutableList<ProjectMetadataElement> value) {
+			if (value == this.Metadata) {
+				return this;
+			}
+		
+			return this.With(metadata: Optional.For(value));
+		}
+		
+		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
+		public ProjectItemElement WithMetadataElements(params ProjectMetadataElement[] values) {
+			return this.With(metadata: this.Metadata.ResetContents(values));
+		}
+		
+		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
+		public ProjectItemElement WithMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
+			return this.With(metadata: this.Metadata.ResetContents(values));
+		}
+		
+		/// <summary>Adds the specified elements from the Metadata collection.</summary>
+		public ProjectItemElement AddMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
+			return this.With(metadata: this.Metadata.AddRange(values));
+		}
+		
+		/// <summary>Adds the specified elements from the Metadata collection.</summary>
+		public ProjectItemElement AddMetadataElements(params ProjectMetadataElement[] values) {
+			return this.With(metadata: this.Metadata.AddRange(values));
+		}
+		
+		/// <summary>Adds the specified element from the Metadata collection.</summary>
+		public ProjectItemElement AddMetadataElement(ProjectMetadataElement value) {
+			return this.With(metadata: this.Metadata.Add(value));
+		}
+		
+		/// <summary>Removes the specified elements from the Metadata collection.</summary>
+		public ProjectItemElement RemoveMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
+			return this.With(metadata: this.Metadata.RemoveRange(values));
+		}
+		
+		/// <summary>Removes the specified elements from the Metadata collection.</summary>
+		public ProjectItemElement RemoveMetadataElements(params ProjectMetadataElement[] values) {
+			return this.With(metadata: this.Metadata.RemoveRange(values));
+		}
+		
+		/// <summary>Removes the specified element from the Metadata collection.</summary>
+		public ProjectItemElement RemoveMetadataElement(ProjectMetadataElement value) {
+			return this.With(metadata: this.Metadata.Remove(value));
+		}
+		
+		/// <summary>Clears all elements from the Metadata collection.</summary>
+		public ProjectItemElement RemoveMetadataElements() {
+			return this.With(metadata: this.Metadata.Clear());
+		}
+		
+		
 		/// <summary>Returns a new instance with the Remove property set to the specified value.</summary>
 		public ProjectItemElement WithRemove(System.String value) {
 			if (value == this.Remove) {
@@ -3217,6 +3287,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -3236,6 +3307,7 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: keepDuplicatesLocation,
 				keepMetadata: keepMetadata,
 				keepMetadataLocation: keepMetadataLocation,
+				metadata: metadata,
 				remove: remove,
 				removeLocation: removeLocation,
 				removeMetadata: removeMetadata,
@@ -3258,6 +3330,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -3278,6 +3351,7 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: Optional.For(keepDuplicatesLocation.GetValueOrDefault(this.KeepDuplicatesLocation)),
 				keepMetadata: Optional.For(keepMetadata.GetValueOrDefault(this.KeepMetadata)),
 				keepMetadataLocation: Optional.For(keepMetadataLocation.GetValueOrDefault(this.KeepMetadataLocation)),
+				metadata: Optional.For(metadata.GetValueOrDefault(this.Metadata)),
 				remove: Optional.For(remove.GetValueOrDefault(this.Remove)),
 				removeLocation: Optional.For(removeLocation.GetValueOrDefault(this.RemoveLocation)),
 				removeMetadata: Optional.For(removeMetadata.GetValueOrDefault(this.RemoveMetadata)),
@@ -3301,6 +3375,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -3322,6 +3397,7 @@ namespace ImmutableObjectGraph.Tests {
 				(keepDuplicatesLocation.IsDefined && keepDuplicatesLocation.Value != this.KeepDuplicatesLocation) || 
 				(keepMetadata.IsDefined && keepMetadata.Value != this.KeepMetadata) || 
 				(keepMetadataLocation.IsDefined && keepMetadataLocation.Value != this.KeepMetadataLocation) || 
+				(metadata.IsDefined && metadata.Value != this.Metadata) || 
 				(remove.IsDefined && remove.Value != this.Remove) || 
 				(removeLocation.IsDefined && removeLocation.Value != this.RemoveLocation) || 
 				(removeMetadata.IsDefined && removeMetadata.Value != this.RemoveMetadata) || 
@@ -3342,6 +3418,7 @@ namespace ImmutableObjectGraph.Tests {
 					keepDuplicatesLocation: keepDuplicatesLocation.GetValueOrDefault(this.KeepDuplicatesLocation),
 					keepMetadata: keepMetadata.GetValueOrDefault(this.KeepMetadata),
 					keepMetadataLocation: keepMetadataLocation.GetValueOrDefault(this.KeepMetadataLocation),
+					metadata: metadata.GetValueOrDefault(this.Metadata),
 					remove: remove.GetValueOrDefault(this.Remove),
 					removeLocation: removeLocation.GetValueOrDefault(this.RemoveLocation),
 					removeMetadata: removeMetadata.GetValueOrDefault(this.RemoveMetadata),
@@ -3379,6 +3456,7 @@ namespace ImmutableObjectGraph.Tests {
 				template.KeepDuplicatesLocation, 
 				template.KeepMetadata, 
 				template.KeepMetadataLocation, 
+				template.Metadata, 
 				template.Remove, 
 				template.RemoveLocation, 
 				template.RemoveMetadata, 
@@ -3415,6 +3493,8 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal ElementLocation KeepMetadataLocation { get; set; }
 	
+			internal System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; set; }
+	
 			internal System.String Remove { get; set; }
 	
 			internal ElementLocation RemoveLocation { get; set; }
@@ -3439,6 +3519,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 				ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -3463,6 +3544,7 @@ namespace ImmutableObjectGraph.Tests {
 					keepDuplicatesLocation: Optional.For(keepDuplicatesLocation.GetValueOrDefault(DefaultInstance.KeepDuplicatesLocation)),
 					keepMetadata: Optional.For(keepMetadata.GetValueOrDefault(DefaultInstance.KeepMetadata)),
 					keepMetadataLocation: Optional.For(keepMetadataLocation.GetValueOrDefault(DefaultInstance.KeepMetadataLocation)),
+					metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
 					remove: Optional.For(remove.GetValueOrDefault(DefaultInstance.Remove)),
 					removeLocation: Optional.For(removeLocation.GetValueOrDefault(DefaultInstance.RemoveLocation)),
 					removeMetadata: Optional.For(removeMetadata.GetValueOrDefault(DefaultInstance.RemoveMetadata)),
@@ -3504,6 +3586,9 @@ namespace ImmutableObjectGraph.Tests {
 		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> keepMetadataLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder> metadata;
 		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String remove;
@@ -3635,6 +3720,20 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
+			public System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder Metadata {
+				get {
+					if (!this.metadata.IsDefined) {
+						this.metadata = this.immutable.metadata != null ? this.immutable.metadata.ToBuilder() : null;
+					}
+		
+					return this.metadata.Value;
+				}
+		
+				set {
+					this.metadata = value;
+				}
+			}
+		
 			public System.String Remove {
 				get {
 					return this.remove;
@@ -3691,6 +3790,7 @@ namespace ImmutableObjectGraph.Tests {
 				var includeLocation = this.includeLocation.IsDefined ? (this.includeLocation.Value != null ? this.includeLocation.Value.ToImmutable() : null) : this.immutable.IncludeLocation;
 				var keepDuplicatesLocation = this.keepDuplicatesLocation.IsDefined ? (this.keepDuplicatesLocation.Value != null ? this.keepDuplicatesLocation.Value.ToImmutable() : null) : this.immutable.KeepDuplicatesLocation;
 				var keepMetadataLocation = this.keepMetadataLocation.IsDefined ? (this.keepMetadataLocation.Value != null ? this.keepMetadataLocation.Value.ToImmutable() : null) : this.immutable.KeepMetadataLocation;
+				var metadata = this.metadata.IsDefined ? (this.metadata.Value != null ? this.metadata.Value.ToImmutable() : null) : this.immutable.Metadata;
 				var removeLocation = this.removeLocation.IsDefined ? (this.removeLocation.Value != null ? this.removeLocation.Value.ToImmutable() : null) : this.immutable.RemoveLocation;
 				var removeMetadataLocation = this.removeMetadataLocation.IsDefined ? (this.removeMetadataLocation.Value != null ? this.removeMetadataLocation.Value.ToImmutable() : null) : this.immutable.RemoveMetadataLocation;
 				return this.immutable = this.immutable.With(
@@ -3708,6 +3808,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(keepDuplicatesLocation),
 					ImmutableObjectGraph.Optional.For(this.KeepMetadata),
 					ImmutableObjectGraph.Optional.For(keepMetadataLocation),
+					ImmutableObjectGraph.Optional.For(metadata),
 					ImmutableObjectGraph.Optional.For(this.Remove),
 					ImmutableObjectGraph.Optional.For(removeLocation),
 					ImmutableObjectGraph.Optional.For(this.RemoveMetadata),

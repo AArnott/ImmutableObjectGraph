@@ -510,6 +510,10 @@ protected class MetaType {
 		public virtual string ArgumentReference {
 			get { return this.NameCamelCase; }
 		}
+
+		public DistinguisherAttribute Distinguisher {
+			get { return this.Field.GetCustomAttributes(typeof(DistinguisherAttribute), false).FirstOrDefault() as DistinguisherAttribute; }
+		}
 	}
 
 	internal class SpecialFieldInfo : FieldInfo {

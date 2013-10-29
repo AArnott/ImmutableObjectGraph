@@ -66,8 +66,9 @@
 		string KeepMetadata;
 		ElementLocation KeepMetadataLocation;
 
-		//[ImmutableObjectGraph.NotRecursiveAttribute]
-		//ImmutableList<ProjectMetadataElement> Metadata;
+		[ImmutableObjectGraph.NotRecursive]
+		[ImmutableObjectGraph.Distinguisher(CollectionModifierMethodSuffix = "Element")] // avoid collision with RemoveMetadata property
+		ImmutableList<ProjectMetadataElement> Metadata;
 
 		string Remove;
 		ElementLocation RemoveLocation;
