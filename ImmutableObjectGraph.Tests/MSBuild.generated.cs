@@ -703,6 +703,389 @@ namespace ImmutableObjectGraph.Tests {
 				content: content);
 		}
 		
+		public virtual ProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectImportElement that = this as ProjectImportElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectImportElement))) {
+				if ((!project.IsDefined || project.Value == that.Project) && 
+				    (!projectLocation.IsDefined || projectLocation.Value == that.ProjectLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectImportElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				project: project,
+				projectLocation: projectLocation);
+		}
+		
+		public virtual ProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			ProjectImportGroupElement that = this as ProjectImportGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectImportGroupElement))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return ProjectImportGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children);
+		}
+		
+		public virtual ProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			ProjectItemDefinitionElement that = this as ProjectItemDefinitionElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemDefinitionElement))) {
+				if ((!children.IsDefined || children.Value == that.Children) && 
+				    (!itemType.IsDefined || itemType.Value == that.ItemType) && 
+				    (!metadata.IsDefined || metadata.Value == that.Metadata)) {
+					return that;
+				}
+			}
+		
+			return ProjectItemDefinitionElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children,
+				itemType: itemType,
+				metadata: metadata);
+		}
+		
+		public virtual ProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			ProjectItemDefinitionGroupElement that = this as ProjectItemDefinitionGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemDefinitionGroupElement))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return ProjectItemDefinitionGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children);
+		}
+		
+		public virtual ProjectOnErrorElement ToProjectOnErrorElement() {
+			ProjectOnErrorElement that = this as ProjectOnErrorElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectOnErrorElement))) {
+				return that;
+			}
+		
+			return ProjectOnErrorElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity);
+		}
+		
+		public virtual ProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectOutputElement that = this as ProjectOutputElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectOutputElement))) {
+				if ((!isOutputItem.IsDefined || isOutputItem.Value == that.IsOutputItem) && 
+				    (!isOutputProperty.IsDefined || isOutputProperty.Value == that.IsOutputProperty) && 
+				    (!itemType.IsDefined || itemType.Value == that.ItemType) && 
+				    (!itemTypeLocation.IsDefined || itemTypeLocation.Value == that.ItemTypeLocation) && 
+				    (!propertyName.IsDefined || propertyName.Value == that.PropertyName) && 
+				    (!propertyNameLocation.IsDefined || propertyNameLocation.Value == that.PropertyNameLocation) && 
+				    (!taskParameter.IsDefined || taskParameter.Value == that.TaskParameter) && 
+				    (!taskParameterLocation.IsDefined || taskParameterLocation.Value == that.TaskParameterLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectOutputElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				isOutputItem: isOutputItem,
+				isOutputProperty: isOutputProperty,
+				itemType: itemType,
+				itemTypeLocation: itemTypeLocation,
+				propertyName: propertyName,
+				propertyNameLocation: propertyNameLocation,
+				taskParameter: taskParameter,
+				taskParameterLocation: taskParameterLocation);
+		}
+		
+		public virtual ProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectTargetElement that = this as ProjectTargetElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectTargetElement))) {
+				if ((!children.IsDefined || children.Value == that.Children) && 
+				    (!afterTargets.IsDefined || afterTargets.Value == that.AfterTargets) && 
+				    (!afterTargetsLocation.IsDefined || afterTargetsLocation.Value == that.AfterTargetsLocation) && 
+				    (!beforeTargets.IsDefined || beforeTargets.Value == that.BeforeTargets) && 
+				    (!beforeTargetsLocation.IsDefined || beforeTargetsLocation.Value == that.BeforeTargetsLocation) && 
+				    (!dependsOnTargets.IsDefined || dependsOnTargets.Value == that.DependsOnTargets) && 
+				    (!dependsOnTargetsLocation.IsDefined || dependsOnTargetsLocation.Value == that.DependsOnTargetsLocation) && 
+				    (!inputs.IsDefined || inputs.Value == that.Inputs) && 
+				    (!inputsLocation.IsDefined || inputsLocation.Value == that.InputsLocation) && 
+				    (!keepDuplicateOutputs.IsDefined || keepDuplicateOutputs.Value == that.KeepDuplicateOutputs) && 
+				    (!keepDuplicateOutputsLocation.IsDefined || keepDuplicateOutputsLocation.Value == that.KeepDuplicateOutputsLocation) && 
+				    (!name.IsDefined || name.Value == that.Name) && 
+				    (!nameLocation.IsDefined || nameLocation.Value == that.NameLocation) && 
+				    (!outputs.IsDefined || outputs.Value == that.Outputs) && 
+				    (!outputsLocation.IsDefined || outputsLocation.Value == that.OutputsLocation) && 
+				    (!returns.IsDefined || returns.Value == that.Returns) && 
+				    (!returnsLocation.IsDefined || returnsLocation.Value == that.ReturnsLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectTargetElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children,
+				afterTargets: afterTargets,
+				afterTargetsLocation: afterTargetsLocation,
+				beforeTargets: beforeTargets,
+				beforeTargetsLocation: beforeTargetsLocation,
+				dependsOnTargets: dependsOnTargets,
+				dependsOnTargetsLocation: dependsOnTargetsLocation,
+				inputs: inputs,
+				inputsLocation: inputsLocation,
+				keepDuplicateOutputs: keepDuplicateOutputs,
+				keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+				name: name,
+				nameLocation: nameLocation,
+				outputs: outputs,
+				outputsLocation: outputsLocation,
+				returns: returns,
+				returnsLocation: returnsLocation);
+		}
+		
+		public virtual ProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ProjectTaskElement that = this as ProjectTaskElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectTaskElement))) {
+				if ((!children.IsDefined || children.Value == that.Children) && 
+				    (!continueOnError.IsDefined || continueOnError.Value == that.ContinueOnError) && 
+				    (!continueOnErrorLocation.IsDefined || continueOnErrorLocation.Value == that.ContinueOnErrorLocation) && 
+				    (!mSBuildArchitecture.IsDefined || mSBuildArchitecture.Value == that.MSBuildArchitecture) && 
+				    (!mSBuildArchitectureLocation.IsDefined || mSBuildArchitectureLocation.Value == that.MSBuildArchitectureLocation) && 
+				    (!mSBuildRuntime.IsDefined || mSBuildRuntime.Value == that.MSBuildRuntime) && 
+				    (!mSBuildRuntimeLocation.IsDefined || mSBuildRuntimeLocation.Value == that.MSBuildRuntimeLocation) && 
+				    (!name.IsDefined || name.Value == that.Name)) {
+					return that;
+				}
+			}
+		
+			return ProjectTaskElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children,
+				continueOnError: continueOnError,
+				continueOnErrorLocation: continueOnErrorLocation,
+				mSBuildArchitecture: mSBuildArchitecture,
+				mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+				mSBuildRuntime: mSBuildRuntime,
+				mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+				name: name);
+		}
+		
+		public virtual ProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ProjectUsingTaskBodyElement that = this as ProjectUsingTaskBodyElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectUsingTaskBodyElement))) {
+				if ((!evaluate.IsDefined || evaluate.Value == that.Evaluate) && 
+				    (!evaluateLocation.IsDefined || evaluateLocation.Value == that.EvaluateLocation) && 
+				    (!taskBody.IsDefined || taskBody.Value == that.TaskBody)) {
+					return that;
+				}
+			}
+		
+			return ProjectUsingTaskBodyElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				evaluate: evaluate,
+				evaluateLocation: evaluateLocation,
+				taskBody: taskBody);
+		}
+		
+		public virtual ProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectUsingTaskElement that = this as ProjectUsingTaskElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectUsingTaskElement))) {
+				if ((!children.IsDefined || children.Value == that.Children) && 
+				    (!architecture.IsDefined || architecture.Value == that.Architecture) && 
+				    (!architectureLocation.IsDefined || architectureLocation.Value == that.ArchitectureLocation) && 
+				    (!assemblyFile.IsDefined || assemblyFile.Value == that.AssemblyFile) && 
+				    (!assemblyFileLocation.IsDefined || assemblyFileLocation.Value == that.AssemblyFileLocation) && 
+				    (!assemblyName.IsDefined || assemblyName.Value == that.AssemblyName) && 
+				    (!assemblyNameLocation.IsDefined || assemblyNameLocation.Value == that.AssemblyNameLocation) && 
+				    (!runtime.IsDefined || runtime.Value == that.Runtime) && 
+				    (!runtimeLocation.IsDefined || runtimeLocation.Value == that.RuntimeLocation) && 
+				    (!taskFactory.IsDefined || taskFactory.Value == that.TaskFactory) && 
+				    (!taskFactoryLocation.IsDefined || taskFactoryLocation.Value == that.TaskFactoryLocation) && 
+				    (!taskName.IsDefined || taskName.Value == that.TaskName) && 
+				    (!taskNameLocation.IsDefined || taskNameLocation.Value == that.TaskNameLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectUsingTaskElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children,
+				architecture: architecture,
+				architectureLocation: architectureLocation,
+				assemblyFile: assemblyFile,
+				assemblyFileLocation: assemblyFileLocation,
+				assemblyName: assemblyName,
+				assemblyNameLocation: assemblyNameLocation,
+				runtime: runtime,
+				runtimeLocation: runtimeLocation,
+				taskFactory: taskFactory,
+				taskFactoryLocation: taskFactoryLocation,
+				taskName: taskName,
+				taskNameLocation: taskNameLocation);
+		}
+		
+		public virtual ProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectUsingTaskParameterElement that = this as ProjectUsingTaskParameterElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectUsingTaskParameterElement))) {
+				if ((!name.IsDefined || name.Value == that.Name) && 
+				    (!output.IsDefined || output.Value == that.Output) && 
+				    (!outputLocation.IsDefined || outputLocation.Value == that.OutputLocation) && 
+				    (!parameterType.IsDefined || parameterType.Value == that.ParameterType) && 
+				    (!parameterTypeLocation.IsDefined || parameterTypeLocation.Value == that.ParameterTypeLocation) && 
+				    (!required.IsDefined || required.Value == that.Required) && 
+				    (!requiredLocation.IsDefined || requiredLocation.Value == that.RequiredLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectUsingTaskParameterElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				name: name,
+				output: output,
+				outputLocation: outputLocation,
+				parameterType: parameterType,
+				parameterTypeLocation: parameterTypeLocation,
+				required: required,
+				requiredLocation: requiredLocation);
+		}
+		
+		public virtual UsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			UsingTaskParameterGroupElement that = this as UsingTaskParameterGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(UsingTaskParameterGroupElement))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return UsingTaskParameterGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children);
+		}
+		
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
@@ -1580,6 +1963,349 @@ namespace ImmutableObjectGraph.Tests {
 		public override ProjectWhenElement ToProjectWhenElement(
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			return base.ToProjectWhenElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)));
+		}
+		
+		public virtual ProjectImportGroupElement ToProjectImportGroupElement() {
+			ProjectImportGroupElement that = this as ProjectImportGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectImportGroupElement))) {
+				return that;
+			}
+		
+			return ProjectImportGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
+		}
+		
+		public override ProjectImportGroupElement ToProjectImportGroupElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return base.ToProjectImportGroupElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)));
+		}
+		
+		public virtual ProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			ProjectItemDefinitionElement that = this as ProjectItemDefinitionElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemDefinitionElement))) {
+				if ((!itemType.IsDefined || itemType.Value == that.ItemType) && 
+				    (!metadata.IsDefined || metadata.Value == that.Metadata)) {
+					return that;
+				}
+			}
+		
+			return ProjectItemDefinitionElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity,
+				itemType: itemType,
+				metadata: metadata);
+		}
+		
+		public override ProjectItemDefinitionElement ToProjectItemDefinitionElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			return base.ToProjectItemDefinitionElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)),
+					itemType: itemType,
+					metadata: metadata);
+		}
+		
+		public virtual ProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			ProjectItemDefinitionGroupElement that = this as ProjectItemDefinitionGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemDefinitionGroupElement))) {
+				return that;
+			}
+		
+			return ProjectItemDefinitionGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
+		}
+		
+		public override ProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return base.ToProjectItemDefinitionGroupElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)));
+		}
+		
+		public virtual ProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectTargetElement that = this as ProjectTargetElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectTargetElement))) {
+				if ((!afterTargets.IsDefined || afterTargets.Value == that.AfterTargets) && 
+				    (!afterTargetsLocation.IsDefined || afterTargetsLocation.Value == that.AfterTargetsLocation) && 
+				    (!beforeTargets.IsDefined || beforeTargets.Value == that.BeforeTargets) && 
+				    (!beforeTargetsLocation.IsDefined || beforeTargetsLocation.Value == that.BeforeTargetsLocation) && 
+				    (!dependsOnTargets.IsDefined || dependsOnTargets.Value == that.DependsOnTargets) && 
+				    (!dependsOnTargetsLocation.IsDefined || dependsOnTargetsLocation.Value == that.DependsOnTargetsLocation) && 
+				    (!inputs.IsDefined || inputs.Value == that.Inputs) && 
+				    (!inputsLocation.IsDefined || inputsLocation.Value == that.InputsLocation) && 
+				    (!keepDuplicateOutputs.IsDefined || keepDuplicateOutputs.Value == that.KeepDuplicateOutputs) && 
+				    (!keepDuplicateOutputsLocation.IsDefined || keepDuplicateOutputsLocation.Value == that.KeepDuplicateOutputsLocation) && 
+				    (!name.IsDefined || name.Value == that.Name) && 
+				    (!nameLocation.IsDefined || nameLocation.Value == that.NameLocation) && 
+				    (!outputs.IsDefined || outputs.Value == that.Outputs) && 
+				    (!outputsLocation.IsDefined || outputsLocation.Value == that.OutputsLocation) && 
+				    (!returns.IsDefined || returns.Value == that.Returns) && 
+				    (!returnsLocation.IsDefined || returnsLocation.Value == that.ReturnsLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectTargetElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity,
+				afterTargets: afterTargets,
+				afterTargetsLocation: afterTargetsLocation,
+				beforeTargets: beforeTargets,
+				beforeTargetsLocation: beforeTargetsLocation,
+				dependsOnTargets: dependsOnTargets,
+				dependsOnTargetsLocation: dependsOnTargetsLocation,
+				inputs: inputs,
+				inputsLocation: inputsLocation,
+				keepDuplicateOutputs: keepDuplicateOutputs,
+				keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+				name: name,
+				nameLocation: nameLocation,
+				outputs: outputs,
+				outputsLocation: outputsLocation,
+				returns: returns,
+				returnsLocation: returnsLocation);
+		}
+		
+		public override ProjectTargetElement ToProjectTargetElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return base.ToProjectTargetElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+		}
+		
+		public virtual ProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ProjectTaskElement that = this as ProjectTaskElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectTaskElement))) {
+				if ((!continueOnError.IsDefined || continueOnError.Value == that.ContinueOnError) && 
+				    (!continueOnErrorLocation.IsDefined || continueOnErrorLocation.Value == that.ContinueOnErrorLocation) && 
+				    (!mSBuildArchitecture.IsDefined || mSBuildArchitecture.Value == that.MSBuildArchitecture) && 
+				    (!mSBuildArchitectureLocation.IsDefined || mSBuildArchitectureLocation.Value == that.MSBuildArchitectureLocation) && 
+				    (!mSBuildRuntime.IsDefined || mSBuildRuntime.Value == that.MSBuildRuntime) && 
+				    (!mSBuildRuntimeLocation.IsDefined || mSBuildRuntimeLocation.Value == that.MSBuildRuntimeLocation) && 
+				    (!name.IsDefined || name.Value == that.Name)) {
+					return that;
+				}
+			}
+		
+			return ProjectTaskElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity,
+				continueOnError: continueOnError,
+				continueOnErrorLocation: continueOnErrorLocation,
+				mSBuildArchitecture: mSBuildArchitecture,
+				mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+				mSBuildRuntime: mSBuildRuntime,
+				mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+				name: name);
+		}
+		
+		public override ProjectTaskElement ToProjectTaskElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return base.ToProjectTaskElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+		}
+		
+		public virtual ProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectUsingTaskElement that = this as ProjectUsingTaskElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectUsingTaskElement))) {
+				if ((!architecture.IsDefined || architecture.Value == that.Architecture) && 
+				    (!architectureLocation.IsDefined || architectureLocation.Value == that.ArchitectureLocation) && 
+				    (!assemblyFile.IsDefined || assemblyFile.Value == that.AssemblyFile) && 
+				    (!assemblyFileLocation.IsDefined || assemblyFileLocation.Value == that.AssemblyFileLocation) && 
+				    (!assemblyName.IsDefined || assemblyName.Value == that.AssemblyName) && 
+				    (!assemblyNameLocation.IsDefined || assemblyNameLocation.Value == that.AssemblyNameLocation) && 
+				    (!runtime.IsDefined || runtime.Value == that.Runtime) && 
+				    (!runtimeLocation.IsDefined || runtimeLocation.Value == that.RuntimeLocation) && 
+				    (!taskFactory.IsDefined || taskFactory.Value == that.TaskFactory) && 
+				    (!taskFactoryLocation.IsDefined || taskFactoryLocation.Value == that.TaskFactoryLocation) && 
+				    (!taskName.IsDefined || taskName.Value == that.TaskName) && 
+				    (!taskNameLocation.IsDefined || taskNameLocation.Value == that.TaskNameLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectUsingTaskElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity,
+				architecture: architecture,
+				architectureLocation: architectureLocation,
+				assemblyFile: assemblyFile,
+				assemblyFileLocation: assemblyFileLocation,
+				assemblyName: assemblyName,
+				assemblyNameLocation: assemblyNameLocation,
+				runtime: runtime,
+				runtimeLocation: runtimeLocation,
+				taskFactory: taskFactory,
+				taskFactoryLocation: taskFactoryLocation,
+				taskName: taskName,
+				taskNameLocation: taskNameLocation);
+		}
+		
+		public override ProjectUsingTaskElement ToProjectUsingTaskElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return base.ToProjectUsingTaskElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+		}
+		
+		public virtual UsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			UsingTaskParameterGroupElement that = this as UsingTaskParameterGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(UsingTaskParameterGroupElement))) {
+				return that;
+			}
+		
+			return UsingTaskParameterGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
+		}
+		
+		public override UsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return base.ToUsingTaskParameterGroupElement(
 					children: Optional.For(children.GetValueOrDefault(this.Children)));
 		}
 		
@@ -5660,6 +6386,6007 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(labelLocation),
 					ImmutableObjectGraph.Optional.For(location),
 					ImmutableObjectGraph.Optional.For(this.Content));
+			}
+		}
+	}
+	
+	public interface IProjectImportElement : IProjectElement {
+		System.String Project { get; }
+		ElementLocation ProjectLocation { get; }
+	}
+	
+	public partial class ProjectImportElement : ProjectElement, IProjectImportElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectImportElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String project;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation projectLocation;
+	
+		/// <summary>Initializes a new instance of the ProjectImportElement class.</summary>
+		protected ProjectImportElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.String project,
+			ElementLocation projectLocation)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location)
+		{
+			this.project = project;
+			this.projectLocation = projectLocation;
+			this.Validate();
+		}
+	
+		public static ProjectImportElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				project: Optional.For(project.GetValueOrDefault(DefaultInstance.Project)),
+				projectLocation: Optional.For(projectLocation.GetValueOrDefault(DefaultInstance.ProjectLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String Project {
+			get { return this.project; }
+		}
+	
+		public ElementLocation ProjectLocation {
+			get { return this.projectLocation; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectImportElement WithCondition(System.String value) {
+			return (ProjectImportElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectImportElement WithConditionLocation(ElementLocation value) {
+			return (ProjectImportElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectImportElement WithLabel(System.String value) {
+			return (ProjectImportElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectImportElement WithLabelLocation(ElementLocation value) {
+			return (ProjectImportElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectImportElement WithLocation(ElementLocation value) {
+			return (ProjectImportElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Project property set to the specified value.</summary>
+		public ProjectImportElement WithProject(System.String value) {
+			if (value == this.Project) {
+				return this;
+			}
+		
+			return this.With(project: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ProjectLocation property set to the specified value.</summary>
+		public ProjectImportElement WithProjectLocation(ElementLocation value) {
+			if (value == this.ProjectLocation) {
+				return this;
+			}
+		
+			return this.With(projectLocation: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectImportElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return (ProjectImportElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				project: project,
+				projectLocation: projectLocation);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectImportElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				project: Optional.For(project.GetValueOrDefault(this.Project)),
+				projectLocation: Optional.For(projectLocation.GetValueOrDefault(this.ProjectLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectImportElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(project.IsDefined && project.Value != this.Project) || 
+				(projectLocation.IsDefined && projectLocation.Value != this.ProjectLocation)) {
+				return new ProjectImportElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					project: project.GetValueOrDefault(this.Project),
+					projectLocation: projectLocation.GetValueOrDefault(this.ProjectLocation));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectImportElement whose fields are initialized with default values.</summary>
+		private static ProjectImportElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectImportElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Project, 
+				template.ProjectLocation);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.String Project { get; set; }
+	
+			internal ElementLocation ProjectLocation { get; set; }
+		}
+		
+		internal static ProjectImportElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					project: Optional.For(project.GetValueOrDefault(DefaultInstance.Project)),
+					projectLocation: Optional.For(projectLocation.GetValueOrDefault(DefaultInstance.ProjectLocation)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectImportElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String project;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> projectLocation;
+		
+			internal Builder(ProjectImportElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.project = immutable.Project;
+			}
+		
+			public System.String Project {
+				get {
+					return this.project;
+				}
+		
+				set {
+					this.project = value;
+				}
+			}
+		
+			public ElementLocation.Builder ProjectLocation {
+				get {
+					if (!this.projectLocation.IsDefined) {
+						this.projectLocation = this.immutable.projectLocation != null ? this.immutable.projectLocation.ToBuilder() : null;
+					}
+		
+					return this.projectLocation.Value;
+				}
+		
+				set {
+					this.projectLocation = value;
+				}
+			}
+		
+			public new ProjectImportElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var projectLocation = this.projectLocation.IsDefined ? (this.projectLocation.Value != null ? this.projectLocation.Value.ToImmutable() : null) : this.immutable.ProjectLocation;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(this.Project),
+					ImmutableObjectGraph.Optional.For(projectLocation));
+			}
+		}
+	}
+	
+	public interface IProjectImportGroupElement : IProjectElementContainer {
+	}
+	
+	public partial class ProjectImportGroupElement : ProjectElementContainer, IProjectImportGroupElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectImportGroupElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ProjectImportGroupElement class.</summary>
+		protected ProjectImportGroupElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.Validate();
+		}
+	
+		public static ProjectImportGroupElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectImportGroupElement WithCondition(System.String value) {
+			return (ProjectImportGroupElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectImportGroupElement WithConditionLocation(ElementLocation value) {
+			return (ProjectImportGroupElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectImportGroupElement WithLabel(System.String value) {
+			return (ProjectImportGroupElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectImportGroupElement WithLabelLocation(ElementLocation value) {
+			return (ProjectImportGroupElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectImportGroupElement WithLocation(ElementLocation value) {
+			return (ProjectImportGroupElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectImportGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectImportGroupElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectImportGroupElement WithChildren(params ProjectElement[] values) {
+			return (ProjectImportGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectImportGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectImportGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectImportGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectImportGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectImportGroupElement AddChildren(params ProjectElement[] values) {
+			return (ProjectImportGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectImportGroupElement AddChild(ProjectElement value) {
+			return (ProjectImportGroupElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectImportGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectImportGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectImportGroupElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectImportGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectImportGroupElement RemoveChild(ProjectElement value) {
+			return (ProjectImportGroupElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectImportGroupElement RemoveChildren() {
+			return (ProjectImportGroupElement)base.RemoveChildren();
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectImportGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return (ProjectImportGroupElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectImportGroupElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children)) {
+				return new ProjectImportGroupElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectImportGroupElement whose fields are initialized with default values.</summary>
+		private static ProjectImportGroupElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectImportGroupElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		internal static ProjectImportGroupElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectImportGroupElement immutable;
+		
+			internal Builder(ProjectImportGroupElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new ProjectImportGroupElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IProjectItemDefinitionElement : IProjectElementContainer {
+		System.String ItemType { get; }
+		System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; }
+	}
+	
+	public partial class ProjectItemDefinitionElement : ProjectElementContainer, IProjectItemDefinitionElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectItemDefinitionElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String itemType;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata;
+	
+		/// <summary>Initializes a new instance of the ProjectItemDefinitionElement class.</summary>
+		protected ProjectItemDefinitionElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			System.String itemType,
+			System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.itemType = itemType;
+			this.metadata = metadata;
+			this.Validate();
+		}
+	
+		public static ProjectItemDefinitionElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				itemType: Optional.For(itemType.GetValueOrDefault(DefaultInstance.ItemType)),
+				metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String ItemType {
+			get { return this.itemType; }
+		}
+	
+		public System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata {
+			get { return this.metadata; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectItemDefinitionElement WithCondition(System.String value) {
+			return (ProjectItemDefinitionElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectItemDefinitionElement WithConditionLocation(ElementLocation value) {
+			return (ProjectItemDefinitionElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectItemDefinitionElement WithLabel(System.String value) {
+			return (ProjectItemDefinitionElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectItemDefinitionElement WithLabelLocation(ElementLocation value) {
+			return (ProjectItemDefinitionElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectItemDefinitionElement WithLocation(ElementLocation value) {
+			return (ProjectItemDefinitionElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectItemDefinitionElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectItemDefinitionElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemDefinitionElement WithChildren(params ProjectElement[] values) {
+			return (ProjectItemDefinitionElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemDefinitionElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemDefinitionElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemDefinitionElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionElement AddChildren(params ProjectElement[] values) {
+			return (ProjectItemDefinitionElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectItemDefinitionElement AddChild(ProjectElement value) {
+			return (ProjectItemDefinitionElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemDefinitionElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectItemDefinitionElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectItemDefinitionElement RemoveChild(ProjectElement value) {
+			return (ProjectItemDefinitionElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectItemDefinitionElement RemoveChildren() {
+			return (ProjectItemDefinitionElement)base.RemoveChildren();
+		}
+		
+		
+		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
+		public ProjectItemDefinitionElement WithItemType(System.String value) {
+			if (value == this.ItemType) {
+				return this;
+			}
+		
+			return this.With(itemType: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Metadata property set to the specified value.</summary>
+		public ProjectItemDefinitionElement WithMetadata(System.Collections.Immutable.ImmutableList<ProjectMetadataElement> value) {
+			if (value == this.Metadata) {
+				return this;
+			}
+		
+			return this.With(metadata: Optional.For(value));
+		}
+		
+		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
+		public ProjectItemDefinitionElement WithMetadataElements(params ProjectMetadataElement[] values) {
+			return this.With(metadata: this.Metadata.ResetContents(values));
+		}
+		
+		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
+		public ProjectItemDefinitionElement WithMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
+			return this.With(metadata: this.Metadata.ResetContents(values));
+		}
+		
+		/// <summary>Adds the specified elements from the Metadata collection.</summary>
+		public ProjectItemDefinitionElement AddMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
+			return this.With(metadata: this.Metadata.AddRange(values));
+		}
+		
+		/// <summary>Adds the specified elements from the Metadata collection.</summary>
+		public ProjectItemDefinitionElement AddMetadataElements(params ProjectMetadataElement[] values) {
+			return this.With(metadata: this.Metadata.AddRange(values));
+		}
+		
+		/// <summary>Adds the specified element from the Metadata collection.</summary>
+		public ProjectItemDefinitionElement AddMetadataElement(ProjectMetadataElement value) {
+			return this.With(metadata: this.Metadata.Add(value));
+		}
+		
+		/// <summary>Removes the specified elements from the Metadata collection.</summary>
+		public ProjectItemDefinitionElement RemoveMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
+			return this.With(metadata: this.Metadata.RemoveRange(values));
+		}
+		
+		/// <summary>Removes the specified elements from the Metadata collection.</summary>
+		public ProjectItemDefinitionElement RemoveMetadataElements(params ProjectMetadataElement[] values) {
+			return this.With(metadata: this.Metadata.RemoveRange(values));
+		}
+		
+		/// <summary>Removes the specified element from the Metadata collection.</summary>
+		public ProjectItemDefinitionElement RemoveMetadataElement(ProjectMetadataElement value) {
+			return this.With(metadata: this.Metadata.Remove(value));
+		}
+		
+		/// <summary>Clears all elements from the Metadata collection.</summary>
+		public ProjectItemDefinitionElement RemoveMetadataElements() {
+			return this.With(metadata: this.Metadata.Clear());
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectItemDefinitionElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			return (ProjectItemDefinitionElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children,
+				itemType: itemType,
+				metadata: metadata);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectItemDefinitionElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				itemType: Optional.For(itemType.GetValueOrDefault(this.ItemType)),
+				metadata: Optional.For(metadata.GetValueOrDefault(this.Metadata)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectItemDefinitionElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children) || 
+				(itemType.IsDefined && itemType.Value != this.ItemType) || 
+				(metadata.IsDefined && metadata.Value != this.Metadata)) {
+				return new ProjectItemDefinitionElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children),
+					itemType: itemType.GetValueOrDefault(this.ItemType),
+					metadata: metadata.GetValueOrDefault(this.Metadata));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectItemDefinitionElement whose fields are initialized with default values.</summary>
+		private static ProjectItemDefinitionElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectItemDefinitionElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children, 
+				template.ItemType, 
+				template.Metadata);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+	
+			internal System.String ItemType { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; set; }
+		}
+		
+		internal static ProjectItemDefinitionElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					itemType: Optional.For(itemType.GetValueOrDefault(DefaultInstance.ItemType)),
+					metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectItemDefinitionElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String itemType;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder> metadata;
+		
+			internal Builder(ProjectItemDefinitionElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.itemType = immutable.ItemType;
+			}
+		
+			public System.String ItemType {
+				get {
+					return this.itemType;
+				}
+		
+				set {
+					this.itemType = value;
+				}
+			}
+		
+			public System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder Metadata {
+				get {
+					if (!this.metadata.IsDefined) {
+						this.metadata = this.immutable.metadata != null ? this.immutable.metadata.ToBuilder() : null;
+					}
+		
+					return this.metadata.Value;
+				}
+		
+				set {
+					this.metadata = value;
+				}
+			}
+		
+			public new ProjectItemDefinitionElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				var metadata = this.metadata.IsDefined ? (this.metadata.Value != null ? this.metadata.Value.ToImmutable() : null) : this.immutable.Metadata;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(children),
+					ImmutableObjectGraph.Optional.For(this.ItemType),
+					ImmutableObjectGraph.Optional.For(metadata));
+			}
+		}
+	}
+	
+	public interface IProjectItemDefinitionGroupElement : IProjectElementContainer {
+	}
+	
+	public partial class ProjectItemDefinitionGroupElement : ProjectElementContainer, IProjectItemDefinitionGroupElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectItemDefinitionGroupElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ProjectItemDefinitionGroupElement class.</summary>
+		protected ProjectItemDefinitionGroupElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.Validate();
+		}
+	
+		public static ProjectItemDefinitionGroupElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectItemDefinitionGroupElement WithCondition(System.String value) {
+			return (ProjectItemDefinitionGroupElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectItemDefinitionGroupElement WithConditionLocation(ElementLocation value) {
+			return (ProjectItemDefinitionGroupElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectItemDefinitionGroupElement WithLabel(System.String value) {
+			return (ProjectItemDefinitionGroupElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectItemDefinitionGroupElement WithLabelLocation(ElementLocation value) {
+			return (ProjectItemDefinitionGroupElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectItemDefinitionGroupElement WithLocation(ElementLocation value) {
+			return (ProjectItemDefinitionGroupElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectItemDefinitionGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectItemDefinitionGroupElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemDefinitionGroupElement WithChildren(params ProjectElement[] values) {
+			return (ProjectItemDefinitionGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemDefinitionGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemDefinitionGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemDefinitionGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionGroupElement AddChildren(params ProjectElement[] values) {
+			return (ProjectItemDefinitionGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectItemDefinitionGroupElement AddChild(ProjectElement value) {
+			return (ProjectItemDefinitionGroupElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemDefinitionGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemDefinitionGroupElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectItemDefinitionGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectItemDefinitionGroupElement RemoveChild(ProjectElement value) {
+			return (ProjectItemDefinitionGroupElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectItemDefinitionGroupElement RemoveChildren() {
+			return (ProjectItemDefinitionGroupElement)base.RemoveChildren();
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectItemDefinitionGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return (ProjectItemDefinitionGroupElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectItemDefinitionGroupElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children)) {
+				return new ProjectItemDefinitionGroupElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectItemDefinitionGroupElement whose fields are initialized with default values.</summary>
+		private static ProjectItemDefinitionGroupElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectItemDefinitionGroupElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		internal static ProjectItemDefinitionGroupElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectItemDefinitionGroupElement immutable;
+		
+			internal Builder(ProjectItemDefinitionGroupElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new ProjectItemDefinitionGroupElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IProjectOnErrorElement : IProjectElement {
+	}
+	
+	public partial class ProjectOnErrorElement : ProjectElement, IProjectOnErrorElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectOnErrorElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ProjectOnErrorElement class.</summary>
+		protected ProjectOnErrorElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location)
+		{
+			this.Validate();
+		}
+	
+		public static ProjectOnErrorElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectOnErrorElement WithCondition(System.String value) {
+			return (ProjectOnErrorElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectOnErrorElement WithConditionLocation(ElementLocation value) {
+			return (ProjectOnErrorElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectOnErrorElement WithLabel(System.String value) {
+			return (ProjectOnErrorElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectOnErrorElement WithLabelLocation(ElementLocation value) {
+			return (ProjectOnErrorElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectOnErrorElement WithLocation(ElementLocation value) {
+			return (ProjectOnErrorElement)base.WithLocation(value);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectOnErrorElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return (ProjectOnErrorElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectOnErrorElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location)) {
+				return new ProjectOnErrorElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectOnErrorElement whose fields are initialized with default values.</summary>
+		private static ProjectOnErrorElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectOnErrorElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+		}
+		
+		internal static ProjectOnErrorElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectOnErrorElement immutable;
+		
+			internal Builder(ProjectOnErrorElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new ProjectOnErrorElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IProjectOutputElement : IProjectElement {
+		System.Boolean IsOutputItem { get; }
+		System.Boolean IsOutputProperty { get; }
+		System.String ItemType { get; }
+		ElementLocation ItemTypeLocation { get; }
+		System.String PropertyName { get; }
+		ElementLocation PropertyNameLocation { get; }
+		System.String TaskParameter { get; }
+		ElementLocation TaskParameterLocation { get; }
+	}
+	
+	public partial class ProjectOutputElement : ProjectElement, IProjectOutputElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectOutputElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.Boolean isOutputItem;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.Boolean isOutputProperty;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String itemType;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation itemTypeLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String propertyName;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation propertyNameLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String taskParameter;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation taskParameterLocation;
+	
+		/// <summary>Initializes a new instance of the ProjectOutputElement class.</summary>
+		protected ProjectOutputElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Boolean isOutputItem,
+			System.Boolean isOutputProperty,
+			System.String itemType,
+			ElementLocation itemTypeLocation,
+			System.String propertyName,
+			ElementLocation propertyNameLocation,
+			System.String taskParameter,
+			ElementLocation taskParameterLocation)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location)
+		{
+			this.isOutputItem = isOutputItem;
+			this.isOutputProperty = isOutputProperty;
+			this.itemType = itemType;
+			this.itemTypeLocation = itemTypeLocation;
+			this.propertyName = propertyName;
+			this.propertyNameLocation = propertyNameLocation;
+			this.taskParameter = taskParameter;
+			this.taskParameterLocation = taskParameterLocation;
+			this.Validate();
+		}
+	
+		public static ProjectOutputElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				isOutputItem: Optional.For(isOutputItem.GetValueOrDefault(DefaultInstance.IsOutputItem)),
+				isOutputProperty: Optional.For(isOutputProperty.GetValueOrDefault(DefaultInstance.IsOutputProperty)),
+				itemType: Optional.For(itemType.GetValueOrDefault(DefaultInstance.ItemType)),
+				itemTypeLocation: Optional.For(itemTypeLocation.GetValueOrDefault(DefaultInstance.ItemTypeLocation)),
+				propertyName: Optional.For(propertyName.GetValueOrDefault(DefaultInstance.PropertyName)),
+				propertyNameLocation: Optional.For(propertyNameLocation.GetValueOrDefault(DefaultInstance.PropertyNameLocation)),
+				taskParameter: Optional.For(taskParameter.GetValueOrDefault(DefaultInstance.TaskParameter)),
+				taskParameterLocation: Optional.For(taskParameterLocation.GetValueOrDefault(DefaultInstance.TaskParameterLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.Boolean IsOutputItem {
+			get { return this.isOutputItem; }
+		}
+	
+		public System.Boolean IsOutputProperty {
+			get { return this.isOutputProperty; }
+		}
+	
+		public System.String ItemType {
+			get { return this.itemType; }
+		}
+	
+		public ElementLocation ItemTypeLocation {
+			get { return this.itemTypeLocation; }
+		}
+	
+		public System.String PropertyName {
+			get { return this.propertyName; }
+		}
+	
+		public ElementLocation PropertyNameLocation {
+			get { return this.propertyNameLocation; }
+		}
+	
+		public System.String TaskParameter {
+			get { return this.taskParameter; }
+		}
+	
+		public ElementLocation TaskParameterLocation {
+			get { return this.taskParameterLocation; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectOutputElement WithCondition(System.String value) {
+			return (ProjectOutputElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectOutputElement WithConditionLocation(ElementLocation value) {
+			return (ProjectOutputElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectOutputElement WithLabel(System.String value) {
+			return (ProjectOutputElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectOutputElement WithLabelLocation(ElementLocation value) {
+			return (ProjectOutputElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectOutputElement WithLocation(ElementLocation value) {
+			return (ProjectOutputElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the IsOutputItem property set to the specified value.</summary>
+		public ProjectOutputElement WithIsOutputItem(System.Boolean value) {
+			if (value == this.IsOutputItem) {
+				return this;
+			}
+		
+			return this.With(isOutputItem: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the IsOutputProperty property set to the specified value.</summary>
+		public ProjectOutputElement WithIsOutputProperty(System.Boolean value) {
+			if (value == this.IsOutputProperty) {
+				return this;
+			}
+		
+			return this.With(isOutputProperty: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
+		public ProjectOutputElement WithItemType(System.String value) {
+			if (value == this.ItemType) {
+				return this;
+			}
+		
+			return this.With(itemType: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ItemTypeLocation property set to the specified value.</summary>
+		public ProjectOutputElement WithItemTypeLocation(ElementLocation value) {
+			if (value == this.ItemTypeLocation) {
+				return this;
+			}
+		
+			return this.With(itemTypeLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the PropertyName property set to the specified value.</summary>
+		public ProjectOutputElement WithPropertyName(System.String value) {
+			if (value == this.PropertyName) {
+				return this;
+			}
+		
+			return this.With(propertyName: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the PropertyNameLocation property set to the specified value.</summary>
+		public ProjectOutputElement WithPropertyNameLocation(ElementLocation value) {
+			if (value == this.PropertyNameLocation) {
+				return this;
+			}
+		
+			return this.With(propertyNameLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the TaskParameter property set to the specified value.</summary>
+		public ProjectOutputElement WithTaskParameter(System.String value) {
+			if (value == this.TaskParameter) {
+				return this;
+			}
+		
+			return this.With(taskParameter: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the TaskParameterLocation property set to the specified value.</summary>
+		public ProjectOutputElement WithTaskParameterLocation(ElementLocation value) {
+			if (value == this.TaskParameterLocation) {
+				return this;
+			}
+		
+			return this.With(taskParameterLocation: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectOutputElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return (ProjectOutputElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				isOutputItem: isOutputItem,
+				isOutputProperty: isOutputProperty,
+				itemType: itemType,
+				itemTypeLocation: itemTypeLocation,
+				propertyName: propertyName,
+				propertyNameLocation: propertyNameLocation,
+				taskParameter: taskParameter,
+				taskParameterLocation: taskParameterLocation);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectOutputElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				isOutputItem: Optional.For(isOutputItem.GetValueOrDefault(this.IsOutputItem)),
+				isOutputProperty: Optional.For(isOutputProperty.GetValueOrDefault(this.IsOutputProperty)),
+				itemType: Optional.For(itemType.GetValueOrDefault(this.ItemType)),
+				itemTypeLocation: Optional.For(itemTypeLocation.GetValueOrDefault(this.ItemTypeLocation)),
+				propertyName: Optional.For(propertyName.GetValueOrDefault(this.PropertyName)),
+				propertyNameLocation: Optional.For(propertyNameLocation.GetValueOrDefault(this.PropertyNameLocation)),
+				taskParameter: Optional.For(taskParameter.GetValueOrDefault(this.TaskParameter)),
+				taskParameterLocation: Optional.For(taskParameterLocation.GetValueOrDefault(this.TaskParameterLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectOutputElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(isOutputItem.IsDefined && isOutputItem.Value != this.IsOutputItem) || 
+				(isOutputProperty.IsDefined && isOutputProperty.Value != this.IsOutputProperty) || 
+				(itemType.IsDefined && itemType.Value != this.ItemType) || 
+				(itemTypeLocation.IsDefined && itemTypeLocation.Value != this.ItemTypeLocation) || 
+				(propertyName.IsDefined && propertyName.Value != this.PropertyName) || 
+				(propertyNameLocation.IsDefined && propertyNameLocation.Value != this.PropertyNameLocation) || 
+				(taskParameter.IsDefined && taskParameter.Value != this.TaskParameter) || 
+				(taskParameterLocation.IsDefined && taskParameterLocation.Value != this.TaskParameterLocation)) {
+				return new ProjectOutputElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					isOutputItem: isOutputItem.GetValueOrDefault(this.IsOutputItem),
+					isOutputProperty: isOutputProperty.GetValueOrDefault(this.IsOutputProperty),
+					itemType: itemType.GetValueOrDefault(this.ItemType),
+					itemTypeLocation: itemTypeLocation.GetValueOrDefault(this.ItemTypeLocation),
+					propertyName: propertyName.GetValueOrDefault(this.PropertyName),
+					propertyNameLocation: propertyNameLocation.GetValueOrDefault(this.PropertyNameLocation),
+					taskParameter: taskParameter.GetValueOrDefault(this.TaskParameter),
+					taskParameterLocation: taskParameterLocation.GetValueOrDefault(this.TaskParameterLocation));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectOutputElement whose fields are initialized with default values.</summary>
+		private static ProjectOutputElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectOutputElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.IsOutputItem, 
+				template.IsOutputProperty, 
+				template.ItemType, 
+				template.ItemTypeLocation, 
+				template.PropertyName, 
+				template.PropertyNameLocation, 
+				template.TaskParameter, 
+				template.TaskParameterLocation);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Boolean IsOutputItem { get; set; }
+	
+			internal System.Boolean IsOutputProperty { get; set; }
+	
+			internal System.String ItemType { get; set; }
+	
+			internal ElementLocation ItemTypeLocation { get; set; }
+	
+			internal System.String PropertyName { get; set; }
+	
+			internal ElementLocation PropertyNameLocation { get; set; }
+	
+			internal System.String TaskParameter { get; set; }
+	
+			internal ElementLocation TaskParameterLocation { get; set; }
+		}
+		
+		internal static ProjectOutputElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+				ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					isOutputItem: Optional.For(isOutputItem.GetValueOrDefault(DefaultInstance.IsOutputItem)),
+					isOutputProperty: Optional.For(isOutputProperty.GetValueOrDefault(DefaultInstance.IsOutputProperty)),
+					itemType: Optional.For(itemType.GetValueOrDefault(DefaultInstance.ItemType)),
+					itemTypeLocation: Optional.For(itemTypeLocation.GetValueOrDefault(DefaultInstance.ItemTypeLocation)),
+					propertyName: Optional.For(propertyName.GetValueOrDefault(DefaultInstance.PropertyName)),
+					propertyNameLocation: Optional.For(propertyNameLocation.GetValueOrDefault(DefaultInstance.PropertyNameLocation)),
+					taskParameter: Optional.For(taskParameter.GetValueOrDefault(DefaultInstance.TaskParameter)),
+					taskParameterLocation: Optional.For(taskParameterLocation.GetValueOrDefault(DefaultInstance.TaskParameterLocation)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectOutputElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Boolean isOutputItem;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Boolean isOutputProperty;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String itemType;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> itemTypeLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String propertyName;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> propertyNameLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String taskParameter;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> taskParameterLocation;
+		
+			internal Builder(ProjectOutputElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.isOutputItem = immutable.IsOutputItem;
+				this.isOutputProperty = immutable.IsOutputProperty;
+				this.itemType = immutable.ItemType;
+				this.propertyName = immutable.PropertyName;
+				this.taskParameter = immutable.TaskParameter;
+			}
+		
+			public System.Boolean IsOutputItem {
+				get {
+					return this.isOutputItem;
+				}
+		
+				set {
+					this.isOutputItem = value;
+				}
+			}
+		
+			public System.Boolean IsOutputProperty {
+				get {
+					return this.isOutputProperty;
+				}
+		
+				set {
+					this.isOutputProperty = value;
+				}
+			}
+		
+			public System.String ItemType {
+				get {
+					return this.itemType;
+				}
+		
+				set {
+					this.itemType = value;
+				}
+			}
+		
+			public ElementLocation.Builder ItemTypeLocation {
+				get {
+					if (!this.itemTypeLocation.IsDefined) {
+						this.itemTypeLocation = this.immutable.itemTypeLocation != null ? this.immutable.itemTypeLocation.ToBuilder() : null;
+					}
+		
+					return this.itemTypeLocation.Value;
+				}
+		
+				set {
+					this.itemTypeLocation = value;
+				}
+			}
+		
+			public System.String PropertyName {
+				get {
+					return this.propertyName;
+				}
+		
+				set {
+					this.propertyName = value;
+				}
+			}
+		
+			public ElementLocation.Builder PropertyNameLocation {
+				get {
+					if (!this.propertyNameLocation.IsDefined) {
+						this.propertyNameLocation = this.immutable.propertyNameLocation != null ? this.immutable.propertyNameLocation.ToBuilder() : null;
+					}
+		
+					return this.propertyNameLocation.Value;
+				}
+		
+				set {
+					this.propertyNameLocation = value;
+				}
+			}
+		
+			public System.String TaskParameter {
+				get {
+					return this.taskParameter;
+				}
+		
+				set {
+					this.taskParameter = value;
+				}
+			}
+		
+			public ElementLocation.Builder TaskParameterLocation {
+				get {
+					if (!this.taskParameterLocation.IsDefined) {
+						this.taskParameterLocation = this.immutable.taskParameterLocation != null ? this.immutable.taskParameterLocation.ToBuilder() : null;
+					}
+		
+					return this.taskParameterLocation.Value;
+				}
+		
+				set {
+					this.taskParameterLocation = value;
+				}
+			}
+		
+			public new ProjectOutputElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var itemTypeLocation = this.itemTypeLocation.IsDefined ? (this.itemTypeLocation.Value != null ? this.itemTypeLocation.Value.ToImmutable() : null) : this.immutable.ItemTypeLocation;
+				var propertyNameLocation = this.propertyNameLocation.IsDefined ? (this.propertyNameLocation.Value != null ? this.propertyNameLocation.Value.ToImmutable() : null) : this.immutable.PropertyNameLocation;
+				var taskParameterLocation = this.taskParameterLocation.IsDefined ? (this.taskParameterLocation.Value != null ? this.taskParameterLocation.Value.ToImmutable() : null) : this.immutable.TaskParameterLocation;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(this.IsOutputItem),
+					ImmutableObjectGraph.Optional.For(this.IsOutputProperty),
+					ImmutableObjectGraph.Optional.For(this.ItemType),
+					ImmutableObjectGraph.Optional.For(itemTypeLocation),
+					ImmutableObjectGraph.Optional.For(this.PropertyName),
+					ImmutableObjectGraph.Optional.For(propertyNameLocation),
+					ImmutableObjectGraph.Optional.For(this.TaskParameter),
+					ImmutableObjectGraph.Optional.For(taskParameterLocation));
+			}
+		}
+	}
+	
+	public interface IProjectTargetElement : IProjectElementContainer {
+		System.String AfterTargets { get; }
+		ElementLocation AfterTargetsLocation { get; }
+		System.String BeforeTargets { get; }
+		ElementLocation BeforeTargetsLocation { get; }
+		System.String DependsOnTargets { get; }
+		ElementLocation DependsOnTargetsLocation { get; }
+		System.String Inputs { get; }
+		ElementLocation InputsLocation { get; }
+		System.String KeepDuplicateOutputs { get; }
+		ElementLocation KeepDuplicateOutputsLocation { get; }
+		System.String Name { get; }
+		ElementLocation NameLocation { get; }
+		System.String Outputs { get; }
+		ElementLocation OutputsLocation { get; }
+		System.String Returns { get; }
+		ElementLocation ReturnsLocation { get; }
+	}
+	
+	public partial class ProjectTargetElement : ProjectElementContainer, IProjectTargetElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectTargetElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String afterTargets;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation afterTargetsLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String beforeTargets;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation beforeTargetsLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String dependsOnTargets;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation dependsOnTargetsLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String inputs;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation inputsLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String keepDuplicateOutputs;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation keepDuplicateOutputsLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String name;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation nameLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String outputs;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation outputsLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String returns;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation returnsLocation;
+	
+		/// <summary>Initializes a new instance of the ProjectTargetElement class.</summary>
+		protected ProjectTargetElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			System.String afterTargets,
+			ElementLocation afterTargetsLocation,
+			System.String beforeTargets,
+			ElementLocation beforeTargetsLocation,
+			System.String dependsOnTargets,
+			ElementLocation dependsOnTargetsLocation,
+			System.String inputs,
+			ElementLocation inputsLocation,
+			System.String keepDuplicateOutputs,
+			ElementLocation keepDuplicateOutputsLocation,
+			System.String name,
+			ElementLocation nameLocation,
+			System.String outputs,
+			ElementLocation outputsLocation,
+			System.String returns,
+			ElementLocation returnsLocation)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.afterTargets = afterTargets;
+			this.afterTargetsLocation = afterTargetsLocation;
+			this.beforeTargets = beforeTargets;
+			this.beforeTargetsLocation = beforeTargetsLocation;
+			this.dependsOnTargets = dependsOnTargets;
+			this.dependsOnTargetsLocation = dependsOnTargetsLocation;
+			this.inputs = inputs;
+			this.inputsLocation = inputsLocation;
+			this.keepDuplicateOutputs = keepDuplicateOutputs;
+			this.keepDuplicateOutputsLocation = keepDuplicateOutputsLocation;
+			this.name = name;
+			this.nameLocation = nameLocation;
+			this.outputs = outputs;
+			this.outputsLocation = outputsLocation;
+			this.returns = returns;
+			this.returnsLocation = returnsLocation;
+			this.Validate();
+		}
+	
+		public static ProjectTargetElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				afterTargets: Optional.For(afterTargets.GetValueOrDefault(DefaultInstance.AfterTargets)),
+				afterTargetsLocation: Optional.For(afterTargetsLocation.GetValueOrDefault(DefaultInstance.AfterTargetsLocation)),
+				beforeTargets: Optional.For(beforeTargets.GetValueOrDefault(DefaultInstance.BeforeTargets)),
+				beforeTargetsLocation: Optional.For(beforeTargetsLocation.GetValueOrDefault(DefaultInstance.BeforeTargetsLocation)),
+				dependsOnTargets: Optional.For(dependsOnTargets.GetValueOrDefault(DefaultInstance.DependsOnTargets)),
+				dependsOnTargetsLocation: Optional.For(dependsOnTargetsLocation.GetValueOrDefault(DefaultInstance.DependsOnTargetsLocation)),
+				inputs: Optional.For(inputs.GetValueOrDefault(DefaultInstance.Inputs)),
+				inputsLocation: Optional.For(inputsLocation.GetValueOrDefault(DefaultInstance.InputsLocation)),
+				keepDuplicateOutputs: Optional.For(keepDuplicateOutputs.GetValueOrDefault(DefaultInstance.KeepDuplicateOutputs)),
+				keepDuplicateOutputsLocation: Optional.For(keepDuplicateOutputsLocation.GetValueOrDefault(DefaultInstance.KeepDuplicateOutputsLocation)),
+				name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+				nameLocation: Optional.For(nameLocation.GetValueOrDefault(DefaultInstance.NameLocation)),
+				outputs: Optional.For(outputs.GetValueOrDefault(DefaultInstance.Outputs)),
+				outputsLocation: Optional.For(outputsLocation.GetValueOrDefault(DefaultInstance.OutputsLocation)),
+				returns: Optional.For(returns.GetValueOrDefault(DefaultInstance.Returns)),
+				returnsLocation: Optional.For(returnsLocation.GetValueOrDefault(DefaultInstance.ReturnsLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String AfterTargets {
+			get { return this.afterTargets; }
+		}
+	
+		public ElementLocation AfterTargetsLocation {
+			get { return this.afterTargetsLocation; }
+		}
+	
+		public System.String BeforeTargets {
+			get { return this.beforeTargets; }
+		}
+	
+		public ElementLocation BeforeTargetsLocation {
+			get { return this.beforeTargetsLocation; }
+		}
+	
+		public System.String DependsOnTargets {
+			get { return this.dependsOnTargets; }
+		}
+	
+		public ElementLocation DependsOnTargetsLocation {
+			get { return this.dependsOnTargetsLocation; }
+		}
+	
+		public System.String Inputs {
+			get { return this.inputs; }
+		}
+	
+		public ElementLocation InputsLocation {
+			get { return this.inputsLocation; }
+		}
+	
+		public System.String KeepDuplicateOutputs {
+			get { return this.keepDuplicateOutputs; }
+		}
+	
+		public ElementLocation KeepDuplicateOutputsLocation {
+			get { return this.keepDuplicateOutputsLocation; }
+		}
+	
+		public System.String Name {
+			get { return this.name; }
+		}
+	
+		public ElementLocation NameLocation {
+			get { return this.nameLocation; }
+		}
+	
+		public System.String Outputs {
+			get { return this.outputs; }
+		}
+	
+		public ElementLocation OutputsLocation {
+			get { return this.outputsLocation; }
+		}
+	
+		public System.String Returns {
+			get { return this.returns; }
+		}
+	
+		public ElementLocation ReturnsLocation {
+			get { return this.returnsLocation; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectTargetElement WithCondition(System.String value) {
+			return (ProjectTargetElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectTargetElement WithConditionLocation(ElementLocation value) {
+			return (ProjectTargetElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectTargetElement WithLabel(System.String value) {
+			return (ProjectTargetElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectTargetElement WithLabelLocation(ElementLocation value) {
+			return (ProjectTargetElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectTargetElement WithLocation(ElementLocation value) {
+			return (ProjectTargetElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectTargetElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectTargetElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectTargetElement WithChildren(params ProjectElement[] values) {
+			return (ProjectTargetElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectTargetElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectTargetElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectTargetElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectTargetElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectTargetElement AddChildren(params ProjectElement[] values) {
+			return (ProjectTargetElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectTargetElement AddChild(ProjectElement value) {
+			return (ProjectTargetElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectTargetElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectTargetElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectTargetElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectTargetElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectTargetElement RemoveChild(ProjectElement value) {
+			return (ProjectTargetElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectTargetElement RemoveChildren() {
+			return (ProjectTargetElement)base.RemoveChildren();
+		}
+		
+		
+		/// <summary>Returns a new instance with the AfterTargets property set to the specified value.</summary>
+		public ProjectTargetElement WithAfterTargets(System.String value) {
+			if (value == this.AfterTargets) {
+				return this;
+			}
+		
+			return this.With(afterTargets: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the AfterTargetsLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithAfterTargetsLocation(ElementLocation value) {
+			if (value == this.AfterTargetsLocation) {
+				return this;
+			}
+		
+			return this.With(afterTargetsLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the BeforeTargets property set to the specified value.</summary>
+		public ProjectTargetElement WithBeforeTargets(System.String value) {
+			if (value == this.BeforeTargets) {
+				return this;
+			}
+		
+			return this.With(beforeTargets: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the BeforeTargetsLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithBeforeTargetsLocation(ElementLocation value) {
+			if (value == this.BeforeTargetsLocation) {
+				return this;
+			}
+		
+			return this.With(beforeTargetsLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the DependsOnTargets property set to the specified value.</summary>
+		public ProjectTargetElement WithDependsOnTargets(System.String value) {
+			if (value == this.DependsOnTargets) {
+				return this;
+			}
+		
+			return this.With(dependsOnTargets: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the DependsOnTargetsLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithDependsOnTargetsLocation(ElementLocation value) {
+			if (value == this.DependsOnTargetsLocation) {
+				return this;
+			}
+		
+			return this.With(dependsOnTargetsLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Inputs property set to the specified value.</summary>
+		public ProjectTargetElement WithInputs(System.String value) {
+			if (value == this.Inputs) {
+				return this;
+			}
+		
+			return this.With(inputs: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the InputsLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithInputsLocation(ElementLocation value) {
+			if (value == this.InputsLocation) {
+				return this;
+			}
+		
+			return this.With(inputsLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the KeepDuplicateOutputs property set to the specified value.</summary>
+		public ProjectTargetElement WithKeepDuplicateOutputs(System.String value) {
+			if (value == this.KeepDuplicateOutputs) {
+				return this;
+			}
+		
+			return this.With(keepDuplicateOutputs: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the KeepDuplicateOutputsLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithKeepDuplicateOutputsLocation(ElementLocation value) {
+			if (value == this.KeepDuplicateOutputsLocation) {
+				return this;
+			}
+		
+			return this.With(keepDuplicateOutputsLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public ProjectTargetElement WithName(System.String value) {
+			if (value == this.Name) {
+				return this;
+			}
+		
+			return this.With(name: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the NameLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithNameLocation(ElementLocation value) {
+			if (value == this.NameLocation) {
+				return this;
+			}
+		
+			return this.With(nameLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Outputs property set to the specified value.</summary>
+		public ProjectTargetElement WithOutputs(System.String value) {
+			if (value == this.Outputs) {
+				return this;
+			}
+		
+			return this.With(outputs: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the OutputsLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithOutputsLocation(ElementLocation value) {
+			if (value == this.OutputsLocation) {
+				return this;
+			}
+		
+			return this.With(outputsLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Returns property set to the specified value.</summary>
+		public ProjectTargetElement WithReturns(System.String value) {
+			if (value == this.Returns) {
+				return this;
+			}
+		
+			return this.With(returns: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ReturnsLocation property set to the specified value.</summary>
+		public ProjectTargetElement WithReturnsLocation(ElementLocation value) {
+			if (value == this.ReturnsLocation) {
+				return this;
+			}
+		
+			return this.With(returnsLocation: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectTargetElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return (ProjectTargetElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children,
+				afterTargets: afterTargets,
+				afterTargetsLocation: afterTargetsLocation,
+				beforeTargets: beforeTargets,
+				beforeTargetsLocation: beforeTargetsLocation,
+				dependsOnTargets: dependsOnTargets,
+				dependsOnTargetsLocation: dependsOnTargetsLocation,
+				inputs: inputs,
+				inputsLocation: inputsLocation,
+				keepDuplicateOutputs: keepDuplicateOutputs,
+				keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+				name: name,
+				nameLocation: nameLocation,
+				outputs: outputs,
+				outputsLocation: outputsLocation,
+				returns: returns,
+				returnsLocation: returnsLocation);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectTargetElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				afterTargets: Optional.For(afterTargets.GetValueOrDefault(this.AfterTargets)),
+				afterTargetsLocation: Optional.For(afterTargetsLocation.GetValueOrDefault(this.AfterTargetsLocation)),
+				beforeTargets: Optional.For(beforeTargets.GetValueOrDefault(this.BeforeTargets)),
+				beforeTargetsLocation: Optional.For(beforeTargetsLocation.GetValueOrDefault(this.BeforeTargetsLocation)),
+				dependsOnTargets: Optional.For(dependsOnTargets.GetValueOrDefault(this.DependsOnTargets)),
+				dependsOnTargetsLocation: Optional.For(dependsOnTargetsLocation.GetValueOrDefault(this.DependsOnTargetsLocation)),
+				inputs: Optional.For(inputs.GetValueOrDefault(this.Inputs)),
+				inputsLocation: Optional.For(inputsLocation.GetValueOrDefault(this.InputsLocation)),
+				keepDuplicateOutputs: Optional.For(keepDuplicateOutputs.GetValueOrDefault(this.KeepDuplicateOutputs)),
+				keepDuplicateOutputsLocation: Optional.For(keepDuplicateOutputsLocation.GetValueOrDefault(this.KeepDuplicateOutputsLocation)),
+				name: Optional.For(name.GetValueOrDefault(this.Name)),
+				nameLocation: Optional.For(nameLocation.GetValueOrDefault(this.NameLocation)),
+				outputs: Optional.For(outputs.GetValueOrDefault(this.Outputs)),
+				outputsLocation: Optional.For(outputsLocation.GetValueOrDefault(this.OutputsLocation)),
+				returns: Optional.For(returns.GetValueOrDefault(this.Returns)),
+				returnsLocation: Optional.For(returnsLocation.GetValueOrDefault(this.ReturnsLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectTargetElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children) || 
+				(afterTargets.IsDefined && afterTargets.Value != this.AfterTargets) || 
+				(afterTargetsLocation.IsDefined && afterTargetsLocation.Value != this.AfterTargetsLocation) || 
+				(beforeTargets.IsDefined && beforeTargets.Value != this.BeforeTargets) || 
+				(beforeTargetsLocation.IsDefined && beforeTargetsLocation.Value != this.BeforeTargetsLocation) || 
+				(dependsOnTargets.IsDefined && dependsOnTargets.Value != this.DependsOnTargets) || 
+				(dependsOnTargetsLocation.IsDefined && dependsOnTargetsLocation.Value != this.DependsOnTargetsLocation) || 
+				(inputs.IsDefined && inputs.Value != this.Inputs) || 
+				(inputsLocation.IsDefined && inputsLocation.Value != this.InputsLocation) || 
+				(keepDuplicateOutputs.IsDefined && keepDuplicateOutputs.Value != this.KeepDuplicateOutputs) || 
+				(keepDuplicateOutputsLocation.IsDefined && keepDuplicateOutputsLocation.Value != this.KeepDuplicateOutputsLocation) || 
+				(name.IsDefined && name.Value != this.Name) || 
+				(nameLocation.IsDefined && nameLocation.Value != this.NameLocation) || 
+				(outputs.IsDefined && outputs.Value != this.Outputs) || 
+				(outputsLocation.IsDefined && outputsLocation.Value != this.OutputsLocation) || 
+				(returns.IsDefined && returns.Value != this.Returns) || 
+				(returnsLocation.IsDefined && returnsLocation.Value != this.ReturnsLocation)) {
+				return new ProjectTargetElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children),
+					afterTargets: afterTargets.GetValueOrDefault(this.AfterTargets),
+					afterTargetsLocation: afterTargetsLocation.GetValueOrDefault(this.AfterTargetsLocation),
+					beforeTargets: beforeTargets.GetValueOrDefault(this.BeforeTargets),
+					beforeTargetsLocation: beforeTargetsLocation.GetValueOrDefault(this.BeforeTargetsLocation),
+					dependsOnTargets: dependsOnTargets.GetValueOrDefault(this.DependsOnTargets),
+					dependsOnTargetsLocation: dependsOnTargetsLocation.GetValueOrDefault(this.DependsOnTargetsLocation),
+					inputs: inputs.GetValueOrDefault(this.Inputs),
+					inputsLocation: inputsLocation.GetValueOrDefault(this.InputsLocation),
+					keepDuplicateOutputs: keepDuplicateOutputs.GetValueOrDefault(this.KeepDuplicateOutputs),
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation.GetValueOrDefault(this.KeepDuplicateOutputsLocation),
+					name: name.GetValueOrDefault(this.Name),
+					nameLocation: nameLocation.GetValueOrDefault(this.NameLocation),
+					outputs: outputs.GetValueOrDefault(this.Outputs),
+					outputsLocation: outputsLocation.GetValueOrDefault(this.OutputsLocation),
+					returns: returns.GetValueOrDefault(this.Returns),
+					returnsLocation: returnsLocation.GetValueOrDefault(this.ReturnsLocation));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectTargetElement whose fields are initialized with default values.</summary>
+		private static ProjectTargetElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectTargetElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children, 
+				template.AfterTargets, 
+				template.AfterTargetsLocation, 
+				template.BeforeTargets, 
+				template.BeforeTargetsLocation, 
+				template.DependsOnTargets, 
+				template.DependsOnTargetsLocation, 
+				template.Inputs, 
+				template.InputsLocation, 
+				template.KeepDuplicateOutputs, 
+				template.KeepDuplicateOutputsLocation, 
+				template.Name, 
+				template.NameLocation, 
+				template.Outputs, 
+				template.OutputsLocation, 
+				template.Returns, 
+				template.ReturnsLocation);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+	
+			internal System.String AfterTargets { get; set; }
+	
+			internal ElementLocation AfterTargetsLocation { get; set; }
+	
+			internal System.String BeforeTargets { get; set; }
+	
+			internal ElementLocation BeforeTargetsLocation { get; set; }
+	
+			internal System.String DependsOnTargets { get; set; }
+	
+			internal ElementLocation DependsOnTargetsLocation { get; set; }
+	
+			internal System.String Inputs { get; set; }
+	
+			internal ElementLocation InputsLocation { get; set; }
+	
+			internal System.String KeepDuplicateOutputs { get; set; }
+	
+			internal ElementLocation KeepDuplicateOutputsLocation { get; set; }
+	
+			internal System.String Name { get; set; }
+	
+			internal ElementLocation NameLocation { get; set; }
+	
+			internal System.String Outputs { get; set; }
+	
+			internal ElementLocation OutputsLocation { get; set; }
+	
+			internal System.String Returns { get; set; }
+	
+			internal ElementLocation ReturnsLocation { get; set; }
+		}
+		
+		internal static ProjectTargetElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					afterTargets: Optional.For(afterTargets.GetValueOrDefault(DefaultInstance.AfterTargets)),
+					afterTargetsLocation: Optional.For(afterTargetsLocation.GetValueOrDefault(DefaultInstance.AfterTargetsLocation)),
+					beforeTargets: Optional.For(beforeTargets.GetValueOrDefault(DefaultInstance.BeforeTargets)),
+					beforeTargetsLocation: Optional.For(beforeTargetsLocation.GetValueOrDefault(DefaultInstance.BeforeTargetsLocation)),
+					dependsOnTargets: Optional.For(dependsOnTargets.GetValueOrDefault(DefaultInstance.DependsOnTargets)),
+					dependsOnTargetsLocation: Optional.For(dependsOnTargetsLocation.GetValueOrDefault(DefaultInstance.DependsOnTargetsLocation)),
+					inputs: Optional.For(inputs.GetValueOrDefault(DefaultInstance.Inputs)),
+					inputsLocation: Optional.For(inputsLocation.GetValueOrDefault(DefaultInstance.InputsLocation)),
+					keepDuplicateOutputs: Optional.For(keepDuplicateOutputs.GetValueOrDefault(DefaultInstance.KeepDuplicateOutputs)),
+					keepDuplicateOutputsLocation: Optional.For(keepDuplicateOutputsLocation.GetValueOrDefault(DefaultInstance.KeepDuplicateOutputsLocation)),
+					name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+					nameLocation: Optional.For(nameLocation.GetValueOrDefault(DefaultInstance.NameLocation)),
+					outputs: Optional.For(outputs.GetValueOrDefault(DefaultInstance.Outputs)),
+					outputsLocation: Optional.For(outputsLocation.GetValueOrDefault(DefaultInstance.OutputsLocation)),
+					returns: Optional.For(returns.GetValueOrDefault(DefaultInstance.Returns)),
+					returnsLocation: Optional.For(returnsLocation.GetValueOrDefault(DefaultInstance.ReturnsLocation)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectTargetElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String afterTargets;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> afterTargetsLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String beforeTargets;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> beforeTargetsLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String dependsOnTargets;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> dependsOnTargetsLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String inputs;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> inputsLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String keepDuplicateOutputs;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> keepDuplicateOutputsLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String name;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> nameLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String outputs;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> outputsLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String returns;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> returnsLocation;
+		
+			internal Builder(ProjectTargetElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.afterTargets = immutable.AfterTargets;
+				this.beforeTargets = immutable.BeforeTargets;
+				this.dependsOnTargets = immutable.DependsOnTargets;
+				this.inputs = immutable.Inputs;
+				this.keepDuplicateOutputs = immutable.KeepDuplicateOutputs;
+				this.name = immutable.Name;
+				this.outputs = immutable.Outputs;
+				this.returns = immutable.Returns;
+			}
+		
+			public System.String AfterTargets {
+				get {
+					return this.afterTargets;
+				}
+		
+				set {
+					this.afterTargets = value;
+				}
+			}
+		
+			public ElementLocation.Builder AfterTargetsLocation {
+				get {
+					if (!this.afterTargetsLocation.IsDefined) {
+						this.afterTargetsLocation = this.immutable.afterTargetsLocation != null ? this.immutable.afterTargetsLocation.ToBuilder() : null;
+					}
+		
+					return this.afterTargetsLocation.Value;
+				}
+		
+				set {
+					this.afterTargetsLocation = value;
+				}
+			}
+		
+			public System.String BeforeTargets {
+				get {
+					return this.beforeTargets;
+				}
+		
+				set {
+					this.beforeTargets = value;
+				}
+			}
+		
+			public ElementLocation.Builder BeforeTargetsLocation {
+				get {
+					if (!this.beforeTargetsLocation.IsDefined) {
+						this.beforeTargetsLocation = this.immutable.beforeTargetsLocation != null ? this.immutable.beforeTargetsLocation.ToBuilder() : null;
+					}
+		
+					return this.beforeTargetsLocation.Value;
+				}
+		
+				set {
+					this.beforeTargetsLocation = value;
+				}
+			}
+		
+			public System.String DependsOnTargets {
+				get {
+					return this.dependsOnTargets;
+				}
+		
+				set {
+					this.dependsOnTargets = value;
+				}
+			}
+		
+			public ElementLocation.Builder DependsOnTargetsLocation {
+				get {
+					if (!this.dependsOnTargetsLocation.IsDefined) {
+						this.dependsOnTargetsLocation = this.immutable.dependsOnTargetsLocation != null ? this.immutable.dependsOnTargetsLocation.ToBuilder() : null;
+					}
+		
+					return this.dependsOnTargetsLocation.Value;
+				}
+		
+				set {
+					this.dependsOnTargetsLocation = value;
+				}
+			}
+		
+			public System.String Inputs {
+				get {
+					return this.inputs;
+				}
+		
+				set {
+					this.inputs = value;
+				}
+			}
+		
+			public ElementLocation.Builder InputsLocation {
+				get {
+					if (!this.inputsLocation.IsDefined) {
+						this.inputsLocation = this.immutable.inputsLocation != null ? this.immutable.inputsLocation.ToBuilder() : null;
+					}
+		
+					return this.inputsLocation.Value;
+				}
+		
+				set {
+					this.inputsLocation = value;
+				}
+			}
+		
+			public System.String KeepDuplicateOutputs {
+				get {
+					return this.keepDuplicateOutputs;
+				}
+		
+				set {
+					this.keepDuplicateOutputs = value;
+				}
+			}
+		
+			public ElementLocation.Builder KeepDuplicateOutputsLocation {
+				get {
+					if (!this.keepDuplicateOutputsLocation.IsDefined) {
+						this.keepDuplicateOutputsLocation = this.immutable.keepDuplicateOutputsLocation != null ? this.immutable.keepDuplicateOutputsLocation.ToBuilder() : null;
+					}
+		
+					return this.keepDuplicateOutputsLocation.Value;
+				}
+		
+				set {
+					this.keepDuplicateOutputsLocation = value;
+				}
+			}
+		
+			public System.String Name {
+				get {
+					return this.name;
+				}
+		
+				set {
+					this.name = value;
+				}
+			}
+		
+			public ElementLocation.Builder NameLocation {
+				get {
+					if (!this.nameLocation.IsDefined) {
+						this.nameLocation = this.immutable.nameLocation != null ? this.immutable.nameLocation.ToBuilder() : null;
+					}
+		
+					return this.nameLocation.Value;
+				}
+		
+				set {
+					this.nameLocation = value;
+				}
+			}
+		
+			public System.String Outputs {
+				get {
+					return this.outputs;
+				}
+		
+				set {
+					this.outputs = value;
+				}
+			}
+		
+			public ElementLocation.Builder OutputsLocation {
+				get {
+					if (!this.outputsLocation.IsDefined) {
+						this.outputsLocation = this.immutable.outputsLocation != null ? this.immutable.outputsLocation.ToBuilder() : null;
+					}
+		
+					return this.outputsLocation.Value;
+				}
+		
+				set {
+					this.outputsLocation = value;
+				}
+			}
+		
+			public System.String Returns {
+				get {
+					return this.returns;
+				}
+		
+				set {
+					this.returns = value;
+				}
+			}
+		
+			public ElementLocation.Builder ReturnsLocation {
+				get {
+					if (!this.returnsLocation.IsDefined) {
+						this.returnsLocation = this.immutable.returnsLocation != null ? this.immutable.returnsLocation.ToBuilder() : null;
+					}
+		
+					return this.returnsLocation.Value;
+				}
+		
+				set {
+					this.returnsLocation = value;
+				}
+			}
+		
+			public new ProjectTargetElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				var afterTargetsLocation = this.afterTargetsLocation.IsDefined ? (this.afterTargetsLocation.Value != null ? this.afterTargetsLocation.Value.ToImmutable() : null) : this.immutable.AfterTargetsLocation;
+				var beforeTargetsLocation = this.beforeTargetsLocation.IsDefined ? (this.beforeTargetsLocation.Value != null ? this.beforeTargetsLocation.Value.ToImmutable() : null) : this.immutable.BeforeTargetsLocation;
+				var dependsOnTargetsLocation = this.dependsOnTargetsLocation.IsDefined ? (this.dependsOnTargetsLocation.Value != null ? this.dependsOnTargetsLocation.Value.ToImmutable() : null) : this.immutable.DependsOnTargetsLocation;
+				var inputsLocation = this.inputsLocation.IsDefined ? (this.inputsLocation.Value != null ? this.inputsLocation.Value.ToImmutable() : null) : this.immutable.InputsLocation;
+				var keepDuplicateOutputsLocation = this.keepDuplicateOutputsLocation.IsDefined ? (this.keepDuplicateOutputsLocation.Value != null ? this.keepDuplicateOutputsLocation.Value.ToImmutable() : null) : this.immutable.KeepDuplicateOutputsLocation;
+				var nameLocation = this.nameLocation.IsDefined ? (this.nameLocation.Value != null ? this.nameLocation.Value.ToImmutable() : null) : this.immutable.NameLocation;
+				var outputsLocation = this.outputsLocation.IsDefined ? (this.outputsLocation.Value != null ? this.outputsLocation.Value.ToImmutable() : null) : this.immutable.OutputsLocation;
+				var returnsLocation = this.returnsLocation.IsDefined ? (this.returnsLocation.Value != null ? this.returnsLocation.Value.ToImmutable() : null) : this.immutable.ReturnsLocation;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(children),
+					ImmutableObjectGraph.Optional.For(this.AfterTargets),
+					ImmutableObjectGraph.Optional.For(afterTargetsLocation),
+					ImmutableObjectGraph.Optional.For(this.BeforeTargets),
+					ImmutableObjectGraph.Optional.For(beforeTargetsLocation),
+					ImmutableObjectGraph.Optional.For(this.DependsOnTargets),
+					ImmutableObjectGraph.Optional.For(dependsOnTargetsLocation),
+					ImmutableObjectGraph.Optional.For(this.Inputs),
+					ImmutableObjectGraph.Optional.For(inputsLocation),
+					ImmutableObjectGraph.Optional.For(this.KeepDuplicateOutputs),
+					ImmutableObjectGraph.Optional.For(keepDuplicateOutputsLocation),
+					ImmutableObjectGraph.Optional.For(this.Name),
+					ImmutableObjectGraph.Optional.For(nameLocation),
+					ImmutableObjectGraph.Optional.For(this.Outputs),
+					ImmutableObjectGraph.Optional.For(outputsLocation),
+					ImmutableObjectGraph.Optional.For(this.Returns),
+					ImmutableObjectGraph.Optional.For(returnsLocation));
+			}
+		}
+	}
+	
+	public interface IProjectTaskElement : IProjectElementContainer {
+		System.String ContinueOnError { get; }
+		ElementLocation ContinueOnErrorLocation { get; }
+		System.String MSBuildArchitecture { get; }
+		ElementLocation MSBuildArchitectureLocation { get; }
+		System.String MSBuildRuntime { get; }
+		ElementLocation MSBuildRuntimeLocation { get; }
+		System.String Name { get; }
+	}
+	
+	public partial class ProjectTaskElement : ProjectElementContainer, IProjectTaskElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectTaskElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String continueOnError;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation continueOnErrorLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String mSBuildArchitecture;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation mSBuildArchitectureLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String mSBuildRuntime;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation mSBuildRuntimeLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String name;
+	
+		/// <summary>Initializes a new instance of the ProjectTaskElement class.</summary>
+		protected ProjectTaskElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			System.String continueOnError,
+			ElementLocation continueOnErrorLocation,
+			System.String mSBuildArchitecture,
+			ElementLocation mSBuildArchitectureLocation,
+			System.String mSBuildRuntime,
+			ElementLocation mSBuildRuntimeLocation,
+			System.String name)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.continueOnError = continueOnError;
+			this.continueOnErrorLocation = continueOnErrorLocation;
+			this.mSBuildArchitecture = mSBuildArchitecture;
+			this.mSBuildArchitectureLocation = mSBuildArchitectureLocation;
+			this.mSBuildRuntime = mSBuildRuntime;
+			this.mSBuildRuntimeLocation = mSBuildRuntimeLocation;
+			this.name = name;
+			this.Validate();
+		}
+	
+		public static ProjectTaskElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				continueOnError: Optional.For(continueOnError.GetValueOrDefault(DefaultInstance.ContinueOnError)),
+				continueOnErrorLocation: Optional.For(continueOnErrorLocation.GetValueOrDefault(DefaultInstance.ContinueOnErrorLocation)),
+				mSBuildArchitecture: Optional.For(mSBuildArchitecture.GetValueOrDefault(DefaultInstance.MSBuildArchitecture)),
+				mSBuildArchitectureLocation: Optional.For(mSBuildArchitectureLocation.GetValueOrDefault(DefaultInstance.MSBuildArchitectureLocation)),
+				mSBuildRuntime: Optional.For(mSBuildRuntime.GetValueOrDefault(DefaultInstance.MSBuildRuntime)),
+				mSBuildRuntimeLocation: Optional.For(mSBuildRuntimeLocation.GetValueOrDefault(DefaultInstance.MSBuildRuntimeLocation)),
+				name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String ContinueOnError {
+			get { return this.continueOnError; }
+		}
+	
+		public ElementLocation ContinueOnErrorLocation {
+			get { return this.continueOnErrorLocation; }
+		}
+	
+		public System.String MSBuildArchitecture {
+			get { return this.mSBuildArchitecture; }
+		}
+	
+		public ElementLocation MSBuildArchitectureLocation {
+			get { return this.mSBuildArchitectureLocation; }
+		}
+	
+		public System.String MSBuildRuntime {
+			get { return this.mSBuildRuntime; }
+		}
+	
+		public ElementLocation MSBuildRuntimeLocation {
+			get { return this.mSBuildRuntimeLocation; }
+		}
+	
+		public System.String Name {
+			get { return this.name; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectTaskElement WithCondition(System.String value) {
+			return (ProjectTaskElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectTaskElement WithConditionLocation(ElementLocation value) {
+			return (ProjectTaskElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectTaskElement WithLabel(System.String value) {
+			return (ProjectTaskElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectTaskElement WithLabelLocation(ElementLocation value) {
+			return (ProjectTaskElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectTaskElement WithLocation(ElementLocation value) {
+			return (ProjectTaskElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectTaskElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectTaskElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectTaskElement WithChildren(params ProjectElement[] values) {
+			return (ProjectTaskElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectTaskElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectTaskElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectTaskElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectTaskElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectTaskElement AddChildren(params ProjectElement[] values) {
+			return (ProjectTaskElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectTaskElement AddChild(ProjectElement value) {
+			return (ProjectTaskElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectTaskElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectTaskElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectTaskElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectTaskElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectTaskElement RemoveChild(ProjectElement value) {
+			return (ProjectTaskElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectTaskElement RemoveChildren() {
+			return (ProjectTaskElement)base.RemoveChildren();
+		}
+		
+		
+		/// <summary>Returns a new instance with the ContinueOnError property set to the specified value.</summary>
+		public ProjectTaskElement WithContinueOnError(System.String value) {
+			if (value == this.ContinueOnError) {
+				return this;
+			}
+		
+			return this.With(continueOnError: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ContinueOnErrorLocation property set to the specified value.</summary>
+		public ProjectTaskElement WithContinueOnErrorLocation(ElementLocation value) {
+			if (value == this.ContinueOnErrorLocation) {
+				return this;
+			}
+		
+			return this.With(continueOnErrorLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildArchitecture property set to the specified value.</summary>
+		public ProjectTaskElement WithMSBuildArchitecture(System.String value) {
+			if (value == this.MSBuildArchitecture) {
+				return this;
+			}
+		
+			return this.With(mSBuildArchitecture: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildArchitectureLocation property set to the specified value.</summary>
+		public ProjectTaskElement WithMSBuildArchitectureLocation(ElementLocation value) {
+			if (value == this.MSBuildArchitectureLocation) {
+				return this;
+			}
+		
+			return this.With(mSBuildArchitectureLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildRuntime property set to the specified value.</summary>
+		public ProjectTaskElement WithMSBuildRuntime(System.String value) {
+			if (value == this.MSBuildRuntime) {
+				return this;
+			}
+		
+			return this.With(mSBuildRuntime: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildRuntimeLocation property set to the specified value.</summary>
+		public ProjectTaskElement WithMSBuildRuntimeLocation(ElementLocation value) {
+			if (value == this.MSBuildRuntimeLocation) {
+				return this;
+			}
+		
+			return this.With(mSBuildRuntimeLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public ProjectTaskElement WithName(System.String value) {
+			if (value == this.Name) {
+				return this;
+			}
+		
+			return this.With(name: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectTaskElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (ProjectTaskElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children,
+				continueOnError: continueOnError,
+				continueOnErrorLocation: continueOnErrorLocation,
+				mSBuildArchitecture: mSBuildArchitecture,
+				mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+				mSBuildRuntime: mSBuildRuntime,
+				mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+				name: name);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectTaskElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				continueOnError: Optional.For(continueOnError.GetValueOrDefault(this.ContinueOnError)),
+				continueOnErrorLocation: Optional.For(continueOnErrorLocation.GetValueOrDefault(this.ContinueOnErrorLocation)),
+				mSBuildArchitecture: Optional.For(mSBuildArchitecture.GetValueOrDefault(this.MSBuildArchitecture)),
+				mSBuildArchitectureLocation: Optional.For(mSBuildArchitectureLocation.GetValueOrDefault(this.MSBuildArchitectureLocation)),
+				mSBuildRuntime: Optional.For(mSBuildRuntime.GetValueOrDefault(this.MSBuildRuntime)),
+				mSBuildRuntimeLocation: Optional.For(mSBuildRuntimeLocation.GetValueOrDefault(this.MSBuildRuntimeLocation)),
+				name: Optional.For(name.GetValueOrDefault(this.Name)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectTaskElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children) || 
+				(continueOnError.IsDefined && continueOnError.Value != this.ContinueOnError) || 
+				(continueOnErrorLocation.IsDefined && continueOnErrorLocation.Value != this.ContinueOnErrorLocation) || 
+				(mSBuildArchitecture.IsDefined && mSBuildArchitecture.Value != this.MSBuildArchitecture) || 
+				(mSBuildArchitectureLocation.IsDefined && mSBuildArchitectureLocation.Value != this.MSBuildArchitectureLocation) || 
+				(mSBuildRuntime.IsDefined && mSBuildRuntime.Value != this.MSBuildRuntime) || 
+				(mSBuildRuntimeLocation.IsDefined && mSBuildRuntimeLocation.Value != this.MSBuildRuntimeLocation) || 
+				(name.IsDefined && name.Value != this.Name)) {
+				return new ProjectTaskElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children),
+					continueOnError: continueOnError.GetValueOrDefault(this.ContinueOnError),
+					continueOnErrorLocation: continueOnErrorLocation.GetValueOrDefault(this.ContinueOnErrorLocation),
+					mSBuildArchitecture: mSBuildArchitecture.GetValueOrDefault(this.MSBuildArchitecture),
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation.GetValueOrDefault(this.MSBuildArchitectureLocation),
+					mSBuildRuntime: mSBuildRuntime.GetValueOrDefault(this.MSBuildRuntime),
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation.GetValueOrDefault(this.MSBuildRuntimeLocation),
+					name: name.GetValueOrDefault(this.Name));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectTaskElement whose fields are initialized with default values.</summary>
+		private static ProjectTaskElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectTaskElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children, 
+				template.ContinueOnError, 
+				template.ContinueOnErrorLocation, 
+				template.MSBuildArchitecture, 
+				template.MSBuildArchitectureLocation, 
+				template.MSBuildRuntime, 
+				template.MSBuildRuntimeLocation, 
+				template.Name);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+	
+			internal System.String ContinueOnError { get; set; }
+	
+			internal ElementLocation ContinueOnErrorLocation { get; set; }
+	
+			internal System.String MSBuildArchitecture { get; set; }
+	
+			internal ElementLocation MSBuildArchitectureLocation { get; set; }
+	
+			internal System.String MSBuildRuntime { get; set; }
+	
+			internal ElementLocation MSBuildRuntimeLocation { get; set; }
+	
+			internal System.String Name { get; set; }
+		}
+		
+		internal static ProjectTaskElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					continueOnError: Optional.For(continueOnError.GetValueOrDefault(DefaultInstance.ContinueOnError)),
+					continueOnErrorLocation: Optional.For(continueOnErrorLocation.GetValueOrDefault(DefaultInstance.ContinueOnErrorLocation)),
+					mSBuildArchitecture: Optional.For(mSBuildArchitecture.GetValueOrDefault(DefaultInstance.MSBuildArchitecture)),
+					mSBuildArchitectureLocation: Optional.For(mSBuildArchitectureLocation.GetValueOrDefault(DefaultInstance.MSBuildArchitectureLocation)),
+					mSBuildRuntime: Optional.For(mSBuildRuntime.GetValueOrDefault(DefaultInstance.MSBuildRuntime)),
+					mSBuildRuntimeLocation: Optional.For(mSBuildRuntimeLocation.GetValueOrDefault(DefaultInstance.MSBuildRuntimeLocation)),
+					name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectTaskElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String continueOnError;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> continueOnErrorLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String mSBuildArchitecture;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> mSBuildArchitectureLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String mSBuildRuntime;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> mSBuildRuntimeLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String name;
+		
+			internal Builder(ProjectTaskElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.continueOnError = immutable.ContinueOnError;
+				this.mSBuildArchitecture = immutable.MSBuildArchitecture;
+				this.mSBuildRuntime = immutable.MSBuildRuntime;
+				this.name = immutable.Name;
+			}
+		
+			public System.String ContinueOnError {
+				get {
+					return this.continueOnError;
+				}
+		
+				set {
+					this.continueOnError = value;
+				}
+			}
+		
+			public ElementLocation.Builder ContinueOnErrorLocation {
+				get {
+					if (!this.continueOnErrorLocation.IsDefined) {
+						this.continueOnErrorLocation = this.immutable.continueOnErrorLocation != null ? this.immutable.continueOnErrorLocation.ToBuilder() : null;
+					}
+		
+					return this.continueOnErrorLocation.Value;
+				}
+		
+				set {
+					this.continueOnErrorLocation = value;
+				}
+			}
+		
+			public System.String MSBuildArchitecture {
+				get {
+					return this.mSBuildArchitecture;
+				}
+		
+				set {
+					this.mSBuildArchitecture = value;
+				}
+			}
+		
+			public ElementLocation.Builder MSBuildArchitectureLocation {
+				get {
+					if (!this.mSBuildArchitectureLocation.IsDefined) {
+						this.mSBuildArchitectureLocation = this.immutable.mSBuildArchitectureLocation != null ? this.immutable.mSBuildArchitectureLocation.ToBuilder() : null;
+					}
+		
+					return this.mSBuildArchitectureLocation.Value;
+				}
+		
+				set {
+					this.mSBuildArchitectureLocation = value;
+				}
+			}
+		
+			public System.String MSBuildRuntime {
+				get {
+					return this.mSBuildRuntime;
+				}
+		
+				set {
+					this.mSBuildRuntime = value;
+				}
+			}
+		
+			public ElementLocation.Builder MSBuildRuntimeLocation {
+				get {
+					if (!this.mSBuildRuntimeLocation.IsDefined) {
+						this.mSBuildRuntimeLocation = this.immutable.mSBuildRuntimeLocation != null ? this.immutable.mSBuildRuntimeLocation.ToBuilder() : null;
+					}
+		
+					return this.mSBuildRuntimeLocation.Value;
+				}
+		
+				set {
+					this.mSBuildRuntimeLocation = value;
+				}
+			}
+		
+			public System.String Name {
+				get {
+					return this.name;
+				}
+		
+				set {
+					this.name = value;
+				}
+			}
+		
+			public new ProjectTaskElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				var continueOnErrorLocation = this.continueOnErrorLocation.IsDefined ? (this.continueOnErrorLocation.Value != null ? this.continueOnErrorLocation.Value.ToImmutable() : null) : this.immutable.ContinueOnErrorLocation;
+				var mSBuildArchitectureLocation = this.mSBuildArchitectureLocation.IsDefined ? (this.mSBuildArchitectureLocation.Value != null ? this.mSBuildArchitectureLocation.Value.ToImmutable() : null) : this.immutable.MSBuildArchitectureLocation;
+				var mSBuildRuntimeLocation = this.mSBuildRuntimeLocation.IsDefined ? (this.mSBuildRuntimeLocation.Value != null ? this.mSBuildRuntimeLocation.Value.ToImmutable() : null) : this.immutable.MSBuildRuntimeLocation;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(children),
+					ImmutableObjectGraph.Optional.For(this.ContinueOnError),
+					ImmutableObjectGraph.Optional.For(continueOnErrorLocation),
+					ImmutableObjectGraph.Optional.For(this.MSBuildArchitecture),
+					ImmutableObjectGraph.Optional.For(mSBuildArchitectureLocation),
+					ImmutableObjectGraph.Optional.For(this.MSBuildRuntime),
+					ImmutableObjectGraph.Optional.For(mSBuildRuntimeLocation),
+					ImmutableObjectGraph.Optional.For(this.Name));
+			}
+		}
+	}
+	
+	public interface IProjectUsingTaskBodyElement : IProjectElement {
+		System.String Evaluate { get; }
+		ElementLocation EvaluateLocation { get; }
+		System.String TaskBody { get; }
+	}
+	
+	public partial class ProjectUsingTaskBodyElement : ProjectElement, IProjectUsingTaskBodyElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectUsingTaskBodyElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String evaluate;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation evaluateLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String taskBody;
+	
+		/// <summary>Initializes a new instance of the ProjectUsingTaskBodyElement class.</summary>
+		protected ProjectUsingTaskBodyElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.String evaluate,
+			ElementLocation evaluateLocation,
+			System.String taskBody)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location)
+		{
+			this.evaluate = evaluate;
+			this.evaluateLocation = evaluateLocation;
+			this.taskBody = taskBody;
+			this.Validate();
+		}
+	
+		public static ProjectUsingTaskBodyElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				evaluate: Optional.For(evaluate.GetValueOrDefault(DefaultInstance.Evaluate)),
+				evaluateLocation: Optional.For(evaluateLocation.GetValueOrDefault(DefaultInstance.EvaluateLocation)),
+				taskBody: Optional.For(taskBody.GetValueOrDefault(DefaultInstance.TaskBody)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String Evaluate {
+			get { return this.evaluate; }
+		}
+	
+		public ElementLocation EvaluateLocation {
+			get { return this.evaluateLocation; }
+		}
+	
+		public System.String TaskBody {
+			get { return this.taskBody; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectUsingTaskBodyElement WithCondition(System.String value) {
+			return (ProjectUsingTaskBodyElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectUsingTaskBodyElement WithConditionLocation(ElementLocation value) {
+			return (ProjectUsingTaskBodyElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectUsingTaskBodyElement WithLabel(System.String value) {
+			return (ProjectUsingTaskBodyElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectUsingTaskBodyElement WithLabelLocation(ElementLocation value) {
+			return (ProjectUsingTaskBodyElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectUsingTaskBodyElement WithLocation(ElementLocation value) {
+			return (ProjectUsingTaskBodyElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Evaluate property set to the specified value.</summary>
+		public ProjectUsingTaskBodyElement WithEvaluate(System.String value) {
+			if (value == this.Evaluate) {
+				return this;
+			}
+		
+			return this.With(evaluate: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the EvaluateLocation property set to the specified value.</summary>
+		public ProjectUsingTaskBodyElement WithEvaluateLocation(ElementLocation value) {
+			if (value == this.EvaluateLocation) {
+				return this;
+			}
+		
+			return this.With(evaluateLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the TaskBody property set to the specified value.</summary>
+		public ProjectUsingTaskBodyElement WithTaskBody(System.String value) {
+			if (value == this.TaskBody) {
+				return this;
+			}
+		
+			return this.With(taskBody: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectUsingTaskBodyElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (ProjectUsingTaskBodyElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				evaluate: evaluate,
+				evaluateLocation: evaluateLocation,
+				taskBody: taskBody);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectUsingTaskBodyElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				evaluate: Optional.For(evaluate.GetValueOrDefault(this.Evaluate)),
+				evaluateLocation: Optional.For(evaluateLocation.GetValueOrDefault(this.EvaluateLocation)),
+				taskBody: Optional.For(taskBody.GetValueOrDefault(this.TaskBody)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectUsingTaskBodyElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(evaluate.IsDefined && evaluate.Value != this.Evaluate) || 
+				(evaluateLocation.IsDefined && evaluateLocation.Value != this.EvaluateLocation) || 
+				(taskBody.IsDefined && taskBody.Value != this.TaskBody)) {
+				return new ProjectUsingTaskBodyElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					evaluate: evaluate.GetValueOrDefault(this.Evaluate),
+					evaluateLocation: evaluateLocation.GetValueOrDefault(this.EvaluateLocation),
+					taskBody: taskBody.GetValueOrDefault(this.TaskBody));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectUsingTaskBodyElement whose fields are initialized with default values.</summary>
+		private static ProjectUsingTaskBodyElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectUsingTaskBodyElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Evaluate, 
+				template.EvaluateLocation, 
+				template.TaskBody);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.String Evaluate { get; set; }
+	
+			internal ElementLocation EvaluateLocation { get; set; }
+	
+			internal System.String TaskBody { get; set; }
+		}
+		
+		internal static ProjectUsingTaskBodyElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					evaluate: Optional.For(evaluate.GetValueOrDefault(DefaultInstance.Evaluate)),
+					evaluateLocation: Optional.For(evaluateLocation.GetValueOrDefault(DefaultInstance.EvaluateLocation)),
+					taskBody: Optional.For(taskBody.GetValueOrDefault(DefaultInstance.TaskBody)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectUsingTaskBodyElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String evaluate;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> evaluateLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String taskBody;
+		
+			internal Builder(ProjectUsingTaskBodyElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.evaluate = immutable.Evaluate;
+				this.taskBody = immutable.TaskBody;
+			}
+		
+			public System.String Evaluate {
+				get {
+					return this.evaluate;
+				}
+		
+				set {
+					this.evaluate = value;
+				}
+			}
+		
+			public ElementLocation.Builder EvaluateLocation {
+				get {
+					if (!this.evaluateLocation.IsDefined) {
+						this.evaluateLocation = this.immutable.evaluateLocation != null ? this.immutable.evaluateLocation.ToBuilder() : null;
+					}
+		
+					return this.evaluateLocation.Value;
+				}
+		
+				set {
+					this.evaluateLocation = value;
+				}
+			}
+		
+			public System.String TaskBody {
+				get {
+					return this.taskBody;
+				}
+		
+				set {
+					this.taskBody = value;
+				}
+			}
+		
+			public new ProjectUsingTaskBodyElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var evaluateLocation = this.evaluateLocation.IsDefined ? (this.evaluateLocation.Value != null ? this.evaluateLocation.Value.ToImmutable() : null) : this.immutable.EvaluateLocation;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(this.Evaluate),
+					ImmutableObjectGraph.Optional.For(evaluateLocation),
+					ImmutableObjectGraph.Optional.For(this.TaskBody));
+			}
+		}
+	}
+	
+	public interface IProjectUsingTaskElement : IProjectElementContainer {
+		System.String Architecture { get; }
+		ElementLocation ArchitectureLocation { get; }
+		System.String AssemblyFile { get; }
+		ElementLocation AssemblyFileLocation { get; }
+		System.String AssemblyName { get; }
+		ElementLocation AssemblyNameLocation { get; }
+		System.String Runtime { get; }
+		ElementLocation RuntimeLocation { get; }
+		System.String TaskFactory { get; }
+		ElementLocation TaskFactoryLocation { get; }
+		System.String TaskName { get; }
+		ElementLocation TaskNameLocation { get; }
+	}
+	
+	public partial class ProjectUsingTaskElement : ProjectElementContainer, IProjectUsingTaskElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectUsingTaskElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String architecture;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation architectureLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String assemblyFile;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation assemblyFileLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String assemblyName;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation assemblyNameLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String runtime;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation runtimeLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String taskFactory;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation taskFactoryLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String taskName;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation taskNameLocation;
+	
+		/// <summary>Initializes a new instance of the ProjectUsingTaskElement class.</summary>
+		protected ProjectUsingTaskElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			System.String architecture,
+			ElementLocation architectureLocation,
+			System.String assemblyFile,
+			ElementLocation assemblyFileLocation,
+			System.String assemblyName,
+			ElementLocation assemblyNameLocation,
+			System.String runtime,
+			ElementLocation runtimeLocation,
+			System.String taskFactory,
+			ElementLocation taskFactoryLocation,
+			System.String taskName,
+			ElementLocation taskNameLocation)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.architecture = architecture;
+			this.architectureLocation = architectureLocation;
+			this.assemblyFile = assemblyFile;
+			this.assemblyFileLocation = assemblyFileLocation;
+			this.assemblyName = assemblyName;
+			this.assemblyNameLocation = assemblyNameLocation;
+			this.runtime = runtime;
+			this.runtimeLocation = runtimeLocation;
+			this.taskFactory = taskFactory;
+			this.taskFactoryLocation = taskFactoryLocation;
+			this.taskName = taskName;
+			this.taskNameLocation = taskNameLocation;
+			this.Validate();
+		}
+	
+		public static ProjectUsingTaskElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				architecture: Optional.For(architecture.GetValueOrDefault(DefaultInstance.Architecture)),
+				architectureLocation: Optional.For(architectureLocation.GetValueOrDefault(DefaultInstance.ArchitectureLocation)),
+				assemblyFile: Optional.For(assemblyFile.GetValueOrDefault(DefaultInstance.AssemblyFile)),
+				assemblyFileLocation: Optional.For(assemblyFileLocation.GetValueOrDefault(DefaultInstance.AssemblyFileLocation)),
+				assemblyName: Optional.For(assemblyName.GetValueOrDefault(DefaultInstance.AssemblyName)),
+				assemblyNameLocation: Optional.For(assemblyNameLocation.GetValueOrDefault(DefaultInstance.AssemblyNameLocation)),
+				runtime: Optional.For(runtime.GetValueOrDefault(DefaultInstance.Runtime)),
+				runtimeLocation: Optional.For(runtimeLocation.GetValueOrDefault(DefaultInstance.RuntimeLocation)),
+				taskFactory: Optional.For(taskFactory.GetValueOrDefault(DefaultInstance.TaskFactory)),
+				taskFactoryLocation: Optional.For(taskFactoryLocation.GetValueOrDefault(DefaultInstance.TaskFactoryLocation)),
+				taskName: Optional.For(taskName.GetValueOrDefault(DefaultInstance.TaskName)),
+				taskNameLocation: Optional.For(taskNameLocation.GetValueOrDefault(DefaultInstance.TaskNameLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String Architecture {
+			get { return this.architecture; }
+		}
+	
+		public ElementLocation ArchitectureLocation {
+			get { return this.architectureLocation; }
+		}
+	
+		public System.String AssemblyFile {
+			get { return this.assemblyFile; }
+		}
+	
+		public ElementLocation AssemblyFileLocation {
+			get { return this.assemblyFileLocation; }
+		}
+	
+		public System.String AssemblyName {
+			get { return this.assemblyName; }
+		}
+	
+		public ElementLocation AssemblyNameLocation {
+			get { return this.assemblyNameLocation; }
+		}
+	
+		public System.String Runtime {
+			get { return this.runtime; }
+		}
+	
+		public ElementLocation RuntimeLocation {
+			get { return this.runtimeLocation; }
+		}
+	
+		public System.String TaskFactory {
+			get { return this.taskFactory; }
+		}
+	
+		public ElementLocation TaskFactoryLocation {
+			get { return this.taskFactoryLocation; }
+		}
+	
+		public System.String TaskName {
+			get { return this.taskName; }
+		}
+	
+		public ElementLocation TaskNameLocation {
+			get { return this.taskNameLocation; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectUsingTaskElement WithCondition(System.String value) {
+			return (ProjectUsingTaskElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectUsingTaskElement WithConditionLocation(ElementLocation value) {
+			return (ProjectUsingTaskElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectUsingTaskElement WithLabel(System.String value) {
+			return (ProjectUsingTaskElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectUsingTaskElement WithLabelLocation(ElementLocation value) {
+			return (ProjectUsingTaskElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectUsingTaskElement WithLocation(ElementLocation value) {
+			return (ProjectUsingTaskElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectUsingTaskElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectUsingTaskElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectUsingTaskElement WithChildren(params ProjectElement[] values) {
+			return (ProjectUsingTaskElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectUsingTaskElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectUsingTaskElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectUsingTaskElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectUsingTaskElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectUsingTaskElement AddChildren(params ProjectElement[] values) {
+			return (ProjectUsingTaskElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectUsingTaskElement AddChild(ProjectElement value) {
+			return (ProjectUsingTaskElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectUsingTaskElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectUsingTaskElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectUsingTaskElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectUsingTaskElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectUsingTaskElement RemoveChild(ProjectElement value) {
+			return (ProjectUsingTaskElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectUsingTaskElement RemoveChildren() {
+			return (ProjectUsingTaskElement)base.RemoveChildren();
+		}
+		
+		
+		/// <summary>Returns a new instance with the Architecture property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithArchitecture(System.String value) {
+			if (value == this.Architecture) {
+				return this;
+			}
+		
+			return this.With(architecture: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ArchitectureLocation property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithArchitectureLocation(ElementLocation value) {
+			if (value == this.ArchitectureLocation) {
+				return this;
+			}
+		
+			return this.With(architectureLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyFile property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithAssemblyFile(System.String value) {
+			if (value == this.AssemblyFile) {
+				return this;
+			}
+		
+			return this.With(assemblyFile: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyFileLocation property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithAssemblyFileLocation(ElementLocation value) {
+			if (value == this.AssemblyFileLocation) {
+				return this;
+			}
+		
+			return this.With(assemblyFileLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyName property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithAssemblyName(System.String value) {
+			if (value == this.AssemblyName) {
+				return this;
+			}
+		
+			return this.With(assemblyName: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyNameLocation property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithAssemblyNameLocation(ElementLocation value) {
+			if (value == this.AssemblyNameLocation) {
+				return this;
+			}
+		
+			return this.With(assemblyNameLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Runtime property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithRuntime(System.String value) {
+			if (value == this.Runtime) {
+				return this;
+			}
+		
+			return this.With(runtime: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the RuntimeLocation property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithRuntimeLocation(ElementLocation value) {
+			if (value == this.RuntimeLocation) {
+				return this;
+			}
+		
+			return this.With(runtimeLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the TaskFactory property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithTaskFactory(System.String value) {
+			if (value == this.TaskFactory) {
+				return this;
+			}
+		
+			return this.With(taskFactory: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the TaskFactoryLocation property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithTaskFactoryLocation(ElementLocation value) {
+			if (value == this.TaskFactoryLocation) {
+				return this;
+			}
+		
+			return this.With(taskFactoryLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the TaskName property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithTaskName(System.String value) {
+			if (value == this.TaskName) {
+				return this;
+			}
+		
+			return this.With(taskName: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the TaskNameLocation property set to the specified value.</summary>
+		public ProjectUsingTaskElement WithTaskNameLocation(ElementLocation value) {
+			if (value == this.TaskNameLocation) {
+				return this;
+			}
+		
+			return this.With(taskNameLocation: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectUsingTaskElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return (ProjectUsingTaskElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children,
+				architecture: architecture,
+				architectureLocation: architectureLocation,
+				assemblyFile: assemblyFile,
+				assemblyFileLocation: assemblyFileLocation,
+				assemblyName: assemblyName,
+				assemblyNameLocation: assemblyNameLocation,
+				runtime: runtime,
+				runtimeLocation: runtimeLocation,
+				taskFactory: taskFactory,
+				taskFactoryLocation: taskFactoryLocation,
+				taskName: taskName,
+				taskNameLocation: taskNameLocation);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectUsingTaskElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				architecture: Optional.For(architecture.GetValueOrDefault(this.Architecture)),
+				architectureLocation: Optional.For(architectureLocation.GetValueOrDefault(this.ArchitectureLocation)),
+				assemblyFile: Optional.For(assemblyFile.GetValueOrDefault(this.AssemblyFile)),
+				assemblyFileLocation: Optional.For(assemblyFileLocation.GetValueOrDefault(this.AssemblyFileLocation)),
+				assemblyName: Optional.For(assemblyName.GetValueOrDefault(this.AssemblyName)),
+				assemblyNameLocation: Optional.For(assemblyNameLocation.GetValueOrDefault(this.AssemblyNameLocation)),
+				runtime: Optional.For(runtime.GetValueOrDefault(this.Runtime)),
+				runtimeLocation: Optional.For(runtimeLocation.GetValueOrDefault(this.RuntimeLocation)),
+				taskFactory: Optional.For(taskFactory.GetValueOrDefault(this.TaskFactory)),
+				taskFactoryLocation: Optional.For(taskFactoryLocation.GetValueOrDefault(this.TaskFactoryLocation)),
+				taskName: Optional.For(taskName.GetValueOrDefault(this.TaskName)),
+				taskNameLocation: Optional.For(taskNameLocation.GetValueOrDefault(this.TaskNameLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectUsingTaskElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children) || 
+				(architecture.IsDefined && architecture.Value != this.Architecture) || 
+				(architectureLocation.IsDefined && architectureLocation.Value != this.ArchitectureLocation) || 
+				(assemblyFile.IsDefined && assemblyFile.Value != this.AssemblyFile) || 
+				(assemblyFileLocation.IsDefined && assemblyFileLocation.Value != this.AssemblyFileLocation) || 
+				(assemblyName.IsDefined && assemblyName.Value != this.AssemblyName) || 
+				(assemblyNameLocation.IsDefined && assemblyNameLocation.Value != this.AssemblyNameLocation) || 
+				(runtime.IsDefined && runtime.Value != this.Runtime) || 
+				(runtimeLocation.IsDefined && runtimeLocation.Value != this.RuntimeLocation) || 
+				(taskFactory.IsDefined && taskFactory.Value != this.TaskFactory) || 
+				(taskFactoryLocation.IsDefined && taskFactoryLocation.Value != this.TaskFactoryLocation) || 
+				(taskName.IsDefined && taskName.Value != this.TaskName) || 
+				(taskNameLocation.IsDefined && taskNameLocation.Value != this.TaskNameLocation)) {
+				return new ProjectUsingTaskElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children),
+					architecture: architecture.GetValueOrDefault(this.Architecture),
+					architectureLocation: architectureLocation.GetValueOrDefault(this.ArchitectureLocation),
+					assemblyFile: assemblyFile.GetValueOrDefault(this.AssemblyFile),
+					assemblyFileLocation: assemblyFileLocation.GetValueOrDefault(this.AssemblyFileLocation),
+					assemblyName: assemblyName.GetValueOrDefault(this.AssemblyName),
+					assemblyNameLocation: assemblyNameLocation.GetValueOrDefault(this.AssemblyNameLocation),
+					runtime: runtime.GetValueOrDefault(this.Runtime),
+					runtimeLocation: runtimeLocation.GetValueOrDefault(this.RuntimeLocation),
+					taskFactory: taskFactory.GetValueOrDefault(this.TaskFactory),
+					taskFactoryLocation: taskFactoryLocation.GetValueOrDefault(this.TaskFactoryLocation),
+					taskName: taskName.GetValueOrDefault(this.TaskName),
+					taskNameLocation: taskNameLocation.GetValueOrDefault(this.TaskNameLocation));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectUsingTaskElement whose fields are initialized with default values.</summary>
+		private static ProjectUsingTaskElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectUsingTaskElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children, 
+				template.Architecture, 
+				template.ArchitectureLocation, 
+				template.AssemblyFile, 
+				template.AssemblyFileLocation, 
+				template.AssemblyName, 
+				template.AssemblyNameLocation, 
+				template.Runtime, 
+				template.RuntimeLocation, 
+				template.TaskFactory, 
+				template.TaskFactoryLocation, 
+				template.TaskName, 
+				template.TaskNameLocation);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+	
+			internal System.String Architecture { get; set; }
+	
+			internal ElementLocation ArchitectureLocation { get; set; }
+	
+			internal System.String AssemblyFile { get; set; }
+	
+			internal ElementLocation AssemblyFileLocation { get; set; }
+	
+			internal System.String AssemblyName { get; set; }
+	
+			internal ElementLocation AssemblyNameLocation { get; set; }
+	
+			internal System.String Runtime { get; set; }
+	
+			internal ElementLocation RuntimeLocation { get; set; }
+	
+			internal System.String TaskFactory { get; set; }
+	
+			internal ElementLocation TaskFactoryLocation { get; set; }
+	
+			internal System.String TaskName { get; set; }
+	
+			internal ElementLocation TaskNameLocation { get; set; }
+		}
+		
+		internal static ProjectUsingTaskElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					architecture: Optional.For(architecture.GetValueOrDefault(DefaultInstance.Architecture)),
+					architectureLocation: Optional.For(architectureLocation.GetValueOrDefault(DefaultInstance.ArchitectureLocation)),
+					assemblyFile: Optional.For(assemblyFile.GetValueOrDefault(DefaultInstance.AssemblyFile)),
+					assemblyFileLocation: Optional.For(assemblyFileLocation.GetValueOrDefault(DefaultInstance.AssemblyFileLocation)),
+					assemblyName: Optional.For(assemblyName.GetValueOrDefault(DefaultInstance.AssemblyName)),
+					assemblyNameLocation: Optional.For(assemblyNameLocation.GetValueOrDefault(DefaultInstance.AssemblyNameLocation)),
+					runtime: Optional.For(runtime.GetValueOrDefault(DefaultInstance.Runtime)),
+					runtimeLocation: Optional.For(runtimeLocation.GetValueOrDefault(DefaultInstance.RuntimeLocation)),
+					taskFactory: Optional.For(taskFactory.GetValueOrDefault(DefaultInstance.TaskFactory)),
+					taskFactoryLocation: Optional.For(taskFactoryLocation.GetValueOrDefault(DefaultInstance.TaskFactoryLocation)),
+					taskName: Optional.For(taskName.GetValueOrDefault(DefaultInstance.TaskName)),
+					taskNameLocation: Optional.For(taskNameLocation.GetValueOrDefault(DefaultInstance.TaskNameLocation)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectUsingTaskElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String architecture;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> architectureLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String assemblyFile;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> assemblyFileLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String assemblyName;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> assemblyNameLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String runtime;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> runtimeLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String taskFactory;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> taskFactoryLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String taskName;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> taskNameLocation;
+		
+			internal Builder(ProjectUsingTaskElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.architecture = immutable.Architecture;
+				this.assemblyFile = immutable.AssemblyFile;
+				this.assemblyName = immutable.AssemblyName;
+				this.runtime = immutable.Runtime;
+				this.taskFactory = immutable.TaskFactory;
+				this.taskName = immutable.TaskName;
+			}
+		
+			public System.String Architecture {
+				get {
+					return this.architecture;
+				}
+		
+				set {
+					this.architecture = value;
+				}
+			}
+		
+			public ElementLocation.Builder ArchitectureLocation {
+				get {
+					if (!this.architectureLocation.IsDefined) {
+						this.architectureLocation = this.immutable.architectureLocation != null ? this.immutable.architectureLocation.ToBuilder() : null;
+					}
+		
+					return this.architectureLocation.Value;
+				}
+		
+				set {
+					this.architectureLocation = value;
+				}
+			}
+		
+			public System.String AssemblyFile {
+				get {
+					return this.assemblyFile;
+				}
+		
+				set {
+					this.assemblyFile = value;
+				}
+			}
+		
+			public ElementLocation.Builder AssemblyFileLocation {
+				get {
+					if (!this.assemblyFileLocation.IsDefined) {
+						this.assemblyFileLocation = this.immutable.assemblyFileLocation != null ? this.immutable.assemblyFileLocation.ToBuilder() : null;
+					}
+		
+					return this.assemblyFileLocation.Value;
+				}
+		
+				set {
+					this.assemblyFileLocation = value;
+				}
+			}
+		
+			public System.String AssemblyName {
+				get {
+					return this.assemblyName;
+				}
+		
+				set {
+					this.assemblyName = value;
+				}
+			}
+		
+			public ElementLocation.Builder AssemblyNameLocation {
+				get {
+					if (!this.assemblyNameLocation.IsDefined) {
+						this.assemblyNameLocation = this.immutable.assemblyNameLocation != null ? this.immutable.assemblyNameLocation.ToBuilder() : null;
+					}
+		
+					return this.assemblyNameLocation.Value;
+				}
+		
+				set {
+					this.assemblyNameLocation = value;
+				}
+			}
+		
+			public System.String Runtime {
+				get {
+					return this.runtime;
+				}
+		
+				set {
+					this.runtime = value;
+				}
+			}
+		
+			public ElementLocation.Builder RuntimeLocation {
+				get {
+					if (!this.runtimeLocation.IsDefined) {
+						this.runtimeLocation = this.immutable.runtimeLocation != null ? this.immutable.runtimeLocation.ToBuilder() : null;
+					}
+		
+					return this.runtimeLocation.Value;
+				}
+		
+				set {
+					this.runtimeLocation = value;
+				}
+			}
+		
+			public System.String TaskFactory {
+				get {
+					return this.taskFactory;
+				}
+		
+				set {
+					this.taskFactory = value;
+				}
+			}
+		
+			public ElementLocation.Builder TaskFactoryLocation {
+				get {
+					if (!this.taskFactoryLocation.IsDefined) {
+						this.taskFactoryLocation = this.immutable.taskFactoryLocation != null ? this.immutable.taskFactoryLocation.ToBuilder() : null;
+					}
+		
+					return this.taskFactoryLocation.Value;
+				}
+		
+				set {
+					this.taskFactoryLocation = value;
+				}
+			}
+		
+			public System.String TaskName {
+				get {
+					return this.taskName;
+				}
+		
+				set {
+					this.taskName = value;
+				}
+			}
+		
+			public ElementLocation.Builder TaskNameLocation {
+				get {
+					if (!this.taskNameLocation.IsDefined) {
+						this.taskNameLocation = this.immutable.taskNameLocation != null ? this.immutable.taskNameLocation.ToBuilder() : null;
+					}
+		
+					return this.taskNameLocation.Value;
+				}
+		
+				set {
+					this.taskNameLocation = value;
+				}
+			}
+		
+			public new ProjectUsingTaskElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				var architectureLocation = this.architectureLocation.IsDefined ? (this.architectureLocation.Value != null ? this.architectureLocation.Value.ToImmutable() : null) : this.immutable.ArchitectureLocation;
+				var assemblyFileLocation = this.assemblyFileLocation.IsDefined ? (this.assemblyFileLocation.Value != null ? this.assemblyFileLocation.Value.ToImmutable() : null) : this.immutable.AssemblyFileLocation;
+				var assemblyNameLocation = this.assemblyNameLocation.IsDefined ? (this.assemblyNameLocation.Value != null ? this.assemblyNameLocation.Value.ToImmutable() : null) : this.immutable.AssemblyNameLocation;
+				var runtimeLocation = this.runtimeLocation.IsDefined ? (this.runtimeLocation.Value != null ? this.runtimeLocation.Value.ToImmutable() : null) : this.immutable.RuntimeLocation;
+				var taskFactoryLocation = this.taskFactoryLocation.IsDefined ? (this.taskFactoryLocation.Value != null ? this.taskFactoryLocation.Value.ToImmutable() : null) : this.immutable.TaskFactoryLocation;
+				var taskNameLocation = this.taskNameLocation.IsDefined ? (this.taskNameLocation.Value != null ? this.taskNameLocation.Value.ToImmutable() : null) : this.immutable.TaskNameLocation;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(children),
+					ImmutableObjectGraph.Optional.For(this.Architecture),
+					ImmutableObjectGraph.Optional.For(architectureLocation),
+					ImmutableObjectGraph.Optional.For(this.AssemblyFile),
+					ImmutableObjectGraph.Optional.For(assemblyFileLocation),
+					ImmutableObjectGraph.Optional.For(this.AssemblyName),
+					ImmutableObjectGraph.Optional.For(assemblyNameLocation),
+					ImmutableObjectGraph.Optional.For(this.Runtime),
+					ImmutableObjectGraph.Optional.For(runtimeLocation),
+					ImmutableObjectGraph.Optional.For(this.TaskFactory),
+					ImmutableObjectGraph.Optional.For(taskFactoryLocation),
+					ImmutableObjectGraph.Optional.For(this.TaskName),
+					ImmutableObjectGraph.Optional.For(taskNameLocation));
+			}
+		}
+	}
+	
+	public interface IProjectUsingTaskParameterElement : IProjectElement {
+		System.String Name { get; }
+		System.String Output { get; }
+		ElementLocation OutputLocation { get; }
+		System.String ParameterType { get; }
+		ElementLocation ParameterTypeLocation { get; }
+		System.String Required { get; }
+		ElementLocation RequiredLocation { get; }
+	}
+	
+	public partial class ProjectUsingTaskParameterElement : ProjectElement, IProjectUsingTaskParameterElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectUsingTaskParameterElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String name;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String output;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation outputLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String parameterType;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation parameterTypeLocation;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String required;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly ElementLocation requiredLocation;
+	
+		/// <summary>Initializes a new instance of the ProjectUsingTaskParameterElement class.</summary>
+		protected ProjectUsingTaskParameterElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.String name,
+			System.String output,
+			ElementLocation outputLocation,
+			System.String parameterType,
+			ElementLocation parameterTypeLocation,
+			System.String required,
+			ElementLocation requiredLocation)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location)
+		{
+			this.name = name;
+			this.output = output;
+			this.outputLocation = outputLocation;
+			this.parameterType = parameterType;
+			this.parameterTypeLocation = parameterTypeLocation;
+			this.required = required;
+			this.requiredLocation = requiredLocation;
+			this.Validate();
+		}
+	
+		public static ProjectUsingTaskParameterElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+				output: Optional.For(output.GetValueOrDefault(DefaultInstance.Output)),
+				outputLocation: Optional.For(outputLocation.GetValueOrDefault(DefaultInstance.OutputLocation)),
+				parameterType: Optional.For(parameterType.GetValueOrDefault(DefaultInstance.ParameterType)),
+				parameterTypeLocation: Optional.For(parameterTypeLocation.GetValueOrDefault(DefaultInstance.ParameterTypeLocation)),
+				required: Optional.For(required.GetValueOrDefault(DefaultInstance.Required)),
+				requiredLocation: Optional.For(requiredLocation.GetValueOrDefault(DefaultInstance.RequiredLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String Name {
+			get { return this.name; }
+		}
+	
+		public System.String Output {
+			get { return this.output; }
+		}
+	
+		public ElementLocation OutputLocation {
+			get { return this.outputLocation; }
+		}
+	
+		public System.String ParameterType {
+			get { return this.parameterType; }
+		}
+	
+		public ElementLocation ParameterTypeLocation {
+			get { return this.parameterTypeLocation; }
+		}
+	
+		public System.String Required {
+			get { return this.required; }
+		}
+	
+		public ElementLocation RequiredLocation {
+			get { return this.requiredLocation; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectUsingTaskParameterElement WithCondition(System.String value) {
+			return (ProjectUsingTaskParameterElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectUsingTaskParameterElement WithConditionLocation(ElementLocation value) {
+			return (ProjectUsingTaskParameterElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectUsingTaskParameterElement WithLabel(System.String value) {
+			return (ProjectUsingTaskParameterElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectUsingTaskParameterElement WithLabelLocation(ElementLocation value) {
+			return (ProjectUsingTaskParameterElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectUsingTaskParameterElement WithLocation(ElementLocation value) {
+			return (ProjectUsingTaskParameterElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public ProjectUsingTaskParameterElement WithName(System.String value) {
+			if (value == this.Name) {
+				return this;
+			}
+		
+			return this.With(name: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Output property set to the specified value.</summary>
+		public ProjectUsingTaskParameterElement WithOutput(System.String value) {
+			if (value == this.Output) {
+				return this;
+			}
+		
+			return this.With(output: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the OutputLocation property set to the specified value.</summary>
+		public ProjectUsingTaskParameterElement WithOutputLocation(ElementLocation value) {
+			if (value == this.OutputLocation) {
+				return this;
+			}
+		
+			return this.With(outputLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ParameterType property set to the specified value.</summary>
+		public ProjectUsingTaskParameterElement WithParameterType(System.String value) {
+			if (value == this.ParameterType) {
+				return this;
+			}
+		
+			return this.With(parameterType: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the ParameterTypeLocation property set to the specified value.</summary>
+		public ProjectUsingTaskParameterElement WithParameterTypeLocation(ElementLocation value) {
+			if (value == this.ParameterTypeLocation) {
+				return this;
+			}
+		
+			return this.With(parameterTypeLocation: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the Required property set to the specified value.</summary>
+		public ProjectUsingTaskParameterElement WithRequired(System.String value) {
+			if (value == this.Required) {
+				return this;
+			}
+		
+			return this.With(required: Optional.For(value));
+		}
+		
+		/// <summary>Returns a new instance with the RequiredLocation property set to the specified value.</summary>
+		public ProjectUsingTaskParameterElement WithRequiredLocation(ElementLocation value) {
+			if (value == this.RequiredLocation) {
+				return this;
+			}
+		
+			return this.With(requiredLocation: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectUsingTaskParameterElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return (ProjectUsingTaskParameterElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				name: name,
+				output: output,
+				outputLocation: outputLocation,
+				parameterType: parameterType,
+				parameterTypeLocation: parameterTypeLocation,
+				required: required,
+				requiredLocation: requiredLocation);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectUsingTaskParameterElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				name: Optional.For(name.GetValueOrDefault(this.Name)),
+				output: Optional.For(output.GetValueOrDefault(this.Output)),
+				outputLocation: Optional.For(outputLocation.GetValueOrDefault(this.OutputLocation)),
+				parameterType: Optional.For(parameterType.GetValueOrDefault(this.ParameterType)),
+				parameterTypeLocation: Optional.For(parameterTypeLocation.GetValueOrDefault(this.ParameterTypeLocation)),
+				required: Optional.For(required.GetValueOrDefault(this.Required)),
+				requiredLocation: Optional.For(requiredLocation.GetValueOrDefault(this.RequiredLocation)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectUsingTaskParameterElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(name.IsDefined && name.Value != this.Name) || 
+				(output.IsDefined && output.Value != this.Output) || 
+				(outputLocation.IsDefined && outputLocation.Value != this.OutputLocation) || 
+				(parameterType.IsDefined && parameterType.Value != this.ParameterType) || 
+				(parameterTypeLocation.IsDefined && parameterTypeLocation.Value != this.ParameterTypeLocation) || 
+				(required.IsDefined && required.Value != this.Required) || 
+				(requiredLocation.IsDefined && requiredLocation.Value != this.RequiredLocation)) {
+				return new ProjectUsingTaskParameterElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					name: name.GetValueOrDefault(this.Name),
+					output: output.GetValueOrDefault(this.Output),
+					outputLocation: outputLocation.GetValueOrDefault(this.OutputLocation),
+					parameterType: parameterType.GetValueOrDefault(this.ParameterType),
+					parameterTypeLocation: parameterTypeLocation.GetValueOrDefault(this.ParameterTypeLocation),
+					required: required.GetValueOrDefault(this.Required),
+					requiredLocation: requiredLocation.GetValueOrDefault(this.RequiredLocation));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectUsingTaskParameterElement whose fields are initialized with default values.</summary>
+		private static ProjectUsingTaskParameterElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectUsingTaskParameterElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Name, 
+				template.Output, 
+				template.OutputLocation, 
+				template.ParameterType, 
+				template.ParameterTypeLocation, 
+				template.Required, 
+				template.RequiredLocation);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.String Name { get; set; }
+	
+			internal System.String Output { get; set; }
+	
+			internal ElementLocation OutputLocation { get; set; }
+	
+			internal System.String ParameterType { get; set; }
+	
+			internal ElementLocation ParameterTypeLocation { get; set; }
+	
+			internal System.String Required { get; set; }
+	
+			internal ElementLocation RequiredLocation { get; set; }
+		}
+		
+		internal static ProjectUsingTaskParameterElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
+					output: Optional.For(output.GetValueOrDefault(DefaultInstance.Output)),
+					outputLocation: Optional.For(outputLocation.GetValueOrDefault(DefaultInstance.OutputLocation)),
+					parameterType: Optional.For(parameterType.GetValueOrDefault(DefaultInstance.ParameterType)),
+					parameterTypeLocation: Optional.For(parameterTypeLocation.GetValueOrDefault(DefaultInstance.ParameterTypeLocation)),
+					required: Optional.For(required.GetValueOrDefault(DefaultInstance.Required)),
+					requiredLocation: Optional.For(requiredLocation.GetValueOrDefault(DefaultInstance.RequiredLocation)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectUsingTaskParameterElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String name;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String output;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> outputLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String parameterType;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> parameterTypeLocation;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String required;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> requiredLocation;
+		
+			internal Builder(ProjectUsingTaskParameterElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.name = immutable.Name;
+				this.output = immutable.Output;
+				this.parameterType = immutable.ParameterType;
+				this.required = immutable.Required;
+			}
+		
+			public System.String Name {
+				get {
+					return this.name;
+				}
+		
+				set {
+					this.name = value;
+				}
+			}
+		
+			public System.String Output {
+				get {
+					return this.output;
+				}
+		
+				set {
+					this.output = value;
+				}
+			}
+		
+			public ElementLocation.Builder OutputLocation {
+				get {
+					if (!this.outputLocation.IsDefined) {
+						this.outputLocation = this.immutable.outputLocation != null ? this.immutable.outputLocation.ToBuilder() : null;
+					}
+		
+					return this.outputLocation.Value;
+				}
+		
+				set {
+					this.outputLocation = value;
+				}
+			}
+		
+			public System.String ParameterType {
+				get {
+					return this.parameterType;
+				}
+		
+				set {
+					this.parameterType = value;
+				}
+			}
+		
+			public ElementLocation.Builder ParameterTypeLocation {
+				get {
+					if (!this.parameterTypeLocation.IsDefined) {
+						this.parameterTypeLocation = this.immutable.parameterTypeLocation != null ? this.immutable.parameterTypeLocation.ToBuilder() : null;
+					}
+		
+					return this.parameterTypeLocation.Value;
+				}
+		
+				set {
+					this.parameterTypeLocation = value;
+				}
+			}
+		
+			public System.String Required {
+				get {
+					return this.required;
+				}
+		
+				set {
+					this.required = value;
+				}
+			}
+		
+			public ElementLocation.Builder RequiredLocation {
+				get {
+					if (!this.requiredLocation.IsDefined) {
+						this.requiredLocation = this.immutable.requiredLocation != null ? this.immutable.requiredLocation.ToBuilder() : null;
+					}
+		
+					return this.requiredLocation.Value;
+				}
+		
+				set {
+					this.requiredLocation = value;
+				}
+			}
+		
+			public new ProjectUsingTaskParameterElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var outputLocation = this.outputLocation.IsDefined ? (this.outputLocation.Value != null ? this.outputLocation.Value.ToImmutable() : null) : this.immutable.OutputLocation;
+				var parameterTypeLocation = this.parameterTypeLocation.IsDefined ? (this.parameterTypeLocation.Value != null ? this.parameterTypeLocation.Value.ToImmutable() : null) : this.immutable.ParameterTypeLocation;
+				var requiredLocation = this.requiredLocation.IsDefined ? (this.requiredLocation.Value != null ? this.requiredLocation.Value.ToImmutable() : null) : this.immutable.RequiredLocation;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(this.Name),
+					ImmutableObjectGraph.Optional.For(this.Output),
+					ImmutableObjectGraph.Optional.For(outputLocation),
+					ImmutableObjectGraph.Optional.For(this.ParameterType),
+					ImmutableObjectGraph.Optional.For(parameterTypeLocation),
+					ImmutableObjectGraph.Optional.For(this.Required),
+					ImmutableObjectGraph.Optional.For(requiredLocation));
+			}
+		}
+	}
+	
+	public interface IUsingTaskParameterGroupElement : IProjectElementContainer {
+	}
+	
+	public partial class UsingTaskParameterGroupElement : ProjectElementContainer, IUsingTaskParameterGroupElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly UsingTaskParameterGroupElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the UsingTaskParameterGroupElement class.</summary>
+		protected UsingTaskParameterGroupElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.Validate();
+		}
+	
+		public static UsingTaskParameterGroupElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new UsingTaskParameterGroupElement WithCondition(System.String value) {
+			return (UsingTaskParameterGroupElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new UsingTaskParameterGroupElement WithConditionLocation(ElementLocation value) {
+			return (UsingTaskParameterGroupElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new UsingTaskParameterGroupElement WithLabel(System.String value) {
+			return (UsingTaskParameterGroupElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new UsingTaskParameterGroupElement WithLabelLocation(ElementLocation value) {
+			return (UsingTaskParameterGroupElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new UsingTaskParameterGroupElement WithLocation(ElementLocation value) {
+			return (UsingTaskParameterGroupElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new UsingTaskParameterGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (UsingTaskParameterGroupElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new UsingTaskParameterGroupElement WithChildren(params ProjectElement[] values) {
+			return (UsingTaskParameterGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new UsingTaskParameterGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (UsingTaskParameterGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new UsingTaskParameterGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (UsingTaskParameterGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new UsingTaskParameterGroupElement AddChildren(params ProjectElement[] values) {
+			return (UsingTaskParameterGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new UsingTaskParameterGroupElement AddChild(ProjectElement value) {
+			return (UsingTaskParameterGroupElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new UsingTaskParameterGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (UsingTaskParameterGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new UsingTaskParameterGroupElement RemoveChildren(params ProjectElement[] values) {
+			return (UsingTaskParameterGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new UsingTaskParameterGroupElement RemoveChild(ProjectElement value) {
+			return (UsingTaskParameterGroupElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new UsingTaskParameterGroupElement RemoveChildren() {
+			return (UsingTaskParameterGroupElement)base.RemoveChildren();
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public UsingTaskParameterGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return (UsingTaskParameterGroupElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private UsingTaskParameterGroupElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children)) {
+				return new UsingTaskParameterGroupElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated UsingTaskParameterGroupElement whose fields are initialized with default values.</summary>
+		private static UsingTaskParameterGroupElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new UsingTaskParameterGroupElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		internal static UsingTaskParameterGroupElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private UsingTaskParameterGroupElement immutable;
+		
+			internal Builder(UsingTaskParameterGroupElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new UsingTaskParameterGroupElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable;
 			}
 		}
 	}
