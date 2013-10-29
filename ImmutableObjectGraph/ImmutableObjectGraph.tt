@@ -134,9 +134,9 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	public static <#= templateType.TypeName #> Create(<# WriteParameters(templateType.AllFields, ParameterStyle.OptionalOrRequired); #>) {
 		var <#= templateType.RequiredIdentityField.NameCamelCase #> = Optional.For(NewIdentity());
-		return DefaultInstance<# if (templateType.LocalFields.Count > 0) { #>.WithFactory(<#
+		return DefaultInstance<# if (templateType.AllFields.Count > 0) { #>.WithFactory(<#
 		WriteArguments(templateType.AllFields.Concat(templateType.OptionalIdentityField), ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always);
-#>)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
+#>)<# } /* if (templateType.AllFields.Count > 0) */ #>;
 	}
 <#
 	} // !IsAbstract Create factory method

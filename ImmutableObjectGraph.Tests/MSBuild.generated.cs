@@ -3207,7 +3207,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -3476,7 +3483,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -3745,7 +3759,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -4014,7 +4035,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -4283,7 +4311,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -6748,7 +6783,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -7471,7 +7513,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -7737,7 +7786,13 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -12158,7 +12213,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>

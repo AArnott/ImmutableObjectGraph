@@ -1,6 +1,7 @@
 ﻿namespace ImmutableObjectGraph.Tests {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Immutable;
 	using System.Linq;
 	using System.Text;
 	using System.Threading.Tasks;
@@ -8,7 +9,7 @@
 
 	public class MSBuildTests {
 		[Fact]
-		public void ProjectRootElementTest() {
+		public void TypeExistanceTest() {
 			Microsoft.Build.Construction.ProjectRootElement pre;
 			ProjectRootElement ipre;
 
@@ -80,6 +81,34 @@
 
 			Microsoft.Build.Construction.UsingTaskParameterGroupElement utpge;
 			UsingTaskParameterGroupElement iutpge;
+		}
+
+		[Fact]
+		public void BasicProjectStructure() {
+			var pre = CreateBasicProjectStructure();
+			Assert.Equal(3, pre.Children.Count);
+			Assert.Equal(2, pre.Children.OfType<ProjectItemGroupElement>().Single().Children.Count);
+		}
+
+		[Fact(Skip = "No parenting support yet.")]
+		public void RecursiveMutation() {
+			var pre = CreateBasicProjectStructure();
+			var aCsItem = (ProjectItemElement)((ProjectItemGroupElement)pre.Children[1]).Children[0];
+			var aCsItemUpdated = aCsItem.WithInclude("A.cs");
+			Assert.Equal("A.cs", aCsItemUpdated.Include);
+			// TODO: add parent and child checks to verify recursion.
+		}
+
+		private static ProjectRootElement CreateBasicProjectStructure() {
+			var pre = ProjectRootElement.Create(toolsVersion: "12.0").AddChildren(
+				ProjectPropertyGroupElement.Create().AddChildren(
+					ProjectPropertyElement.Create(name: "TargetFrameworkIdentifier", value: ".NETFramework"),
+					ProjectPropertyElement.Create(name: "TargetFrameworkVersion", value: "v4.5")),
+				ProjectItemGroupElement.Create().AddChildren(
+					ProjectItemElement.Create(itemType: "Compile", include: "a.cs"),
+					ProjectItemElement.Create(itemType: "Compile", include: "b.cs")),
+				ProjectImportElement.Create(project: "$(MSBuildExtensionsPath32)Microsoft.CSharp.targets"));
+			return pre;
 		}
 	}
 }

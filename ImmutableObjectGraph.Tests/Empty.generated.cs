@@ -489,7 +489,9 @@ namespace ImmutableObjectGraph.Tests {
 		public static EmptyDerivedFromNonEmptyBase Create(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				oneField: Optional.For(oneField.GetValueOrDefault(DefaultInstance.OneField)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the OneField property set to the specified value.</summary>
@@ -705,7 +707,9 @@ namespace ImmutableObjectGraph.Tests {
 		public static EmptyDerivedFromAbstract Create(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var identity = Optional.For(NewIdentity());
-			return DefaultInstance;
+			return DefaultInstance.WithFactory(
+				oneField: Optional.For(oneField.GetValueOrDefault(DefaultInstance.OneField)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		/// <summary>Returns a new instance with the OneField property set to the specified value.</summary>
