@@ -684,6 +684,25 @@ namespace ImmutableObjectGraph.Tests {
 				value: value);
 		}
 		
+		public virtual ProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ProjectExtensionsElement that = this as ProjectExtensionsElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectExtensionsElement))) {
+				if ((!content.IsDefined || content.Value == that.Content)) {
+					return that;
+				}
+			}
+		
+			return ProjectExtensionsElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				content: content);
+		}
+		
 		public Builder ToBuilder() {
 			return new Builder(this);
 		}
@@ -5371,6 +5390,276 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(location),
 					ImmutableObjectGraph.Optional.For(this.Name),
 					ImmutableObjectGraph.Optional.For(this.Value));
+			}
+		}
+	}
+	
+	public interface IProjectExtensionsElement : IProjectElement {
+		System.String Content { get; }
+	}
+	
+	public partial class ProjectExtensionsElement : ProjectElement, IProjectExtensionsElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectExtensionsElement DefaultInstance = GetDefaultTemplate();
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.String content;
+	
+		/// <summary>Initializes a new instance of the ProjectExtensionsElement class.</summary>
+		protected ProjectExtensionsElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.String content)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location)
+		{
+			this.content = content;
+			this.Validate();
+		}
+	
+		public static ProjectExtensionsElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				content: Optional.For(content.GetValueOrDefault(DefaultInstance.Content)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.String Content {
+			get { return this.content; }
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectExtensionsElement WithCondition(System.String value) {
+			return (ProjectExtensionsElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectExtensionsElement WithConditionLocation(ElementLocation value) {
+			return (ProjectExtensionsElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectExtensionsElement WithLabel(System.String value) {
+			return (ProjectExtensionsElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectExtensionsElement WithLabelLocation(ElementLocation value) {
+			return (ProjectExtensionsElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectExtensionsElement WithLocation(ElementLocation value) {
+			return (ProjectExtensionsElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Content property set to the specified value.</summary>
+		public ProjectExtensionsElement WithContent(System.String value) {
+			if (value == this.Content) {
+				return this;
+			}
+		
+			return this.With(content: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectExtensionsElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (ProjectExtensionsElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				content: content);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual ProjectExtensionsElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
+				conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(this.ConditionLocation)),
+				label: Optional.For(label.GetValueOrDefault(this.Label)),
+				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
+				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				content: Optional.For(content.GetValueOrDefault(this.Content)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectExtensionsElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(content.IsDefined && content.Value != this.Content)) {
+				return new ProjectExtensionsElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					content: content.GetValueOrDefault(this.Content));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectExtensionsElement whose fields are initialized with default values.</summary>
+		private static ProjectExtensionsElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectExtensionsElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Content);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.String Content { get; set; }
+		}
+		
+		internal static ProjectExtensionsElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
+					conditionLocation: Optional.For(conditionLocation.GetValueOrDefault(DefaultInstance.ConditionLocation)),
+					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
+					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
+					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					content: Optional.For(content.GetValueOrDefault(DefaultInstance.Content)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElement.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectExtensionsElement immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.String content;
+		
+			internal Builder(ProjectExtensionsElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+				this.content = immutable.Content;
+			}
+		
+			public System.String Content {
+				get {
+					return this.content;
+				}
+		
+				set {
+					this.content = value;
+				}
+			}
+		
+			public new ProjectExtensionsElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.Condition),
+					ImmutableObjectGraph.Optional.For(conditionLocation),
+					ImmutableObjectGraph.Optional.For(this.Label),
+					ImmutableObjectGraph.Optional.For(labelLocation),
+					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(this.Content));
 			}
 		}
 	}

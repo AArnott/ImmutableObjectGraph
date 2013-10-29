@@ -41,6 +41,22 @@
 
 			Microsoft.Build.Construction.ProjectOtherwiseElement poe;
 			ProjectOtherwiseElement ipoe;
+
+			Microsoft.Build.Construction.ProjectExtensionsElement pee;
+			ProjectExtensionsElement ipee;
+
+			Microsoft.Build.Construction.ProjectImportElement pimporte;
+			Microsoft.Build.Construction.ProjectImportGroupElement pimportge;
+			Microsoft.Build.Construction.ProjectItemDefinitionElement pide;
+			Microsoft.Build.Construction.ProjectItemDefinitionGroupElement pidge;
+			Microsoft.Build.Construction.ProjectOnErrorElement poee;
+			Microsoft.Build.Construction.ProjectOutputElement poutpute;
+			Microsoft.Build.Construction.ProjectTargetElement pte;
+			Microsoft.Build.Construction.ProjectTaskElement ptaske;
+			Microsoft.Build.Construction.ProjectUsingTaskBodyElement putbe;
+			Microsoft.Build.Construction.ProjectUsingTaskElement pute;
+			Microsoft.Build.Construction.ProjectUsingTaskParameterElement putpe;
+			Microsoft.Build.Construction.UsingTaskParameterGroupElement utpge;
 		}
 	}
 }

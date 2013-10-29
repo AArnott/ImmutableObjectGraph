@@ -93,4 +93,8 @@
 		string name;
 		string value;
 	}
+
+	class ProjectExtensionsElement : ProjectElement {
+		string content;
+	}
 #>
