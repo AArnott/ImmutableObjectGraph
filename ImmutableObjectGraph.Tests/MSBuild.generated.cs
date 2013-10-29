@@ -506,6 +506,82 @@ namespace ImmutableObjectGraph.Tests {
 				children: children);
 		}
 		
+		public virtual ProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			ProjectItemGroupElement that = this as ProjectItemGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemGroupElement))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return ProjectItemGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children);
+		}
+		
+		public virtual ProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			ProjectChooseElement that = this as ProjectChooseElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectChooseElement))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return ProjectChooseElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children);
+		}
+		
+		public virtual ProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			ProjectOtherwiseElement that = this as ProjectOtherwiseElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectOtherwiseElement))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return ProjectOtherwiseElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children);
+		}
+		
+		public virtual ProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			ProjectWhenElement that = this as ProjectWhenElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectWhenElement))) {
+				if ((!children.IsDefined || children.Value == that.Children)) {
+					return that;
+				}
+			}
+		
+			return ProjectWhenElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				identity: this.Identity,
+				children: children);
+		}
+		
 		public virtual ProjectPropertyElement ToProjectPropertyElement(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
@@ -1397,6 +1473,94 @@ namespace ImmutableObjectGraph.Tests {
 		public override ProjectPropertyGroupElement ToProjectPropertyGroupElement(
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
 			return base.ToProjectPropertyGroupElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)));
+		}
+		
+		public virtual ProjectItemGroupElement ToProjectItemGroupElement() {
+			ProjectItemGroupElement that = this as ProjectItemGroupElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemGroupElement))) {
+				return that;
+			}
+		
+			return ProjectItemGroupElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
+		}
+		
+		public override ProjectItemGroupElement ToProjectItemGroupElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return base.ToProjectItemGroupElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)));
+		}
+		
+		public virtual ProjectChooseElement ToProjectChooseElement() {
+			ProjectChooseElement that = this as ProjectChooseElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectChooseElement))) {
+				return that;
+			}
+		
+			return ProjectChooseElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
+		}
+		
+		public override ProjectChooseElement ToProjectChooseElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return base.ToProjectChooseElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)));
+		}
+		
+		public virtual ProjectOtherwiseElement ToProjectOtherwiseElement() {
+			ProjectOtherwiseElement that = this as ProjectOtherwiseElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectOtherwiseElement))) {
+				return that;
+			}
+		
+			return ProjectOtherwiseElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
+		}
+		
+		public override ProjectOtherwiseElement ToProjectOtherwiseElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return base.ToProjectOtherwiseElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)));
+		}
+		
+		public virtual ProjectWhenElement ToProjectWhenElement() {
+			ProjectWhenElement that = this as ProjectWhenElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectWhenElement))) {
+				return that;
+			}
+		
+			return ProjectWhenElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
+		}
+		
+		public override ProjectWhenElement ToProjectWhenElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return base.ToProjectWhenElement(
 					children: Optional.For(children.GetValueOrDefault(this.Children)));
 		}
 		
@@ -2522,6 +2686,1082 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			public new ProjectPropertyGroupElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IProjectItemGroupElement : IProjectElementContainer {
+	}
+	
+	public partial class ProjectItemGroupElement : ProjectElementContainer, IProjectItemGroupElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectItemGroupElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ProjectItemGroupElement class.</summary>
+		protected ProjectItemGroupElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.Validate();
+		}
+	
+		public static ProjectItemGroupElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectItemGroupElement WithCondition(System.String value) {
+			return (ProjectItemGroupElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectItemGroupElement WithConditionLocation(ElementLocation value) {
+			return (ProjectItemGroupElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectItemGroupElement WithLabel(System.String value) {
+			return (ProjectItemGroupElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectItemGroupElement WithLabelLocation(ElementLocation value) {
+			return (ProjectItemGroupElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectItemGroupElement WithLocation(ElementLocation value) {
+			return (ProjectItemGroupElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectItemGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectItemGroupElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemGroupElement WithChildren(params ProjectElement[] values) {
+			return (ProjectItemGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemGroupElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemGroupElement AddChildren(params ProjectElement[] values) {
+			return (ProjectItemGroupElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectItemGroupElement AddChild(ProjectElement value) {
+			return (ProjectItemGroupElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemGroupElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectItemGroupElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectItemGroupElement RemoveChild(ProjectElement value) {
+			return (ProjectItemGroupElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectItemGroupElement RemoveChildren() {
+			return (ProjectItemGroupElement)base.RemoveChildren();
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectItemGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return (ProjectItemGroupElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectItemGroupElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children)) {
+				return new ProjectItemGroupElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectItemGroupElement whose fields are initialized with default values.</summary>
+		private static ProjectItemGroupElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectItemGroupElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		internal static ProjectItemGroupElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectItemGroupElement immutable;
+		
+			internal Builder(ProjectItemGroupElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new ProjectItemGroupElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IProjectChooseElement : IProjectElementContainer {
+	}
+	
+	public partial class ProjectChooseElement : ProjectElementContainer, IProjectChooseElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectChooseElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ProjectChooseElement class.</summary>
+		protected ProjectChooseElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.Validate();
+		}
+	
+		public static ProjectChooseElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectChooseElement WithCondition(System.String value) {
+			return (ProjectChooseElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectChooseElement WithConditionLocation(ElementLocation value) {
+			return (ProjectChooseElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectChooseElement WithLabel(System.String value) {
+			return (ProjectChooseElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectChooseElement WithLabelLocation(ElementLocation value) {
+			return (ProjectChooseElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectChooseElement WithLocation(ElementLocation value) {
+			return (ProjectChooseElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectChooseElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectChooseElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectChooseElement WithChildren(params ProjectElement[] values) {
+			return (ProjectChooseElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectChooseElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectChooseElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectChooseElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectChooseElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectChooseElement AddChildren(params ProjectElement[] values) {
+			return (ProjectChooseElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectChooseElement AddChild(ProjectElement value) {
+			return (ProjectChooseElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectChooseElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectChooseElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectChooseElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectChooseElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectChooseElement RemoveChild(ProjectElement value) {
+			return (ProjectChooseElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectChooseElement RemoveChildren() {
+			return (ProjectChooseElement)base.RemoveChildren();
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectChooseElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return (ProjectChooseElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectChooseElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children)) {
+				return new ProjectChooseElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectChooseElement whose fields are initialized with default values.</summary>
+		private static ProjectChooseElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectChooseElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		internal static ProjectChooseElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectChooseElement immutable;
+		
+			internal Builder(ProjectChooseElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new ProjectChooseElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IProjectOtherwiseElement : IProjectElementContainer {
+	}
+	
+	public partial class ProjectOtherwiseElement : ProjectElementContainer, IProjectOtherwiseElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectOtherwiseElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ProjectOtherwiseElement class.</summary>
+		protected ProjectOtherwiseElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.Validate();
+		}
+	
+		public static ProjectOtherwiseElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectOtherwiseElement WithCondition(System.String value) {
+			return (ProjectOtherwiseElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectOtherwiseElement WithConditionLocation(ElementLocation value) {
+			return (ProjectOtherwiseElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectOtherwiseElement WithLabel(System.String value) {
+			return (ProjectOtherwiseElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectOtherwiseElement WithLabelLocation(ElementLocation value) {
+			return (ProjectOtherwiseElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectOtherwiseElement WithLocation(ElementLocation value) {
+			return (ProjectOtherwiseElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectOtherwiseElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectOtherwiseElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectOtherwiseElement WithChildren(params ProjectElement[] values) {
+			return (ProjectOtherwiseElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectOtherwiseElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectOtherwiseElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectOtherwiseElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectOtherwiseElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectOtherwiseElement AddChildren(params ProjectElement[] values) {
+			return (ProjectOtherwiseElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectOtherwiseElement AddChild(ProjectElement value) {
+			return (ProjectOtherwiseElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectOtherwiseElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectOtherwiseElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectOtherwiseElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectOtherwiseElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectOtherwiseElement RemoveChild(ProjectElement value) {
+			return (ProjectOtherwiseElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectOtherwiseElement RemoveChildren() {
+			return (ProjectOtherwiseElement)base.RemoveChildren();
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectOtherwiseElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return (ProjectOtherwiseElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectOtherwiseElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children)) {
+				return new ProjectOtherwiseElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectOtherwiseElement whose fields are initialized with default values.</summary>
+		private static ProjectOtherwiseElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectOtherwiseElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		internal static ProjectOtherwiseElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectOtherwiseElement immutable;
+		
+			internal Builder(ProjectOtherwiseElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new ProjectOtherwiseElement ToImmutable() {
+				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
+				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
+				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
+				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public interface IProjectWhenElement : IProjectElementContainer {
+	}
+	
+	public partial class ProjectWhenElement : ProjectElementContainer, IProjectWhenElement {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly ProjectWhenElement DefaultInstance = GetDefaultTemplate();
+	
+		/// <summary>Initializes a new instance of the ProjectWhenElement class.</summary>
+		protected ProjectWhenElement(
+			System.Int32 identity,
+			System.String condition,
+			ElementLocation conditionLocation,
+			System.String label,
+			ElementLocation labelLocation,
+			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			: base(
+				identity: identity,
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children)
+		{
+			this.Validate();
+		}
+	
+		public static ProjectWhenElement Create(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance;
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public new ProjectWhenElement WithCondition(System.String value) {
+			return (ProjectWhenElement)base.WithCondition(value);
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public new ProjectWhenElement WithConditionLocation(ElementLocation value) {
+			return (ProjectWhenElement)base.WithConditionLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public new ProjectWhenElement WithLabel(System.String value) {
+			return (ProjectWhenElement)base.WithLabel(value);
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public new ProjectWhenElement WithLabelLocation(ElementLocation value) {
+			return (ProjectWhenElement)base.WithLabelLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public new ProjectWhenElement WithLocation(ElementLocation value) {
+			return (ProjectWhenElement)base.WithLocation(value);
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectWhenElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectWhenElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectWhenElement WithChildren(params ProjectElement[] values) {
+			return (ProjectWhenElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectWhenElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectWhenElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectWhenElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectWhenElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectWhenElement AddChildren(params ProjectElement[] values) {
+			return (ProjectWhenElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectWhenElement AddChild(ProjectElement value) {
+			return (ProjectWhenElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectWhenElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectWhenElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectWhenElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectWhenElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectWhenElement RemoveChild(ProjectElement value) {
+			return (ProjectWhenElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectWhenElement RemoveChildren() {
+			return (ProjectWhenElement)base.RemoveChildren();
+		}
+		
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public ProjectWhenElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return (ProjectWhenElement)this.WithCore(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private ProjectWhenElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(condition.IsDefined && condition.Value != this.Condition) || 
+				(conditionLocation.IsDefined && conditionLocation.Value != this.ConditionLocation) || 
+				(label.IsDefined && label.Value != this.Label) || 
+				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
+				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children)) {
+				return new ProjectWhenElement(
+					identity: identity.GetValueOrDefault(this.Identity),
+					condition: condition.GetValueOrDefault(this.Condition),
+					conditionLocation: conditionLocation.GetValueOrDefault(this.ConditionLocation),
+					label: label.GetValueOrDefault(this.Label),
+					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
+					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children));
+			} else {
+				return this;
+			}
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated ProjectWhenElement whose fields are initialized with default values.</summary>
+		private static ProjectWhenElement GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new ProjectWhenElement(
+				default(System.Int32), 
+				template.Condition, 
+				template.ConditionLocation, 
+				template.Label, 
+				template.LabelLocation, 
+				template.Location, 
+				template.Children);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.String Condition { get; set; }
+	
+			internal ElementLocation ConditionLocation { get; set; }
+	
+			internal System.String Label { get; set; }
+	
+			internal ElementLocation LabelLocation { get; set; }
+	
+			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		internal static ProjectWhenElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : ProjectElementContainer.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private ProjectWhenElement immutable;
+		
+			internal Builder(ProjectWhenElement immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new ProjectWhenElement ToImmutable() {
 				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
 				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
 				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;

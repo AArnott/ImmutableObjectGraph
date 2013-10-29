@@ -45,6 +45,18 @@
 
 	class ProjectPropertyGroupElement : ProjectElementContainer {
 	}
+	
+	class ProjectItemGroupElement : ProjectElementContainer {
+	}
+
+	class ProjectChooseElement : ProjectElementContainer {
+	}
+
+	class ProjectOtherwiseElement : ProjectElementContainer {
+	}
+
+	class ProjectWhenElement : ProjectElementContainer {
+	}
 
 	class ProjectPropertyElement : ProjectElement {
 		string name;
