@@ -15,6 +15,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public interface IFileSystemEntry {
 		System.String PathSegment { get; }
+		RichData Data { get; }
 	}
 	
 	public abstract partial class FileSystemEntry : IFileSystemEntry, IRecursiveType, IRecursiveDiffingType<FileSystemEntryChangedProperties, FileSystemEntry.DiffGram> {
@@ -25,19 +26,28 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String pathSegment;
 	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly RichData data;
+	
 		private readonly System.Int32 identity;
 	
 		/// <summary>Initializes a new instance of the FileSystemEntry class.</summary>
 		protected FileSystemEntry(
 			System.Int32 identity,
-			System.String pathSegment)
+			System.String pathSegment,
+			RichData data)
 		{
 			this.identity = identity;
 			this.pathSegment = pathSegment;
+			this.data = data;
 		}
 	
 		public System.String PathSegment {
 			get { return this.pathSegment; }
+		}
+	
+		public RichData Data {
+			get { return this.data; }
 		}
 		
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
@@ -48,17 +58,29 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(pathSegment: Optional.For(value));
 		}
+		
+		/// <summary>Returns a new instance with the Data property set to the specified value.</summary>
+		public FileSystemEntry WithData(RichData value) {
+			if (value == this.Data) {
+				return this;
+			}
+		
+			return this.With(data: Optional.For(value));
+		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public FileSystemEntry With(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>)) {
 			return (FileSystemEntry)this.WithCore(
-				pathSegment: pathSegment);
+				pathSegment: pathSegment,
+				data: data);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected abstract FileSystemEntry WithCore(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>));
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>));
 	
 		protected internal System.Int32 Identity {
 			get { return this.identity; }
@@ -199,6 +221,10 @@ namespace ImmutableObjectGraph.Tests {
 				if (this.PathSegment != other.PathSegment) {
 					propertiesChanged |= FileSystemEntryChangedProperties.PathSegment;
 				}
+		
+				if (this.Data != other.Data) {
+					propertiesChanged |= FileSystemEntryChangedProperties.Data;
+				}
 			}
 		
 			return propertiesChanged;
@@ -215,6 +241,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return FileSystemFile.CreateWithIdentity(
 				pathSegment: this.PathSegment,
+				data: Optional.For(this.Data),
 				identity: this.Identity,
 				attributes: attributes);
 		}
@@ -230,6 +257,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return FileSystemDirectory.CreateWithIdentity(
 				pathSegment: this.PathSegment,
+				data: Optional.For(this.Data),
 				identity: this.Identity,
 				children: children);
 		}
@@ -244,6 +272,9 @@ namespace ImmutableObjectGraph.Tests {
 		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String pathSegment;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected ImmutableObjectGraph.Optional<RichData.Builder> data;
 		
 			internal Builder(FileSystemEntry immutable) {
 				this.immutable = immutable;
@@ -261,9 +292,25 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
+			public RichData.Builder Data {
+				get {
+					if (!this.data.IsDefined) {
+						this.data = this.immutable.data != null ? this.immutable.data.ToBuilder() : null;
+					}
+		
+					return this.data.Value;
+				}
+		
+				set {
+					this.data = value;
+				}
+			}
+		
 			public FileSystemEntry ToImmutable() {
+				var data = this.data.IsDefined ? (this.data.Value != null ? this.data.Value.ToImmutable() : null) : this.immutable.Data;
 				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.PathSegment));
+					ImmutableObjectGraph.Optional.For(this.PathSegment),
+					ImmutableObjectGraph.Optional.For(data));
 			}
 		}
 	
@@ -332,6 +379,20 @@ namespace ImmutableObjectGraph.Tests {
 			return this.NewSpine(mutatedLeaf);
 		}
 	
+		public RichData Data {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Data;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Data property set to the specified value.</summary>
+		public RootedFileSystemEntry WithData(RichData value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithData(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
 		public FileSystemEntry FileSystemEntry {
 			get { return this.greenNode; }
@@ -339,10 +400,12 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedFileSystemEntry With(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>)) {
 			this.ThrowIfDefault();
 			var newGreenNode = this.greenNode.With(
-				pathSegment: pathSegment);
+				pathSegment: pathSegment,
+				data: data);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -426,14 +489,19 @@ namespace ImmutableObjectGraph.Tests {
 		PathSegment = 0x8,
 	
 		/// <summary>
+		/// The <see cref="FileSystemEntry.Data" /> property was changed.
+		/// </summary>
+		Data = 0x10,
+	
+		/// <summary>
 		/// The <see cref="FileSystemFile.Attributes" /> property was changed.
 		/// </summary>
-		Attributes = 0x10,
+		Attributes = 0x20,
 	
 		/// <summary>
 		/// All flags in this enum.
 		/// </summary>
-		All = Type | PositionUnderParent | Parent | PathSegment | Attributes,
+		All = Type | PositionUnderParent | Parent | PathSegment | Data | Attributes,
 	}
 	
 	public interface IFileSystemFile : IFileSystemEntry {
@@ -451,10 +519,12 @@ namespace ImmutableObjectGraph.Tests {
 		protected FileSystemFile(
 			System.Int32 identity,
 			System.String pathSegment,
+			RichData data,
 			System.Collections.Immutable.ImmutableHashSet<System.String> attributes)
 			: base(
 				identity: identity,
-				pathSegment: pathSegment)
+				pathSegment: pathSegment,
+				data: data)
 		{
 			this.attributes = attributes;
 			this.Validate();
@@ -462,10 +532,12 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static FileSystemFile Create(
 			System.String pathSegment,
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				pathSegment: Optional.For(pathSegment),
+				data: Optional.For(data.GetValueOrDefault(DefaultInstance.Data)),
 				attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
@@ -477,6 +549,11 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public new FileSystemFile WithPathSegment(System.String value) {
 			return (FileSystemFile)base.WithPathSegment(value);
+		}
+		
+		/// <summary>Returns a new instance with the Data property set to the specified value.</summary>
+		public new FileSystemFile WithData(RichData value) {
+			return (FileSystemFile)base.WithData(value);
 		}
 		
 		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
@@ -536,27 +613,33 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override FileSystemEntry WithCore(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>)) {
 			return this.WithFactory(
-				pathSegment: pathSegment);
+				pathSegment: pathSegment,
+				data: data);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public FileSystemFile With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			return (FileSystemFile)this.WithCore(
 				pathSegment: pathSegment,
+				data: data,
 				attributes: attributes);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected virtual FileSystemFile WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				pathSegment: Optional.For(pathSegment.GetValueOrDefault(this.PathSegment)),
+				data: Optional.For(data.GetValueOrDefault(this.Data)),
 				attributes: Optional.For(attributes.GetValueOrDefault(this.Attributes)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
@@ -564,15 +647,18 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private FileSystemFile WithFactory(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
+				(data.IsDefined && data.Value != this.Data) || 
 				(attributes.IsDefined && attributes.Value != this.Attributes)) {
 				return new FileSystemFile(
 					identity: identity.GetValueOrDefault(this.Identity),
 					pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
+					data: data.GetValueOrDefault(this.Data),
 					attributes: attributes.GetValueOrDefault(this.Attributes));
 			} else {
 				return this;
@@ -594,12 +680,15 @@ namespace ImmutableObjectGraph.Tests {
 			return new FileSystemFile(
 				default(System.Int32), 
 				template.PathSegment, 
+				template.Data, 
 				template.Attributes);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.String PathSegment { get; set; }
+	
+			internal RichData Data { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; set; }
 		}
@@ -628,6 +717,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal static FileSystemFile CreateWithIdentity(
 				System.String pathSegment,
+				ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (!identity.IsDefined) {
@@ -636,6 +726,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return DefaultInstance.WithFactory(
 					pathSegment: Optional.For(pathSegment),
+					data: Optional.For(data.GetValueOrDefault(DefaultInstance.Data)),
 					attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
@@ -671,9 +762,11 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			public new FileSystemFile ToImmutable() {
+				var data = this.data.IsDefined ? (this.data.Value != null ? this.data.Value.ToImmutable() : null) : this.immutable.Data;
 				var attributes = this.attributes.IsDefined ? (this.attributes.Value != null ? this.attributes.Value.ToImmutable() : null) : this.immutable.Attributes;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.PathSegment),
+					ImmutableObjectGraph.Optional.For(data),
 					ImmutableObjectGraph.Optional.For(attributes));
 			}
 		}
@@ -724,6 +817,20 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemFile WithPathSegment(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public RichData Data {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Data;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Data property set to the specified value.</summary>
+		public RootedFileSystemFile WithData(RichData value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithData(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 	
@@ -812,10 +919,12 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedFileSystemFile With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> attributes = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>)) {
 			this.ThrowIfDefault();
 			var newGreenNode = this.greenNode.With(
 				pathSegment: pathSegment,
+				data: data,
 				attributes: attributes);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -879,11 +988,13 @@ namespace ImmutableObjectGraph.Tests {
 		protected FileSystemDirectory(
 			System.Int32 identity,
 			System.String pathSegment,
+			RichData data,
 			System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children,
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>))
 			: base(
 				identity: identity,
-				pathSegment: pathSegment)
+				pathSegment: pathSegment,
+				data: data)
 		{
 			this.children = children;
 			this.Validate();
@@ -892,10 +1003,12 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static FileSystemDirectory Create(
 			System.String pathSegment,
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				pathSegment: Optional.For(pathSegment),
+				data: Optional.For(data.GetValueOrDefault(DefaultInstance.Data)),
 				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
@@ -907,6 +1020,11 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the PathSegment property set to the specified value.</summary>
 		public new FileSystemDirectory WithPathSegment(System.String value) {
 			return (FileSystemDirectory)base.WithPathSegment(value);
+		}
+		
+		/// <summary>Returns a new instance with the Data property set to the specified value.</summary>
+		public new FileSystemDirectory WithData(RichData value) {
+			return (FileSystemDirectory)base.WithData(value);
 		}
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
@@ -966,27 +1084,33 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override FileSystemEntry WithCore(
-			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>)) {
+			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>)) {
 			return this.WithFactory(
-				pathSegment: pathSegment);
+				pathSegment: pathSegment,
+				data: data);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public FileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			return (FileSystemDirectory)this.WithCore(
 				pathSegment: pathSegment,
+				data: data,
 				children: children);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected virtual FileSystemDirectory WithCore(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				pathSegment: Optional.For(pathSegment.GetValueOrDefault(this.PathSegment)),
+				data: Optional.For(data.GetValueOrDefault(this.Data)),
 				children: Optional.For(children.GetValueOrDefault(this.Children)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
@@ -994,16 +1118,19 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private FileSystemDirectory WithFactory(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(pathSegment.IsDefined && pathSegment.Value != this.PathSegment) || 
+				(data.IsDefined && data.Value != this.Data) || 
 				(children.IsDefined && children.Value != this.Children)) {
 				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>) : Optional.For(this.lookupTable);
 				return new FileSystemDirectory(
 					identity: identity.GetValueOrDefault(this.Identity),
 					pathSegment: pathSegment.GetValueOrDefault(this.PathSegment),
+					data: data.GetValueOrDefault(this.Data),
 					children: children.GetValueOrDefault(this.Children),
 					lookupTable: lookupTable);
 			} else {
@@ -1034,12 +1161,15 @@ namespace ImmutableObjectGraph.Tests {
 			return new FileSystemDirectory(
 				default(System.Int32), 
 				template.PathSegment, 
+				template.Data, 
 				template.Children);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.String PathSegment { get; set; }
+	
+			internal RichData Data { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; set; }
 		}
@@ -1497,6 +1627,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal static FileSystemDirectory CreateWithIdentity(
 				System.String pathSegment,
+				ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>),
 				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (!identity.IsDefined) {
@@ -1505,6 +1636,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return DefaultInstance.WithFactory(
 					pathSegment: Optional.For(pathSegment),
+					data: Optional.For(data.GetValueOrDefault(DefaultInstance.Data)),
 					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
@@ -1540,9 +1672,11 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			public new FileSystemDirectory ToImmutable() {
+				var data = this.data.IsDefined ? (this.data.Value != null ? this.data.Value.ToImmutable() : null) : this.immutable.Data;
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.PathSegment),
+					ImmutableObjectGraph.Optional.For(data),
 					ImmutableObjectGraph.Optional.For(children));
 			}
 		}
@@ -1617,6 +1751,20 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemDirectory WithPathSegment(System.String value) {
 			this.ThrowIfDefault();
 			var mutatedLeaf = this.greenNode.WithPathSegment(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public RichData Data {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Data;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Data property set to the specified value.</summary>
+		public RootedFileSystemDirectory WithData(RichData value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithData(value);
 			return this.NewSpine(mutatedLeaf);
 		}
 	
@@ -1770,10 +1918,12 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public RootedFileSystemDirectory With(
 			ImmutableObjectGraph.Optional<System.String> pathSegment = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
 			this.ThrowIfDefault();
 			var newGreenNode = this.greenNode.With(
 				pathSegment: pathSegment,
+				data: data,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -1781,9 +1931,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static RootedFileSystemDirectory Create(
 			System.String pathSegment,
+			ImmutableObjectGraph.Optional<RichData> data = default(ImmutableObjectGraph.Optional<RichData>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
 			var greenNode = FileSystemDirectory.Create(
 				pathSegment: pathSegment,
+				data: data,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			return greenNode.AsRoot;
 		}
@@ -1862,6 +2014,149 @@ namespace ImmutableObjectGraph.Tests {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
+		}
+	}
+	
+	public interface IRichData {
+		System.Int32 SomeCoolProperty { get; }
+	}
+	
+	public partial class RichData : IRichData {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly RichData DefaultInstance = GetDefaultTemplate();
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
+	
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private readonly System.Int32 someCoolProperty;
+	
+		private readonly System.Int32 identity;
+	
+		/// <summary>Initializes a new instance of the RichData class.</summary>
+		protected RichData(
+			System.Int32 identity,
+			System.Int32 someCoolProperty)
+		{
+			this.identity = identity;
+			this.someCoolProperty = someCoolProperty;
+			this.Validate();
+		}
+	
+		public static RichData Create(
+			ImmutableObjectGraph.Optional<System.Int32> someCoolProperty = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				someCoolProperty: Optional.For(someCoolProperty.GetValueOrDefault(DefaultInstance.SomeCoolProperty)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+	
+		public System.Int32 SomeCoolProperty {
+			get { return this.someCoolProperty; }
+		}
+		
+		/// <summary>Returns a new instance with the SomeCoolProperty property set to the specified value.</summary>
+		public RichData WithSomeCoolProperty(System.Int32 value) {
+			if (value == this.SomeCoolProperty) {
+				return this;
+			}
+		
+			return this.With(someCoolProperty: Optional.For(value));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RichData With(
+			ImmutableObjectGraph.Optional<System.Int32> someCoolProperty = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			return (RichData)this.WithCore(
+				someCoolProperty: someCoolProperty);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual RichData WithCore(
+			ImmutableObjectGraph.Optional<System.Int32> someCoolProperty = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				someCoolProperty: Optional.For(someCoolProperty.GetValueOrDefault(this.SomeCoolProperty)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private RichData WithFactory(
+			ImmutableObjectGraph.Optional<System.Int32> someCoolProperty = default(ImmutableObjectGraph.Optional<System.Int32>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
+				(someCoolProperty.IsDefined && someCoolProperty.Value != this.SomeCoolProperty)) {
+				return new RichData(
+					identity: identity.GetValueOrDefault(this.Identity),
+					someCoolProperty: someCoolProperty.GetValueOrDefault(this.SomeCoolProperty));
+			} else {
+				return this;
+			}
+		}
+	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
+	
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		}
+	
+		/// <summary>Normalizes and/or validates all properties on this object.</summary>
+		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+		partial void Validate();
+	
+		/// <summary>Provides defaults for fields.</summary>
+		/// <param name="template">The struct to set default values on.</param>
+		static partial void CreateDefaultTemplate(ref Template template);
+	
+		/// <summary>Returns a newly instantiated RichData whose fields are initialized with default values.</summary>
+		private static RichData GetDefaultTemplate() {
+			var template = new Template();
+			CreateDefaultTemplate(ref template);
+			return new RichData(
+				default(System.Int32), 
+				template.SomeCoolProperty);
+		}
+	
+		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
+		private struct Template {
+			internal System.Int32 SomeCoolProperty { get; set; }
+		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private RichData immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Int32 someCoolProperty;
+		
+			internal Builder(RichData immutable) {
+				this.immutable = immutable;
+		
+				this.someCoolProperty = immutable.SomeCoolProperty;
+			}
+		
+			public System.Int32 SomeCoolProperty {
+				get {
+					return this.someCoolProperty;
+				}
+		
+				set {
+					this.someCoolProperty = value;
+				}
+			}
+		
+			public RichData ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.SomeCoolProperty));
+			}
 		}
 	}
 }

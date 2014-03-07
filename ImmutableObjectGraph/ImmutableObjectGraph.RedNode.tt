@@ -2,6 +2,9 @@
 HiddenTypes.Add(typeof(RedMetaType));
 this.HandleType += (templateType, position) => {
 	var redType = new RedMetaType(templateType);
+	if (redType.RecursiveParent == null) {
+		return;
+	}
 
 	switch (position) {
 		case HandleTypePosition.WithinTypeDeclaration:
@@ -314,7 +317,19 @@ protected class RedMetaType : MetaType {
 	}
 
 	protected override string GetTypeNameCore(Type type, bool isTemplateType) {
-		return isTemplateType ? "Rooted" + type.Name : type.FullName;
+		if (isTemplateType) {
+			return HasRootedTypeVariant(type) ? ("Rooted" + type.Name) : type.Name;
+		} else {
+			return type.FullName;
+		}
+	}
+	
+	private bool HasRootedTypeVariant(Type type) {
+		if (!TemplateTypes.Any(tt => tt.Type == type && tt.RecursiveParent != null)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	[DebuggerDisplay("{DeclaringType.TypeName,nq}.{NamePascalCase,nq} (red)")]

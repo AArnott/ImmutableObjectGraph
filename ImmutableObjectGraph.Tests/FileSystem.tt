@@ -10,6 +10,8 @@
 	abstract class FileSystemEntry {
 		[Required]
 		string pathSegment;
+
+		RichData data;
 	}
 
 	class FileSystemFile : FileSystemEntry {
@@ -18,5 +20,9 @@
 
 	class FileSystemDirectory : FileSystemEntry {
 		ImmutableSortedSet<FileSystemEntry> children;
+	}
+
+	class RichData {
+		int someCoolProperty;
 	}
 #>

@@ -62,6 +62,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="FileSystem.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FileSystem.tt</DependentUpon>
+    </Compile>
     <Compile Include="MSBuild.cs" />
     <Compile Include="NonRecursive.generated.cs">
       <DependentUpon>NonRecursive.tt</DependentUpon>
@@ -71,11 +76,6 @@
     <Compile Include="MSBuildTests.cs" />
     <Compile Include="ProjectTree.generated.cs">
       <DependentUpon>ProjectTree.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="FileSystem.generated.cs">
-      <DependentUpon>FileSystem.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
