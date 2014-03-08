@@ -90,13 +90,18 @@
 			Assert.Equal(2, pre.Children.OfType<ProjectItemGroupElement>().Single().Children.Count);
 		}
 
-		[Fact(Skip = "No parenting support yet.")]
+		[Fact(Skip = "Add RedNode.tt to MSBuild.tt file and fix issues, then uncomment this test.")]
 		public void RecursiveMutation() {
-			var pre = CreateBasicProjectStructure();
-			var aCsItem = (ProjectItemElement)((ProjectItemGroupElement)pre.Children[1]).Children[0];
-			var aCsItemUpdated = aCsItem.WithInclude("A.cs");
-			Assert.Equal("A.cs", aCsItemUpdated.Include);
-			// TODO: add parent and child checks to verify recursion.
+			//RootedProjectRootElement root = CreateBasicProjectStructure().AsRoot;
+			//RootedProjectItemElement aCsItem = root.Children[1].Children[0].AsProjectItemElement;
+			//RootedProjectItemElement aCsItemUpdated = aCsItem.WithInclude("A.cs");
+			//Assert.Equal("A.cs", aCsItemUpdated.Include);
+
+			//RootedProjectRootElement rootUpdated = aCsItemUpdated.Root.AsProjectRootElement;
+			//Assert.NotSame(root.ProjectRootElement, rootUpdated.ProjectRootElement);
+			//Assert.Same(
+			//	aCsItemUpdated.ProjectItemElement,
+			//	rootUpdated.ProjectRootElement.Find(aCsItemUpdated.Identity));
 		}
 
 		private static ProjectRootElement CreateBasicProjectStructure() {
