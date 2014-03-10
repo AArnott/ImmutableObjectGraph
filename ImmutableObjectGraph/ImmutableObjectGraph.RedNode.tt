@@ -52,7 +52,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 <#
 			if (recursiveParent != null) {
 #>
-	private Optional<Adapters.ImmutableSetRootAdapter<<#=recursiveParent.GreenType.RecursiveType.TypeName#>, <#=recursiveParent.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveParent.TypeName#>>> <#= recursiveParent.RecursiveField.NameCamelCase #>;
+	private Optional<<#= ((RedMetaType.RedMetaField)recursiveParent.RecursiveField).RootedCollectionTypeAdapterName #>> <#= recursiveParent.RecursiveField.NameCamelCase #>;
 <#
 			}
 #>
@@ -63,7 +63,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 <#
 			if (recursiveParent != null) {
 #>
-		this.<#= recursiveParent.RecursiveField.NameCamelCase #> = default(Optional<Adapters.ImmutableSetRootAdapter<<#=recursiveParent.GreenType.RecursiveType.TypeName#>, <#=recursiveParent.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveParent.TypeName#>>>);
+		this.<#= recursiveParent.RecursiveField.NameCamelCase #> = default(Optional<<#= ((RedMetaType.RedMetaField)recursiveParent.RecursiveField).RootedCollectionTypeAdapterName #>>);
 <#
 			}
 #>
@@ -126,7 +126,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 				if (field.IsRecursiveCollection) {
 #>
 
-	public System.Collections.Immutable.IImmutableSet<<#= field.ElementTypeName #>> <#= field.NamePascalCase #> {
+	public <#= ((RedMetaType.RedMetaField)field).RootedCollectionTypeName #> <#= field.NamePascalCase #> {
 		get {
 			if (!this.<#= field.NameCamelCase #>.IsDefined) {
 				this.ThrowIfDefault();
@@ -338,6 +338,28 @@ protected class RedMetaType : MetaType {
 			: base(field, declaringType) {
 		}
 
+		public string RootedCollectionTypeAdapterName {
+			get {
+				return string.Format(
+					CultureInfo.InvariantCulture,
+					"Adapters.Immutable{3}RootAdapter<{0}, {1}, {2}>",
+					this.DeclaringType.RecursiveParent.GreenType.RecursiveType.TypeName,
+					this.DeclaringType.RecursiveParent.RecursiveType.TypeName,
+					this.DeclaringType.RecursiveParent.GreenType.RecursiveParent.TypeName,
+					this.CollectionType);
+			}
+		}
+
+		public string RootedCollectionTypeName {
+			get {
+				return string.Format(
+					CultureInfo.InvariantCulture,
+					"System.Collections.Immutable.IImmutable{1}<{0}>",
+					this.DeclaringType.RecursiveParent.RecursiveType.TypeName,
+					this.CollectionType);
+			}
+		}
+
 		public override MetaField GreenField {
 			get { return ((RedMetaType)this.DeclaringType).GreenType.LocalFields.Single(f => f.Field == this.Field); }
 		}
@@ -345,7 +367,10 @@ protected class RedMetaType : MetaType {
 		public override string TypeName {
 			get {
 				if (this.IsRecursiveCollection) {
-					return string.Format("System.Collections.Immutable.IImmutableSet<{0}>", this.ElementTypeName);
+					return string.Format(
+						"System.Collections.Immutable.IImmutable{1}<{0}>",
+						this.ElementTypeName,
+						this.CollectionType);
 				} else {
 					return base.TypeName;
 				}
@@ -359,6 +384,30 @@ protected class RedMetaType : MetaType {
 				} else {
 					return base.ArgumentReference;
 				}
+			}
+		}
+
+		private string CollectionType {
+			get {
+				bool ordered = false;
+				Type type = this.FieldType;
+				if (type.IsArray) {
+					ordered = true;
+				}
+
+				if (type.IsGenericType && type.GenericTypeArguments.Length == 1) {
+					Type immutableSet = typeof(IImmutableSet<>);
+					var genericImmutableSet = immutableSet.MakeGenericType(type.GenericTypeArguments[0]);
+					if (!genericImmutableSet.IsAssignableFrom(type)) {
+						Type readOnlyList = typeof(IReadOnlyList<>);
+						var genericReadOnlyList = readOnlyList.MakeGenericType(type.GenericTypeArguments[0]);
+						if (genericReadOnlyList.IsAssignableFrom(type)) {
+							ordered = true;
+						}
+					}
+				}
+
+				return ordered ? "List" : "Set";
 			}
 		}
 	}

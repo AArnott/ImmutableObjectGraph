@@ -14,5 +14,12 @@
 			where TRoot : class {
 				return new ImmutableSetRootAdapter<TUnrooted, TRooted, TRoot>(underlyingCollection, toRooted, toUnrooted, rootObject);
 		}
+
+		public static ImmutableListRootAdapter<TUnrooted, TRooted, TRoot> Create<TUnrooted, TRooted, TRoot>(IImmutableList<TUnrooted> underlyingCollection, Func<TUnrooted, TRoot, TRooted> toRooted, Func<TRooted, TUnrooted> toUnrooted, TRoot rootObject)
+			where TRooted : struct
+			where TUnrooted : class
+			where TRoot : class {
+			return new ImmutableListRootAdapter<TUnrooted, TRooted, TRoot>(underlyingCollection, toRooted, toUnrooted, rootObject);
+		}
 	}
 }
