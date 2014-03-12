@@ -2,10 +2,8 @@
 <#@ Output Extension=".generated.cs" #>
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
-
-	// TODO: add this and fix issues:
-	//  Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" 
 #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
 	// Note that ProjectElementContainer-derived types lack any properties that expose

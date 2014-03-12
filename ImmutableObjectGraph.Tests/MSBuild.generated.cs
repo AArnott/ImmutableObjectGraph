@@ -438,6 +438,15 @@ namespace ImmutableObjectGraph.Tests {
 			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
+		public RootedProjectElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectElement(this, root);
+		}
+		
 		public virtual ProjectRootElement ToProjectRootElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
@@ -605,6 +614,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public virtual ProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
@@ -614,14 +624,14 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
 			ProjectItemElement that = this as ProjectItemElement;
 			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemElement))) {
-				if ((!exclude.IsDefined || exclude.Value == that.Exclude) && 
+				if ((!children.IsDefined || children.Value == that.Children) && 
+				    (!exclude.IsDefined || exclude.Value == that.Exclude) && 
 				    (!excludeLocation.IsDefined || excludeLocation.Value == that.ExcludeLocation) && 
 				    (!include.IsDefined || include.Value == that.Include) && 
 				    (!includeLocation.IsDefined || includeLocation.Value == that.IncludeLocation) && 
@@ -630,7 +640,6 @@ namespace ImmutableObjectGraph.Tests {
 				    (!keepDuplicatesLocation.IsDefined || keepDuplicatesLocation.Value == that.KeepDuplicatesLocation) && 
 				    (!keepMetadata.IsDefined || keepMetadata.Value == that.KeepMetadata) && 
 				    (!keepMetadataLocation.IsDefined || keepMetadataLocation.Value == that.KeepMetadataLocation) && 
-				    (!metadata.IsDefined || metadata.Value == that.Metadata) && 
 				    (!remove.IsDefined || remove.Value == that.Remove) && 
 				    (!removeLocation.IsDefined || removeLocation.Value == that.RemoveLocation) && 
 				    (!removeMetadata.IsDefined || removeMetadata.Value == that.RemoveMetadata) && 
@@ -646,6 +655,7 @@ namespace ImmutableObjectGraph.Tests {
 				labelLocation: Optional.For(this.LabelLocation),
 				location: Optional.For(this.Location),
 				identity: this.Identity,
+				children: children,
 				exclude: exclude,
 				excludeLocation: excludeLocation,
 				include: include,
@@ -655,7 +665,6 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: keepDuplicatesLocation,
 				keepMetadata: keepMetadata,
 				keepMetadataLocation: keepMetadataLocation,
-				metadata: metadata,
 				remove: remove,
 				removeLocation: removeLocation,
 				removeMetadata: removeMetadata,
@@ -746,13 +755,11 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public virtual ProjectItemDefinitionElement ToProjectItemDefinitionElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			ProjectItemDefinitionElement that = this as ProjectItemDefinitionElement;
 			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemDefinitionElement))) {
 				if ((!children.IsDefined || children.Value == that.Children) && 
-				    (!itemType.IsDefined || itemType.Value == that.ItemType) && 
-				    (!metadata.IsDefined || metadata.Value == that.Metadata)) {
+				    (!itemType.IsDefined || itemType.Value == that.ItemType)) {
 					return that;
 				}
 			}
@@ -765,8 +772,7 @@ namespace ImmutableObjectGraph.Tests {
 				location: Optional.For(this.Location),
 				identity: this.Identity,
 				children: children,
-				itemType: itemType,
-				metadata: metadata);
+				itemType: itemType);
 		}
 		
 		public virtual ProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -1196,6 +1202,671 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
+	public partial struct RootedProjectElement : System.IEquatable<RootedProjectElement>, IRecursiveType {
+		private readonly ProjectElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectElement(ProjectElement projectElement, ProjectElementContainer root) {
+			this.greenNode = projectElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public bool IsProjectElementContainer {
+			get { return this.greenNode is ProjectElementContainer; }
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public bool IsProjectRootElement {
+			get { return this.greenNode is ProjectRootElement; }
+		}
+	
+		public RootedProjectRootElement AsProjectRootElement {
+			get { return this.greenNode != null ? ((ProjectRootElement)this.greenNode).WithRoot(this.root) : default(RootedProjectRootElement); }
+		}
+	
+		public bool IsProjectPropertyGroupElement {
+			get { return this.greenNode is ProjectPropertyGroupElement; }
+		}
+	
+		public RootedProjectPropertyGroupElement AsProjectPropertyGroupElement {
+			get { return this.greenNode != null ? ((ProjectPropertyGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectPropertyGroupElement); }
+		}
+	
+		public bool IsProjectItemGroupElement {
+			get { return this.greenNode is ProjectItemGroupElement; }
+		}
+	
+		public RootedProjectItemGroupElement AsProjectItemGroupElement {
+			get { return this.greenNode != null ? ((ProjectItemGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemGroupElement); }
+		}
+	
+		public bool IsProjectChooseElement {
+			get { return this.greenNode is ProjectChooseElement; }
+		}
+	
+		public RootedProjectChooseElement AsProjectChooseElement {
+			get { return this.greenNode != null ? ((ProjectChooseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectChooseElement); }
+		}
+	
+		public bool IsProjectOtherwiseElement {
+			get { return this.greenNode is ProjectOtherwiseElement; }
+		}
+	
+		public RootedProjectOtherwiseElement AsProjectOtherwiseElement {
+			get { return this.greenNode != null ? ((ProjectOtherwiseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOtherwiseElement); }
+		}
+	
+		public bool IsProjectWhenElement {
+			get { return this.greenNode is ProjectWhenElement; }
+		}
+	
+		public RootedProjectWhenElement AsProjectWhenElement {
+			get { return this.greenNode != null ? ((ProjectWhenElement)this.greenNode).WithRoot(this.root) : default(RootedProjectWhenElement); }
+		}
+	
+		public bool IsProjectPropertyElement {
+			get { return this.greenNode is ProjectPropertyElement; }
+		}
+	
+		public RootedProjectPropertyElement AsProjectPropertyElement {
+			get { return this.greenNode != null ? ((ProjectPropertyElement)this.greenNode).WithRoot(this.root) : default(RootedProjectPropertyElement); }
+		}
+	
+		public bool IsProjectItemElement {
+			get { return this.greenNode is ProjectItemElement; }
+		}
+	
+		public RootedProjectItemElement AsProjectItemElement {
+			get { return this.greenNode != null ? ((ProjectItemElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemElement); }
+		}
+	
+		public bool IsProjectMetadataElement {
+			get { return this.greenNode is ProjectMetadataElement; }
+		}
+	
+		public RootedProjectMetadataElement AsProjectMetadataElement {
+			get { return this.greenNode != null ? ((ProjectMetadataElement)this.greenNode).WithRoot(this.root) : default(RootedProjectMetadataElement); }
+		}
+	
+		public bool IsProjectExtensionsElement {
+			get { return this.greenNode is ProjectExtensionsElement; }
+		}
+	
+		public RootedProjectExtensionsElement AsProjectExtensionsElement {
+			get { return this.greenNode != null ? ((ProjectExtensionsElement)this.greenNode).WithRoot(this.root) : default(RootedProjectExtensionsElement); }
+		}
+	
+		public bool IsProjectImportElement {
+			get { return this.greenNode is ProjectImportElement; }
+		}
+	
+		public RootedProjectImportElement AsProjectImportElement {
+			get { return this.greenNode != null ? ((ProjectImportElement)this.greenNode).WithRoot(this.root) : default(RootedProjectImportElement); }
+		}
+	
+		public bool IsProjectImportGroupElement {
+			get { return this.greenNode is ProjectImportGroupElement; }
+		}
+	
+		public RootedProjectImportGroupElement AsProjectImportGroupElement {
+			get { return this.greenNode != null ? ((ProjectImportGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectImportGroupElement); }
+		}
+	
+		public bool IsProjectItemDefinitionElement {
+			get { return this.greenNode is ProjectItemDefinitionElement; }
+		}
+	
+		public RootedProjectItemDefinitionElement AsProjectItemDefinitionElement {
+			get { return this.greenNode != null ? ((ProjectItemDefinitionElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionElement); }
+		}
+	
+		public bool IsProjectItemDefinitionGroupElement {
+			get { return this.greenNode is ProjectItemDefinitionGroupElement; }
+		}
+	
+		public RootedProjectItemDefinitionGroupElement AsProjectItemDefinitionGroupElement {
+			get { return this.greenNode != null ? ((ProjectItemDefinitionGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement); }
+		}
+	
+		public bool IsProjectOnErrorElement {
+			get { return this.greenNode is ProjectOnErrorElement; }
+		}
+	
+		public RootedProjectOnErrorElement AsProjectOnErrorElement {
+			get { return this.greenNode != null ? ((ProjectOnErrorElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOnErrorElement); }
+		}
+	
+		public bool IsProjectOutputElement {
+			get { return this.greenNode is ProjectOutputElement; }
+		}
+	
+		public RootedProjectOutputElement AsProjectOutputElement {
+			get { return this.greenNode != null ? ((ProjectOutputElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOutputElement); }
+		}
+	
+		public bool IsProjectTargetElement {
+			get { return this.greenNode is ProjectTargetElement; }
+		}
+	
+		public RootedProjectTargetElement AsProjectTargetElement {
+			get { return this.greenNode != null ? ((ProjectTargetElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTargetElement); }
+		}
+	
+		public bool IsProjectTaskElement {
+			get { return this.greenNode is ProjectTaskElement; }
+		}
+	
+		public RootedProjectTaskElement AsProjectTaskElement {
+			get { return this.greenNode != null ? ((ProjectTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTaskElement); }
+		}
+	
+		public bool IsProjectUsingTaskBodyElement {
+			get { return this.greenNode is ProjectUsingTaskBodyElement; }
+		}
+	
+		public RootedProjectUsingTaskBodyElement AsProjectUsingTaskBodyElement {
+			get { return this.greenNode != null ? ((ProjectUsingTaskBodyElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskBodyElement); }
+		}
+	
+		public bool IsProjectUsingTaskElement {
+			get { return this.greenNode is ProjectUsingTaskElement; }
+		}
+	
+		public RootedProjectUsingTaskElement AsProjectUsingTaskElement {
+			get { return this.greenNode != null ? ((ProjectUsingTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskElement); }
+		}
+	
+		public bool IsProjectUsingTaskParameterElement {
+			get { return this.greenNode is ProjectUsingTaskParameterElement; }
+		}
+	
+		public RootedProjectUsingTaskParameterElement AsProjectUsingTaskParameterElement {
+			get { return this.greenNode != null ? ((ProjectUsingTaskParameterElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskParameterElement); }
+		}
+	
+		public bool IsUsingTaskParameterGroupElement {
+			get { return this.greenNode is UsingTaskParameterGroupElement; }
+		}
+	
+		public RootedUsingTaskParameterGroupElement AsUsingTaskParameterGroupElement {
+			get { return this.greenNode != null ? ((UsingTaskParameterGroupElement)this.greenNode).WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectElement ProjectElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectElement) {
+				var other = (RootedProjectElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectElement NewSpine(ProjectElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	}
+	
 	public interface IProjectElementContainer : IProjectElement {
 		System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; }
 	}
@@ -1343,6 +2014,19 @@ namespace ImmutableObjectGraph.Tests {
 	
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.children.GetEnumerator();
+		}
+		
+		public RootedProjectElementContainer AsRoot {
+			get { return new RootedProjectElementContainer(this, this); }
+		}
+		
+		public new RootedProjectElementContainer WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectElementContainer(this, root);
 		}
 		
 		protected ProjectElement SyncImmediateChildToCurrentVersion(ProjectElement child) {
@@ -1966,6 +2650,94 @@ namespace ImmutableObjectGraph.Tests {
 					children: Optional.For(children.GetValueOrDefault(this.Children)));
 		}
 		
+		public virtual ProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			ProjectItemElement that = this as ProjectItemElement;
+			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemElement))) {
+				if ((!exclude.IsDefined || exclude.Value == that.Exclude) && 
+				    (!excludeLocation.IsDefined || excludeLocation.Value == that.ExcludeLocation) && 
+				    (!include.IsDefined || include.Value == that.Include) && 
+				    (!includeLocation.IsDefined || includeLocation.Value == that.IncludeLocation) && 
+				    (!itemType.IsDefined || itemType.Value == that.ItemType) && 
+				    (!keepDuplicates.IsDefined || keepDuplicates.Value == that.KeepDuplicates) && 
+				    (!keepDuplicatesLocation.IsDefined || keepDuplicatesLocation.Value == that.KeepDuplicatesLocation) && 
+				    (!keepMetadata.IsDefined || keepMetadata.Value == that.KeepMetadata) && 
+				    (!keepMetadataLocation.IsDefined || keepMetadataLocation.Value == that.KeepMetadataLocation) && 
+				    (!remove.IsDefined || remove.Value == that.Remove) && 
+				    (!removeLocation.IsDefined || removeLocation.Value == that.RemoveLocation) && 
+				    (!removeMetadata.IsDefined || removeMetadata.Value == that.RemoveMetadata) && 
+				    (!removeMetadataLocation.IsDefined || removeMetadataLocation.Value == that.RemoveMetadataLocation)) {
+					return that;
+				}
+			}
+		
+			return ProjectItemElement.CreateWithIdentity(
+				condition: Optional.For(this.Condition),
+				conditionLocation: Optional.For(this.ConditionLocation),
+				label: Optional.For(this.Label),
+				labelLocation: Optional.For(this.LabelLocation),
+				location: Optional.For(this.Location),
+				children: Optional.For(this.Children),
+				identity: this.Identity,
+				exclude: exclude,
+				excludeLocation: excludeLocation,
+				include: include,
+				includeLocation: includeLocation,
+				itemType: itemType,
+				keepDuplicates: keepDuplicates,
+				keepDuplicatesLocation: keepDuplicatesLocation,
+				keepMetadata: keepMetadata,
+				keepMetadataLocation: keepMetadataLocation,
+				remove: remove,
+				removeLocation: removeLocation,
+				removeMetadata: removeMetadata,
+				removeMetadataLocation: removeMetadataLocation);
+		}
+		
+		public override ProjectItemElement ToProjectItemElement(
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			return base.ToProjectItemElement(
+					children: Optional.For(children.GetValueOrDefault(this.Children)),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+		}
+		
 		public virtual ProjectImportGroupElement ToProjectImportGroupElement() {
 			ProjectImportGroupElement that = this as ProjectImportGroupElement;
 			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectImportGroupElement))) {
@@ -1989,12 +2761,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		public virtual ProjectItemDefinitionElement ToProjectItemDefinitionElement(
-			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			ProjectItemDefinitionElement that = this as ProjectItemDefinitionElement;
 			if (that != null && this.GetType().IsEquivalentTo(typeof(ProjectItemDefinitionElement))) {
-				if ((!itemType.IsDefined || itemType.Value == that.ItemType) && 
-				    (!metadata.IsDefined || metadata.Value == that.Metadata)) {
+				if ((!itemType.IsDefined || itemType.Value == that.ItemType)) {
 					return that;
 				}
 			}
@@ -2007,18 +2777,15 @@ namespace ImmutableObjectGraph.Tests {
 				location: Optional.For(this.Location),
 				children: Optional.For(this.Children),
 				identity: this.Identity,
-				itemType: itemType,
-				metadata: metadata);
+				itemType: itemType);
 		}
 		
 		public override ProjectItemDefinitionElement ToProjectItemDefinitionElement(
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return base.ToProjectItemDefinitionElement(
 					children: Optional.For(children.GetValueOrDefault(this.Children)),
-					itemType: itemType,
-					metadata: metadata);
+					itemType: itemType);
 		}
 		
 		public virtual ProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
@@ -2364,6 +3131,762 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 			return this.Children.IndexOf((ProjectElement)value);
+		}
+	}
+	
+	public partial struct RootedProjectElementContainer : System.IEquatable<RootedProjectElementContainer>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectElementContainer greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectElementContainer(ProjectElementContainer projectElementContainer, ProjectElementContainer root) {
+			this.greenNode = projectElementContainer;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectElementContainer);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public bool IsProjectRootElement {
+			get { return this.greenNode is ProjectRootElement; }
+		}
+	
+		public RootedProjectRootElement AsProjectRootElement {
+			get { return this.greenNode != null ? ((ProjectRootElement)this.greenNode).WithRoot(this.root) : default(RootedProjectRootElement); }
+		}
+	
+		public bool IsProjectPropertyGroupElement {
+			get { return this.greenNode is ProjectPropertyGroupElement; }
+		}
+	
+		public RootedProjectPropertyGroupElement AsProjectPropertyGroupElement {
+			get { return this.greenNode != null ? ((ProjectPropertyGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectPropertyGroupElement); }
+		}
+	
+		public bool IsProjectItemGroupElement {
+			get { return this.greenNode is ProjectItemGroupElement; }
+		}
+	
+		public RootedProjectItemGroupElement AsProjectItemGroupElement {
+			get { return this.greenNode != null ? ((ProjectItemGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemGroupElement); }
+		}
+	
+		public bool IsProjectChooseElement {
+			get { return this.greenNode is ProjectChooseElement; }
+		}
+	
+		public RootedProjectChooseElement AsProjectChooseElement {
+			get { return this.greenNode != null ? ((ProjectChooseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectChooseElement); }
+		}
+	
+		public bool IsProjectOtherwiseElement {
+			get { return this.greenNode is ProjectOtherwiseElement; }
+		}
+	
+		public RootedProjectOtherwiseElement AsProjectOtherwiseElement {
+			get { return this.greenNode != null ? ((ProjectOtherwiseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOtherwiseElement); }
+		}
+	
+		public bool IsProjectWhenElement {
+			get { return this.greenNode is ProjectWhenElement; }
+		}
+	
+		public RootedProjectWhenElement AsProjectWhenElement {
+			get { return this.greenNode != null ? ((ProjectWhenElement)this.greenNode).WithRoot(this.root) : default(RootedProjectWhenElement); }
+		}
+	
+		public bool IsProjectItemElement {
+			get { return this.greenNode is ProjectItemElement; }
+		}
+	
+		public RootedProjectItemElement AsProjectItemElement {
+			get { return this.greenNode != null ? ((ProjectItemElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemElement); }
+		}
+	
+		public bool IsProjectImportGroupElement {
+			get { return this.greenNode is ProjectImportGroupElement; }
+		}
+	
+		public RootedProjectImportGroupElement AsProjectImportGroupElement {
+			get { return this.greenNode != null ? ((ProjectImportGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectImportGroupElement); }
+		}
+	
+		public bool IsProjectItemDefinitionElement {
+			get { return this.greenNode is ProjectItemDefinitionElement; }
+		}
+	
+		public RootedProjectItemDefinitionElement AsProjectItemDefinitionElement {
+			get { return this.greenNode != null ? ((ProjectItemDefinitionElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionElement); }
+		}
+	
+		public bool IsProjectItemDefinitionGroupElement {
+			get { return this.greenNode is ProjectItemDefinitionGroupElement; }
+		}
+	
+		public RootedProjectItemDefinitionGroupElement AsProjectItemDefinitionGroupElement {
+			get { return this.greenNode != null ? ((ProjectItemDefinitionGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement); }
+		}
+	
+		public bool IsProjectTargetElement {
+			get { return this.greenNode is ProjectTargetElement; }
+		}
+	
+		public RootedProjectTargetElement AsProjectTargetElement {
+			get { return this.greenNode != null ? ((ProjectTargetElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTargetElement); }
+		}
+	
+		public bool IsProjectTaskElement {
+			get { return this.greenNode is ProjectTaskElement; }
+		}
+	
+		public RootedProjectTaskElement AsProjectTaskElement {
+			get { return this.greenNode != null ? ((ProjectTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTaskElement); }
+		}
+	
+		public bool IsProjectUsingTaskElement {
+			get { return this.greenNode is ProjectUsingTaskElement; }
+		}
+	
+		public RootedProjectUsingTaskElement AsProjectUsingTaskElement {
+			get { return this.greenNode != null ? ((ProjectUsingTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskElement); }
+		}
+	
+		public bool IsUsingTaskParameterGroupElement {
+			get { return this.greenNode is UsingTaskParameterGroupElement; }
+		}
+	
+		public RootedUsingTaskParameterGroupElement AsUsingTaskParameterGroupElement {
+			get { return this.greenNode != null ? ((UsingTaskParameterGroupElement)this.greenNode).WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public bool IsRoot {
+			get { return this.root == this.greenNode; }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectElementContainer WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectElementContainer WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectElementContainer WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectElementContainer WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectElementContainer WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectElementContainer WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectElementContainer WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectElementContainer WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectElementContainer, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectElementContainer, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectElementContainer RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectElementContainer WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectElementContainer WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectElementContainer, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectElementContainer, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectElementContainer RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectElementContainer RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectElementContainer RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectElementContainer ProjectElementContainer {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectElementContainer With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public RootedProjectElement Find(System.Int32 identity) {
+			this.ThrowIfDefault();
+			return this.greenNode.Find(identity).WithRoot(this.root);
+		}
+	
+		public bool TryFind(System.Int32 identity, out RootedProjectElement value) {
+			this.ThrowIfDefault();
+			ProjectElement greenValue;
+			if (this.greenNode.TryFind(identity, out greenValue)) {
+				value = greenValue.WithRoot(this.root);
+				return true;
+			}
+	
+			value = default(RootedProjectElement);
+			return false;
+		}
+	
+		public System.Collections.Generic.IEnumerator<RootedProjectElement> GetEnumerator() {
+			return this.Children.GetEnumerator();
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectElementContainer) {
+				var other = (RootedProjectElementContainer)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectElementContainer other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectElementContainer NewSpine(ProjectElementContainer leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectElementContainer.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -2934,6 +4457,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation TreatAsLocalPropertylocation { get; set; }
 		}
 		
+		public new RootedProjectRootElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectRootElement(this, root);
+		}
+		
 		internal static ProjectRootElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -3168,6 +4700,763 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.TreatAsLocalProperty),
 					ImmutableObjectGraph.Optional.For(treatAsLocalPropertylocation));
 			}
+		}
+	}
+	
+	public partial struct RootedProjectRootElement : System.IEquatable<RootedProjectRootElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectRootElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectRootElement(ProjectRootElement projectRootElement, ProjectElementContainer root) {
+			this.greenNode = projectRootElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectRootElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectRootElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectRootElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectRootElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectRootElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectRootElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectRootElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectRootElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectRootElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectRootElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectRootElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectRootElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectRootElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectRootElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectRootElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectRootElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectRootElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectRootElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectRootElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String FullPath {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.FullPath;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the FullPath property set to the specified value.</summary>
+		public RootedProjectRootElement WithFullPath(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithFullPath(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Text.Encoding Encoding {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Encoding;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Encoding property set to the specified value.</summary>
+		public RootedProjectRootElement WithEncoding(System.Text.Encoding value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithEncoding(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String ToolsVersion {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ToolsVersion;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ToolsVersion property set to the specified value.</summary>
+		public RootedProjectRootElement WithToolsVersion(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithToolsVersion(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ToolsVersionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ToolsVersionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ToolsVersionLocation property set to the specified value.</summary>
+		public RootedProjectRootElement WithToolsVersionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithToolsVersionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String DefaultTargets {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.DefaultTargets;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the DefaultTargets property set to the specified value.</summary>
+		public RootedProjectRootElement WithDefaultTargets(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithDefaultTargets(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation DefaultTargetsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.DefaultTargetsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the DefaultTargetsLocation property set to the specified value.</summary>
+		public RootedProjectRootElement WithDefaultTargetsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithDefaultTargetsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String InitialTargets {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.InitialTargets;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the InitialTargets property set to the specified value.</summary>
+		public RootedProjectRootElement WithInitialTargets(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithInitialTargets(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation InitialTargetsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.InitialTargetsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the InitialTargetsLocation property set to the specified value.</summary>
+		public RootedProjectRootElement WithInitialTargetsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithInitialTargetsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Boolean TreatAsLocalProperty {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TreatAsLocalProperty;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TreatAsLocalProperty property set to the specified value.</summary>
+		public RootedProjectRootElement WithTreatAsLocalProperty(System.Boolean value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTreatAsLocalProperty(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation TreatAsLocalPropertylocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TreatAsLocalPropertylocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TreatAsLocalPropertylocation property set to the specified value.</summary>
+		public RootedProjectRootElement WithTreatAsLocalPropertylocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTreatAsLocalPropertylocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectRootElement ProjectRootElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectRootElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				fullPath: fullPath,
+				encoding: encoding,
+				toolsVersion: toolsVersion,
+				toolsVersionLocation: toolsVersionLocation,
+				defaultTargets: defaultTargets,
+				defaultTargetsLocation: defaultTargetsLocation,
+				initialTargets: initialTargets,
+				initialTargetsLocation: initialTargetsLocation,
+				treatAsLocalProperty: treatAsLocalProperty,
+				treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectRootElement) {
+				var other = (RootedProjectRootElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectRootElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectRootElement NewSpine(ProjectRootElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectRootElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -3409,6 +5698,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedProjectPropertyGroupElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectPropertyGroupElement(this, root);
+		}
+		
 		internal static ProjectPropertyGroupElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -3444,6 +5742,623 @@ namespace ImmutableObjectGraph.Tests {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable;
 			}
+		}
+	}
+	
+	public partial struct RootedProjectPropertyGroupElement : System.IEquatable<RootedProjectPropertyGroupElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectPropertyGroupElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectPropertyGroupElement(ProjectPropertyGroupElement projectPropertyGroupElement, ProjectElementContainer root) {
+			this.greenNode = projectPropertyGroupElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectPropertyGroupElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectPropertyGroupElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectPropertyGroupElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectPropertyGroupElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectPropertyGroupElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectPropertyGroupElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectPropertyGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectPropertyGroupElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectPropertyGroupElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectPropertyGroupElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectPropertyGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectPropertyGroupElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectPropertyGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectPropertyGroupElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectPropertyGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectPropertyGroupElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectPropertyGroupElement ProjectPropertyGroupElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectPropertyGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectPropertyGroupElement) {
+				var other = (RootedProjectPropertyGroupElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectPropertyGroupElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectPropertyGroupElement NewSpine(ProjectPropertyGroupElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectPropertyGroupElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -3685,6 +6600,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedProjectItemGroupElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectItemGroupElement(this, root);
+		}
+		
 		internal static ProjectItemGroupElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -3720,6 +6644,623 @@ namespace ImmutableObjectGraph.Tests {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable;
 			}
+		}
+	}
+	
+	public partial struct RootedProjectItemGroupElement : System.IEquatable<RootedProjectItemGroupElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectItemGroupElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectItemGroupElement(ProjectItemGroupElement projectItemGroupElement, ProjectElementContainer root) {
+			this.greenNode = projectItemGroupElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectItemGroupElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectItemGroupElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectItemGroupElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectItemGroupElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectItemGroupElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectItemGroupElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectItemGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemGroupElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemGroupElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemGroupElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemGroupElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemGroupElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemGroupElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemGroupElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectItemGroupElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectItemGroupElement ProjectItemGroupElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectItemGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectItemGroupElement) {
+				var other = (RootedProjectItemGroupElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectItemGroupElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectItemGroupElement NewSpine(ProjectItemGroupElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectItemGroupElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -3961,6 +7502,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedProjectChooseElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectChooseElement(this, root);
+		}
+		
 		internal static ProjectChooseElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -3996,6 +7546,623 @@ namespace ImmutableObjectGraph.Tests {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable;
 			}
+		}
+	}
+	
+	public partial struct RootedProjectChooseElement : System.IEquatable<RootedProjectChooseElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectChooseElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectChooseElement(ProjectChooseElement projectChooseElement, ProjectElementContainer root) {
+			this.greenNode = projectChooseElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectChooseElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectChooseElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectChooseElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectChooseElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectChooseElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectChooseElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectChooseElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectChooseElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectChooseElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectChooseElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectChooseElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectChooseElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectChooseElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectChooseElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectChooseElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectChooseElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectChooseElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectChooseElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectChooseElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectChooseElement ProjectChooseElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectChooseElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectChooseElement) {
+				var other = (RootedProjectChooseElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectChooseElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectChooseElement NewSpine(ProjectChooseElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectChooseElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -4237,6 +8404,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedProjectOtherwiseElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectOtherwiseElement(this, root);
+		}
+		
 		internal static ProjectOtherwiseElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -4272,6 +8448,623 @@ namespace ImmutableObjectGraph.Tests {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable;
 			}
+		}
+	}
+	
+	public partial struct RootedProjectOtherwiseElement : System.IEquatable<RootedProjectOtherwiseElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectOtherwiseElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectOtherwiseElement(ProjectOtherwiseElement projectOtherwiseElement, ProjectElementContainer root) {
+			this.greenNode = projectOtherwiseElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectOtherwiseElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectOtherwiseElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectOtherwiseElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectOtherwiseElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectOtherwiseElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectOtherwiseElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectOtherwiseElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectOtherwiseElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectOtherwiseElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectOtherwiseElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectOtherwiseElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectOtherwiseElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectOtherwiseElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectOtherwiseElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectOtherwiseElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectOtherwiseElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectOtherwiseElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectOtherwiseElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectOtherwiseElement ProjectOtherwiseElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectOtherwiseElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectOtherwiseElement) {
+				var other = (RootedProjectOtherwiseElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectOtherwiseElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectOtherwiseElement NewSpine(ProjectOtherwiseElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectOtherwiseElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -4513,6 +9306,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedProjectWhenElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectWhenElement(this, root);
+		}
+		
 		internal static ProjectWhenElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -4548,6 +9350,623 @@ namespace ImmutableObjectGraph.Tests {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable;
 			}
+		}
+	}
+	
+	public partial struct RootedProjectWhenElement : System.IEquatable<RootedProjectWhenElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectWhenElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectWhenElement(ProjectWhenElement projectWhenElement, ProjectElementContainer root) {
+			this.greenNode = projectWhenElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectWhenElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectWhenElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectWhenElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectWhenElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectWhenElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectWhenElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectWhenElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectWhenElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectWhenElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectWhenElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectWhenElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectWhenElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectWhenElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectWhenElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectWhenElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectWhenElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectWhenElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectWhenElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectWhenElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectWhenElement ProjectWhenElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectWhenElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectWhenElement) {
+				var other = (RootedProjectWhenElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectWhenElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectWhenElement NewSpine(ProjectWhenElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectWhenElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -4788,6 +10207,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String Value { get; set; }
 		}
 		
+		public new RootedProjectPropertyElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectPropertyElement(this, root);
+		}
+		
 		internal static ProjectPropertyElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -4869,7 +10297,514 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectItemElement : IProjectElement {
+	public partial struct RootedProjectPropertyElement : System.IEquatable<RootedProjectPropertyElement>, IRecursiveType {
+		private readonly ProjectPropertyElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectPropertyElement(ProjectPropertyElement projectPropertyElement, ProjectElementContainer root) {
+			this.greenNode = projectPropertyElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectPropertyElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectPropertyElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectPropertyElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectPropertyElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectPropertyElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectPropertyElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Name {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Name;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public RootedProjectPropertyElement WithName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Value {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
+		public RootedProjectPropertyElement WithValue(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithValue(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectPropertyElement ProjectPropertyElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectPropertyElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				name: name,
+				value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectPropertyElement) {
+				var other = (RootedProjectPropertyElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectPropertyElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectPropertyElement NewSpine(ProjectPropertyElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectPropertyElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	}
+	
+	public interface IProjectItemElement : IProjectElementContainer {
 		System.String Exclude { get; }
 		ElementLocation ExcludeLocation { get; }
 		System.String Include { get; }
@@ -4879,14 +10814,13 @@ namespace ImmutableObjectGraph.Tests {
 		ElementLocation KeepDuplicatesLocation { get; }
 		System.String KeepMetadata { get; }
 		ElementLocation KeepMetadataLocation { get; }
-		System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; }
 		System.String Remove { get; }
 		ElementLocation RemoveLocation { get; }
 		System.String RemoveMetadata { get; }
 		ElementLocation RemoveMetadataLocation { get; }
 	}
 	
-	public partial class ProjectItemElement : ProjectElement, IProjectItemElement {
+	public partial class ProjectItemElement : ProjectElementContainer, IProjectItemElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectItemElement DefaultInstance = GetDefaultTemplate();
 	
@@ -4918,9 +10852,6 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ElementLocation keepMetadataLocation;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata;
-	
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String remove;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -4940,6 +10871,7 @@ namespace ImmutableObjectGraph.Tests {
 			System.String label,
 			ElementLocation labelLocation,
 			ElementLocation location,
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
 			System.String exclude,
 			ElementLocation excludeLocation,
 			System.String include,
@@ -4949,7 +10881,6 @@ namespace ImmutableObjectGraph.Tests {
 			ElementLocation keepDuplicatesLocation,
 			System.String keepMetadata,
 			ElementLocation keepMetadataLocation,
-			System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata,
 			System.String remove,
 			ElementLocation removeLocation,
 			System.String removeMetadata,
@@ -4960,7 +10891,8 @@ namespace ImmutableObjectGraph.Tests {
 				conditionLocation: conditionLocation,
 				label: label,
 				labelLocation: labelLocation,
-				location: location)
+				location: location,
+				children: children)
 		{
 			this.exclude = exclude;
 			this.excludeLocation = excludeLocation;
@@ -4971,7 +10903,6 @@ namespace ImmutableObjectGraph.Tests {
 			this.keepDuplicatesLocation = keepDuplicatesLocation;
 			this.keepMetadata = keepMetadata;
 			this.keepMetadataLocation = keepMetadataLocation;
-			this.metadata = metadata;
 			this.remove = remove;
 			this.removeLocation = removeLocation;
 			this.removeMetadata = removeMetadata;
@@ -4985,6 +10916,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
@@ -4994,7 +10926,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5006,6 +10937,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
 				labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
 				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 				exclude: Optional.For(exclude.GetValueOrDefault(DefaultInstance.Exclude)),
 				excludeLocation: Optional.For(excludeLocation.GetValueOrDefault(DefaultInstance.ExcludeLocation)),
 				include: Optional.For(include.GetValueOrDefault(DefaultInstance.Include)),
@@ -5015,7 +10947,6 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: Optional.For(keepDuplicatesLocation.GetValueOrDefault(DefaultInstance.KeepDuplicatesLocation)),
 				keepMetadata: Optional.For(keepMetadata.GetValueOrDefault(DefaultInstance.KeepMetadata)),
 				keepMetadataLocation: Optional.For(keepMetadataLocation.GetValueOrDefault(DefaultInstance.KeepMetadataLocation)),
-				metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
 				remove: Optional.For(remove.GetValueOrDefault(DefaultInstance.Remove)),
 				removeLocation: Optional.For(removeLocation.GetValueOrDefault(DefaultInstance.RemoveLocation)),
 				removeMetadata: Optional.For(removeMetadata.GetValueOrDefault(DefaultInstance.RemoveMetadata)),
@@ -5059,10 +10990,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.keepMetadataLocation; }
 		}
 	
-		public System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata {
-			get { return this.metadata; }
-		}
-	
 		public System.String Remove {
 			get { return this.remove; }
 		}
@@ -5103,6 +11030,57 @@ namespace ImmutableObjectGraph.Tests {
 		public new ProjectItemElement WithLocation(ElementLocation value) {
 			return (ProjectItemElement)base.WithLocation(value);
 		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public new ProjectItemElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
+			return (ProjectItemElement)base.WithChildren(value);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemElement WithChildren(params ProjectElement[] values) {
+			return (ProjectItemElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public new ProjectItemElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemElement)base.WithChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public new ProjectItemElement AddChildren(params ProjectElement[] values) {
+			return (ProjectItemElement)base.AddChildren(values);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public new ProjectItemElement AddChild(ProjectElement value) {
+			return (ProjectItemElement)base.AddChild(value);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			return (ProjectItemElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public new ProjectItemElement RemoveChildren(params ProjectElement[] values) {
+			return (ProjectItemElement)base.RemoveChildren(values);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public new ProjectItemElement RemoveChild(ProjectElement value) {
+			return (ProjectItemElement)base.RemoveChild(value);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public new ProjectItemElement RemoveChildren() {
+			return (ProjectItemElement)base.RemoveChildren();
+		}
+		
 		
 		/// <summary>Returns a new instance with the Exclude property set to the specified value.</summary>
 		public ProjectItemElement WithExclude(System.String value) {
@@ -5185,61 +11163,6 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(keepMetadataLocation: Optional.For(value));
 		}
 		
-		/// <summary>Returns a new instance with the Metadata property set to the specified value.</summary>
-		public ProjectItemElement WithMetadata(System.Collections.Immutable.ImmutableList<ProjectMetadataElement> value) {
-			if (value == this.Metadata) {
-				return this;
-			}
-		
-			return this.With(metadata: Optional.For(value));
-		}
-		
-		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
-		public ProjectItemElement WithMetadataElements(params ProjectMetadataElement[] values) {
-			return this.With(metadata: this.Metadata.ResetContents(values));
-		}
-		
-		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
-		public ProjectItemElement WithMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
-			return this.With(metadata: this.Metadata.ResetContents(values));
-		}
-		
-		/// <summary>Adds the specified elements from the Metadata collection.</summary>
-		public ProjectItemElement AddMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
-			return this.With(metadata: this.Metadata.AddRange(values));
-		}
-		
-		/// <summary>Adds the specified elements from the Metadata collection.</summary>
-		public ProjectItemElement AddMetadataElements(params ProjectMetadataElement[] values) {
-			return this.With(metadata: this.Metadata.AddRange(values));
-		}
-		
-		/// <summary>Adds the specified element from the Metadata collection.</summary>
-		public ProjectItemElement AddMetadataElement(ProjectMetadataElement value) {
-			return this.With(metadata: this.Metadata.Add(value));
-		}
-		
-		/// <summary>Removes the specified elements from the Metadata collection.</summary>
-		public ProjectItemElement RemoveMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
-			return this.With(metadata: this.Metadata.RemoveRange(values));
-		}
-		
-		/// <summary>Removes the specified elements from the Metadata collection.</summary>
-		public ProjectItemElement RemoveMetadataElements(params ProjectMetadataElement[] values) {
-			return this.With(metadata: this.Metadata.RemoveRange(values));
-		}
-		
-		/// <summary>Removes the specified element from the Metadata collection.</summary>
-		public ProjectItemElement RemoveMetadataElement(ProjectMetadataElement value) {
-			return this.With(metadata: this.Metadata.Remove(value));
-		}
-		
-		/// <summary>Clears all elements from the Metadata collection.</summary>
-		public ProjectItemElement RemoveMetadataElements() {
-			return this.With(metadata: this.Metadata.Clear());
-		}
-		
-		
 		/// <summary>Returns a new instance with the Remove property set to the specified value.</summary>
 		public ProjectItemElement WithRemove(System.String value) {
 			if (value == this.Remove) {
@@ -5292,12 +11215,30 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override ProjectElementContainer WithCore(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>)) {
+			return this.WithFactory(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public ProjectItemElement With(
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5307,7 +11248,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5318,6 +11258,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				labelLocation: labelLocation,
 				location: location,
+				children: children,
 				exclude: exclude,
 				excludeLocation: excludeLocation,
 				include: include,
@@ -5327,7 +11268,6 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: keepDuplicatesLocation,
 				keepMetadata: keepMetadata,
 				keepMetadataLocation: keepMetadataLocation,
-				metadata: metadata,
 				remove: remove,
 				removeLocation: removeLocation,
 				removeMetadata: removeMetadata,
@@ -5341,6 +11281,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5350,7 +11291,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5362,6 +11302,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
 				labelLocation: Optional.For(labelLocation.GetValueOrDefault(this.LabelLocation)),
 				location: Optional.For(location.GetValueOrDefault(this.Location)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
 				exclude: Optional.For(exclude.GetValueOrDefault(this.Exclude)),
 				excludeLocation: Optional.For(excludeLocation.GetValueOrDefault(this.ExcludeLocation)),
 				include: Optional.For(include.GetValueOrDefault(this.Include)),
@@ -5371,7 +11312,6 @@ namespace ImmutableObjectGraph.Tests {
 				keepDuplicatesLocation: Optional.For(keepDuplicatesLocation.GetValueOrDefault(this.KeepDuplicatesLocation)),
 				keepMetadata: Optional.For(keepMetadata.GetValueOrDefault(this.KeepMetadata)),
 				keepMetadataLocation: Optional.For(keepMetadataLocation.GetValueOrDefault(this.KeepMetadataLocation)),
-				metadata: Optional.For(metadata.GetValueOrDefault(this.Metadata)),
 				remove: Optional.For(remove.GetValueOrDefault(this.Remove)),
 				removeLocation: Optional.For(removeLocation.GetValueOrDefault(this.RemoveLocation)),
 				removeMetadata: Optional.For(removeMetadata.GetValueOrDefault(this.RemoveMetadata)),
@@ -5386,6 +11326,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5395,7 +11336,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5408,6 +11348,7 @@ namespace ImmutableObjectGraph.Tests {
 				(label.IsDefined && label.Value != this.Label) || 
 				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
 				(location.IsDefined && location.Value != this.Location) || 
+				(children.IsDefined && children.Value != this.Children) || 
 				(exclude.IsDefined && exclude.Value != this.Exclude) || 
 				(excludeLocation.IsDefined && excludeLocation.Value != this.ExcludeLocation) || 
 				(include.IsDefined && include.Value != this.Include) || 
@@ -5417,7 +11358,6 @@ namespace ImmutableObjectGraph.Tests {
 				(keepDuplicatesLocation.IsDefined && keepDuplicatesLocation.Value != this.KeepDuplicatesLocation) || 
 				(keepMetadata.IsDefined && keepMetadata.Value != this.KeepMetadata) || 
 				(keepMetadataLocation.IsDefined && keepMetadataLocation.Value != this.KeepMetadataLocation) || 
-				(metadata.IsDefined && metadata.Value != this.Metadata) || 
 				(remove.IsDefined && remove.Value != this.Remove) || 
 				(removeLocation.IsDefined && removeLocation.Value != this.RemoveLocation) || 
 				(removeMetadata.IsDefined && removeMetadata.Value != this.RemoveMetadata) || 
@@ -5429,6 +11369,7 @@ namespace ImmutableObjectGraph.Tests {
 					label: label.GetValueOrDefault(this.Label),
 					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
 					location: location.GetValueOrDefault(this.Location),
+					children: children.GetValueOrDefault(this.Children),
 					exclude: exclude.GetValueOrDefault(this.Exclude),
 					excludeLocation: excludeLocation.GetValueOrDefault(this.ExcludeLocation),
 					include: include.GetValueOrDefault(this.Include),
@@ -5438,7 +11379,6 @@ namespace ImmutableObjectGraph.Tests {
 					keepDuplicatesLocation: keepDuplicatesLocation.GetValueOrDefault(this.KeepDuplicatesLocation),
 					keepMetadata: keepMetadata.GetValueOrDefault(this.KeepMetadata),
 					keepMetadataLocation: keepMetadataLocation.GetValueOrDefault(this.KeepMetadataLocation),
-					metadata: metadata.GetValueOrDefault(this.Metadata),
 					remove: remove.GetValueOrDefault(this.Remove),
 					removeLocation: removeLocation.GetValueOrDefault(this.RemoveLocation),
 					removeMetadata: removeMetadata.GetValueOrDefault(this.RemoveMetadata),
@@ -5467,6 +11407,7 @@ namespace ImmutableObjectGraph.Tests {
 				template.Label, 
 				template.LabelLocation, 
 				template.Location, 
+				template.Children, 
 				template.Exclude, 
 				template.ExcludeLocation, 
 				template.Include, 
@@ -5476,7 +11417,6 @@ namespace ImmutableObjectGraph.Tests {
 				template.KeepDuplicatesLocation, 
 				template.KeepMetadata, 
 				template.KeepMetadataLocation, 
-				template.Metadata, 
 				template.Remove, 
 				template.RemoveLocation, 
 				template.RemoveMetadata, 
@@ -5494,6 +11434,8 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation LabelLocation { get; set; }
 	
 			internal ElementLocation Location { get; set; }
+	
+			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 	
 			internal System.String Exclude { get; set; }
 	
@@ -5513,8 +11455,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 			internal ElementLocation KeepMetadataLocation { get; set; }
 	
-			internal System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; set; }
-	
 			internal System.String Remove { get; set; }
 	
 			internal ElementLocation RemoveLocation { get; set; }
@@ -5524,12 +11464,22 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation RemoveMetadataLocation { get; set; }
 		}
 		
+		public new RootedProjectItemElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectItemElement(this, root);
+		}
+		
 		internal static ProjectItemElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5539,7 +11489,6 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
-				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 				ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
@@ -5555,6 +11504,7 @@ namespace ImmutableObjectGraph.Tests {
 					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
 					labelLocation: Optional.For(labelLocation.GetValueOrDefault(DefaultInstance.LabelLocation)),
 					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 					exclude: Optional.For(exclude.GetValueOrDefault(DefaultInstance.Exclude)),
 					excludeLocation: Optional.For(excludeLocation.GetValueOrDefault(DefaultInstance.ExcludeLocation)),
 					include: Optional.For(include.GetValueOrDefault(DefaultInstance.Include)),
@@ -5564,7 +11514,6 @@ namespace ImmutableObjectGraph.Tests {
 					keepDuplicatesLocation: Optional.For(keepDuplicatesLocation.GetValueOrDefault(DefaultInstance.KeepDuplicatesLocation)),
 					keepMetadata: Optional.For(keepMetadata.GetValueOrDefault(DefaultInstance.KeepMetadata)),
 					keepMetadataLocation: Optional.For(keepMetadataLocation.GetValueOrDefault(DefaultInstance.KeepMetadataLocation)),
-					metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
 					remove: Optional.For(remove.GetValueOrDefault(DefaultInstance.Remove)),
 					removeLocation: Optional.For(removeLocation.GetValueOrDefault(DefaultInstance.RemoveLocation)),
 					removeMetadata: Optional.For(removeMetadata.GetValueOrDefault(DefaultInstance.RemoveMetadata)),
@@ -5576,7 +11525,7 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 		
-		public new partial class Builder : ProjectElement.Builder {
+		public new partial class Builder : ProjectElementContainer.Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private ProjectItemElement immutable;
 		
@@ -5606,9 +11555,6 @@ namespace ImmutableObjectGraph.Tests {
 		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected ImmutableObjectGraph.Optional<ElementLocation.Builder> keepMetadataLocation;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder> metadata;
 		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String remove;
@@ -5740,20 +11686,6 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			public System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder Metadata {
-				get {
-					if (!this.metadata.IsDefined) {
-						this.metadata = this.immutable.metadata != null ? this.immutable.metadata.ToBuilder() : null;
-					}
-		
-					return this.metadata.Value;
-				}
-		
-				set {
-					this.metadata = value;
-				}
-			}
-		
 			public System.String Remove {
 				get {
 					return this.remove;
@@ -5806,11 +11738,11 @@ namespace ImmutableObjectGraph.Tests {
 				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
 				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
 				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
+				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				var excludeLocation = this.excludeLocation.IsDefined ? (this.excludeLocation.Value != null ? this.excludeLocation.Value.ToImmutable() : null) : this.immutable.ExcludeLocation;
 				var includeLocation = this.includeLocation.IsDefined ? (this.includeLocation.Value != null ? this.includeLocation.Value.ToImmutable() : null) : this.immutable.IncludeLocation;
 				var keepDuplicatesLocation = this.keepDuplicatesLocation.IsDefined ? (this.keepDuplicatesLocation.Value != null ? this.keepDuplicatesLocation.Value.ToImmutable() : null) : this.immutable.KeepDuplicatesLocation;
 				var keepMetadataLocation = this.keepMetadataLocation.IsDefined ? (this.keepMetadataLocation.Value != null ? this.keepMetadataLocation.Value.ToImmutable() : null) : this.immutable.KeepMetadataLocation;
-				var metadata = this.metadata.IsDefined ? (this.metadata.Value != null ? this.metadata.Value.ToImmutable() : null) : this.immutable.Metadata;
 				var removeLocation = this.removeLocation.IsDefined ? (this.removeLocation.Value != null ? this.removeLocation.Value.ToImmutable() : null) : this.immutable.RemoveLocation;
 				var removeMetadataLocation = this.removeMetadataLocation.IsDefined ? (this.removeMetadataLocation.Value != null ? this.removeMetadataLocation.Value.ToImmutable() : null) : this.immutable.RemoveMetadataLocation;
 				return this.immutable = this.immutable.With(
@@ -5819,6 +11751,7 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Label),
 					ImmutableObjectGraph.Optional.For(labelLocation),
 					ImmutableObjectGraph.Optional.For(location),
+					ImmutableObjectGraph.Optional.For(children),
 					ImmutableObjectGraph.Optional.For(this.Exclude),
 					ImmutableObjectGraph.Optional.For(excludeLocation),
 					ImmutableObjectGraph.Optional.For(this.Include),
@@ -5828,12 +11761,810 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(keepDuplicatesLocation),
 					ImmutableObjectGraph.Optional.For(this.KeepMetadata),
 					ImmutableObjectGraph.Optional.For(keepMetadataLocation),
-					ImmutableObjectGraph.Optional.For(metadata),
 					ImmutableObjectGraph.Optional.For(this.Remove),
 					ImmutableObjectGraph.Optional.For(removeLocation),
 					ImmutableObjectGraph.Optional.For(this.RemoveMetadata),
 					ImmutableObjectGraph.Optional.For(removeMetadataLocation));
 			}
+		}
+	}
+	
+	public partial struct RootedProjectItemElement : System.IEquatable<RootedProjectItemElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectItemElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectItemElement(ProjectItemElement projectItemElement, ProjectElementContainer root) {
+			this.greenNode = projectItemElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectItemElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectItemElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectItemElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectItemElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectItemElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectItemElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Exclude {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Exclude;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Exclude property set to the specified value.</summary>
+		public RootedProjectItemElement WithExclude(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithExclude(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ExcludeLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ExcludeLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ExcludeLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithExcludeLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithExcludeLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Include {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Include;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Include property set to the specified value.</summary>
+		public RootedProjectItemElement WithInclude(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithInclude(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation IncludeLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.IncludeLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the IncludeLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithIncludeLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithIncludeLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String ItemType {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ItemType;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
+		public RootedProjectItemElement WithItemType(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithItemType(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String KeepDuplicates {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.KeepDuplicates;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the KeepDuplicates property set to the specified value.</summary>
+		public RootedProjectItemElement WithKeepDuplicates(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithKeepDuplicates(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation KeepDuplicatesLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.KeepDuplicatesLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the KeepDuplicatesLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithKeepDuplicatesLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithKeepDuplicatesLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String KeepMetadata {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.KeepMetadata;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the KeepMetadata property set to the specified value.</summary>
+		public RootedProjectItemElement WithKeepMetadata(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithKeepMetadata(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation KeepMetadataLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.KeepMetadataLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the KeepMetadataLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithKeepMetadataLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithKeepMetadataLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Remove {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Remove;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Remove property set to the specified value.</summary>
+		public RootedProjectItemElement WithRemove(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRemove(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation RemoveLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.RemoveLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the RemoveLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithRemoveLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRemoveLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String RemoveMetadata {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.RemoveMetadata;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the RemoveMetadata property set to the specified value.</summary>
+		public RootedProjectItemElement WithRemoveMetadata(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRemoveMetadata(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation RemoveMetadataLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.RemoveMetadataLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the RemoveMetadataLocation property set to the specified value.</summary>
+		public RootedProjectItemElement WithRemoveMetadataLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRemoveMetadataLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectItemElement ProjectItemElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectItemElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				exclude: exclude,
+				excludeLocation: excludeLocation,
+				include: include,
+				includeLocation: includeLocation,
+				itemType: itemType,
+				keepDuplicates: keepDuplicates,
+				keepDuplicatesLocation: keepDuplicatesLocation,
+				keepMetadata: keepMetadata,
+				keepMetadataLocation: keepMetadataLocation,
+				remove: remove,
+				removeLocation: removeLocation,
+				removeMetadata: removeMetadata,
+				removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectItemElement) {
+				var other = (RootedProjectItemElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectItemElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectItemElement NewSpine(ProjectItemElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectItemElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -6074,6 +12805,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String Value { get; set; }
 		}
 		
+		public new RootedProjectMetadataElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectMetadataElement(this, root);
+		}
+		
 		internal static ProjectMetadataElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -6151,6 +12891,513 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(location),
 					ImmutableObjectGraph.Optional.For(this.Name),
 					ImmutableObjectGraph.Optional.For(this.Value));
+			}
+		}
+	}
+	
+	public partial struct RootedProjectMetadataElement : System.IEquatable<RootedProjectMetadataElement>, IRecursiveType {
+		private readonly ProjectMetadataElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectMetadataElement(ProjectMetadataElement projectMetadataElement, ProjectElementContainer root) {
+			this.greenNode = projectMetadataElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectMetadataElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectMetadataElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectMetadataElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectMetadataElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectMetadataElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectMetadataElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Name {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Name;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public RootedProjectMetadataElement WithName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Value {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
+		public RootedProjectMetadataElement WithValue(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithValue(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectMetadataElement ProjectMetadataElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectMetadataElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				name: name,
+				value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectMetadataElement) {
+				var other = (RootedProjectMetadataElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectMetadataElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectMetadataElement NewSpine(ProjectMetadataElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectMetadataElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
 			}
 		}
 	}
@@ -6361,6 +13608,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String Content { get; set; }
 		}
 		
+		public new RootedProjectExtensionsElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectExtensionsElement(this, root);
+		}
+		
 		internal static ProjectExtensionsElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -6421,6 +13677,499 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(labelLocation),
 					ImmutableObjectGraph.Optional.For(location),
 					ImmutableObjectGraph.Optional.For(this.Content));
+			}
+		}
+	}
+	
+	public partial struct RootedProjectExtensionsElement : System.IEquatable<RootedProjectExtensionsElement>, IRecursiveType {
+		private readonly ProjectExtensionsElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectExtensionsElement(ProjectExtensionsElement projectExtensionsElement, ProjectElementContainer root) {
+			this.greenNode = projectExtensionsElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectExtensionsElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectExtensionsElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectExtensionsElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectExtensionsElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectExtensionsElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectExtensionsElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Content {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Content;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Content property set to the specified value.</summary>
+		public RootedProjectExtensionsElement WithContent(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithContent(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectExtensionsElement ProjectExtensionsElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectExtensionsElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectExtensionsElement) {
+				var other = (RootedProjectExtensionsElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectExtensionsElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectExtensionsElement NewSpine(ProjectExtensionsElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectExtensionsElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
 			}
 		}
 	}
@@ -6662,6 +14411,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation ProjectLocation { get; set; }
 		}
 		
+		public new RootedProjectImportElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectImportElement(this, root);
+		}
+		
 		internal static ProjectImportElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -6743,6 +14501,513 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(location),
 					ImmutableObjectGraph.Optional.For(this.Project),
 					ImmutableObjectGraph.Optional.For(projectLocation));
+			}
+		}
+	}
+	
+	public partial struct RootedProjectImportElement : System.IEquatable<RootedProjectImportElement>, IRecursiveType {
+		private readonly ProjectImportElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectImportElement(ProjectImportElement projectImportElement, ProjectElementContainer root) {
+			this.greenNode = projectImportElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectImportElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectImportElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectImportElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectImportElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectImportElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectImportElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Project {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Project;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Project property set to the specified value.</summary>
+		public RootedProjectImportElement WithProject(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithProject(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ProjectLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ProjectLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ProjectLocation property set to the specified value.</summary>
+		public RootedProjectImportElement WithProjectLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithProjectLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectImportElement ProjectImportElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectImportElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				project: project,
+				projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectImportElement) {
+				var other = (RootedProjectImportElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectImportElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectImportElement NewSpine(ProjectImportElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectImportElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
 			}
 		}
 	}
@@ -6985,6 +15250,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedProjectImportGroupElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectImportGroupElement(this, root);
+		}
+		
 		internal static ProjectImportGroupElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -7023,9 +15297,625 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
+	public partial struct RootedProjectImportGroupElement : System.IEquatable<RootedProjectImportGroupElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectImportGroupElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectImportGroupElement(ProjectImportGroupElement projectImportGroupElement, ProjectElementContainer root) {
+			this.greenNode = projectImportGroupElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectImportGroupElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectImportGroupElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectImportGroupElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectImportGroupElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectImportGroupElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectImportGroupElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectImportGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectImportGroupElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectImportGroupElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectImportGroupElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectImportGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectImportGroupElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectImportGroupElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectImportGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectImportGroupElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectImportGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectImportGroupElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectImportGroupElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectImportGroupElement ProjectImportGroupElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectImportGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectImportGroupElement) {
+				var other = (RootedProjectImportGroupElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectImportGroupElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectImportGroupElement NewSpine(ProjectImportGroupElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectImportGroupElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
+		}
+	}
+	
 	public interface IProjectItemDefinitionElement : IProjectElementContainer {
 		System.String ItemType { get; }
-		System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; }
 	}
 	
 	public partial class ProjectItemDefinitionElement : ProjectElementContainer, IProjectItemDefinitionElement {
@@ -7034,9 +15924,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String itemType;
-	
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata;
 	
 		/// <summary>Initializes a new instance of the ProjectItemDefinitionElement class.</summary>
 		protected ProjectItemDefinitionElement(
@@ -7047,8 +15934,7 @@ namespace ImmutableObjectGraph.Tests {
 			ElementLocation labelLocation,
 			ElementLocation location,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
-			System.String itemType,
-			System.Collections.Immutable.ImmutableList<ProjectMetadataElement> metadata)
+			System.String itemType)
 			: base(
 				identity: identity,
 				condition: condition,
@@ -7059,7 +15945,6 @@ namespace ImmutableObjectGraph.Tests {
 				children: children)
 		{
 			this.itemType = itemType;
-			this.metadata = metadata;
 			this.Validate();
 		}
 	
@@ -7070,8 +15955,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = Optional.For(NewIdentity());
 			return DefaultInstance.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(DefaultInstance.Condition)),
@@ -7081,16 +15965,11 @@ namespace ImmutableObjectGraph.Tests {
 				location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
 				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 				itemType: Optional.For(itemType.GetValueOrDefault(DefaultInstance.ItemType)),
-				metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String ItemType {
 			get { return this.itemType; }
-		}
-	
-		public System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata {
-			get { return this.metadata; }
 		}
 		
 		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
@@ -7177,61 +16056,6 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return this.With(itemType: Optional.For(value));
 		}
-		
-		/// <summary>Returns a new instance with the Metadata property set to the specified value.</summary>
-		public ProjectItemDefinitionElement WithMetadata(System.Collections.Immutable.ImmutableList<ProjectMetadataElement> value) {
-			if (value == this.Metadata) {
-				return this;
-			}
-		
-			return this.With(metadata: Optional.For(value));
-		}
-		
-		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
-		public ProjectItemDefinitionElement WithMetadataElements(params ProjectMetadataElement[] values) {
-			return this.With(metadata: this.Metadata.ResetContents(values));
-		}
-		
-		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
-		public ProjectItemDefinitionElement WithMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
-			return this.With(metadata: this.Metadata.ResetContents(values));
-		}
-		
-		/// <summary>Adds the specified elements from the Metadata collection.</summary>
-		public ProjectItemDefinitionElement AddMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
-			return this.With(metadata: this.Metadata.AddRange(values));
-		}
-		
-		/// <summary>Adds the specified elements from the Metadata collection.</summary>
-		public ProjectItemDefinitionElement AddMetadataElements(params ProjectMetadataElement[] values) {
-			return this.With(metadata: this.Metadata.AddRange(values));
-		}
-		
-		/// <summary>Adds the specified element from the Metadata collection.</summary>
-		public ProjectItemDefinitionElement AddMetadataElement(ProjectMetadataElement value) {
-			return this.With(metadata: this.Metadata.Add(value));
-		}
-		
-		/// <summary>Removes the specified elements from the Metadata collection.</summary>
-		public ProjectItemDefinitionElement RemoveMetadataElements(System.Collections.Generic.IEnumerable<ProjectMetadataElement> values) {
-			return this.With(metadata: this.Metadata.RemoveRange(values));
-		}
-		
-		/// <summary>Removes the specified elements from the Metadata collection.</summary>
-		public ProjectItemDefinitionElement RemoveMetadataElements(params ProjectMetadataElement[] values) {
-			return this.With(metadata: this.Metadata.RemoveRange(values));
-		}
-		
-		/// <summary>Removes the specified element from the Metadata collection.</summary>
-		public ProjectItemDefinitionElement RemoveMetadataElement(ProjectMetadataElement value) {
-			return this.With(metadata: this.Metadata.Remove(value));
-		}
-		
-		/// <summary>Clears all elements from the Metadata collection.</summary>
-		public ProjectItemDefinitionElement RemoveMetadataElements() {
-			return this.With(metadata: this.Metadata.Clear());
-		}
-		
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -7273,8 +16097,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return (ProjectItemDefinitionElement)this.WithCore(
 				condition: condition,
 				conditionLocation: conditionLocation,
@@ -7282,8 +16105,7 @@ namespace ImmutableObjectGraph.Tests {
 				labelLocation: labelLocation,
 				location: location,
 				children: children,
-				itemType: itemType,
-				metadata: metadata);
+				itemType: itemType);
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -7294,8 +16116,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>)) {
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
@@ -7305,7 +16126,6 @@ namespace ImmutableObjectGraph.Tests {
 				location: Optional.For(location.GetValueOrDefault(this.Location)),
 				children: Optional.For(children.GetValueOrDefault(this.Children)),
 				itemType: Optional.For(itemType.GetValueOrDefault(this.ItemType)),
-				metadata: Optional.For(metadata.GetValueOrDefault(this.Metadata)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
 		}
 	
@@ -7318,7 +16138,6 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
@@ -7328,8 +16147,7 @@ namespace ImmutableObjectGraph.Tests {
 				(labelLocation.IsDefined && labelLocation.Value != this.LabelLocation) || 
 				(location.IsDefined && location.Value != this.Location) || 
 				(children.IsDefined && children.Value != this.Children) || 
-				(itemType.IsDefined && itemType.Value != this.ItemType) || 
-				(metadata.IsDefined && metadata.Value != this.Metadata)) {
+				(itemType.IsDefined && itemType.Value != this.ItemType)) {
 				return new ProjectItemDefinitionElement(
 					identity: identity.GetValueOrDefault(this.Identity),
 					condition: condition.GetValueOrDefault(this.Condition),
@@ -7338,8 +16156,7 @@ namespace ImmutableObjectGraph.Tests {
 					labelLocation: labelLocation.GetValueOrDefault(this.LabelLocation),
 					location: location.GetValueOrDefault(this.Location),
 					children: children.GetValueOrDefault(this.Children),
-					itemType: itemType.GetValueOrDefault(this.ItemType),
-					metadata: metadata.GetValueOrDefault(this.Metadata));
+					itemType: itemType.GetValueOrDefault(this.ItemType));
 			} else {
 				return this;
 			}
@@ -7365,8 +16182,7 @@ namespace ImmutableObjectGraph.Tests {
 				template.LabelLocation, 
 				template.Location, 
 				template.Children, 
-				template.ItemType, 
-				template.Metadata);
+				template.ItemType);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -7384,8 +16200,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 	
 			internal System.String ItemType { get; set; }
-	
-			internal System.Collections.Immutable.ImmutableList<ProjectMetadataElement> Metadata { get; set; }
+		}
+		
+		public new RootedProjectItemDefinitionElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectItemDefinitionElement(this, root);
 		}
 		
 		internal static ProjectItemDefinitionElement CreateWithIdentity(
@@ -7396,7 +16219,6 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>>),
 				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
@@ -7410,7 +16232,6 @@ namespace ImmutableObjectGraph.Tests {
 					location: Optional.For(location.GetValueOrDefault(DefaultInstance.Location)),
 					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 					itemType: Optional.For(itemType.GetValueOrDefault(DefaultInstance.ItemType)),
-					metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
@@ -7424,9 +16245,6 @@ namespace ImmutableObjectGraph.Tests {
 		
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			protected System.String itemType;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder> metadata;
 		
 			internal Builder(ProjectItemDefinitionElement immutable) : base(immutable) {
 				this.immutable = immutable;
@@ -7444,26 +16262,11 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			public System.Collections.Immutable.ImmutableList<ProjectMetadataElement>.Builder Metadata {
-				get {
-					if (!this.metadata.IsDefined) {
-						this.metadata = this.immutable.metadata != null ? this.immutable.metadata.ToBuilder() : null;
-					}
-		
-					return this.metadata.Value;
-				}
-		
-				set {
-					this.metadata = value;
-				}
-			}
-		
 			public new ProjectItemDefinitionElement ToImmutable() {
 				var conditionLocation = this.conditionLocation.IsDefined ? (this.conditionLocation.Value != null ? this.conditionLocation.Value.ToImmutable() : null) : this.immutable.ConditionLocation;
 				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
 				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				var metadata = this.metadata.IsDefined ? (this.metadata.Value != null ? this.metadata.Value.ToImmutable() : null) : this.immutable.Metadata;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.Condition),
 					ImmutableObjectGraph.Optional.For(conditionLocation),
@@ -7471,9 +16274,639 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(labelLocation),
 					ImmutableObjectGraph.Optional.For(location),
 					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.ItemType),
-					ImmutableObjectGraph.Optional.For(metadata));
+					ImmutableObjectGraph.Optional.For(this.ItemType));
 			}
+		}
+	}
+	
+	public partial struct RootedProjectItemDefinitionElement : System.IEquatable<RootedProjectItemDefinitionElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectItemDefinitionElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectItemDefinitionElement(ProjectItemDefinitionElement projectItemDefinitionElement, ProjectElementContainer root) {
+			this.greenNode = projectItemDefinitionElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectItemDefinitionElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectItemDefinitionElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectItemDefinitionElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectItemDefinitionElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectItemDefinitionElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectItemDefinitionElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectItemDefinitionElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemDefinitionElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemDefinitionElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemDefinitionElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemDefinitionElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String ItemType {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ItemType;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
+		public RootedProjectItemDefinitionElement WithItemType(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithItemType(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectItemDefinitionElement ProjectItemDefinitionElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectItemDefinitionElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectItemDefinitionElement) {
+				var other = (RootedProjectItemDefinitionElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectItemDefinitionElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectItemDefinitionElement NewSpine(ProjectItemDefinitionElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectItemDefinitionElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -7715,6 +17148,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedProjectItemDefinitionGroupElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectItemDefinitionGroupElement(this, root);
+		}
+		
 		internal static ProjectItemDefinitionGroupElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -7750,6 +17192,623 @@ namespace ImmutableObjectGraph.Tests {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable;
 			}
+		}
+	}
+	
+	public partial struct RootedProjectItemDefinitionGroupElement : System.IEquatable<RootedProjectItemDefinitionGroupElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectItemDefinitionGroupElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectItemDefinitionGroupElement(ProjectItemDefinitionGroupElement projectItemDefinitionGroupElement, ProjectElementContainer root) {
+			this.greenNode = projectItemDefinitionGroupElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectItemDefinitionGroupElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectItemDefinitionGroupElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectItemDefinitionGroupElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectItemDefinitionGroupElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectItemDefinitionGroupElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectItemDefinitionGroupElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectItemDefinitionGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionGroupElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionGroupElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemDefinitionGroupElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemDefinitionGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionGroupElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemDefinitionGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemDefinitionGroupElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectItemDefinitionGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectItemDefinitionGroupElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectItemDefinitionGroupElement ProjectItemDefinitionGroupElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectItemDefinitionGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectItemDefinitionGroupElement) {
+				var other = (RootedProjectItemDefinitionGroupElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectItemDefinitionGroupElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectItemDefinitionGroupElement NewSpine(ProjectItemDefinitionGroupElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectItemDefinitionGroupElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -7911,6 +17970,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation Location { get; set; }
 		}
 		
+		public new RootedProjectOnErrorElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectOnErrorElement(this, root);
+		}
+		
 		internal static ProjectOnErrorElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -7943,6 +18011,485 @@ namespace ImmutableObjectGraph.Tests {
 				var labelLocation = this.labelLocation.IsDefined ? (this.labelLocation.Value != null ? this.labelLocation.Value.ToImmutable() : null) : this.immutable.LabelLocation;
 				var location = this.location.IsDefined ? (this.location.Value != null ? this.location.Value.ToImmutable() : null) : this.immutable.Location;
 				return this.immutable = this.immutable;
+			}
+		}
+	}
+	
+	public partial struct RootedProjectOnErrorElement : System.IEquatable<RootedProjectOnErrorElement>, IRecursiveType {
+		private readonly ProjectOnErrorElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectOnErrorElement(ProjectOnErrorElement projectOnErrorElement, ProjectElementContainer root) {
+			this.greenNode = projectOnErrorElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectOnErrorElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectOnErrorElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectOnErrorElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectOnErrorElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectOnErrorElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectOnErrorElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectOnErrorElement ProjectOnErrorElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectOnErrorElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectOnErrorElement) {
+				var other = (RootedProjectOnErrorElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectOnErrorElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectOnErrorElement NewSpine(ProjectOnErrorElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectOnErrorElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
 			}
 		}
 	}
@@ -8370,6 +18917,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation TaskParameterLocation { get; set; }
 		}
 		
+		public new RootedProjectOutputElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectOutputElement(this, root);
+		}
+		
 		internal static ProjectOutputElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -8561,6 +19117,597 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(propertyNameLocation),
 					ImmutableObjectGraph.Optional.For(this.TaskParameter),
 					ImmutableObjectGraph.Optional.For(taskParameterLocation));
+			}
+		}
+	}
+	
+	public partial struct RootedProjectOutputElement : System.IEquatable<RootedProjectOutputElement>, IRecursiveType {
+		private readonly ProjectOutputElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectOutputElement(ProjectOutputElement projectOutputElement, ProjectElementContainer root) {
+			this.greenNode = projectOutputElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectOutputElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectOutputElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectOutputElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectOutputElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectOutputElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectOutputElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Boolean IsOutputItem {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.IsOutputItem;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the IsOutputItem property set to the specified value.</summary>
+		public RootedProjectOutputElement WithIsOutputItem(System.Boolean value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithIsOutputItem(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Boolean IsOutputProperty {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.IsOutputProperty;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the IsOutputProperty property set to the specified value.</summary>
+		public RootedProjectOutputElement WithIsOutputProperty(System.Boolean value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithIsOutputProperty(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String ItemType {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ItemType;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
+		public RootedProjectOutputElement WithItemType(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithItemType(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ItemTypeLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ItemTypeLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ItemTypeLocation property set to the specified value.</summary>
+		public RootedProjectOutputElement WithItemTypeLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithItemTypeLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String PropertyName {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.PropertyName;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the PropertyName property set to the specified value.</summary>
+		public RootedProjectOutputElement WithPropertyName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithPropertyName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation PropertyNameLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.PropertyNameLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the PropertyNameLocation property set to the specified value.</summary>
+		public RootedProjectOutputElement WithPropertyNameLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithPropertyNameLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String TaskParameter {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TaskParameter;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TaskParameter property set to the specified value.</summary>
+		public RootedProjectOutputElement WithTaskParameter(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTaskParameter(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation TaskParameterLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TaskParameterLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TaskParameterLocation property set to the specified value.</summary>
+		public RootedProjectOutputElement WithTaskParameterLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTaskParameterLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectOutputElement ProjectOutputElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectOutputElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				isOutputItem: isOutputItem,
+				isOutputProperty: isOutputProperty,
+				itemType: itemType,
+				itemTypeLocation: itemTypeLocation,
+				propertyName: propertyName,
+				propertyNameLocation: propertyNameLocation,
+				taskParameter: taskParameter,
+				taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectOutputElement) {
+				var other = (RootedProjectOutputElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectOutputElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectOutputElement NewSpine(ProjectOutputElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectOutputElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
 			}
 		}
 	}
@@ -9318,6 +20465,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation ReturnsLocation { get; set; }
 		}
 		
+		public new RootedProjectTargetElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectTargetElement(this, root);
+		}
+		
 		internal static ProjectTargetElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -9670,6 +20826,847 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Returns),
 					ImmutableObjectGraph.Optional.For(returnsLocation));
 			}
+		}
+	}
+	
+	public partial struct RootedProjectTargetElement : System.IEquatable<RootedProjectTargetElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectTargetElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectTargetElement(ProjectTargetElement projectTargetElement, ProjectElementContainer root) {
+			this.greenNode = projectTargetElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectTargetElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectTargetElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectTargetElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectTargetElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectTargetElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTargetElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTargetElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectTargetElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectTargetElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectTargetElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTargetElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTargetElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectTargetElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectTargetElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTargetElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectTargetElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectTargetElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String AfterTargets {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.AfterTargets;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the AfterTargets property set to the specified value.</summary>
+		public RootedProjectTargetElement WithAfterTargets(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithAfterTargets(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation AfterTargetsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.AfterTargetsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the AfterTargetsLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithAfterTargetsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithAfterTargetsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String BeforeTargets {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.BeforeTargets;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the BeforeTargets property set to the specified value.</summary>
+		public RootedProjectTargetElement WithBeforeTargets(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithBeforeTargets(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation BeforeTargetsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.BeforeTargetsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the BeforeTargetsLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithBeforeTargetsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithBeforeTargetsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String DependsOnTargets {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.DependsOnTargets;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the DependsOnTargets property set to the specified value.</summary>
+		public RootedProjectTargetElement WithDependsOnTargets(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithDependsOnTargets(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation DependsOnTargetsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.DependsOnTargetsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the DependsOnTargetsLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithDependsOnTargetsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithDependsOnTargetsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Inputs {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Inputs;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Inputs property set to the specified value.</summary>
+		public RootedProjectTargetElement WithInputs(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithInputs(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation InputsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.InputsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the InputsLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithInputsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithInputsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String KeepDuplicateOutputs {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.KeepDuplicateOutputs;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the KeepDuplicateOutputs property set to the specified value.</summary>
+		public RootedProjectTargetElement WithKeepDuplicateOutputs(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithKeepDuplicateOutputs(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation KeepDuplicateOutputsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.KeepDuplicateOutputsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the KeepDuplicateOutputsLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithKeepDuplicateOutputsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithKeepDuplicateOutputsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Name {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Name;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public RootedProjectTargetElement WithName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation NameLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.NameLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the NameLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithNameLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithNameLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Outputs {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Outputs;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Outputs property set to the specified value.</summary>
+		public RootedProjectTargetElement WithOutputs(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithOutputs(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation OutputsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.OutputsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the OutputsLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithOutputsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithOutputsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Returns {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Returns;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Returns property set to the specified value.</summary>
+		public RootedProjectTargetElement WithReturns(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithReturns(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ReturnsLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ReturnsLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ReturnsLocation property set to the specified value.</summary>
+		public RootedProjectTargetElement WithReturnsLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithReturnsLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectTargetElement ProjectTargetElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectTargetElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				afterTargets: afterTargets,
+				afterTargetsLocation: afterTargetsLocation,
+				beforeTargets: beforeTargets,
+				beforeTargetsLocation: beforeTargetsLocation,
+				dependsOnTargets: dependsOnTargets,
+				dependsOnTargetsLocation: dependsOnTargetsLocation,
+				inputs: inputs,
+				inputsLocation: inputsLocation,
+				keepDuplicateOutputs: keepDuplicateOutputs,
+				keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+				name: name,
+				nameLocation: nameLocation,
+				outputs: outputs,
+				outputsLocation: outputsLocation,
+				returns: returns,
+				returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectTargetElement) {
+				var other = (RootedProjectTargetElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectTargetElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectTargetElement NewSpine(ProjectTargetElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectTargetElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -10147,6 +22144,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String Name { get; set; }
 		}
 		
+		public new RootedProjectTaskElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectTaskElement(this, root);
+		}
+		
 		internal static ProjectTaskElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -10326,6 +22332,721 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(mSBuildRuntimeLocation),
 					ImmutableObjectGraph.Optional.For(this.Name));
 			}
+		}
+	}
+	
+	public partial struct RootedProjectTaskElement : System.IEquatable<RootedProjectTaskElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectTaskElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectTaskElement(ProjectTaskElement projectTaskElement, ProjectElementContainer root) {
+			this.greenNode = projectTaskElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectTaskElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectTaskElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectTaskElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectTaskElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectTaskElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectTaskElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectTaskElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTaskElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTaskElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectTaskElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectTaskElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectTaskElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTaskElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectTaskElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectTaskElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectTaskElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectTaskElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectTaskElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectTaskElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String ContinueOnError {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ContinueOnError;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ContinueOnError property set to the specified value.</summary>
+		public RootedProjectTaskElement WithContinueOnError(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithContinueOnError(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ContinueOnErrorLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ContinueOnErrorLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ContinueOnErrorLocation property set to the specified value.</summary>
+		public RootedProjectTaskElement WithContinueOnErrorLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithContinueOnErrorLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String MSBuildArchitecture {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.MSBuildArchitecture;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildArchitecture property set to the specified value.</summary>
+		public RootedProjectTaskElement WithMSBuildArchitecture(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithMSBuildArchitecture(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation MSBuildArchitectureLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.MSBuildArchitectureLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildArchitectureLocation property set to the specified value.</summary>
+		public RootedProjectTaskElement WithMSBuildArchitectureLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithMSBuildArchitectureLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String MSBuildRuntime {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.MSBuildRuntime;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildRuntime property set to the specified value.</summary>
+		public RootedProjectTaskElement WithMSBuildRuntime(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithMSBuildRuntime(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation MSBuildRuntimeLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.MSBuildRuntimeLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the MSBuildRuntimeLocation property set to the specified value.</summary>
+		public RootedProjectTaskElement WithMSBuildRuntimeLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithMSBuildRuntimeLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Name {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Name;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public RootedProjectTaskElement WithName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectTaskElement ProjectTaskElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectTaskElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				continueOnError: continueOnError,
+				continueOnErrorLocation: continueOnErrorLocation,
+				mSBuildArchitecture: mSBuildArchitecture,
+				mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+				mSBuildRuntime: mSBuildRuntime,
+				mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+				name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectTaskElement) {
+				var other = (RootedProjectTaskElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectTaskElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectTaskElement NewSpine(ProjectTaskElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectTaskElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -10597,6 +23318,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String TaskBody { get; set; }
 		}
 		
+		public new RootedProjectUsingTaskBodyElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectUsingTaskBodyElement(this, root);
+		}
+		
 		internal static ProjectUsingTaskBodyElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -10695,6 +23425,527 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.Evaluate),
 					ImmutableObjectGraph.Optional.For(evaluateLocation),
 					ImmutableObjectGraph.Optional.For(this.TaskBody));
+			}
+		}
+	}
+	
+	public partial struct RootedProjectUsingTaskBodyElement : System.IEquatable<RootedProjectUsingTaskBodyElement>, IRecursiveType {
+		private readonly ProjectUsingTaskBodyElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectUsingTaskBodyElement(ProjectUsingTaskBodyElement projectUsingTaskBodyElement, ProjectElementContainer root) {
+			this.greenNode = projectUsingTaskBodyElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectUsingTaskBodyElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Evaluate {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Evaluate;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Evaluate property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithEvaluate(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithEvaluate(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation EvaluateLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.EvaluateLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the EvaluateLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithEvaluateLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithEvaluateLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String TaskBody {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TaskBody;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TaskBody property set to the specified value.</summary>
+		public RootedProjectUsingTaskBodyElement WithTaskBody(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTaskBody(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectUsingTaskBodyElement ProjectUsingTaskBodyElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectUsingTaskBodyElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				evaluate: evaluate,
+				evaluateLocation: evaluateLocation,
+				taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectUsingTaskBodyElement) {
+				var other = (RootedProjectUsingTaskBodyElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectUsingTaskBodyElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectUsingTaskBodyElement NewSpine(ProjectUsingTaskBodyElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectUsingTaskBodyElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
 			}
 		}
 	}
@@ -11328,6 +24579,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation TaskNameLocation { get; set; }
 		}
 		
+		public new RootedProjectUsingTaskElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectUsingTaskElement(this, root);
+		}
+		
 		internal static ProjectUsingTaskElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -11604,6 +24864,791 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.TaskName),
 					ImmutableObjectGraph.Optional.For(taskNameLocation));
 			}
+		}
+	}
+	
+	public partial struct RootedProjectUsingTaskElement : System.IEquatable<RootedProjectUsingTaskElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectUsingTaskElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedProjectUsingTaskElement(ProjectUsingTaskElement projectUsingTaskElement, ProjectElementContainer root) {
+			this.greenNode = projectUsingTaskElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectUsingTaskElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectUsingTaskElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectUsingTaskElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectUsingTaskElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectUsingTaskElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectUsingTaskElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectUsingTaskElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectUsingTaskElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectUsingTaskElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedProjectUsingTaskElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectUsingTaskElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectUsingTaskElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Architecture {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Architecture;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Architecture property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithArchitecture(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithArchitecture(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ArchitectureLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ArchitectureLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ArchitectureLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithArchitectureLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithArchitectureLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String AssemblyFile {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.AssemblyFile;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyFile property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithAssemblyFile(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithAssemblyFile(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation AssemblyFileLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.AssemblyFileLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyFileLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithAssemblyFileLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithAssemblyFileLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String AssemblyName {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.AssemblyName;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyName property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithAssemblyName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithAssemblyName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation AssemblyNameLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.AssemblyNameLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the AssemblyNameLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithAssemblyNameLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithAssemblyNameLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Runtime {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Runtime;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Runtime property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithRuntime(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRuntime(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation RuntimeLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.RuntimeLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the RuntimeLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithRuntimeLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRuntimeLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String TaskFactory {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TaskFactory;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TaskFactory property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithTaskFactory(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTaskFactory(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation TaskFactoryLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TaskFactoryLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TaskFactoryLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithTaskFactoryLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTaskFactoryLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String TaskName {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TaskName;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TaskName property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithTaskName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTaskName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation TaskNameLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.TaskNameLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the TaskNameLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskElement WithTaskNameLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithTaskNameLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectUsingTaskElement ProjectUsingTaskElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectUsingTaskElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				architecture: architecture,
+				architectureLocation: architectureLocation,
+				assemblyFile: assemblyFile,
+				assemblyFileLocation: assemblyFileLocation,
+				assemblyName: assemblyName,
+				assemblyNameLocation: assemblyNameLocation,
+				runtime: runtime,
+				runtimeLocation: runtimeLocation,
+				taskFactory: taskFactory,
+				taskFactoryLocation: taskFactoryLocation,
+				taskName: taskName,
+				taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectUsingTaskElement) {
+				var other = (RootedProjectUsingTaskElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectUsingTaskElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectUsingTaskElement NewSpine(ProjectUsingTaskElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectUsingTaskElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -11999,6 +26044,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation RequiredLocation { get; set; }
 		}
 		
+		public new RootedProjectUsingTaskParameterElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedProjectUsingTaskParameterElement(this, root);
+		}
+		
 		internal static ProjectUsingTaskParameterElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -12173,6 +26227,583 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(parameterTypeLocation),
 					ImmutableObjectGraph.Optional.For(this.Required),
 					ImmutableObjectGraph.Optional.For(requiredLocation));
+			}
+		}
+	}
+	
+	public partial struct RootedProjectUsingTaskParameterElement : System.IEquatable<RootedProjectUsingTaskParameterElement>, IRecursiveType {
+		private readonly ProjectUsingTaskParameterElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+	
+		internal RootedProjectUsingTaskParameterElement(ProjectUsingTaskParameterElement projectUsingTaskParameterElement, ProjectElementContainer root) {
+			this.greenNode = projectUsingTaskParameterElement;
+			this.root = root;
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectUsingTaskParameterElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Name {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Name;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithName(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithName(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Output {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Output;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Output property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithOutput(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithOutput(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation OutputLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.OutputLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the OutputLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithOutputLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithOutputLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String ParameterType {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ParameterType;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ParameterType property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithParameterType(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithParameterType(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ParameterTypeLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ParameterTypeLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ParameterTypeLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithParameterTypeLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithParameterTypeLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Required {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Required;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Required property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithRequired(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRequired(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation RequiredLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.RequiredLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the RequiredLocation property set to the specified value.</summary>
+		public RootedProjectUsingTaskParameterElement WithRequiredLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithRequiredLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectUsingTaskParameterElement ProjectUsingTaskParameterElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectUsingTaskParameterElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				name: name,
+				output: output,
+				outputLocation: outputLocation,
+				parameterType: parameterType,
+				parameterTypeLocation: parameterTypeLocation,
+				required: required,
+				requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectChooseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectWhenElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectUsingTaskParameterElement) {
+				var other = (RootedProjectUsingTaskParameterElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectUsingTaskParameterElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectUsingTaskParameterElement NewSpine(ProjectUsingTaskParameterElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectUsingTaskParameterElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
 			}
 		}
 	}
@@ -12415,6 +27046,15 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public new RootedUsingTaskParameterGroupElement WithRoot(ProjectElementContainer root) {
+			var spine = root.GetSpine(this);
+			if (spine.IsEmpty) {
+				throw new System.ArgumentException("Root does not belong to the same tree.");
+			}
+		
+			return new RootedUsingTaskParameterGroupElement(this, root);
+		}
+		
 		internal static UsingTaskParameterGroupElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
@@ -12450,6 +27090,623 @@ namespace ImmutableObjectGraph.Tests {
 				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
 				return this.immutable = this.immutable;
 			}
+		}
+	}
+	
+	public partial struct RootedUsingTaskParameterGroupElement : System.IEquatable<RootedUsingTaskParameterGroupElement>, IRecursiveParent {
+		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly UsingTaskParameterGroupElement greenNode;
+	
+		private readonly ProjectElementContainer root;
+		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+	
+		internal RootedUsingTaskParameterGroupElement(UsingTaskParameterGroupElement usingTaskParameterGroupElement, ProjectElementContainer root) {
+			this.greenNode = usingTaskParameterGroupElement;
+			this.root = root;
+			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectElementContainer Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.UsingTaskParameterGroupElement);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
+		}
+	
+		public RootedProjectElementContainer Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectElementContainer AsProjectElementContainer {
+			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+		}
+	
+		public RootedProjectElement AsProjectElement {
+			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+		}
+	
+		public System.String Condition {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Condition;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
+		public RootedUsingTaskParameterGroupElement WithCondition(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCondition(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation ConditionLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ConditionLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ConditionLocation property set to the specified value.</summary>
+		public RootedUsingTaskParameterGroupElement WithConditionLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithConditionLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String Label {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Label;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
+		public RootedUsingTaskParameterGroupElement WithLabel(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabel(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation LabelLocation {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.LabelLocation;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the LabelLocation property set to the specified value.</summary>
+		public RootedUsingTaskParameterGroupElement WithLabelLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLabelLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public ElementLocation Location {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Location;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Location property set to the specified value.</summary>
+		public RootedUsingTaskParameterGroupElement WithLocation(ElementLocation value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithLocation(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedUsingTaskParameterGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
+			this.ThrowIfDefault();
+			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedUsingTaskParameterGroupElement WithChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedUsingTaskParameterGroupElement WithChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement AddChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement AddChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedUsingTaskParameterGroupElement, RootedProjectElement> AddChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectElement);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value.ProjectElement, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedUsingTaskParameterGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement RemoveChildren(params RootedProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectElement));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement RemoveChild(RootedProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectElement);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedUsingTaskParameterGroupElement WithChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedUsingTaskParameterGroupElement WithChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement AddChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement AddChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedUsingTaskParameterGroupElement, RootedProjectElement> AddChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectElement(value, newParent.Root.ProjectElementContainer);
+			return new ParentedRecursiveType<RootedUsingTaskParameterGroupElement, RootedProjectElement>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement RemoveChildren(System.Collections.Generic.IEnumerable<ProjectElement> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement RemoveChildren(params ProjectElement[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement RemoveChild(ProjectElement value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedUsingTaskParameterGroupElement RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public UsingTaskParameterGroupElement UsingTaskParameterGroupElement {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedUsingTaskParameterGroupElement With(
+			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> conditionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> labelLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<ElementLocation> location = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				condition: condition,
+				conditionLocation: conditionLocation,
+				label: label,
+				labelLocation: labelLocation,
+				location: location,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectRootElement ToProjectRootElement(
+			ImmutableObjectGraph.Optional<System.String> fullPath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Text.Encoding> encoding = default(ImmutableObjectGraph.Optional<System.Text.Encoding>),
+			ImmutableObjectGraph.Optional<System.String> toolsVersion = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> toolsVersionLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> defaultTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> initialTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<ElementLocation> treatAsLocalPropertylocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectRootElement(
+					fullPath: fullPath,
+					encoding: encoding,
+					toolsVersion: toolsVersion,
+					toolsVersionLocation: toolsVersionLocation,
+					defaultTargets: defaultTargets,
+					defaultTargetsLocation: defaultTargetsLocation,
+					initialTargets: initialTargets,
+					initialTargetsLocation: initialTargetsLocation,
+					treatAsLocalProperty: treatAsLocalProperty,
+					treatAsLocalPropertylocation: treatAsLocalPropertylocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectChooseElement ToProjectChooseElement() {
+			var newGreenNode = this.greenNode.ToProjectChooseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
+			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectWhenElement ToProjectWhenElement() {
+			var newGreenNode = this.greenNode.ToProjectWhenElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectPropertyElement ToProjectPropertyElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectPropertyElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemElement ToProjectItemElement(
+			ImmutableObjectGraph.Optional<System.String> exclude = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> excludeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> include = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> includeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicates = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicatesLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> removeMetadataLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectItemElement(
+					exclude: exclude,
+					excludeLocation: excludeLocation,
+					include: include,
+					includeLocation: includeLocation,
+					itemType: itemType,
+					keepDuplicates: keepDuplicates,
+					keepDuplicatesLocation: keepDuplicatesLocation,
+					keepMetadata: keepMetadata,
+					keepMetadataLocation: keepMetadataLocation,
+					remove: remove,
+					removeLocation: removeLocation,
+					removeMetadata: removeMetadata,
+					removeMetadataLocation: removeMetadataLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectMetadataElement ToProjectMetadataElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectMetadataElement(
+					name: name,
+					value: value);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectExtensionsElement ToProjectExtensionsElement(
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
+					content: content);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportElement ToProjectImportElement(
+			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> projectLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectImportElement(
+					project: project,
+					projectLocation: projectLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
+					itemType: itemType);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
+			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
+			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectOutputElement ToProjectOutputElement(
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputItem = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.Boolean> isOutputProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> itemTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> propertyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskParameterLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectOutputElement(
+					isOutputItem: isOutputItem,
+					isOutputProperty: isOutputProperty,
+					itemType: itemType,
+					itemTypeLocation: itemTypeLocation,
+					propertyName: propertyName,
+					propertyNameLocation: propertyNameLocation,
+					taskParameter: taskParameter,
+					taskParameterLocation: taskParameterLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTargetElement ToProjectTargetElement(
+			ImmutableObjectGraph.Optional<System.String> afterTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> afterTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> beforeTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> beforeTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> dependsOnTargets = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> dependsOnTargetsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> inputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> inputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> keepDuplicateOutputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> keepDuplicateOutputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> nameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> returnsLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectTargetElement(
+					afterTargets: afterTargets,
+					afterTargetsLocation: afterTargetsLocation,
+					beforeTargets: beforeTargets,
+					beforeTargetsLocation: beforeTargetsLocation,
+					dependsOnTargets: dependsOnTargets,
+					dependsOnTargetsLocation: dependsOnTargetsLocation,
+					inputs: inputs,
+					inputsLocation: inputsLocation,
+					keepDuplicateOutputs: keepDuplicateOutputs,
+					keepDuplicateOutputsLocation: keepDuplicateOutputsLocation,
+					name: name,
+					nameLocation: nameLocation,
+					outputs: outputs,
+					outputsLocation: outputsLocation,
+					returns: returns,
+					returnsLocation: returnsLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectTaskElement ToProjectTaskElement(
+			ImmutableObjectGraph.Optional<System.String> continueOnError = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> continueOnErrorLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildArchitectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> mSBuildRuntimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectTaskElement(
+					continueOnError: continueOnError,
+					continueOnErrorLocation: continueOnErrorLocation,
+					mSBuildArchitecture: mSBuildArchitecture,
+					mSBuildArchitectureLocation: mSBuildArchitectureLocation,
+					mSBuildRuntime: mSBuildRuntime,
+					mSBuildRuntimeLocation: mSBuildRuntimeLocation,
+					name: name);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
+			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> evaluateLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskBodyElement(
+					evaluate: evaluate,
+					evaluateLocation: evaluateLocation,
+					taskBody: taskBody);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
+			ImmutableObjectGraph.Optional<System.String> architecture = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> architectureLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyFile = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyFileLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> assemblyName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> assemblyNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> runtimeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskFactoryLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> taskNameLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
+					architecture: architecture,
+					architectureLocation: architectureLocation,
+					assemblyFile: assemblyFile,
+					assemblyFileLocation: assemblyFileLocation,
+					assemblyName: assemblyName,
+					assemblyNameLocation: assemblyNameLocation,
+					runtime: runtime,
+					runtimeLocation: runtimeLocation,
+					taskFactory: taskFactory,
+					taskFactoryLocation: taskFactoryLocation,
+					taskName: taskName,
+					taskNameLocation: taskNameLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+		
+		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
+			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> outputLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> parameterTypeLocation = default(ImmutableObjectGraph.Optional<ElementLocation>),
+			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<ElementLocation> requiredLocation = default(ImmutableObjectGraph.Optional<ElementLocation>)) {
+			var newGreenNode = this.greenNode.ToProjectUsingTaskParameterElement(
+					name: name,
+					output: output,
+					outputLocation: outputLocation,
+					parameterType: parameterType,
+					parameterTypeLocation: parameterTypeLocation,
+					required: required,
+					requiredLocation: requiredLocation);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedUsingTaskParameterGroupElement) {
+				var other = (RootedUsingTaskParameterGroupElement)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedUsingTaskParameterGroupElement other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedUsingTaskParameterGroupElement NewSpine(UsingTaskParameterGroupElement leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing UsingTaskParameterGroupElement.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 }
