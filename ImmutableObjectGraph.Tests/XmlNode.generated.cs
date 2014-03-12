@@ -17,21 +17,22 @@ namespace ImmutableObjectGraph.Tests {
 		System.String LocalName { get; }
 	}
 	
-	public abstract partial class XmlNode : IXmlNode {
+	public abstract partial class XmlNode : IXmlNode, IRecursiveType {
+		
+		/// <summary>The last identity assigned to a created instance.</summary>
+		private static int lastIdentityProduced;
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String localName;
 	
-		/// <summary>Initializes a new instance of the XmlNode class.</summary>
-		protected XmlNode()
-		{
-		}
+		private readonly System.Int32 identity;
 	
 		/// <summary>Initializes a new instance of the XmlNode class.</summary>
 		protected XmlNode(
+			System.Int32 identity,
 			System.String localName)
-			: base()
 		{
+			this.identity = identity;
 			this.localName = localName;
 		}
 	
@@ -45,12 +46,28 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(localName: value);
+			return this.With(localName: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public abstract XmlNode With(
+		public XmlNode With(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (XmlNode)this.WithCore(
+				localName: localName);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected abstract XmlNode WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>));
+	
+		protected internal System.Int32 Identity {
+			get { return this.identity; }
+		}
+	
+		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
+		protected static System.Int32 NewIdentity() {
+			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		}
 		
 		public virtual XmlElement ToXmlElement(
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
@@ -63,8 +80,9 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return XmlElement.Create(
-				localName: this.LocalName,
+			return XmlElement.CreateWithIdentity(
+				localName: Optional.For(this.LocalName),
+				identity: this.Identity,
 				namespaceName: namespaceName,
 				children: children);
 		}
@@ -82,8 +100,9 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return XmlElementWithContent.Create(
-				localName: this.LocalName,
+			return XmlElementWithContent.CreateWithIdentity(
+				localName: Optional.For(this.LocalName),
+				identity: this.Identity,
 				namespaceName: namespaceName,
 				children: children,
 				content: content);
@@ -100,8 +119,9 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return XmlAttribute.Create(
-				localName: this.LocalName,
+			return XmlAttribute.CreateWithIdentity(
+				localName: Optional.For(this.LocalName),
+				identity: this.Identity,
 				namespaceName: namespaceName,
 				value: value);
 		}
@@ -138,6 +158,10 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(this.LocalName));
 			}
 		}
+	
+		int IRecursiveType.Identity {
+			get { return this.Identity; }
+		}
 	}
 	
 	public interface IXmlElement : IXmlNode {
@@ -145,7 +169,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableList<XmlNode> Children { get; }
 	}
 	
-	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode> {
+	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode>, IRecursiveParentWithOrderedChildren {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlElement DefaultInstance = GetDefaultTemplate();
 	
@@ -156,31 +180,32 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly System.Collections.Immutable.ImmutableList<XmlNode> children;
 	
 		/// <summary>Initializes a new instance of the XmlElement class.</summary>
-		protected XmlElement()
-		{
-		}
-	
-		/// <summary>Initializes a new instance of the XmlElement class.</summary>
 		protected XmlElement(
+			System.Int32 identity,
 			System.String localName,
 			System.String namespaceName,
-			System.Collections.Immutable.ImmutableList<XmlNode> children)
+			System.Collections.Immutable.ImmutableList<XmlNode> children,
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>))
 			: base(
+				identity: identity,
 				localName: localName)
 		{
 			this.namespaceName = namespaceName;
 			this.children = children;
 			this.Validate();
+			this.InitializeLookup(lookupTable);
 		}
 	
 		public static XmlElement Create(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
-			return DefaultInstance.With(
-				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				children: children.GetValueOrDefault(DefaultInstance.Children));
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String NamespaceName {
@@ -202,7 +227,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(namespaceName: value);
+			return this.With(namespaceName: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
@@ -211,7 +236,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(children: value);
+			return this.With(children: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -235,23 +260,23 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public XmlElement AddChildren(XmlNode value) {
+		public XmlElement AddChild(XmlNode value) {
 			return this.With(children: this.Children.Add(value));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public XmlElement RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public XmlElement RemoveChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: this.Children.RemoveRange(values.Select(v => this.SyncImmediateChildToCurrentVersion(v))));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public XmlElement RemoveChildren(XmlNode value) {
-			return this.With(children: this.Children.Remove(value));
+		public XmlElement RemoveChild(XmlNode value) {
+			return this.With(children: this.Children.Remove(this.SyncImmediateChildToCurrentVersion(value)));
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
@@ -261,32 +286,58 @@ namespace ImmutableObjectGraph.Tests {
 		
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override XmlNode With(
+		protected override XmlNode WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return this.With(
-				localName: localName,
-				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
-				children: default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>));
+			return this.WithFactory(
+				localName: localName);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual XmlElement With(
+		public XmlElement With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
+			return (XmlElement)this.WithCore(
+				localName: localName,
+				namespaceName: namespaceName,
+				children: children);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual XmlElement WithCore(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private XmlElement WithFactory(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(localName.IsDefined && localName.Value != this.LocalName) || 
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(children.IsDefined && children.Value != this.Children)) {
+				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>) : Optional.For(this.lookupTable);
 				return new XmlElement(
+					identity: identity.GetValueOrDefault(this.Identity),
 					localName: localName.GetValueOrDefault(this.LocalName),
 					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
-					children: children.GetValueOrDefault(this.Children));
+					children: children.GetValueOrDefault(this.Children),
+					lookupTable: lookupTable);
 			} else {
 				return this;
 			}
 		}
-	
 	
 		public System.Collections.Generic.IEnumerator<XmlNode> GetEnumerator() {
 			return this.children.GetEnumerator();
@@ -295,6 +346,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return this.children.GetEnumerator();
 		}
+	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -308,6 +360,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlElement(
+				default(System.Int32), 
 				template.LocalName, 
 				template.NamespaceName, 
 				template.Children);
@@ -322,23 +375,458 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<XmlNode> Children { get; set; }
 		}
 		
-		public XmlElement ReplaceDescendent(XmlNode current, XmlNode replacement) {
-			// TODO: fix this horribly inefficient algorithm.
-			var newChildren = this.Children.Replace(current, replacement);
-			if (this.Children != newChildren) {
-				return this.WithChildren(newChildren);
+		protected XmlNode SyncImmediateChildToCurrentVersion(XmlNode child) {
+			XmlNode currentValue;
+			if (!this.TryFindImmediateChild(child.Identity, out currentValue)) {
+				throw new System.ArgumentException();
 			}
-			
-			foreach (var child in this.OfType<XmlElement>())
+		
+			return currentValue;
+		}
+		
+		public XmlElement AddDescendent(XmlNode value, XmlElement parent) {
+			var spine = this.GetSpine(parent);
+			var newParent = parent.AddChildren(value);
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create(value, newParent);
+			return (XmlElement)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: false).Peek();
+		}
+		
+		public XmlElement RemoveDescendent(XmlNode value) {
+			var spine = this.GetSpine(value);
+			var spineList = spine.ToList();
+			var parent = (XmlElement)spineList[spineList.Count - 2];
+			var newParent = parent.RemoveChildren(spineList[spineList.Count - 1]);
+		
+			var newSpine = System.Collections.Immutable.ImmutableStack.Create((XmlNode)newParent);
+			return (XmlElement)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
+		}
+		
+		public XmlElement ReplaceDescendent(XmlNode current, XmlNode replacement) {
+			var spine = this.GetSpine(current);
+		
+			if (spine.IsEmpty) {
+				// The descendent was not found.
+				throw new System.ArgumentException("Old value not found");
+			}
+		
+			return (XmlElement)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
+		}
+		
+		private System.Collections.Immutable.ImmutableStack<XmlNode> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<XmlNode> spine, System.Collections.Immutable.ImmutableStack<XmlNode> replacementStackTip, bool spineIncludesDeletedElement) {
+			Debug.Assert(this == spine.Peek());
+			var remainingSpine = spine.Pop();
+			if (remainingSpine.IsEmpty || (spineIncludesDeletedElement && remainingSpine.Pop().IsEmpty)) {
+				// This is the instance to be changed.
+				return replacementStackTip;
+			}
+		
+			System.Collections.Immutable.ImmutableStack<XmlNode> newChildSpine;
+			var child = remainingSpine.Peek();
+			var recursiveChild = child as XmlElement;
+			if (recursiveChild != null) {
+				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacementStackTip, spineIncludesDeletedElement);
+			} else {
+				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
+				Debug.Assert(this.Children.Contains(child));
+				newChildSpine = replacementStackTip;
+			}
+		
+			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
+			var newSelf = this.WithChildren(newChildren);
+			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
+				// Our newly mutated self wants a lookup table. If we already have one we can use it,
+				// but it needs to be fixed up given the newly rewritten spine through our descendents.
+				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
+				newSelf.ValidateInternalIntegrityDebugOnly();
+			}
+		
+			return newChildSpine.Push(newSelf);
+		}
+		
+		/// <summary>
+		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
+		/// </summary>
+		/// <param name="updatedSpine">
+		/// The spine of this node's new descendents' instances that are created for this change.
+		/// The head is an immediate child of the new instance for this node.
+		/// The tail is the node that was added or replaced.
+		/// </param>
+		/// <param name="oldSpine">
+		/// The spine of this node's descendents that have been changed in this delta.
+		/// The head is an immediate child of this instance.
+		/// The tail is the node that was removed or replaced.
+		/// </param>
+		/// <returns>An updated lookup table.</returns>
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<XmlNode> updatedSpine, ImmutableObjectGraph.ImmutableDeque<XmlNode> oldSpine) {
+			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
+				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
+				return lookupTableLazySentinal;
+			}
+		
+			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
+				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
+				// No changes were actually made.
+				return this.lookupTable;
+			}
+		
+			var lookupTable = this.lookupTable.ToBuilder();
+		
+			// Classify the kind of change that has just occurred.
+			var oldSpineTail = oldSpine.PeekTail();
+			var newSpineTail = updatedSpine.PeekTail();
+			ChangeKind changeKind;
+			bool childrenChanged = false;
+			if (updatedSpine.Count == oldSpine.Count) {
+				changeKind = ChangeKind.Replaced;
+				var oldSpineTailRecursive = oldSpineTail as XmlElement;
+				var newSpineTailRecursive = newSpineTail as XmlElement;
+				if (oldSpineTailRecursive != null || newSpineTailRecursive != null) {
+					// Children have changed if either before or after type didn't have a children property,
+					// or if both did, but the children actually changed.
+					childrenChanged = oldSpineTailRecursive == null || newSpineTailRecursive == null
+						|| !System.Object.ReferenceEquals(oldSpineTailRecursive.Children, newSpineTailRecursive.Children);
+				}
+			} else if (updatedSpine.Count > oldSpine.Count) {
+				changeKind = ChangeKind.Added;
+			} else // updatedSpine.Count < oldSpine.Count
 			{
-				var newChild = child.ReplaceDescendent(current, replacement);
-				if (newChild != child) {
-					newChildren = this.Children.Replace(child, newChild);
-					return this.WithChildren(newChildren);
+				changeKind = ChangeKind.Removed;
+			}
+		
+			// Trim the lookup table of any entries for nodes that have been removed from the tree.
+			if (childrenChanged || changeKind == ChangeKind.Removed) {
+				// We need to remove all descendents of the old tail node.
+				lookupTable.RemoveRange(oldSpineTail.GetSelfAndDescendents().Select(n => n.Identity));
+			} else if (changeKind == ChangeKind.Replaced && oldSpineTail.Identity != newSpineTail.Identity) {
+				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
+				// from our lookup table in this case.
+				lookupTable.Remove(oldSpineTail.Identity);
+		
+				// We also need to update any immediate children of the old spine tail
+				// because the identity of their parent has changed.
+				var oldSpineTailRecursive = oldSpineTail as XmlElement;
+				if (oldSpineTailRecursive != null) {
+					foreach (var child in oldSpineTailRecursive) {
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<XmlNode, int>(child, newSpineTail.Identity);
+					}
 				}
 			}
-				
-			return this;
+		
+			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
+			XmlNode parent = this;
+			foreach (var node in updatedSpine) {
+				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
+				// assume no change is relevant and not apply the change.
+				lookupTable.Remove(node.Identity);
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<XmlNode, int>(node, parent.Identity));
+				parent = node;
+			}
+		
+			// There may be children on the added node that we should include.
+			if (childrenChanged || changeKind == ChangeKind.Added) {
+				var recursiveParent = parent as XmlElement;
+				if (recursiveParent != null) {
+					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
+				}
+			}
+		
+			return lookupTable.ToImmutable();
+		}
+		
+		/// <summary>
+		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
+		/// </summary>
+		[Conditional("DEBUG")]
+		private void ValidateInternalIntegrityDebugOnly() {
+			this.ValidateInternalIntegrity();
+		}
+		
+		/// <summary>
+		/// Validates this node and all its descendents.
+		/// </summary>
+		protected internal void ValidateInternalIntegrity() {
+			// Each node id appears at most once.
+			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			foreach (var node in this.GetSelfAndDescendents()) {
+				if (!observedIdentities.Add(node.Identity)) {
+					throw new RecursiveChildNotUniqueException(node.Identity);
+				}
+			}
+		
+			// The lookup table (if any) accurately describes the contents of this tree.
+			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
+				// The table should have one entry for every *descendent* of this node (not this node itself).
+				int expectedCount = this.GetSelfAndDescendents().Count() - 1;
+				int actualCount = this.lookupTable.Count;
+				if (actualCount != expectedCount) {
+					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
+				}
+		
+				this.ValidateLookupTable(this.lookupTable);
+			}
+		}
+		
+		/// <summary>
+		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
+		/// </summary>
+		/// <param name="lookupTable">The lookup table being validated.</param>
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTable) {
+			const string ErrorString = "Lookup table integrity failure.";
+		
+			foreach (var child in this.Children) {
+				var entry = lookupTable[child.Identity];
+				if (!object.ReferenceEquals(entry.Key, child)) {
+					throw new System.ApplicationException(ErrorString);
+				}
+		
+				if (entry.Value != this.Identity) {
+					throw new System.ApplicationException(ErrorString);
+				}
+		
+				var recursiveChild = child as XmlElement;
+				if (recursiveChild != null) {
+					recursiveChild.ValidateLookupTable(lookupTable);
+				}
+			}
+		}
+		
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>());
+		
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTable;
+		
+		private int inefficiencyLoad;
+		
+		/// <summary>
+		/// The maximum number of steps allowable for a search to be done among this node's children
+		/// before a faster lookup table will be built.
+		/// </summary>
+		internal const int InefficiencyLoadThreshold = 16;
+		
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> LookupTable {
+			get {
+				if (this.lookupTable == lookupTableLazySentinal) {
+					this.lookupTable = this.CreateLookupTable();
+					this.inefficiencyLoad = 1;
+				}
+		
+				return this.lookupTable;
+			}
+		}
+		
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>)) {
+			this.inefficiencyLoad = 1;
+			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
+				this.lookupTable = priorLookupTable.Value;
+			} else {
+				if (this.children != null) {
+					foreach (var child in this.children)
+					{
+						var recursiveChild = child as XmlElement;
+						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+					}
+				}
+		
+				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+					this.inefficiencyLoad = 1;
+					this.lookupTable = lookupTableLazySentinal;
+				}
+			}
+		
+			this.ValidateInternalIntegrityDebugOnly();
+		}
+		
+		/// <summary>
+		/// Creates the lookup table that will contain all this node's children.
+		/// </summary>
+		/// <returns>The lookup table.</returns>
+		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>().ToBuilder();
+			this.ContributeDescendentsToLookupTable(table);
+			return table.ToImmutable();
+		}
+		
+		/// <summary>
+		/// Adds this node's children (recursively) to the lookup table.
+		/// </summary>
+		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
+		/// <returns>The new lookup table.</returns>
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>.Builder seedLookupTable)
+		{
+			foreach (var child in this.Children)
+			{
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>(child, this.Identity));
+				var recursiveChild = child as XmlElement;
+				if (recursiveChild != null) {
+					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
+				}
+			}
+		}
+		
+		public bool TryFind(System.Int32 identity, out XmlNode value) {
+			if (this.Identity.Equals(identity)) {
+				value = this;
+				return true;
+			}
+		
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
+					value = lookupValue.Key;
+					return true;
+				}
+			} else {
+				// No lookup table means we have to exhaustively search each child and its descendents.
+				foreach (var child in this.Children) {
+					var recursiveChild = child as XmlElement;
+					if (recursiveChild != null) {
+						if (recursiveChild.TryFind(identity, out value)) {
+							return true;
+						}
+					} else {
+						if (child.Identity.Equals(identity)) {
+							value = child;
+							return true;
+						}
+					}
+				}
+			}
+		
+			value = null;
+			return false;
+		}
+		
+		public XmlNode Find(System.Int32 identity) {
+			XmlNode result;
+			if (this.TryFind(identity, out result)) {
+				return result;
+			}
+		
+			throw new System.Collections.Generic.KeyNotFoundException();
+		}
+		
+		public bool TryFindImmediateChild(System.Int32 identity, out XmlNode value) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.Identity) {
+					value = lookupValue.Key;
+					return true;
+				}
+			} else {
+				// No lookup table means we have to exhaustively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(identity)) {
+						value = child;
+						return true;
+					}
+				}
+			}
+		
+			value = null;
+			return false;
+		}
+		
+		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
+		public bool Contains(System.Int32 identity) {
+			XmlNode result;
+			return this.TryFind(identity, out result) && result != this;
+		}
+		
+		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
+		internal ParentedRecursiveType<XmlElement, XmlNode> GetParentedNode(System.Int32 identity) {
+			if (this.Identity == identity) {
+				return new ParentedRecursiveType<XmlElement, XmlNode>(this, null);
+			}
+		
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
+					var parentIdentity = lookupValue.Value;
+					return new ParentedRecursiveType<XmlElement, XmlNode>(this.LookupTable[identity].Key, (XmlElement)this.Find(parentIdentity));
+				}
+			} else {
+				// No lookup table means we have to aggressively search each child.
+				foreach (var child in this.Children) {
+					if (child.Identity.Equals(identity)) {
+						return new ParentedRecursiveType<XmlElement, XmlNode>(child, this);
+					}
+		
+					var recursiveChild = child as XmlElement;
+					if (recursiveChild != null) {
+						var childResult = recursiveChild.GetParentedNode(identity);
+						if (childResult.Value != null) {
+							return childResult;
+						}
+					} 
+				}
+			}
+		
+			return default(ParentedRecursiveType<XmlElement, XmlNode>);
+		}
+		
+		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
+		internal XmlElement GetParent(XmlNode descendent) {
+			return this.GetParentedNode(descendent.Identity).Parent;
+		}
+		
+		public System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(System.Int32 descendent) {
+			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<XmlNode>();
+			if (this.Identity.Equals(descendent)) {
+				return emptySpine.Push(this);
+			}
+		
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
+				{
+					// Awesome.  We know the node the caller is looking for is a descendent of this node.
+					// Now just string together all the nodes that connect this one with the sought one.
+					var spine = emptySpine;
+					do
+					{
+						spine = spine.Push(lookupValue.Key);
+					}
+					while (this.lookupTable.TryGetValue(lookupValue.Value, out lookupValue));
+					return spine.Push(this);
+				}
+			} else {
+				// We don't have an efficient lookup table for this node.  Aggressively search every child.
+				var spine = emptySpine;
+				foreach (var child in this.Children) {
+					var recursiveChild = child as XmlElement;
+					if (recursiveChild != null) {
+						spine = recursiveChild.GetSpine(descendent);
+					} else if (child.Identity.Equals(descendent)) {
+						spine = spine.Push(child);
+					}
+		
+					if (!spine.IsEmpty) {
+						return spine.Push(this);
+					}
+				}
+			}
+		
+			// The descendent is not in this sub-tree.
+			return emptySpine;
+		}
+		
+		public System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(XmlNode descendent) {
+			return this.GetSpine(descendent.Identity);
+		}
+		
+		internal static XmlElement CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+					namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public virtual XmlElementWithContent ToXmlElementWithContent(
@@ -350,10 +838,11 @@ namespace ImmutableObjectGraph.Tests {
 				}
 			}
 		
-			return XmlElementWithContent.Create(
-				localName: this.LocalName,
-				namespaceName: this.NamespaceName,
-				children: this.Children,
+			return XmlElementWithContent.CreateWithIdentity(
+				localName: Optional.For(this.LocalName),
+				namespaceName: Optional.For(this.NamespaceName),
+				children: Optional.For(this.Children),
+				identity: this.Identity,
 				content: content);
 		}
 		
@@ -362,8 +851,8 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 				ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
 			return base.ToXmlElementWithContent(
-					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
-					children: children.GetValueOrDefault(this.Children),
+					namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+					children: Optional.For(children.GetValueOrDefault(this.Children)),
 					content: content);
 		}
 		
@@ -419,6 +908,18 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(children));
 			}
 		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			var parented = this.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		}
+		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
+			return this.Children.IndexOf((XmlNode)value);
+		}
 	}
 	
 	public interface IXmlElementWithContent : IXmlElement {
@@ -433,17 +934,14 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly System.String content;
 	
 		/// <summary>Initializes a new instance of the XmlElementWithContent class.</summary>
-		protected XmlElementWithContent()
-		{
-		}
-	
-		/// <summary>Initializes a new instance of the XmlElementWithContent class.</summary>
 		protected XmlElementWithContent(
+			System.Int32 identity,
 			System.String localName,
 			System.String namespaceName,
 			System.Collections.Immutable.ImmutableList<XmlNode> children,
 			System.String content)
 			: base(
+				identity: identity,
 				localName: localName,
 				namespaceName: namespaceName,
 				children: children)
@@ -457,11 +955,13 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return DefaultInstance.With(
-				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				children: children.GetValueOrDefault(DefaultInstance.Children),
-				content: content.GetValueOrDefault(DefaultInstance.Content));
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+				content: Optional.For(content.GetValueOrDefault(DefaultInstance.Content)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String Content {
@@ -484,48 +984,48 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
-		public XmlElementWithContent WithChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.ResetContents(values));
+		public new XmlElementWithContent WithChildren(params XmlNode[] values) {
+			return (XmlElementWithContent)base.WithChildren(values);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
-		public XmlElementWithContent WithChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.ResetContents(values));
+		public new XmlElementWithContent WithChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+			return (XmlElementWithContent)base.WithChildren(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
-		public XmlElementWithContent AddChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.AddRange(values));
+		public new XmlElementWithContent AddChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+			return (XmlElementWithContent)base.AddChildren(values);
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
-		public XmlElementWithContent AddChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.AddRange(values));
+		public new XmlElementWithContent AddChildren(params XmlNode[] values) {
+			return (XmlElementWithContent)base.AddChildren(values);
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
-		public XmlElementWithContent AddChildren(XmlNode value) {
-			return this.With(children: this.Children.Add(value));
+		public new XmlElementWithContent AddChild(XmlNode value) {
+			return (XmlElementWithContent)base.AddChild(value);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+		public new XmlElementWithContent RemoveChildren(System.Collections.Generic.IEnumerable<XmlNode> values) {
+			return (XmlElementWithContent)base.RemoveChildren(values);
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren(params XmlNode[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+		public new XmlElementWithContent RemoveChildren(params XmlNode[] values) {
+			return (XmlElementWithContent)base.RemoveChildren(values);
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren(XmlNode value) {
-			return this.With(children: this.Children.Remove(value));
+		public new XmlElementWithContent RemoveChild(XmlNode value) {
+			return (XmlElementWithContent)base.RemoveChild(value);
 		}
 		
 		/// <summary>Clears all elements from the Children collection.</summary>
-		public XmlElementWithContent RemoveChildren() {
-			return this.With(children: this.Children.Clear());
+		public new XmlElementWithContent RemoveChildren() {
+			return (XmlElementWithContent)base.RemoveChildren();
 		}
 		
 		
@@ -535,33 +1035,70 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(content: value);
+			return this.With(content: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override XmlElement With(
+		protected override XmlNode WithCore(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return this.WithFactory(
+				localName: localName);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected override XmlElement WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
-			return this.With(
+			return this.WithFactory(
 				localName: localName,
 				namespaceName: namespaceName,
-				children: children,
-				content: default(ImmutableObjectGraph.Optional<System.String>));
+				children: children);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual XmlElementWithContent With(
+		public XmlElementWithContent With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (XmlElementWithContent)this.WithCore(
+				localName: localName,
+				namespaceName: namespaceName,
+				children: children,
+				content: content);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual XmlElementWithContent WithCore(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+				children: Optional.For(children.GetValueOrDefault(this.Children)),
+				content: Optional.For(content.GetValueOrDefault(this.Content)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private XmlElementWithContent WithFactory(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(localName.IsDefined && localName.Value != this.LocalName) || 
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(children.IsDefined && children.Value != this.Children) || 
 				(content.IsDefined && content.Value != this.Content)) {
 				return new XmlElementWithContent(
+					identity: identity.GetValueOrDefault(this.Identity),
 					localName: localName.GetValueOrDefault(this.LocalName),
 					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
 					children: children.GetValueOrDefault(this.Children),
@@ -584,6 +1121,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlElementWithContent(
+				default(System.Int32), 
 				template.LocalName, 
 				template.NamespaceName, 
 				template.Children, 
@@ -601,11 +1139,30 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String Content { get; set; }
 		}
 		
+		internal static XmlElementWithContent CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
+				ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+					namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
+					content: Optional.For(content.GetValueOrDefault(DefaultInstance.Content)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
+		}
+		
 		public XmlElement ToXmlElement() {
-			return XmlElement.Create(
-				localName: this.LocalName,
-				namespaceName: this.NamespaceName,
-				children: this.Children);
+			return XmlElement.CreateWithIdentity(
+				localName: Optional.For(this.LocalName),
+				namespaceName: Optional.For(this.NamespaceName),
+				children: Optional.For(this.Children),
+				identity: this.Identity);
 		}
 		
 		public new Builder ToBuilder() {
@@ -662,16 +1219,13 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly System.String value;
 	
 		/// <summary>Initializes a new instance of the XmlAttribute class.</summary>
-		protected XmlAttribute()
-		{
-		}
-	
-		/// <summary>Initializes a new instance of the XmlAttribute class.</summary>
 		protected XmlAttribute(
+			System.Int32 identity,
 			System.String localName,
 			System.String namespaceName,
 			System.String value)
 			: base(
+				identity: identity,
 				localName: localName)
 		{
 			this.namespaceName = namespaceName;
@@ -683,10 +1237,12 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return DefaultInstance.With(
-				localName: localName.GetValueOrDefault(DefaultInstance.LocalName),
-				namespaceName: namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName),
-				value: value.GetValueOrDefault(DefaultInstance.Value));
+			var identity = Optional.For(NewIdentity());
+			return DefaultInstance.WithFactory(
+				localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+				value: Optional.For(value.GetValueOrDefault(DefaultInstance.Value)),
+				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 	
 		public System.String NamespaceName {
@@ -708,7 +1264,7 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(namespaceName: value);
+			return this.With(namespaceName: Optional.For(value));
 		}
 		
 		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
@@ -717,28 +1273,53 @@ namespace ImmutableObjectGraph.Tests {
 				return this;
 			}
 		
-			return this.With(value: value);
+			return this.With(value: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public override XmlNode With(
+		protected override XmlNode WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>)) {
-			return this.With(
-				localName: localName,
-				namespaceName: default(ImmutableObjectGraph.Optional<System.String>),
-				value: default(ImmutableObjectGraph.Optional<System.String>));
+			return this.WithFactory(
+				localName: localName);
 		}
-		
+	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
-		public virtual XmlAttribute With(
+		public XmlAttribute With(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			return (XmlAttribute)this.WithCore(
+				localName: localName,
+				namespaceName: namespaceName,
+				value: value);
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		protected virtual XmlAttribute WithCore(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
+			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			return this.WithFactory(
+				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
+				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
+				value: Optional.For(value.GetValueOrDefault(this.Value)),
+				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		private XmlAttribute WithFactory(
+			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
 			if (
+				(identity.IsDefined && identity.Value != this.Identity) || 
 				(localName.IsDefined && localName.Value != this.LocalName) || 
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(value.IsDefined && value.Value != this.Value)) {
 				return new XmlAttribute(
+					identity: identity.GetValueOrDefault(this.Identity),
 					localName: localName.GetValueOrDefault(this.LocalName),
 					namespaceName: namespaceName.GetValueOrDefault(this.NamespaceName),
 					value: value.GetValueOrDefault(this.Value));
@@ -760,6 +1341,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlAttribute(
+				default(System.Int32), 
 				template.LocalName, 
 				template.NamespaceName, 
 				template.Value);
@@ -772,6 +1354,22 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String NamespaceName { get; set; }
 	
 			internal System.String Value { get; set; }
+		}
+		
+		internal static XmlAttribute CreateWithIdentity(
+				ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
+				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			if (!identity.IsDefined) {
+				identity = NewIdentity();
+			}
+		
+			return DefaultInstance.WithFactory(
+					localName: Optional.For(localName.GetValueOrDefault(DefaultInstance.LocalName)),
+					namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
+					value: Optional.For(value.GetValueOrDefault(DefaultInstance.Value)),
+					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
 		public new Builder ToBuilder() {

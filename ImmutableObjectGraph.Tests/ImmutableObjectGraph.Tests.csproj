@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ImmutableObjectGraph.Tests</RootNamespace>
     <AssemblyName>ImmutableObjectGraph.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,27 +33,58 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.8-beta\lib\net45\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.27\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="xunit">
-      <HintPath>..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
+    <Reference Include="Validation">
+      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit, Version=1.9.2.1705, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractClassFamiliesTests.cs" />
+    <Compile Include="AbstractClassFamilies.generated.cs">
+      <DependentUpon>AbstractClassFamilies.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="FileSystem.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
       <DependentUpon>FileSystem.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSBuild.cs" />
+    <Compile Include="NonRecursive.generated.cs">
+      <DependentUpon>NonRecursive.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="MSBuildTests.cs" />
+    <Compile Include="ProjectTree.generated.cs">
+      <DependentUpon>ProjectTree.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="FileSystemTests.cs" />
+    <Compile Include="ProjectTreeCapabilities.cs" />
+    <Compile Include="ProjectTreeNodeTestBase.cs" />
+    <Compile Include="ProjectTreePartial.cs" />
+    <Compile Include="ProjectTreeSort.cs" />
+    <Compile Include="ProjectTreeTests.cs" />
     <Compile Include="RequiresAndHierarchy.generated.cs">
       <DependentUpon>RequiresAndHierarchy.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -89,6 +121,13 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="TreeNodeTests.cs" />
+    <Compile Include="ProjectTreeNodeTest.cs" />
+    <Compile Include="ProjectTreeNodeTest2.cs" />
+    <Compile Include="MSBuild.generated.cs">
+      <DependentUpon>MSBuild.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="XmlNode.generated.cs">
       <DependentUpon>XmlNode.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -97,11 +136,17 @@
     <Compile Include="XmlNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt">
-      <Link>ImmutableObjectGraph.CollectionHelpers.tt</Link>
+    <None Include="AbstractClassFamilies.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AbstractClassFamilies.generated.cs</LastGenOutput>
     </None>
-    <None Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt">
-      <Link>ImmutableObjectGraph.tt</Link>
+    <None Include="NonRecursive.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NonRecursive.generated.cs</LastGenOutput>
+    </None>
+    <None Include="ProjectTree.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ProjectTree.generated.cs</LastGenOutput>
     </None>
     <None Include="FileSystem.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -128,6 +173,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TreeNode.generated.cs</LastGenOutput>
     </None>
+    <None Include="MSBuild.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MSBuild.generated.cs</LastGenOutput>
+    </None>
     <None Include="XmlNode.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>XmlNode.generated.cs</LastGenOutput>
@@ -135,11 +184,16 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
       <Name>ImmutableObjectGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.VisualStudio.ProjectSystem.v12Only\Microsoft.VisualStudio.ProjectSystem.v12Only.csproj">
+      <Project>{91668e84-7b80-45a1-892c-fa2ee381e770}</Project>
+      <Name>Microsoft.VisualStudio.ProjectSystem.v12Only</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

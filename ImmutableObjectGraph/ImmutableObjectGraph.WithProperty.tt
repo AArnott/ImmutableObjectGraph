@@ -1,6 +1,6 @@
 ﻿<#
 this.HandleField += (templateType, field) => { 
-	if (field.DeclaringType == templateType) { // field is declared locally
+	if (field.DeclaringType.Equals(templateType)) { // field is declared locally
 #>
 
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
@@ -9,7 +9,7 @@ public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.Ty
 		return this;
 	}
 
-	return this.With(<#= field.NameCamelCase #>: value);
+	return this.With(<#= field.NameCamelCase #>: Optional.For(value));
 }
 <#
 	} else { // else field is declared on a base type
@@ -22,4 +22,29 @@ public new <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= fiel
 <#
 	}
 }; // event handler
+
+this.HandleRedField += (templateType, field) => {
+	if (field.IsRecursiveCollection) {
+#>
+
+/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
+public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
+	this.ThrowIfDefault();
+	var adapter = (Adapters.IImmutableCollectionAdapter<<#= templateType.GreenType.RecursiveTypeFromFamily.TypeName #>>)value;
+	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(adapter.UnderlyingCollection);
+	return this.NewSpine(mutatedLeaf);
+}
+<#
+	} else {
+#>
+
+/// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
+public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.GreenField.TypeName #> value) {
+	this.ThrowIfDefault();
+	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(value);
+	return this.NewSpine(mutatedLeaf);
+}
+<#
+	}
+};
 #>

@@ -3,11 +3,15 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
 	abstract class FileSystemEntry {
 		[Required]
 		string pathSegment;
+
+		RichData data;
 	}
 
 	class FileSystemFile : FileSystemEntry {
@@ -16,5 +20,9 @@
 
 	class FileSystemDirectory : FileSystemEntry {
 		ImmutableSortedSet<FileSystemEntry> children;
+	}
+
+	class RichData {
+		int someCoolProperty;
 	}
 #>

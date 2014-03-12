@@ -1,6 +1,6 @@
 ﻿<#
 this.HandleType += (templateType, position) => {
-	if (position != HandleTypePosition.WithinTypeDeclaration) {
+	if (position != HandleTypePosition.WithinTypeDeclaration || !templateType.AllFields.Any()) {
 		return;
 	}
 #>
@@ -10,7 +10,7 @@ public <#= templateType.HasAncestor ? "new ": "" #>Builder ToBuilder() {
 }
 
 public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
-	if (templateType.HasAncestor) {
+	if (templateType.HasAncestor && templateType.Ancestor.AllFields.Any()) {
 		Write(" : {0}.Builder", templateType.Ancestor.TypeName);
 	}
 #> {
@@ -23,7 +23,7 @@ public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 <#		} #>
 
 	internal Builder(<#= templateType.TypeName #> immutable)<#
-		if (templateType.HasAncestor) {
+		if (templateType.HasAncestor && templateType.Ancestor.AllFields.Any()) {
 			Write(" : base(immutable)");
 		} #> {
 		this.immutable = immutable;
