@@ -1,6 +1,6 @@
 ﻿<#@ template debug="true" language="C#" #>
 <#@ assembly name="System.Drawing" #>
-<#@ assembly name="d:\Users\andarno\git\ImmutableObjectGraph\Microsoft.VisualStudio.ProjectSystem.v12Only\bin\Debug\Microsoft.VisualStudio.ProjectSystem.Mocks.dll" #>
+<#@ assembly name="c:\Users\andarno\source\repos\ImmutableObjectGraph\Microsoft.VisualStudio.ProjectSystem.v12Only\bin\Debug\Microsoft.VisualStudio.ProjectSystem.Mocks.dll" #>
 <#@ Import Namespace="System.Drawing" #>
 <#@ import Namespace="Microsoft.VisualStudio.ProjectSystem.Properties" #>
 <#@ Output Extension=".generated.cs" #>
