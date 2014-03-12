@@ -24,7 +24,7 @@
 		}
 
 		public TRooted this[int index] {
-			get { throw new NotImplementedException(); }
+			get { return this.root(this.underlyingCollection[index], this.rootObject); }
 		}
 
 		public IImmutableList<TUnrooted> UnderlyingCollection {

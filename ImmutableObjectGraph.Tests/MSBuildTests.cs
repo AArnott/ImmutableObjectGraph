@@ -90,18 +90,18 @@
 			Assert.Equal(2, pre.Children.OfType<ProjectItemGroupElement>().Single().Children.Count);
 		}
 
-		[Fact(Skip = "Add RedNode.tt to MSBuild.tt file and fix issues, then uncomment this test.")]
+		[Fact]
 		public void RecursiveMutation() {
-			//RootedProjectRootElement root = CreateBasicProjectStructure().AsRoot;
-			//RootedProjectItemElement aCsItem = root.Children[1].Children[0].AsProjectItemElement;
-			//RootedProjectItemElement aCsItemUpdated = aCsItem.WithInclude("A.cs");
-			//Assert.Equal("A.cs", aCsItemUpdated.Include);
+			RootedProjectRootElement root = CreateBasicProjectStructure().AsRoot;
+			RootedProjectItemElement aCsItem = root.Children[1].AsProjectElementContainer.Children[0].AsProjectItemElement;
+			RootedProjectItemElement aCsItemUpdated = aCsItem.WithInclude("A.cs");
+			Assert.Equal("A.cs", aCsItemUpdated.Include);
 
-			//RootedProjectRootElement rootUpdated = aCsItemUpdated.Root.AsProjectRootElement;
-			//Assert.NotSame(root.ProjectRootElement, rootUpdated.ProjectRootElement);
-			//Assert.Same(
-			//	aCsItemUpdated.ProjectItemElement,
-			//	rootUpdated.ProjectRootElement.Find(aCsItemUpdated.Identity));
+			RootedProjectRootElement rootUpdated = aCsItemUpdated.Root.AsProjectRootElement;
+			Assert.NotSame(root.ProjectRootElement, rootUpdated.ProjectRootElement);
+			Assert.Same(
+				aCsItemUpdated.ProjectItemElement,
+				rootUpdated.ProjectRootElement.Find(aCsItemUpdated.Identity));
 		}
 
 		private static ProjectRootElement CreateBasicProjectStructure() {
