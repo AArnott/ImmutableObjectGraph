@@ -87,10 +87,6 @@
 		string KeepMetadata;
 		ElementLocation KeepMetadataLocation;
 
-		[ImmutableObjectGraph.NotRecursive]
-		[ImmutableObjectGraph.Distinguisher(CollectionModifierMethodSuffix = "Element")] // avoid collision with RemoveMetadata property
-		ImmutableList<ProjectMetadataElement> Metadata;
-
 		string Remove;
 		ElementLocation RemoveLocation;
 
@@ -117,10 +113,6 @@
 
 	class ProjectItemDefinitionElement : ProjectElementContainer {
 		string itemType;
-
-		[ImmutableObjectGraph.NotRecursive]
-		[ImmutableObjectGraph.Distinguisher(CollectionModifierMethodSuffix = "Element")] // avoid collision with RemoveMetadata property
-		ImmutableList<ProjectMetadataElement> Metadata;
 	}
 
 	class ProjectItemDefinitionGroupElement : ProjectElementContainer {
