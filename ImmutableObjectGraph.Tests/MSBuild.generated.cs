@@ -4457,6 +4457,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation TreatAsLocalPropertylocation { get; set; }
 		}
 		
+		public RootedProjectRootElement AsRoot {
+			get { return new RootedProjectRootElement(this, this); }
+		}
+		
 		public new RootedProjectRootElement WithRoot(ProjectElementContainer root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
@@ -5698,6 +5702,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public RootedProjectPropertyGroupElement AsRoot {
+			get { return new RootedProjectPropertyGroupElement(this, this); }
+		}
+		
 		public new RootedProjectPropertyGroupElement WithRoot(ProjectElementContainer root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
@@ -6598,6 +6606,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation Location { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		public RootedProjectItemGroupElement AsRoot {
+			get { return new RootedProjectItemGroupElement(this, this); }
 		}
 		
 		public new RootedProjectItemGroupElement WithRoot(ProjectElementContainer root) {
@@ -7502,6 +7514,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public RootedProjectChooseElement AsRoot {
+			get { return new RootedProjectChooseElement(this, this); }
+		}
+		
 		public new RootedProjectChooseElement WithRoot(ProjectElementContainer root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
@@ -8404,6 +8420,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public RootedProjectOtherwiseElement AsRoot {
+			get { return new RootedProjectOtherwiseElement(this, this); }
+		}
+		
 		public new RootedProjectOtherwiseElement WithRoot(ProjectElementContainer root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
@@ -9304,6 +9324,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation Location { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		public RootedProjectWhenElement AsRoot {
+			get { return new RootedProjectWhenElement(this, this); }
 		}
 		
 		public new RootedProjectWhenElement WithRoot(ProjectElementContainer root) {
@@ -11462,6 +11486,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String RemoveMetadata { get; set; }
 	
 			internal ElementLocation RemoveMetadataLocation { get; set; }
+		}
+		
+		public RootedProjectItemElement AsRoot {
+			get { return new RootedProjectItemElement(this, this); }
 		}
 		
 		public new RootedProjectItemElement WithRoot(ProjectElementContainer root) {
@@ -15250,6 +15278,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
 		}
 		
+		public RootedProjectImportGroupElement AsRoot {
+			get { return new RootedProjectImportGroupElement(this, this); }
+		}
+		
 		public new RootedProjectImportGroupElement WithRoot(ProjectElementContainer root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
@@ -16202,6 +16234,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String ItemType { get; set; }
 		}
 		
+		public RootedProjectItemDefinitionElement AsRoot {
+			get { return new RootedProjectItemDefinitionElement(this, this); }
+		}
+		
 		public new RootedProjectItemDefinitionElement WithRoot(ProjectElementContainer root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
@@ -17146,6 +17182,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation Location { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		public RootedProjectItemDefinitionGroupElement AsRoot {
+			get { return new RootedProjectItemDefinitionGroupElement(this, this); }
 		}
 		
 		public new RootedProjectItemDefinitionGroupElement WithRoot(ProjectElementContainer root) {
@@ -20465,6 +20505,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation ReturnsLocation { get; set; }
 		}
 		
+		public RootedProjectTargetElement AsRoot {
+			get { return new RootedProjectTargetElement(this, this); }
+		}
+		
 		public new RootedProjectTargetElement WithRoot(ProjectElementContainer root) {
 			var spine = root.GetSpine(this);
 			if (spine.IsEmpty) {
@@ -22142,6 +22186,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation MSBuildRuntimeLocation { get; set; }
 	
 			internal System.String Name { get; set; }
+		}
+		
+		public RootedProjectTaskElement AsRoot {
+			get { return new RootedProjectTaskElement(this, this); }
 		}
 		
 		public new RootedProjectTaskElement WithRoot(ProjectElementContainer root) {
@@ -24577,6 +24625,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal System.String TaskName { get; set; }
 	
 			internal ElementLocation TaskNameLocation { get; set; }
+		}
+		
+		public RootedProjectUsingTaskElement AsRoot {
+			get { return new RootedProjectUsingTaskElement(this, this); }
 		}
 		
 		public new RootedProjectUsingTaskElement WithRoot(ProjectElementContainer root) {
@@ -27044,6 +27096,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal ElementLocation Location { get; set; }
 	
 			internal System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; set; }
+		}
+		
+		public RootedUsingTaskParameterGroupElement AsRoot {
+			get { return new RootedUsingTaskParameterGroupElement(this, this); }
 		}
 		
 		public new RootedUsingTaskParameterGroupElement WithRoot(ProjectElementContainer root) {

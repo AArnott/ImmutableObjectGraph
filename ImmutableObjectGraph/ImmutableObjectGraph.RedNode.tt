@@ -8,7 +8,7 @@ this.HandleType += (templateType, position) => {
 
 	switch (position) {
 		case HandleTypePosition.WithinTypeDeclaration:
-			if (redType.RecursiveParent.Equals(redType)) {
+			if (redType.IsDerivedFromRecursiveParent) {
 #>
 
 public <#= redType.TypeName #> AsRoot {
