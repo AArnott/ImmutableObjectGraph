@@ -91,7 +91,6 @@ public override <#= derivedType.TypeName #> To<#= derivedType.TypeName #>(<# Wri
 	} // foreach derived type
 }; // event handler
 
-/* Type converters on red nodes are buggy, and add a lot of code bloat anyway.
 this.HandleRedType += (templateType, position) => {
 	if (position != HandleTypePosition.WithinTypeDeclaration) {
 		return;
@@ -112,5 +111,4 @@ public <#= familyType.TypeName #> To<#= familyType.GreenType.TypeName #>(<# Writ
 
 	PopIndent();
 };
-*/
 #>
