@@ -142,21 +142,22 @@ this.HandleRedField += (templateType, redField) => {
 		}
 
 		foreach (var field in fieldTypes) {
+			var collectionArgumentField = field.IsRecursiveCollection ? field : field.GreenField;
 			var translateOne = field.GreenField.TypeName != field.TypeName ? "." + field.GreenField.ElementTypeName : "";
-			var translateCollection = field.GreenField.TypeName != field.TypeName ? (".Select(r => r" + translateOne + ")") : "";
+			var translateCollection = (field.IsRecursiveCollection && field.GreenField.TypeName != field.TypeName) ? (".Select(r => r" + translateOne + ")") : "";
 #>
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
-public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+public <#= templateType.TypeName #> With<#= plural #>(params <#= collectionArgumentField.ElementTypeName #>[] values) {
 	this.ThrowIfDefault();
-	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	var mutatedLeaf = this.greenNode.With<#= plural #>(values<#= translateCollection #>);
 	return this.NewSpine(mutatedLeaf);
 }
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
-public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+public <#= templateType.TypeName #> With<#= plural #>(System.Collections.Generic.IEnumerable<<#= collectionArgumentField.ElementTypeName #>> values) {
 	this.ThrowIfDefault();
-	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(values<#= translateCollection #>);
+	var mutatedLeaf = this.greenNode.With<#= plural #>(values<#= translateCollection #>);
 	return this.NewSpine(mutatedLeaf);
 }
 

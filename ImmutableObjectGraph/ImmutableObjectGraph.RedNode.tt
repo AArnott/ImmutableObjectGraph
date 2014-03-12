@@ -140,7 +140,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 				} else {
 #>
 
-	public <#= field.TypeName #> <#= field.NamePascalCase #> {
+	public <#= field.GreenField.TypeName #> <#= field.NamePascalCase #> {
 		get {
 			this.ThrowIfDefault();
 			return this.greenNode.<#= field.NamePascalCase #>;

@@ -39,7 +39,7 @@ public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.Ty
 #>
 
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
-public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
+public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.GreenField.TypeName #> value) {
 	this.ThrowIfDefault();
 	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(value);
 	return this.NewSpine(mutatedLeaf);
