@@ -169,12 +169,16 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 	}
 <#
 			if (redType.IsRecursive) {
+				if (!redType.IsAbstract) {
 #>
 
 	public static <#= redType.TypeName #> Create(<# WriteParameters(redType.AllFields, ParameterStyle.OptionalOrRequired); #>) {
 		var greenNode = <#= redType.GreenType.TypeName#>.Create(<# WriteArguments(redType.AllFields, ArgSource.Argument); #>);
 		return greenNode.AsRoot;
 	}
+<#
+				}
+#>
 
 	public <#=redType.RecursiveType.TypeName#> Find(<#= templateType.RequiredIdentityField.TypeName #> identity) {
 		this.ThrowIfDefault();
