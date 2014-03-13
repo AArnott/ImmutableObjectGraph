@@ -57,7 +57,7 @@ public struct DiffGram {
 	/// Gets the kinds of changes made to node if <see cref="Kind"/> is <see cref="ChangeKind.Replaced"/>.
 	/// </summary>
 	public <#= enumTypeName #> Changes { get; private set; }
-<#	foreach (var field in templateType.AllFields) { #>
+<#	foreach (var field in templateType.AllFields.Where(f => !f.IsRecursiveCollection)) { #>
 
 	/// <summary>
 	/// Gets a value indicating whether the <see cref="<#= field.DeclaringType.TypeName #>.<#= field.NamePascalCase #>" /> was changed.

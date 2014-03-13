@@ -551,13 +551,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			/// <summary>
-			/// Gets a value indicating whether the <see cref="ProjectTree.Children" /> was changed.
-			/// </summary>
-			public bool IsChildrenChanged {
-				get { return (this.Changes & ProjectTreeChangedProperties.Children) != ProjectTreeChangedProperties.None; }
-			}
-		
-			/// <summary>
 			/// Gets the identity of the affected object.
 			/// </summary>
 			public System.Int32 Identity {
