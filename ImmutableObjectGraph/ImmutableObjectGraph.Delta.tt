@@ -66,6 +66,7 @@ public struct DiffGram {
 		get { return (this.Changes & <#= enumTypeName #>.<#= field.NamePascalCase #>) != <#= enumTypeName #>.None; }
 	}
 <#	} #>
+
 	/// <summary>
 	/// Gets the identity of the affected object.
 	/// </summary>

@@ -158,6 +158,7 @@ namespace ImmutableObjectGraph.Tests {
 			public bool IsDataChanged {
 				get { return (this.Changes & FileSystemEntryChangedProperties.Data) != FileSystemEntryChangedProperties.None; }
 			}
+		
 			/// <summary>
 			/// Gets the identity of the affected object.
 			/// </summary>
