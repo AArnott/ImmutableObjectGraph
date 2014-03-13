@@ -57,7 +57,15 @@ public struct DiffGram {
 	/// Gets the kinds of changes made to node if <see cref="Kind"/> is <see cref="ChangeKind.Replaced"/>.
 	/// </summary>
 	public <#= enumTypeName #> Changes { get; private set; }
+<#	foreach (var field in templateType.AllFields) { #>
 
+	/// <summary>
+	/// Gets a value indicating whether the <see cref="<#= field.DeclaringType.TypeName #>.<#= field.NamePascalCase #>" /> was changed.
+	/// </summary>
+	public bool Is<#=field.NamePascalCase#>Changed {
+		get { return (this.Changes & <#= enumTypeName #>.<#= field.NamePascalCase #>) != <#= enumTypeName #>.None; }
+	}
+<#	} #>
 	/// <summary>
 	/// Gets the identity of the affected object.
 	/// </summary>

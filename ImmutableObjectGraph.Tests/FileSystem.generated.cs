@@ -146,6 +146,19 @@ namespace ImmutableObjectGraph.Tests {
 			public FileSystemEntryChangedProperties Changes { get; private set; }
 		
 			/// <summary>
+			/// Gets a value indicating whether the <see cref="FileSystemEntry.PathSegment" /> was changed.
+			/// </summary>
+			public bool IsPathSegmentChanged {
+				get { return (this.Changes & FileSystemEntryChangedProperties.PathSegment) != FileSystemEntryChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="FileSystemEntry.Data" /> was changed.
+			/// </summary>
+			public bool IsDataChanged {
+				get { return (this.Changes & FileSystemEntryChangedProperties.Data) != FileSystemEntryChangedProperties.None; }
+			}
+			/// <summary>
 			/// Gets the identity of the affected object.
 			/// </summary>
 			public System.Int32 Identity {
