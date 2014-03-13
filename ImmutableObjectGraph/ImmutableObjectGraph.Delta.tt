@@ -194,7 +194,7 @@ public enum <#= enumTypeName #> : <#=enumBaseTypeName#> {
 #>
 
 	/// <summary>
-	/// The <#= field.Key #>" /> property was changed.
+	/// The <#= field.Key #> property was changed.
 	/// </summary>
 	<#= field.Key #> = <#= string.Format("0x{0:x}", (ulong)Math.Pow(2, counter)) #>,
 <#

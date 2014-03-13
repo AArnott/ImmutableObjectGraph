@@ -502,6 +502,62 @@ namespace ImmutableObjectGraph.Tests {
 			public ProjectTreeChangedProperties Changes { get; private set; }
 		
 			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.Caption" /> was changed.
+			/// </summary>
+			public bool IsCaptionChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.Caption) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.FilePath" /> was changed.
+			/// </summary>
+			public bool IsFilePathChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.FilePath) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.Icon" /> was changed.
+			/// </summary>
+			public bool IsIconChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.Icon) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.ExpandedIcon" /> was changed.
+			/// </summary>
+			public bool IsExpandedIconChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.ExpandedIcon) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.Visible" /> was changed.
+			/// </summary>
+			public bool IsVisibleChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.Visible) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.BrowseObjectProperties" /> was changed.
+			/// </summary>
+			public bool IsBrowseObjectPropertiesChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.BrowseObjectProperties) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.Capabilities" /> was changed.
+			/// </summary>
+			public bool IsCapabilitiesChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.Capabilities) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="ProjectTree.Children" /> was changed.
+			/// </summary>
+			public bool IsChildrenChanged {
+				get { return (this.Changes & ProjectTreeChangedProperties.Children) != ProjectTreeChangedProperties.None; }
+			}
+		
+			/// <summary>
 			/// Gets the identity of the affected object.
 			/// </summary>
 			public System.Int32 Identity {
@@ -1746,7 +1802,7 @@ namespace ImmutableObjectGraph.Tests {
 	}
 	
 	[System.Flags]
-	public enum ProjectTreeChangedProperties {
+	public enum ProjectTreeChangedProperties : uint {
 		/// <summary>
 		/// No change was made to the node.  It was either entirely added or removed. 
 		/// </summary>
@@ -1768,52 +1824,52 @@ namespace ImmutableObjectGraph.Tests {
 		Parent = 0x4,
 	
 		/// <summary>
-		/// The <see cref="ProjectTree.Caption" /> property was changed.
+		/// The Caption property was changed.
 		/// </summary>
 		Caption = 0x8,
 	
 		/// <summary>
-		/// The <see cref="ProjectTree.FilePath" /> property was changed.
+		/// The FilePath property was changed.
 		/// </summary>
 		FilePath = 0x10,
 	
 		/// <summary>
-		/// The <see cref="ProjectTree.Icon" /> property was changed.
+		/// The Icon property was changed.
 		/// </summary>
 		Icon = 0x20,
 	
 		/// <summary>
-		/// The <see cref="ProjectTree.ExpandedIcon" /> property was changed.
+		/// The ExpandedIcon property was changed.
 		/// </summary>
 		ExpandedIcon = 0x40,
 	
 		/// <summary>
-		/// The <see cref="ProjectTree.Visible" /> property was changed.
+		/// The Visible property was changed.
 		/// </summary>
 		Visible = 0x80,
 	
 		/// <summary>
-		/// The <see cref="ProjectTree.BrowseObjectProperties" /> property was changed.
+		/// The BrowseObjectProperties property was changed.
 		/// </summary>
 		BrowseObjectProperties = 0x100,
 	
 		/// <summary>
-		/// The <see cref="ProjectTree.Capabilities" /> property was changed.
+		/// The Capabilities property was changed.
 		/// </summary>
 		Capabilities = 0x200,
 	
 		/// <summary>
-		/// The <see cref="ProjectItemTree.ProjectPropertiesContext" /> property was changed.
+		/// The ProjectPropertiesContext property was changed.
 		/// </summary>
 		ProjectPropertiesContext = 0x400,
 	
 		/// <summary>
-		/// The <see cref="ProjectItemTree.PropertySheet" /> property was changed.
+		/// The PropertySheet property was changed.
 		/// </summary>
 		PropertySheet = 0x800,
 	
 		/// <summary>
-		/// The <see cref="ProjectItemTree.IsLinked" /> property was changed.
+		/// The IsLinked property was changed.
 		/// </summary>
 		IsLinked = 0x1000,
 	
@@ -2244,6 +2300,10 @@ namespace ImmutableObjectGraph.Tests {
 			internal Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet PropertySheet { get; set; }
 	
 			internal System.Boolean IsLinked { get; set; }
+		}
+		
+		public RootedProjectItemTree AsRoot {
+			get { return new RootedProjectItemTree(this, this); }
 		}
 		
 		public new RootedProjectItemTree WithRoot(ProjectTree root) {

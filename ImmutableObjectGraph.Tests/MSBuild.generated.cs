@@ -1346,222 +1346,222 @@ namespace ImmutableObjectGraph.Tests {
 		Parent = 0x4,
 	
 		/// <summary>
-		/// The Condition" /> property was changed.
+		/// The Condition property was changed.
 		/// </summary>
 		Condition = 0x8,
 	
 		/// <summary>
-		/// The Label" /> property was changed.
+		/// The Label property was changed.
 		/// </summary>
 		Label = 0x10,
 	
 		/// <summary>
-		/// The FullPath" /> property was changed.
+		/// The FullPath property was changed.
 		/// </summary>
 		FullPath = 0x20,
 	
 		/// <summary>
-		/// The Encoding" /> property was changed.
+		/// The Encoding property was changed.
 		/// </summary>
 		Encoding = 0x40,
 	
 		/// <summary>
-		/// The ToolsVersion" /> property was changed.
+		/// The ToolsVersion property was changed.
 		/// </summary>
 		ToolsVersion = 0x80,
 	
 		/// <summary>
-		/// The DefaultTargets" /> property was changed.
+		/// The DefaultTargets property was changed.
 		/// </summary>
 		DefaultTargets = 0x100,
 	
 		/// <summary>
-		/// The InitialTargets" /> property was changed.
+		/// The InitialTargets property was changed.
 		/// </summary>
 		InitialTargets = 0x200,
 	
 		/// <summary>
-		/// The TreatAsLocalProperty" /> property was changed.
+		/// The TreatAsLocalProperty property was changed.
 		/// </summary>
 		TreatAsLocalProperty = 0x400,
 	
 		/// <summary>
-		/// The Name" /> property was changed.
+		/// The Name property was changed.
 		/// </summary>
 		Name = 0x800,
 	
 		/// <summary>
-		/// The Value" /> property was changed.
+		/// The Value property was changed.
 		/// </summary>
 		Value = 0x1000,
 	
 		/// <summary>
-		/// The Exclude" /> property was changed.
+		/// The Exclude property was changed.
 		/// </summary>
 		Exclude = 0x2000,
 	
 		/// <summary>
-		/// The Include" /> property was changed.
+		/// The Include property was changed.
 		/// </summary>
 		Include = 0x4000,
 	
 		/// <summary>
-		/// The ItemType" /> property was changed.
+		/// The ItemType property was changed.
 		/// </summary>
 		ItemType = 0x8000,
 	
 		/// <summary>
-		/// The KeepDuplicates" /> property was changed.
+		/// The KeepDuplicates property was changed.
 		/// </summary>
 		KeepDuplicates = 0x10000,
 	
 		/// <summary>
-		/// The KeepMetadata" /> property was changed.
+		/// The KeepMetadata property was changed.
 		/// </summary>
 		KeepMetadata = 0x20000,
 	
 		/// <summary>
-		/// The Remove" /> property was changed.
+		/// The Remove property was changed.
 		/// </summary>
 		Remove = 0x40000,
 	
 		/// <summary>
-		/// The RemoveMetadata" /> property was changed.
+		/// The RemoveMetadata property was changed.
 		/// </summary>
 		RemoveMetadata = 0x80000,
 	
 		/// <summary>
-		/// The Content" /> property was changed.
+		/// The Content property was changed.
 		/// </summary>
 		Content = 0x100000,
 	
 		/// <summary>
-		/// The Project" /> property was changed.
+		/// The Project property was changed.
 		/// </summary>
 		Project = 0x200000,
 	
 		/// <summary>
-		/// The IsOutputItem" /> property was changed.
+		/// The IsOutputItem property was changed.
 		/// </summary>
 		IsOutputItem = 0x400000,
 	
 		/// <summary>
-		/// The IsOutputProperty" /> property was changed.
+		/// The IsOutputProperty property was changed.
 		/// </summary>
 		IsOutputProperty = 0x800000,
 	
 		/// <summary>
-		/// The PropertyName" /> property was changed.
+		/// The PropertyName property was changed.
 		/// </summary>
 		PropertyName = 0x1000000,
 	
 		/// <summary>
-		/// The TaskParameter" /> property was changed.
+		/// The TaskParameter property was changed.
 		/// </summary>
 		TaskParameter = 0x2000000,
 	
 		/// <summary>
-		/// The AfterTargets" /> property was changed.
+		/// The AfterTargets property was changed.
 		/// </summary>
 		AfterTargets = 0x4000000,
 	
 		/// <summary>
-		/// The BeforeTargets" /> property was changed.
+		/// The BeforeTargets property was changed.
 		/// </summary>
 		BeforeTargets = 0x8000000,
 	
 		/// <summary>
-		/// The DependsOnTargets" /> property was changed.
+		/// The DependsOnTargets property was changed.
 		/// </summary>
 		DependsOnTargets = 0x10000000,
 	
 		/// <summary>
-		/// The Inputs" /> property was changed.
+		/// The Inputs property was changed.
 		/// </summary>
 		Inputs = 0x20000000,
 	
 		/// <summary>
-		/// The KeepDuplicateOutputs" /> property was changed.
+		/// The KeepDuplicateOutputs property was changed.
 		/// </summary>
 		KeepDuplicateOutputs = 0x40000000,
 	
 		/// <summary>
-		/// The Outputs" /> property was changed.
+		/// The Outputs property was changed.
 		/// </summary>
 		Outputs = 0x80000000,
 	
 		/// <summary>
-		/// The Returns" /> property was changed.
+		/// The Returns property was changed.
 		/// </summary>
 		Returns = 0x100000000,
 	
 		/// <summary>
-		/// The ContinueOnError" /> property was changed.
+		/// The ContinueOnError property was changed.
 		/// </summary>
 		ContinueOnError = 0x200000000,
 	
 		/// <summary>
-		/// The MSBuildArchitecture" /> property was changed.
+		/// The MSBuildArchitecture property was changed.
 		/// </summary>
 		MSBuildArchitecture = 0x400000000,
 	
 		/// <summary>
-		/// The MSBuildRuntime" /> property was changed.
+		/// The MSBuildRuntime property was changed.
 		/// </summary>
 		MSBuildRuntime = 0x800000000,
 	
 		/// <summary>
-		/// The Evaluate" /> property was changed.
+		/// The Evaluate property was changed.
 		/// </summary>
 		Evaluate = 0x1000000000,
 	
 		/// <summary>
-		/// The TaskBody" /> property was changed.
+		/// The TaskBody property was changed.
 		/// </summary>
 		TaskBody = 0x2000000000,
 	
 		/// <summary>
-		/// The Architecture" /> property was changed.
+		/// The Architecture property was changed.
 		/// </summary>
 		Architecture = 0x4000000000,
 	
 		/// <summary>
-		/// The AssemblyFile" /> property was changed.
+		/// The AssemblyFile property was changed.
 		/// </summary>
 		AssemblyFile = 0x8000000000,
 	
 		/// <summary>
-		/// The AssemblyName" /> property was changed.
+		/// The AssemblyName property was changed.
 		/// </summary>
 		AssemblyName = 0x10000000000,
 	
 		/// <summary>
-		/// The Runtime" /> property was changed.
+		/// The Runtime property was changed.
 		/// </summary>
 		Runtime = 0x20000000000,
 	
 		/// <summary>
-		/// The TaskFactory" /> property was changed.
+		/// The TaskFactory property was changed.
 		/// </summary>
 		TaskFactory = 0x40000000000,
 	
 		/// <summary>
-		/// The TaskName" /> property was changed.
+		/// The TaskName property was changed.
 		/// </summary>
 		TaskName = 0x80000000000,
 	
 		/// <summary>
-		/// The Output" /> property was changed.
+		/// The Output property was changed.
 		/// </summary>
 		Output = 0x100000000000,
 	
 		/// <summary>
-		/// The ParameterType" /> property was changed.
+		/// The ParameterType property was changed.
 		/// </summary>
 		ParameterType = 0x200000000000,
 	
 		/// <summary>
-		/// The Required" /> property was changed.
+		/// The Required property was changed.
 		/// </summary>
 		Required = 0x400000000000,
 	
