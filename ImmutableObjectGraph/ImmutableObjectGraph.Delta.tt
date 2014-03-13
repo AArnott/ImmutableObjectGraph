@@ -157,10 +157,16 @@ protected virtual <#= enumTypeName #> DiffProperties(<#= templateType.TypeName #
 <#
 				break;
 			case HandleTypePosition.AfterTypeDeclaration:
+				var fields = templateType.Concat(templateType.Descendents)
+					.SelectMany(t => t.LocalFields)
+					.Where(f => !f.IsRecursiveCollection)
+					.GroupBy(f => f.NamePascalCase);
+				int fieldsCount = 4 + fields.Count();
+				string enumBaseTypeName = fieldsCount > 32 ? "ulong" : "uint";
 #>
 
 [System.Flags]
-public enum <#= enumTypeName #> {
+public enum <#= enumTypeName #> : <#=enumBaseTypeName#> {
 	/// <summary>
 	/// No change was made to the node.  It was either entirely added or removed. 
 	/// </summary>
@@ -184,16 +190,13 @@ public enum <#= enumTypeName #> {
 				int counter = 3;
 				// We're interested in enumerating the union of all fields on this and derived types,
 				// excluding the recursive collection itself.
-				var fields = templateType.Concat(templateType.Descendents)
-					.SelectMany(t => t.LocalFields)
-					.Where(f => !f.IsRecursiveCollection);
 				foreach (var field in fields) {
 #>
 
 	/// <summary>
-	/// The <see cref="<#= field.DeclaringType.TypeName #>.<#= field.NamePascalCase #>" /> property was changed.
+	/// The <#= field.Key #>" /> property was changed.
 	/// </summary>
-	<#= field.NamePascalCase #> = <#= string.Format("0x{0:x}", (int)Math.Pow(2, counter)) #>,
+	<#= field.Key #> = <#= string.Format("0x{0:x}", (ulong)Math.Pow(2, counter)) #>,
 <#
 					counter++;
 				}
@@ -205,7 +208,7 @@ public enum <#= enumTypeName #> {
 	All = Type | PositionUnderParent | Parent<#
 	foreach (var field in fields) {
 		Write(" | ");
-		Write(field.NamePascalCase);
+		Write(field.Key);
 	}
 #>,
 }

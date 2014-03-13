@@ -476,7 +476,7 @@ namespace ImmutableObjectGraph.Tests {
 	}
 	
 	[System.Flags]
-	public enum FileSystemEntryChangedProperties {
+	public enum FileSystemEntryChangedProperties : uint {
 		/// <summary>
 		/// No change was made to the node.  It was either entirely added or removed. 
 		/// </summary>
@@ -498,17 +498,17 @@ namespace ImmutableObjectGraph.Tests {
 		Parent = 0x4,
 	
 		/// <summary>
-		/// The <see cref="FileSystemEntry.PathSegment" /> property was changed.
+		/// The PathSegment" /> property was changed.
 		/// </summary>
 		PathSegment = 0x8,
 	
 		/// <summary>
-		/// The <see cref="FileSystemEntry.Data" /> property was changed.
+		/// The Data" /> property was changed.
 		/// </summary>
 		Data = 0x10,
 	
 		/// <summary>
-		/// The <see cref="FileSystemFile.Attributes" /> property was changed.
+		/// The Attributes" /> property was changed.
 		/// </summary>
 		Attributes = 0x20,
 	

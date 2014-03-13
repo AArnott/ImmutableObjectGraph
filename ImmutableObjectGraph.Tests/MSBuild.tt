@@ -4,6 +4,7 @@
 	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
 <#+
 	// Note that ProjectElementContainer-derived types lack any properties that expose
@@ -12,21 +13,21 @@
 	// So an enhancement we should consider is to optionally hide the Children member
 	// from the public API and allow more constrained types of children via the public API.
 
-	class ElementLocation {
-		int column;
-		int line;
-		string file;
-		string locationString;
-	}
+	// class ElementLocation {
+	// 	int column;
+	// 	int line;
+	// 	string file;
+	// 	string locationString;
+	// }
 
 	abstract class ProjectElement {
 		string condition;
-		ElementLocation conditionLocation;
+		// ElementLocation conditionLocation;
 
 		string label;
-		ElementLocation labelLocation;
+		// ElementLocation labelLocation;
 
-		ElementLocation location;
+		// ElementLocation location;
 	}
 
 	abstract class ProjectElementContainer : ProjectElement {
@@ -38,16 +39,16 @@
 		Encoding encoding;
 
 		string toolsVersion;
-		ElementLocation toolsVersionLocation;
+		// ElementLocation toolsVersionLocation;
 		
 		string defaultTargets;
-		ElementLocation defaultTargetsLocation;
+		// ElementLocation defaultTargetsLocation;
 
 		string initialTargets;
-		ElementLocation initialTargetsLocation;
+		// ElementLocation initialTargetsLocation;
 
 		bool treatAsLocalProperty;
-		ElementLocation treatAsLocalPropertylocation;
+		// ElementLocation treatAsLocalPropertylocation;
 	}
 
 	class ProjectPropertyGroupElement : ProjectElementContainer {
@@ -72,24 +73,24 @@
 
 	class ProjectItemElement : ProjectElementContainer {
 		string Exclude;
-		ElementLocation ExcludeLocation;
+		// ElementLocation ExcludeLocation;
 
 		string Include;
-		ElementLocation IncludeLocation;
+		// ElementLocation IncludeLocation;
 
 		string ItemType;
 
 		string KeepDuplicates;
-		ElementLocation KeepDuplicatesLocation;
+		// ElementLocation KeepDuplicatesLocation;
 
 		string KeepMetadata;
-		ElementLocation KeepMetadataLocation;
+		// ElementLocation KeepMetadataLocation;
 
 		string Remove;
-		ElementLocation RemoveLocation;
+		// ElementLocation RemoveLocation;
 
 		string RemoveMetadata;
-		ElementLocation RemoveMetadataLocation;
+		// ElementLocation RemoveMetadataLocation;
 	}
 
 	class ProjectMetadataElement : ProjectElement {
@@ -103,7 +104,7 @@
 
 	class ProjectImportElement : ProjectElement {
 		string project;
-		ElementLocation projectLocation;
+		// ElementLocation projectLocation;
 	}
 
 	class ProjectImportGroupElement : ProjectElementContainer {
@@ -124,92 +125,92 @@
 		bool isOutputProperty;
 
 		string itemType;
-		ElementLocation itemTypeLocation;
+		// ElementLocation itemTypeLocation;
 
 		string propertyName;
-		ElementLocation propertyNameLocation;
+		// ElementLocation propertyNameLocation;
 
 		string taskParameter;
-		ElementLocation TaskParameterLocation;
+		// ElementLocation TaskParameterLocation;
 	}
 
 	class ProjectTargetElement : ProjectElementContainer {
 		string AfterTargets;
-		ElementLocation AfterTargetsLocation;
+		// ElementLocation AfterTargetsLocation;
 
 		string BeforeTargets;
-		ElementLocation BeforeTargetsLocation;
+		// ElementLocation BeforeTargetsLocation;
 
 		string DependsOnTargets;
-		ElementLocation DependsOnTargetsLocation;
+		// ElementLocation DependsOnTargetsLocation;
 
 		string Inputs;
-		ElementLocation InputsLocation;
+		// ElementLocation InputsLocation;
 
 		string KeepDuplicateOutputs;
-		ElementLocation KeepDuplicateOutputsLocation;
+		// ElementLocation KeepDuplicateOutputsLocation;
 
 		string Name;
-		ElementLocation NameLocation;
+		// ElementLocation NameLocation;
 
 		string Outputs;
-		ElementLocation OutputsLocation;
+		// ElementLocation OutputsLocation;
 
 		string Returns;
-		ElementLocation ReturnsLocation;
+		// ElementLocation ReturnsLocation;
 	}
 
 	class ProjectTaskElement : ProjectElementContainer {
 		string ContinueOnError;
-		ElementLocation ContinueOnErrorLocation;
+		// ElementLocation ContinueOnErrorLocation;
 
 		string MSBuildArchitecture;
-		ElementLocation MSBuildArchitectureLocation;
+		// ElementLocation MSBuildArchitectureLocation;
 
 		string MSBuildRuntime;
-		ElementLocation MSBuildRuntimeLocation;
+		// ElementLocation MSBuildRuntimeLocation;
 
 		string Name;
 	}
 
 	class ProjectUsingTaskBodyElement : ProjectElement {
 		string evaluate;
-		ElementLocation evaluateLocation;
+		// ElementLocation evaluateLocation;
 
 		string taskBody;
 	}
 
 	class ProjectUsingTaskElement : ProjectElementContainer {
 		string Architecture;
-		ElementLocation ArchitectureLocation;
+		// ElementLocation ArchitectureLocation;
 
 		string AssemblyFile;
-		ElementLocation AssemblyFileLocation;
+		// ElementLocation AssemblyFileLocation;
 
 		string AssemblyName;
-		ElementLocation AssemblyNameLocation;
+		// ElementLocation AssemblyNameLocation;
 
 		string Runtime;
-		ElementLocation RuntimeLocation;
+		// ElementLocation RuntimeLocation;
 
 		string TaskFactory;
-		ElementLocation TaskFactoryLocation;
+		// ElementLocation TaskFactoryLocation;
 
 		string TaskName;
-		ElementLocation TaskNameLocation;
+		// ElementLocation TaskNameLocation;
 	}
 
 	class ProjectUsingTaskParameterElement : ProjectElement {
 		string name;
 
 		string output;
-		ElementLocation outputLocation;
+		// ElementLocation outputLocation;
 
 		string parameterType;
-		ElementLocation parameterTypeLocation;
+		// ElementLocation parameterTypeLocation;
 
 		string required;
-		ElementLocation requiredLocation;
+		// ElementLocation requiredLocation;
 	}
 
 	class UsingTaskParameterGroupElement : ProjectElementContainer {
