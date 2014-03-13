@@ -104,6 +104,21 @@
 				rootUpdated.ProjectRootElement.Find(aCsItemUpdated.Identity));
 		}
 
+		[Fact]
+		public void ChangesSinceToolsetAndMetadata() {
+			var root = CreateBasicProjectStructure().AsRoot;
+			var newRoot = root.With(toolsVersion: "14.0");
+			var aCs = newRoot.Children[1].AsProjectItemGroupElement.Children[0].AsProjectItemElement;
+			var newMetadata = ProjectMetadataElement.Create(name: "ExcludeFromStyleCop", value: "true");
+			newRoot = aCs.AddChild(newMetadata).Parent.Root.AsProjectRootElement;
+			var changes = newRoot.ChangesSince(root);
+			Assert.Equal(2, changes.Count);
+			Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
+			Assert.Equal(ProjectElementChangedProperties.ToolsVersion, changes[0].Changes);
+			Assert.Equal(ChangeKind.Added, changes[1].Kind);
+			Assert.Same(newMetadata, changes[1].After);
+		}
+
 		private static ProjectRootElement CreateBasicProjectStructure() {
 			var pre = ProjectRootElement.Create(toolsVersion: "12.0").AddChildren(
 				ProjectPropertyGroupElement.Create().AddChildren(
@@ -114,6 +129,12 @@
 					ProjectItemElement.Create(itemType: "Compile", include: "b.cs")),
 				ProjectImportElement.Create(project: "$(MSBuildExtensionsPath32)Microsoft.CSharp.targets"));
 			return pre;
+		}
+	}
+
+	partial class ProjectItemElement {
+		static partial void CreateDefaultTemplate(ref ProjectItemElement.Template template) {
+			template.Children = ImmutableList.Create<ProjectElement>();
 		}
 	}
 }

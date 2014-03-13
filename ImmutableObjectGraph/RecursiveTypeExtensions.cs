@@ -155,7 +155,16 @@
 						}
 					} else {
 						// Calculate whether items were reordered without leveraging a sorting comparer.
-						throw new NotImplementedException();
+						var otherParentOrdered = (IRecursiveParentWithOrderedChildren)other.Parent;
+						int beforeIndex = otherParentOrdered.IndexOf(other.Value);
+						int afterIndex = selfParentOrdered.IndexOf(self.Value);
+
+						// TODO: review (and add tests for) cases where items are inserted/removed from the parent,
+						// causing all other items after it to apparently shift in position. We probably don't want
+						// to consider that a change in PositionUnderParent, since the removal or add will take care of it.
+						if (afterIndex != beforeIndex) {
+							changes = self.Value.Union(changes, self.Value.PositionUnderParentProperty);
+						}
 					}
 				}
 			}
