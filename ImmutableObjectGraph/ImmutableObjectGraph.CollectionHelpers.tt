@@ -1,49 +1,50 @@
 ﻿<#
 this.HandleField += (templateType, field) => { 
-	if (field.IsCollection) { #>
+	if (field.IsCollection) { 
+        string decl = (field.DeclaringType == templateType ? "public" : "public new"); #>
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
-public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+<#= decl #> <#= templateType.TypeName #> With<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
 }
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
-public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+<#= decl #> <#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
 }
 
 /// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+<#= decl #> <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
 }
 
 /// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+<#= decl #> <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
 }
 
 /// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+<#= decl #> <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Add(value));
 }
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
+<#= decl #> <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
 }
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
+<#= decl #> <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
 }
 
 /// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
+<#= decl #> <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(<#= field.ElementTypeName #> value) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(value));
 }
 
 /// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>() {
+<#= decl #> <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>() {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Clear());
 }
 
