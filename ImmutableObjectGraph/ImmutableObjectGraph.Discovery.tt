@@ -90,6 +90,18 @@ private static bool IsCollectionType(Type type) {
 		}
 	}
 
+	return IsDictionaryType(type);
+}
+
+private static bool IsDictionaryType(Type type) {
+	if (type.IsGenericType && type.GenericTypeArguments.Length == 2) {
+		Type readOnlyCollection = typeof(IReadOnlyDictionary<,>);
+		var genericReadOnlyCollection = readOnlyCollection.MakeGenericType(type.GenericTypeArguments[0], type.GenericTypeArguments[1]);
+		if (genericReadOnlyCollection.IsAssignableFrom(type)) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -104,6 +116,17 @@ private static bool TryGetCollectionElementType(Type collectionType, out Type el
 		var genericReadOnlyCollection = readOnlyCollection.MakeGenericType(collectionType.GenericTypeArguments[0]);
 		if (genericReadOnlyCollection.IsAssignableFrom(collectionType)) {
 			elementType = collectionType.GenericTypeArguments[0];
+			return true;
+		}
+	}
+
+	if (collectionType.IsGenericType && collectionType.GenericTypeArguments.Length == 2) {
+		Type readOnlyCollection = typeof(IReadOnlyDictionary<,>);
+		var genericReadOnlyCollection = readOnlyCollection.MakeGenericType(collectionType.GenericTypeArguments[0], collectionType.GenericTypeArguments[1]);
+		if (genericReadOnlyCollection.IsAssignableFrom(collectionType)) {
+			elementType = typeof(KeyValuePair<,>).MakeGenericType(
+				collectionType.GenericTypeArguments[0],
+				collectionType.GenericTypeArguments[1]);
 			return true;
 		}
 	}
@@ -339,6 +362,10 @@ protected class MetaType {
 			get { return IsCollectionType(this.Field.FieldType); }
 		}
 
+		public bool IsDictionary {
+			get { return IsDictionaryType(this.Field.FieldType); }
+		}
+
 		public bool IsPrimitiveType {
 			get { return !TemplateTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) && !this.IsCollection; }
 		}
@@ -349,6 +376,14 @@ protected class MetaType {
 
 		public string ElementTypeName {
 			get { return GetTypeName(GetTypeOrCollectionMemberType(this.Field.FieldType)); }
+		}
+
+		public string KeyTypeName {
+			get { return GetTypeName(this.Field.FieldType.GenericTypeArguments[0]); }
+		}
+
+		public string ValueTypeName {
+			get { return GetTypeName(this.Field.FieldType.GenericTypeArguments[1]); }		
 		}
 
 		public string TypeName {
