@@ -27,6 +27,34 @@ public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.Ele
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Add(value));
 }
 
+/// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>() {
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Clear());
+}
+<#
+		if (field.IsDictionary) {
+#>
+/// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
+public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.KeyTypeName #> key, <#= field.ValueTypeName #> value) {
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Add(key, value));
+}
+
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(<#= field.KeyTypeName #> key) {
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(key));
+}
+
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.KeyTypeName #>> keys) {
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(keys));
+}
+
+public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#= field.KeyTypeName #>[] keys) {
+	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(keys));
+}
+
+<#
+		} // if field type is a dictionary
+		else {
+#>
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
@@ -42,12 +70,8 @@ public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(<#= field.
 	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Remove(value));
 }
 
-/// <summary>Clears all elements from the <#= field.NamePascalCase #> collection.</summary>
-public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>() {
-	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.Clear());
-}
-
 <#
+		} // if field type is not a dictionary
 	} // if field type is a collection
 }; // event handler
 #>
