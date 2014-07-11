@@ -13,11 +13,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IXmlNode {
-		System.String LocalName { get; }
-	}
-	
-	public abstract partial class XmlNode : IXmlNode, IRecursiveType {
+	public abstract partial class XmlNode : IRecursiveType {
 		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
@@ -164,12 +160,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IXmlElement : IXmlNode {
-		System.String NamespaceName { get; }
-		System.Collections.Immutable.ImmutableList<XmlNode> Children { get; }
-	}
-	
-	public partial class XmlElement : XmlNode, IXmlElement, System.Collections.Generic.IEnumerable<XmlNode>, IRecursiveParentWithOrderedChildren {
+	public partial class XmlElement : XmlNode, System.Collections.Generic.IEnumerable<XmlNode>, IRecursiveParentWithOrderedChildren {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlElement DefaultInstance = GetDefaultTemplate();
 	
@@ -922,11 +913,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IXmlElementWithContent : IXmlElement {
-		System.String Content { get; }
-	}
-	
-	public partial class XmlElementWithContent : XmlElement, IXmlElementWithContent {
+	public partial class XmlElementWithContent : XmlElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlElementWithContent DefaultInstance = GetDefaultTemplate();
 	
@@ -1203,12 +1190,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IXmlAttribute : IXmlNode {
-		System.String NamespaceName { get; }
-		System.String Value { get; }
-	}
-	
-	public partial class XmlAttribute : XmlNode, IXmlAttribute {
+	public partial class XmlAttribute : XmlNode {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly XmlAttribute DefaultInstance = GetDefaultTemplate();
 	

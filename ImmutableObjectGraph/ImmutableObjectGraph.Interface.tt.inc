@@ -1,4 +1,5 @@
 ﻿<#
+if (this.DefineInterface) {
 this.HandleType += (templateType, position) => {
 	if (position != HandleTypePosition.BeforeTypeDeclaration) {
 		return;
@@ -18,4 +19,7 @@ public interface I<#= templateType.TypeName #><#
 }
 <#
 }; // event handler
+}
+#><#+
+	public bool DefineInterface { get; set; }
 #>

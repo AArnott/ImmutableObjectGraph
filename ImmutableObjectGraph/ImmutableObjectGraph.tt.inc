@@ -47,7 +47,10 @@ namespace <#= this.Namespace #> {
 			baseTypes.Add(templateType.Ancestor.TypeName);
 		}
 
-		baseTypes.Add("I" + templateType.TypeName);
+		if (this.DefineInterface) {
+			baseTypes.Add("I" + templateType.TypeName);
+		}
+
 		if (templateType.IsRecursiveParent) {
 			baseTypes.Add("System.Collections.Generic.IEnumerable<" + templateType.RecursiveType.TypeName + ">");
 			if (templateType.ChildrenAreSorted) {
@@ -66,7 +69,7 @@ namespace <#= this.Namespace #> {
 		OnContributeBaseTypes(templateType, baseTypes);
 #>
 
-public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.TypeName #> : <#= String.Join(", ", baseTypes) #> {
+public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templateType.TypeName #><# if (baseTypes.Count > 0) { #> : <#= String.Join(", ", baseTypes) #><# } #> {
 <#	if (!templateType.IsAbstract) { #>
 	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 	private static readonly <#= templateType.TypeName #> DefaultInstance = GetDefaultTemplate();

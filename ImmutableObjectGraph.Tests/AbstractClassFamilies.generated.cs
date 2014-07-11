@@ -13,12 +13,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IAbstract1 {
-		System.Int32 Abstract1Field1 { get; }
-		System.Int32 Abstract1Field2 { get; }
-	}
-	
-	public abstract partial class Abstract1 : IAbstract1 {
+	public abstract partial class Abstract1 {
 		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
@@ -165,12 +160,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IAbstract2 : IAbstract1 {
-		System.Int32 Abstract2Field1 { get; }
-		System.Int32 Abstract2Field2 { get; }
-	}
-	
-	public abstract partial class Abstract2 : Abstract1, IAbstract2 {
+	public abstract partial class Abstract2 : Abstract1 {
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 abstract2Field1;
@@ -334,12 +324,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IConcreteOf2Abstracts : IAbstract2 {
-		System.Int32 ConcreteField1 { get; }
-		System.Int32 ConcreteField2 { get; }
-	}
-	
-	public partial class ConcreteOf2Abstracts : Abstract2, IConcreteOf2Abstracts {
+	public partial class ConcreteOf2Abstracts : Abstract2 {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ConcreteOf2Abstracts DefaultInstance = GetDefaultTemplate();
 	

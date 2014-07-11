@@ -13,11 +13,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IA {
-		System.Int32 Field1 { get; }
-	}
-	
-	public partial class A : IA {
+	public partial class A {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly A DefaultInstance = GetDefaultTemplate();
 		
@@ -219,11 +215,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IB : IA {
-		System.Int32 Field2 { get; }
-	}
-	
-	public partial class B : A, IB {
+	public partial class B : A {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly B DefaultInstance = GetDefaultTemplate();
 	
@@ -444,11 +436,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IC1 : IB {
-		System.Int32 Field3 { get; }
-	}
-	
-	public partial class C1 : B, IC1 {
+	public partial class C1 : B {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly C1 DefaultInstance = GetDefaultTemplate();
 	
@@ -653,11 +641,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IC2 : IB {
-		System.Int32 Field3 { get; }
-	}
-	
-	public partial class C2 : B, IC2 {
+	public partial class C2 : B {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly C2 DefaultInstance = GetDefaultTemplate();
 	

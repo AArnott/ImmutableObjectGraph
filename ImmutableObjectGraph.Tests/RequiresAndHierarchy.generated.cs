@@ -13,12 +13,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IReqAndHierL1 {
-		System.String L1Field1 { get; }
-		System.String L1Field2 { get; }
-	}
-	
-	public partial class ReqAndHierL1 : IReqAndHierL1 {
+	public partial class ReqAndHierL1 {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ReqAndHierL1 DefaultInstance = GetDefaultTemplate();
 		
@@ -235,12 +230,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IReqAndHierL2 : IReqAndHierL1 {
-		System.String L2Field1 { get; }
-		System.String L2Field2 { get; }
-	}
-	
-	public partial class ReqAndHierL2 : ReqAndHierL1, IReqAndHierL2 {
+	public partial class ReqAndHierL2 : ReqAndHierL1 {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ReqAndHierL2 DefaultInstance = GetDefaultTemplate();
 	

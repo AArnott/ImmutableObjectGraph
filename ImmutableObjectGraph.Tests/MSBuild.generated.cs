@@ -13,12 +13,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IProjectElement {
-		System.String Condition { get; }
-		System.String Label { get; }
-	}
-	
-	public abstract partial class ProjectElement : IProjectElement, IRecursiveType, IRecursiveDiffingType<ProjectElementChangedProperties, ProjectElement.DiffGram> {
+	public abstract partial class ProjectElement : IRecursiveType, IRecursiveDiffingType<ProjectElementChangedProperties, ProjectElement.DiffGram> {
 		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
@@ -1571,11 +1566,7 @@ namespace ImmutableObjectGraph.Tests {
 		All = Type | PositionUnderParent | Parent | Condition | Label | FullPath | Encoding | ToolsVersion | DefaultTargets | InitialTargets | TreatAsLocalProperty | Name | Value | Exclude | Include | ItemType | KeepDuplicates | KeepMetadata | Remove | RemoveMetadata | Content | Project | IsOutputItem | IsOutputProperty | PropertyName | TaskParameter | AfterTargets | BeforeTargets | DependsOnTargets | Inputs | KeepDuplicateOutputs | Outputs | Returns | ContinueOnError | MSBuildArchitecture | MSBuildRuntime | Evaluate | TaskBody | Architecture | AssemblyFile | AssemblyName | Runtime | TaskFactory | TaskName | Output | ParameterType | Required,
 	}
 	
-	public interface IProjectElementContainer : IProjectElement {
-		System.Collections.Immutable.ImmutableList<ProjectElement> Children { get; }
-	}
-	
-	public abstract partial class ProjectElementContainer : ProjectElement, IProjectElementContainer, System.Collections.Generic.IEnumerable<ProjectElement>, IRecursiveParentWithOrderedChildren {
+	public abstract partial class ProjectElementContainer : ProjectElement, System.Collections.Generic.IEnumerable<ProjectElement>, IRecursiveParentWithOrderedChildren {
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableList<ProjectElement> children;
@@ -3268,16 +3259,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectRootElement : IProjectElementContainer {
-		System.String FullPath { get; }
-		System.Text.Encoding Encoding { get; }
-		System.String ToolsVersion { get; }
-		System.String DefaultTargets { get; }
-		System.String InitialTargets { get; }
-		System.Boolean TreatAsLocalProperty { get; }
-	}
-	
-	public partial class ProjectRootElement : ProjectElementContainer, IProjectRootElement {
+	public partial class ProjectRootElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectRootElement DefaultInstance = GetDefaultTemplate();
 	
@@ -4417,10 +4399,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectPropertyGroupElement : IProjectElementContainer {
-	}
-	
-	public partial class ProjectPropertyGroupElement : ProjectElementContainer, IProjectPropertyGroupElement {
+	public partial class ProjectPropertyGroupElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectPropertyGroupElement DefaultInstance = GetDefaultTemplate();
 	
@@ -5141,10 +5120,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectItemGroupElement : IProjectElementContainer {
-	}
-	
-	public partial class ProjectItemGroupElement : ProjectElementContainer, IProjectItemGroupElement {
+	public partial class ProjectItemGroupElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectItemGroupElement DefaultInstance = GetDefaultTemplate();
 	
@@ -5865,10 +5841,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectChooseElement : IProjectElementContainer {
-	}
-	
-	public partial class ProjectChooseElement : ProjectElementContainer, IProjectChooseElement {
+	public partial class ProjectChooseElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectChooseElement DefaultInstance = GetDefaultTemplate();
 	
@@ -6589,10 +6562,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectOtherwiseElement : IProjectElementContainer {
-	}
-	
-	public partial class ProjectOtherwiseElement : ProjectElementContainer, IProjectOtherwiseElement {
+	public partial class ProjectOtherwiseElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectOtherwiseElement DefaultInstance = GetDefaultTemplate();
 	
@@ -7313,10 +7283,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectWhenElement : IProjectElementContainer {
-	}
-	
-	public partial class ProjectWhenElement : ProjectElementContainer, IProjectWhenElement {
+	public partial class ProjectWhenElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectWhenElement DefaultInstance = GetDefaultTemplate();
 	
@@ -8037,12 +8004,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectPropertyElement : IProjectElement {
-		System.String Name { get; }
-		System.String Value { get; }
-	}
-	
-	public partial class ProjectPropertyElement : ProjectElement, IProjectPropertyElement {
+	public partial class ProjectPropertyElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectPropertyElement DefaultInstance = GetDefaultTemplate();
 	
@@ -8700,17 +8662,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectItemElement : IProjectElementContainer {
-		System.String Exclude { get; }
-		System.String Include { get; }
-		System.String ItemType { get; }
-		System.String KeepDuplicates { get; }
-		System.String KeepMetadata { get; }
-		System.String Remove { get; }
-		System.String RemoveMetadata { get; }
-	}
-	
-	public partial class ProjectItemElement : ProjectElementContainer, IProjectItemElement {
+	public partial class ProjectItemElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectItemElement DefaultInstance = GetDefaultTemplate();
 	
@@ -9915,12 +9867,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectMetadataElement : IProjectElement {
-		System.String Name { get; }
-		System.String Value { get; }
-	}
-	
-	public partial class ProjectMetadataElement : ProjectElement, IProjectMetadataElement {
+	public partial class ProjectMetadataElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectMetadataElement DefaultInstance = GetDefaultTemplate();
 	
@@ -10578,11 +10525,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectExtensionsElement : IProjectElement {
-		System.String Content { get; }
-	}
-	
-	public partial class ProjectExtensionsElement : ProjectElement, IProjectExtensionsElement {
+	public partial class ProjectExtensionsElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectExtensionsElement DefaultInstance = GetDefaultTemplate();
 	
@@ -11175,11 +11118,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectImportElement : IProjectElement {
-		System.String Project { get; }
-	}
-	
-	public partial class ProjectImportElement : ProjectElement, IProjectImportElement {
+	public partial class ProjectImportElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectImportElement DefaultInstance = GetDefaultTemplate();
 	
@@ -11772,10 +11711,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectImportGroupElement : IProjectElementContainer {
-	}
-	
-	public partial class ProjectImportGroupElement : ProjectElementContainer, IProjectImportGroupElement {
+	public partial class ProjectImportGroupElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectImportGroupElement DefaultInstance = GetDefaultTemplate();
 	
@@ -12496,11 +12432,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectItemDefinitionElement : IProjectElementContainer {
-		System.String ItemType { get; }
-	}
-	
-	public partial class ProjectItemDefinitionElement : ProjectElementContainer, IProjectItemDefinitionElement {
+	public partial class ProjectItemDefinitionElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectItemDefinitionElement DefaultInstance = GetDefaultTemplate();
 	
@@ -13315,10 +13247,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectItemDefinitionGroupElement : IProjectElementContainer {
-	}
-	
-	public partial class ProjectItemDefinitionGroupElement : ProjectElementContainer, IProjectItemDefinitionGroupElement {
+	public partial class ProjectItemDefinitionGroupElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectItemDefinitionGroupElement DefaultInstance = GetDefaultTemplate();
 	
@@ -14039,10 +13968,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectOnErrorElement : IProjectElement {
-	}
-	
-	public partial class ProjectOnErrorElement : ProjectElement, IProjectOnErrorElement {
+	public partial class ProjectOnErrorElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectOnErrorElement DefaultInstance = GetDefaultTemplate();
 	
@@ -14545,15 +14471,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectOutputElement : IProjectElement {
-		System.Boolean IsOutputItem { get; }
-		System.Boolean IsOutputProperty { get; }
-		System.String ItemType { get; }
-		System.String PropertyName { get; }
-		System.String TaskParameter { get; }
-	}
-	
-	public partial class ProjectOutputElement : ProjectElement, IProjectOutputElement {
+	public partial class ProjectOutputElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectOutputElement DefaultInstance = GetDefaultTemplate();
 	
@@ -15406,18 +15324,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectTargetElement : IProjectElementContainer {
-		System.String AfterTargets { get; }
-		System.String BeforeTargets { get; }
-		System.String DependsOnTargets { get; }
-		System.String Inputs { get; }
-		System.String KeepDuplicateOutputs { get; }
-		System.String Name { get; }
-		System.String Outputs { get; }
-		System.String Returns { get; }
-	}
-	
-	public partial class ProjectTargetElement : ProjectElementContainer, IProjectTargetElement {
+	public partial class ProjectTargetElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTargetElement DefaultInstance = GetDefaultTemplate();
 	
@@ -16687,14 +16594,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectTaskElement : IProjectElementContainer {
-		System.String ContinueOnError { get; }
-		System.String MSBuildArchitecture { get; }
-		System.String MSBuildRuntime { get; }
-		System.String Name { get; }
-	}
-	
-	public partial class ProjectTaskElement : ProjectElementContainer, IProjectTaskElement {
+	public partial class ProjectTaskElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTaskElement DefaultInstance = GetDefaultTemplate();
 	
@@ -17704,12 +17604,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectUsingTaskBodyElement : IProjectElement {
-		System.String Evaluate { get; }
-		System.String TaskBody { get; }
-	}
-	
-	public partial class ProjectUsingTaskBodyElement : ProjectElement, IProjectUsingTaskBodyElement {
+	public partial class ProjectUsingTaskBodyElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectUsingTaskBodyElement DefaultInstance = GetDefaultTemplate();
 	
@@ -18367,16 +18262,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectUsingTaskElement : IProjectElementContainer {
-		System.String Architecture { get; }
-		System.String AssemblyFile { get; }
-		System.String AssemblyName { get; }
-		System.String Runtime { get; }
-		System.String TaskFactory { get; }
-		System.String TaskName { get; }
-	}
-	
-	public partial class ProjectUsingTaskElement : ProjectElementContainer, IProjectUsingTaskElement {
+	public partial class ProjectUsingTaskElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectUsingTaskElement DefaultInstance = GetDefaultTemplate();
 	
@@ -19516,14 +19402,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IProjectUsingTaskParameterElement : IProjectElement {
-		System.String Name { get; }
-		System.String Output { get; }
-		System.String ParameterType { get; }
-		System.String Required { get; }
-	}
-	
-	public partial class ProjectUsingTaskParameterElement : ProjectElement, IProjectUsingTaskParameterElement {
+	public partial class ProjectUsingTaskParameterElement : ProjectElement {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectUsingTaskParameterElement DefaultInstance = GetDefaultTemplate();
 	
@@ -20311,10 +20190,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IUsingTaskParameterGroupElement : IProjectElementContainer {
-	}
-	
-	public partial class UsingTaskParameterGroupElement : ProjectElementContainer, IUsingTaskParameterGroupElement {
+	public partial class UsingTaskParameterGroupElement : ProjectElementContainer {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly UsingTaskParameterGroupElement DefaultInstance = GetDefaultTemplate();
 	

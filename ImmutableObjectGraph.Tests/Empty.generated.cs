@@ -13,10 +13,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IEmpty {
-	}
-	
-	public partial class Empty : IEmpty {
+	public partial class Empty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Empty DefaultInstance = GetDefaultTemplate();
 		
@@ -100,10 +97,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IEmptyDerived : IEmpty {
-	}
-	
-	public partial class EmptyDerived : Empty, IEmptyDerived {
+	public partial class EmptyDerived : Empty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly EmptyDerived DefaultInstance = GetDefaultTemplate();
 	
@@ -155,11 +149,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface INotSoEmptyDerived : IEmpty {
-		System.Boolean OneField { get; }
-	}
-	
-	public partial class NotSoEmptyDerived : Empty, INotSoEmptyDerived {
+	public partial class NotSoEmptyDerived : Empty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly NotSoEmptyDerived DefaultInstance = GetDefaultTemplate();
 	
@@ -302,11 +292,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface INonEmptyBase {
-		System.Boolean OneField { get; }
-	}
-	
-	public partial class NonEmptyBase : INonEmptyBase {
+	public partial class NonEmptyBase {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly NonEmptyBase DefaultInstance = GetDefaultTemplate();
 		
@@ -468,10 +454,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IEmptyDerivedFromNonEmptyBase : INonEmptyBase {
-	}
-	
-	public partial class EmptyDerivedFromNonEmptyBase : NonEmptyBase, IEmptyDerivedFromNonEmptyBase {
+	public partial class EmptyDerivedFromNonEmptyBase : NonEmptyBase {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly EmptyDerivedFromNonEmptyBase DefaultInstance = GetDefaultTemplate();
 	
@@ -585,11 +568,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IAbstractNonEmpty {
-		System.Boolean OneField { get; }
-	}
-	
-	public abstract partial class AbstractNonEmpty : IAbstractNonEmpty {
+	public abstract partial class AbstractNonEmpty {
 		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
@@ -686,10 +665,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public interface IEmptyDerivedFromAbstract : IAbstractNonEmpty {
-	}
-	
-	public partial class EmptyDerivedFromAbstract : AbstractNonEmpty, IEmptyDerivedFromAbstract {
+	public partial class EmptyDerivedFromAbstract : AbstractNonEmpty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly EmptyDerivedFromAbstract DefaultInstance = GetDefaultTemplate();
 	

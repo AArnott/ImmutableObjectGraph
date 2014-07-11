@@ -13,12 +13,7 @@ namespace Demo {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IFruit {
-		System.String Color { get; }
-		System.Int32 SkinThickness { get; }
-	}
-	
-	public partial class Fruit : IFruit {
+	public partial class Fruit {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Fruit DefaultInstance = GetDefaultTemplate();
 		

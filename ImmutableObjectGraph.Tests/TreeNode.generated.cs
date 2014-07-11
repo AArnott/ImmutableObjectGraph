@@ -13,15 +13,7 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface ITreeNode {
-		System.String Caption { get; }
-		System.String FilePath { get; }
-		System.Boolean Visible { get; }
-		System.Collections.Immutable.ImmutableHashSet<System.String> Attributes { get; }
-		System.Collections.Immutable.ImmutableList<TreeNode> Children { get; }
-	}
-	
-	public partial class TreeNode : ITreeNode, System.Collections.Generic.IEnumerable<TreeNode>, IRecursiveParentWithOrderedChildren, IRecursiveType {
+	public partial class TreeNode : System.Collections.Generic.IEnumerable<TreeNode>, IRecursiveParentWithOrderedChildren, IRecursiveType {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly TreeNode DefaultInstance = GetDefaultTemplate();
 		

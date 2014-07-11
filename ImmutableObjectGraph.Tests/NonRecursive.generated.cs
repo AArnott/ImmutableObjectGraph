@@ -13,10 +13,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public interface IRootRecursive {
-	}
-	
-	public abstract partial class RootRecursive : IRootRecursive, IRecursiveType {
+	public abstract partial class RootRecursive : IRecursiveType {
 		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
@@ -75,11 +72,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		}
 	}
 	
-	public interface IRecursiveContainer : IRootRecursive {
-		System.Collections.Immutable.ImmutableList<RootRecursive> Children { get; }
-	}
-	
-	public abstract partial class RecursiveContainer : RootRecursive, IRecursiveContainer, System.Collections.Generic.IEnumerable<RootRecursive>, IRecursiveParentWithOrderedChildren {
+	public abstract partial class RecursiveContainer : RootRecursive, System.Collections.Generic.IEnumerable<RootRecursive>, IRecursiveParentWithOrderedChildren {
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableList<RootRecursive> children;
@@ -662,11 +655,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		}
 	}
 	
-	public interface IContainerOfNonRecursiveCollection : IRootRecursive {
-		System.Collections.Immutable.ImmutableList<NonRecursiveElement> Metadata { get; }
-	}
-	
-	public partial class ContainerOfNonRecursiveCollection : RootRecursive, IContainerOfNonRecursiveCollection {
+	public partial class ContainerOfNonRecursiveCollection : RootRecursive {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ContainerOfNonRecursiveCollection DefaultInstance = GetDefaultTemplate();
 	
@@ -854,12 +843,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		}
 	}
 	
-	public interface INonRecursiveElement : IRootRecursive {
-		System.String Name { get; }
-		System.String Value { get; }
-	}
-	
-	public partial class NonRecursiveElement : RootRecursive, INonRecursiveElement {
+	public partial class NonRecursiveElement : RootRecursive {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly NonRecursiveElement DefaultInstance = GetDefaultTemplate();
 	

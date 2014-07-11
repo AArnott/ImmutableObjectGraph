@@ -3,7 +3,7 @@
 <#
 	this.Namespace = "Demo";
 #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc" #>
 <#+
 	class Message {
 		Contact author;
