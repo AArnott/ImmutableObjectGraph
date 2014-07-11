@@ -121,39 +121,6 @@ namespace ImmutableObjectGraph.Tests {
 				namespaceName: namespaceName,
 				value: value);
 		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private XmlNode immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String localName;
-		
-			internal Builder(XmlNode immutable) {
-				this.immutable = immutable;
-		
-				this.localName = immutable.LocalName;
-			}
-		
-			public System.String LocalName {
-				get {
-					return this.localName;
-				}
-		
-				set {
-					this.localName = value;
-				}
-			}
-		
-			public XmlNode ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.LocalName));
-			}
-		}
 	
 		int IRecursiveType.Identity {
 			get { return this.Identity; }
@@ -846,59 +813,6 @@ namespace ImmutableObjectGraph.Tests {
 					children: Optional.For(children.GetValueOrDefault(this.Children)),
 					content: content);
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : XmlNode.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private XmlElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String namespaceName;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>.Builder> children;
-		
-			internal Builder(XmlElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.namespaceName = immutable.NamespaceName;
-			}
-		
-			public System.String NamespaceName {
-				get {
-					return this.namespaceName;
-				}
-		
-				set {
-					this.namespaceName = value;
-				}
-			}
-		
-			public System.Collections.Immutable.ImmutableList<XmlNode>.Builder Children {
-				get {
-					if (!this.children.IsDefined) {
-						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
-					}
-		
-					return this.children.Value;
-				}
-		
-				set {
-					this.children = value;
-				}
-			}
-		
-			public new XmlElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.LocalName),
-					ImmutableObjectGraph.Optional.For(this.NamespaceName),
-					ImmutableObjectGraph.Optional.For(children));
-			}
-		}
 	
 		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
 			get { return this.Children; }
@@ -1151,43 +1065,6 @@ namespace ImmutableObjectGraph.Tests {
 				children: Optional.For(this.Children),
 				identity: this.Identity);
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : XmlElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private XmlElementWithContent immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String content;
-		
-			internal Builder(XmlElementWithContent immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.content = immutable.Content;
-			}
-		
-			public System.String Content {
-				get {
-					return this.content;
-				}
-		
-				set {
-					this.content = value;
-				}
-			}
-		
-			public new XmlElementWithContent ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.LocalName),
-					ImmutableObjectGraph.Optional.For(this.NamespaceName),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.Content));
-			}
-		}
 	}
 	
 	public partial class XmlAttribute : XmlNode {
@@ -1352,55 +1229,6 @@ namespace ImmutableObjectGraph.Tests {
 					namespaceName: Optional.For(namespaceName.GetValueOrDefault(DefaultInstance.NamespaceName)),
 					value: Optional.For(value.GetValueOrDefault(DefaultInstance.Value)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : XmlNode.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private XmlAttribute immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String namespaceName;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String value;
-		
-			internal Builder(XmlAttribute immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.namespaceName = immutable.NamespaceName;
-				this.value = immutable.Value;
-			}
-		
-			public System.String NamespaceName {
-				get {
-					return this.namespaceName;
-				}
-		
-				set {
-					this.namespaceName = value;
-				}
-			}
-		
-			public System.String Value {
-				get {
-					return this.value;
-				}
-		
-				set {
-					this.value = value;
-				}
-			}
-		
-			public new XmlAttribute ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.LocalName),
-					ImmutableObjectGraph.Optional.For(this.NamespaceName),
-					ImmutableObjectGraph.Optional.For(this.Value));
-			}
 		}
 	}
 }

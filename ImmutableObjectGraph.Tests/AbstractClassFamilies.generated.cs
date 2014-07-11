@@ -110,54 +110,6 @@ namespace ImmutableObjectGraph.Tests {
 				concreteField1: concreteField1,
 				concreteField2: concreteField2);
 		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private Abstract1 immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 abstract1Field1;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 abstract1Field2;
-		
-			internal Builder(Abstract1 immutable) {
-				this.immutable = immutable;
-		
-				this.abstract1Field1 = immutable.Abstract1Field1;
-				this.abstract1Field2 = immutable.Abstract1Field2;
-			}
-		
-			public System.Int32 Abstract1Field1 {
-				get {
-					return this.abstract1Field1;
-				}
-		
-				set {
-					this.abstract1Field1 = value;
-				}
-			}
-		
-			public System.Int32 Abstract1Field2 {
-				get {
-					return this.abstract1Field2;
-				}
-		
-				set {
-					this.abstract1Field2 = value;
-				}
-			}
-		
-			public Abstract1 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Abstract1Field1),
-					ImmutableObjectGraph.Optional.For(this.Abstract1Field2));
-			}
-		}
 	}
 	
 	public abstract partial class Abstract2 : Abstract1 {
@@ -271,56 +223,6 @@ namespace ImmutableObjectGraph.Tests {
 					abstract2Field2: Optional.For(abstract2Field2.GetValueOrDefault(this.Abstract2Field2)),
 					concreteField1: concreteField1,
 					concreteField2: concreteField2);
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : Abstract1.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private Abstract2 immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 abstract2Field1;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 abstract2Field2;
-		
-			internal Builder(Abstract2 immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.abstract2Field1 = immutable.Abstract2Field1;
-				this.abstract2Field2 = immutable.Abstract2Field2;
-			}
-		
-			public System.Int32 Abstract2Field1 {
-				get {
-					return this.abstract2Field1;
-				}
-		
-				set {
-					this.abstract2Field1 = value;
-				}
-			}
-		
-			public System.Int32 Abstract2Field2 {
-				get {
-					return this.abstract2Field2;
-				}
-		
-				set {
-					this.abstract2Field2 = value;
-				}
-			}
-		
-			public new Abstract2 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Abstract1Field1),
-					ImmutableObjectGraph.Optional.For(this.Abstract1Field2),
-					ImmutableObjectGraph.Optional.For(this.Abstract2Field1),
-					ImmutableObjectGraph.Optional.For(this.Abstract2Field2));
-			}
 		}
 	}
 	
@@ -564,58 +466,6 @@ namespace ImmutableObjectGraph.Tests {
 					concreteField1: Optional.For(concreteField1.GetValueOrDefault(DefaultInstance.ConcreteField1)),
 					concreteField2: Optional.For(concreteField2.GetValueOrDefault(DefaultInstance.ConcreteField2)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : Abstract2.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ConcreteOf2Abstracts immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 concreteField1;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 concreteField2;
-		
-			internal Builder(ConcreteOf2Abstracts immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.concreteField1 = immutable.ConcreteField1;
-				this.concreteField2 = immutable.ConcreteField2;
-			}
-		
-			public System.Int32 ConcreteField1 {
-				get {
-					return this.concreteField1;
-				}
-		
-				set {
-					this.concreteField1 = value;
-				}
-			}
-		
-			public System.Int32 ConcreteField2 {
-				get {
-					return this.concreteField2;
-				}
-		
-				set {
-					this.concreteField2 = value;
-				}
-			}
-		
-			public new ConcreteOf2Abstracts ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Abstract1Field1),
-					ImmutableObjectGraph.Optional.For(this.Abstract1Field2),
-					ImmutableObjectGraph.Optional.For(this.Abstract2Field1),
-					ImmutableObjectGraph.Optional.For(this.Abstract2Field2),
-					ImmutableObjectGraph.Optional.For(this.ConcreteField1),
-					ImmutableObjectGraph.Optional.For(this.ConcreteField2));
-			}
 		}
 	}
 }

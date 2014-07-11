@@ -180,54 +180,6 @@ namespace ImmutableObjectGraph.Tests {
 				l2Field1: l2Field1,
 				l2Field2: l2Field2);
 		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ReqAndHierL1 immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l1Field1;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l1Field2;
-		
-			internal Builder(ReqAndHierL1 immutable) {
-				this.immutable = immutable;
-		
-				this.l1Field1 = immutable.L1Field1;
-				this.l1Field2 = immutable.L1Field2;
-			}
-		
-			public System.String L1Field1 {
-				get {
-					return this.l1Field1;
-				}
-		
-				set {
-					this.l1Field1 = value;
-				}
-			}
-		
-			public System.String L1Field2 {
-				get {
-					return this.l1Field2;
-				}
-		
-				set {
-					this.l1Field2 = value;
-				}
-			}
-		
-			public ReqAndHierL1 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.L1Field1),
-					ImmutableObjectGraph.Optional.For(this.L1Field2));
-			}
-		}
 	}
 	
 	public partial class ReqAndHierL2 : ReqAndHierL1 {
@@ -422,56 +374,6 @@ namespace ImmutableObjectGraph.Tests {
 				l1Field1: Optional.For(this.L1Field1),
 				l1Field2: this.L1Field2,
 				identity: this.Identity);
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ReqAndHierL1.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ReqAndHierL2 immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l2Field1;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String l2Field2;
-		
-			internal Builder(ReqAndHierL2 immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.l2Field1 = immutable.L2Field1;
-				this.l2Field2 = immutable.L2Field2;
-			}
-		
-			public System.String L2Field1 {
-				get {
-					return this.l2Field1;
-				}
-		
-				set {
-					this.l2Field1 = value;
-				}
-			}
-		
-			public System.String L2Field2 {
-				get {
-					return this.l2Field2;
-				}
-		
-				set {
-					this.l2Field2 = value;
-				}
-			}
-		
-			public new ReqAndHierL2 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.L1Field1),
-					ImmutableObjectGraph.Optional.For(this.L1Field2),
-					ImmutableObjectGraph.Optional.For(this.L2Field1),
-					ImmutableObjectGraph.Optional.For(this.L2Field2));
-			}
 		}
 	}
 }

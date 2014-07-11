@@ -1,6 +1,7 @@
 ﻿<#@ template debug="true" language="C#" #>
 <#@ Output Extension=".generated.cs" #>
 <#
+	this.DefineBuilders = true;
 	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc" #>

@@ -604,43 +604,6 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		public System.Collections.Immutable.ImmutableStack<RootRecursive> GetSpine(RootRecursive descendent) {
 			return this.GetSpine(descendent.Identity);
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private RecursiveContainer immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<RootRecursive>.Builder> children;
-		
-			internal Builder(RecursiveContainer immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public System.Collections.Immutable.ImmutableList<RootRecursive>.Builder Children {
-				get {
-					if (!this.children.IsDefined) {
-						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
-					}
-		
-					return this.children.Value;
-				}
-		
-				set {
-					this.children = value;
-				}
-			}
-		
-			public new RecursiveContainer ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(children));
-			}
-		}
 	
 		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
 			get { return this.Children; }
@@ -804,43 +767,6 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 					metadata: Optional.For(metadata.GetValueOrDefault(DefaultInstance.Metadata)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ContainerOfNonRecursiveCollection immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<NonRecursiveElement>.Builder> metadata;
-		
-			internal Builder(ContainerOfNonRecursiveCollection immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public System.Collections.Immutable.ImmutableList<NonRecursiveElement>.Builder Metadata {
-				get {
-					if (!this.metadata.IsDefined) {
-						this.metadata = this.immutable.metadata != null ? this.immutable.metadata.ToBuilder() : null;
-					}
-		
-					return this.metadata.Value;
-				}
-		
-				set {
-					this.metadata = value;
-				}
-			}
-		
-			public new ContainerOfNonRecursiveCollection ToImmutable() {
-				var metadata = this.metadata.IsDefined ? (this.metadata.Value != null ? this.metadata.Value.ToImmutable() : null) : this.immutable.Metadata;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(metadata));
-			}
-		}
 	}
 	
 	public partial class NonRecursiveElement : RootRecursive {
@@ -977,54 +903,6 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 					name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
 					value: Optional.For(value.GetValueOrDefault(DefaultInstance.Value)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private NonRecursiveElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String name;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String value;
-		
-			internal Builder(NonRecursiveElement immutable) {
-				this.immutable = immutable;
-		
-				this.name = immutable.Name;
-				this.value = immutable.Value;
-			}
-		
-			public System.String Name {
-				get {
-					return this.name;
-				}
-		
-				set {
-					this.name = value;
-				}
-			}
-		
-			public System.String Value {
-				get {
-					return this.value;
-				}
-		
-				set {
-					this.value = value;
-				}
-			}
-		
-			public new NonRecursiveElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Name),
-					ImmutableObjectGraph.Optional.For(this.Value));
-			}
 		}
 	}
 }

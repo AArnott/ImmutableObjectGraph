@@ -712,54 +712,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: this.Identity,
 				children: children);
 		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String condition;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String label;
-		
-			internal Builder(ProjectElement immutable) {
-				this.immutable = immutable;
-		
-				this.condition = immutable.Condition;
-				this.label = immutable.Label;
-			}
-		
-			public System.String Condition {
-				get {
-					return this.condition;
-				}
-		
-				set {
-					this.condition = value;
-				}
-			}
-		
-			public System.String Label {
-				get {
-					return this.label;
-				}
-		
-				set {
-					this.label = value;
-				}
-			}
-		
-			public ProjectElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label));
-			}
-		}
 	
 		int IRecursiveType.Identity {
 			get { return this.Identity; }
@@ -2563,45 +2515,6 @@ namespace ImmutableObjectGraph.Tests {
 			return base.ToUsingTaskParameterGroupElement(
 					children: Optional.For(children.GetValueOrDefault(this.Children)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectElementContainer immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>.Builder> children;
-		
-			internal Builder(ProjectElementContainer immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public System.Collections.Immutable.ImmutableList<ProjectElement>.Builder Children {
-				get {
-					if (!this.children.IsDefined) {
-						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
-					}
-		
-					return this.children.Value;
-				}
-		
-				set {
-					this.children = value;
-				}
-			}
-		
-			public new ProjectElementContainer ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(children));
-			}
-		}
 	
 		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
 			get { return this.Children; }
@@ -3697,118 +3610,6 @@ namespace ImmutableObjectGraph.Tests {
 					treatAsLocalProperty: Optional.For(treatAsLocalProperty.GetValueOrDefault(DefaultInstance.TreatAsLocalProperty)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectRootElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String fullPath;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Text.Encoding encoding;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String toolsVersion;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String defaultTargets;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String initialTargets;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Boolean treatAsLocalProperty;
-		
-			internal Builder(ProjectRootElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.fullPath = immutable.FullPath;
-				this.encoding = immutable.Encoding;
-				this.toolsVersion = immutable.ToolsVersion;
-				this.defaultTargets = immutable.DefaultTargets;
-				this.initialTargets = immutable.InitialTargets;
-				this.treatAsLocalProperty = immutable.TreatAsLocalProperty;
-			}
-		
-			public System.String FullPath {
-				get {
-					return this.fullPath;
-				}
-		
-				set {
-					this.fullPath = value;
-				}
-			}
-		
-			public System.Text.Encoding Encoding {
-				get {
-					return this.encoding;
-				}
-		
-				set {
-					this.encoding = value;
-				}
-			}
-		
-			public System.String ToolsVersion {
-				get {
-					return this.toolsVersion;
-				}
-		
-				set {
-					this.toolsVersion = value;
-				}
-			}
-		
-			public System.String DefaultTargets {
-				get {
-					return this.defaultTargets;
-				}
-		
-				set {
-					this.defaultTargets = value;
-				}
-			}
-		
-			public System.String InitialTargets {
-				get {
-					return this.initialTargets;
-				}
-		
-				set {
-					this.initialTargets = value;
-				}
-			}
-		
-			public System.Boolean TreatAsLocalProperty {
-				get {
-					return this.treatAsLocalProperty;
-				}
-		
-				set {
-					this.treatAsLocalProperty = value;
-				}
-			}
-		
-			public new ProjectRootElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.FullPath),
-					ImmutableObjectGraph.Optional.For(this.Encoding),
-					ImmutableObjectGraph.Optional.For(this.ToolsVersion),
-					ImmutableObjectGraph.Optional.For(this.DefaultTargets),
-					ImmutableObjectGraph.Optional.For(this.InitialTargets),
-					ImmutableObjectGraph.Optional.For(this.TreatAsLocalProperty));
-			}
-		}
 	}
 	
 	public partial struct RootedProjectRootElement : System.IEquatable<RootedProjectRootElement>, IRecursiveParent {
@@ -4595,25 +4396,6 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return DefaultInstance;
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectPropertyGroupElement immutable;
-		
-			internal Builder(ProjectPropertyGroupElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectPropertyGroupElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
-		}
 	}
 	
 	public partial struct RootedProjectPropertyGroupElement : System.IEquatable<RootedProjectPropertyGroupElement>, IRecursiveParent {
@@ -5315,25 +5097,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return DefaultInstance;
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectItemGroupElement immutable;
-		
-			internal Builder(ProjectItemGroupElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectItemGroupElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
 		}
 	}
 	
@@ -6037,25 +5800,6 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return DefaultInstance;
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectChooseElement immutable;
-		
-			internal Builder(ProjectChooseElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectChooseElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
-		}
 	}
 	
 	public partial struct RootedProjectChooseElement : System.IEquatable<RootedProjectChooseElement>, IRecursiveParent {
@@ -6758,25 +6502,6 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return DefaultInstance;
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectOtherwiseElement immutable;
-		
-			internal Builder(ProjectOtherwiseElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectOtherwiseElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
-		}
 	}
 	
 	public partial struct RootedProjectOtherwiseElement : System.IEquatable<RootedProjectOtherwiseElement>, IRecursiveParent {
@@ -7478,25 +7203,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return DefaultInstance;
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectWhenElement immutable;
-		
-			internal Builder(ProjectWhenElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectWhenElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
 		}
 	}
 	
@@ -8215,56 +7921,6 @@ namespace ImmutableObjectGraph.Tests {
 					name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
 					value: Optional.For(value.GetValueOrDefault(DefaultInstance.Value)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectPropertyElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String name;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String value;
-		
-			internal Builder(ProjectPropertyElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.name = immutable.Name;
-				this.value = immutable.Value;
-			}
-		
-			public System.String Name {
-				get {
-					return this.name;
-				}
-		
-				set {
-					this.name = value;
-				}
-			}
-		
-			public System.String Value {
-				get {
-					return this.value;
-				}
-		
-				set {
-					this.value = value;
-				}
-			}
-		
-			public new ProjectPropertyElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(this.Name),
-					ImmutableObjectGraph.Optional.For(this.Value));
-			}
 		}
 	}
 	
@@ -9136,133 +8792,6 @@ namespace ImmutableObjectGraph.Tests {
 					removeMetadata: Optional.For(removeMetadata.GetValueOrDefault(DefaultInstance.RemoveMetadata)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectItemElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String exclude;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String include;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String itemType;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String keepDuplicates;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String keepMetadata;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String remove;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String removeMetadata;
-		
-			internal Builder(ProjectItemElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.exclude = immutable.Exclude;
-				this.include = immutable.Include;
-				this.itemType = immutable.ItemType;
-				this.keepDuplicates = immutable.KeepDuplicates;
-				this.keepMetadata = immutable.KeepMetadata;
-				this.remove = immutable.Remove;
-				this.removeMetadata = immutable.RemoveMetadata;
-			}
-		
-			public System.String Exclude {
-				get {
-					return this.exclude;
-				}
-		
-				set {
-					this.exclude = value;
-				}
-			}
-		
-			public System.String Include {
-				get {
-					return this.include;
-				}
-		
-				set {
-					this.include = value;
-				}
-			}
-		
-			public System.String ItemType {
-				get {
-					return this.itemType;
-				}
-		
-				set {
-					this.itemType = value;
-				}
-			}
-		
-			public System.String KeepDuplicates {
-				get {
-					return this.keepDuplicates;
-				}
-		
-				set {
-					this.keepDuplicates = value;
-				}
-			}
-		
-			public System.String KeepMetadata {
-				get {
-					return this.keepMetadata;
-				}
-		
-				set {
-					this.keepMetadata = value;
-				}
-			}
-		
-			public System.String Remove {
-				get {
-					return this.remove;
-				}
-		
-				set {
-					this.remove = value;
-				}
-			}
-		
-			public System.String RemoveMetadata {
-				get {
-					return this.removeMetadata;
-				}
-		
-				set {
-					this.removeMetadata = value;
-				}
-			}
-		
-			public new ProjectItemElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.Exclude),
-					ImmutableObjectGraph.Optional.For(this.Include),
-					ImmutableObjectGraph.Optional.For(this.ItemType),
-					ImmutableObjectGraph.Optional.For(this.KeepDuplicates),
-					ImmutableObjectGraph.Optional.For(this.KeepMetadata),
-					ImmutableObjectGraph.Optional.For(this.Remove),
-					ImmutableObjectGraph.Optional.For(this.RemoveMetadata));
-			}
-		}
 	}
 	
 	public partial struct RootedProjectItemElement : System.IEquatable<RootedProjectItemElement>, IRecursiveParent {
@@ -10079,56 +9608,6 @@ namespace ImmutableObjectGraph.Tests {
 					value: Optional.For(value.GetValueOrDefault(DefaultInstance.Value)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectMetadataElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String name;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String value;
-		
-			internal Builder(ProjectMetadataElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.name = immutable.Name;
-				this.value = immutable.Value;
-			}
-		
-			public System.String Name {
-				get {
-					return this.name;
-				}
-		
-				set {
-					this.name = value;
-				}
-			}
-		
-			public System.String Value {
-				get {
-					return this.value;
-				}
-		
-				set {
-					this.value = value;
-				}
-			}
-		
-			public new ProjectMetadataElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(this.Name),
-					ImmutableObjectGraph.Optional.For(this.Value));
-			}
-		}
 	}
 	
 	public partial struct RootedProjectMetadataElement : System.IEquatable<RootedProjectMetadataElement>, IRecursiveType {
@@ -10701,41 +10180,6 @@ namespace ImmutableObjectGraph.Tests {
 					content: Optional.For(content.GetValueOrDefault(DefaultInstance.Content)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectExtensionsElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String content;
-		
-			internal Builder(ProjectExtensionsElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.content = immutable.Content;
-			}
-		
-			public System.String Content {
-				get {
-					return this.content;
-				}
-		
-				set {
-					this.content = value;
-				}
-			}
-		
-			public new ProjectExtensionsElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(this.Content));
-			}
-		}
 	}
 	
 	public partial struct RootedProjectExtensionsElement : System.IEquatable<RootedProjectExtensionsElement>, IRecursiveType {
@@ -11293,41 +10737,6 @@ namespace ImmutableObjectGraph.Tests {
 					label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
 					project: Optional.For(project.GetValueOrDefault(DefaultInstance.Project)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectImportElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String project;
-		
-			internal Builder(ProjectImportElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.project = immutable.Project;
-			}
-		
-			public System.String Project {
-				get {
-					return this.project;
-				}
-		
-				set {
-					this.project = value;
-				}
-			}
-		
-			public new ProjectImportElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(this.Project));
-			}
 		}
 	}
 	
@@ -11906,25 +11315,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return DefaultInstance;
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectImportGroupElement immutable;
-		
-			internal Builder(ProjectImportGroupElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectImportGroupElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
 		}
 	}
 	
@@ -12690,43 +12080,6 @@ namespace ImmutableObjectGraph.Tests {
 					itemType: Optional.For(itemType.GetValueOrDefault(DefaultInstance.ItemType)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectItemDefinitionElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String itemType;
-		
-			internal Builder(ProjectItemDefinitionElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.itemType = immutable.ItemType;
-			}
-		
-			public System.String ItemType {
-				get {
-					return this.itemType;
-				}
-		
-				set {
-					this.itemType = value;
-				}
-			}
-		
-			public new ProjectItemDefinitionElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.ItemType));
-			}
-		}
 	}
 	
 	public partial struct RootedProjectItemDefinitionElement : System.IEquatable<RootedProjectItemDefinitionElement>, IRecursiveParent {
@@ -13443,25 +12796,6 @@ namespace ImmutableObjectGraph.Tests {
 		
 			return DefaultInstance;
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectItemDefinitionGroupElement immutable;
-		
-			internal Builder(ProjectItemDefinitionGroupElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectItemDefinitionGroupElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
-		}
 	}
 	
 	public partial struct RootedProjectItemDefinitionGroupElement : System.IEquatable<RootedProjectItemDefinitionGroupElement>, IRecursiveParent {
@@ -14084,24 +13418,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return DefaultInstance;
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectOnErrorElement immutable;
-		
-			internal Builder(ProjectOnErrorElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new ProjectOnErrorElement ToImmutable() {
-				return this.immutable = this.immutable;
-			}
 		}
 	}
 	
@@ -14790,101 +14106,6 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: Optional.For(propertyName.GetValueOrDefault(DefaultInstance.PropertyName)),
 					taskParameter: Optional.For(taskParameter.GetValueOrDefault(DefaultInstance.TaskParameter)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectOutputElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Boolean isOutputItem;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Boolean isOutputProperty;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String itemType;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String propertyName;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String taskParameter;
-		
-			internal Builder(ProjectOutputElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.isOutputItem = immutable.IsOutputItem;
-				this.isOutputProperty = immutable.IsOutputProperty;
-				this.itemType = immutable.ItemType;
-				this.propertyName = immutable.PropertyName;
-				this.taskParameter = immutable.TaskParameter;
-			}
-		
-			public System.Boolean IsOutputItem {
-				get {
-					return this.isOutputItem;
-				}
-		
-				set {
-					this.isOutputItem = value;
-				}
-			}
-		
-			public System.Boolean IsOutputProperty {
-				get {
-					return this.isOutputProperty;
-				}
-		
-				set {
-					this.isOutputProperty = value;
-				}
-			}
-		
-			public System.String ItemType {
-				get {
-					return this.itemType;
-				}
-		
-				set {
-					this.itemType = value;
-				}
-			}
-		
-			public System.String PropertyName {
-				get {
-					return this.propertyName;
-				}
-		
-				set {
-					this.propertyName = value;
-				}
-			}
-		
-			public System.String TaskParameter {
-				get {
-					return this.taskParameter;
-				}
-		
-				set {
-					this.taskParameter = value;
-				}
-			}
-		
-			public new ProjectOutputElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(this.IsOutputItem),
-					ImmutableObjectGraph.Optional.For(this.IsOutputProperty),
-					ImmutableObjectGraph.Optional.For(this.ItemType),
-					ImmutableObjectGraph.Optional.For(this.PropertyName),
-					ImmutableObjectGraph.Optional.For(this.TaskParameter));
-			}
 		}
 	}
 	
@@ -15833,148 +15054,6 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: Optional.For(outputs.GetValueOrDefault(DefaultInstance.Outputs)),
 					returns: Optional.For(returns.GetValueOrDefault(DefaultInstance.Returns)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectTargetElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String afterTargets;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String beforeTargets;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String dependsOnTargets;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String inputs;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String keepDuplicateOutputs;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String name;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String outputs;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String returns;
-		
-			internal Builder(ProjectTargetElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.afterTargets = immutable.AfterTargets;
-				this.beforeTargets = immutable.BeforeTargets;
-				this.dependsOnTargets = immutable.DependsOnTargets;
-				this.inputs = immutable.Inputs;
-				this.keepDuplicateOutputs = immutable.KeepDuplicateOutputs;
-				this.name = immutable.Name;
-				this.outputs = immutable.Outputs;
-				this.returns = immutable.Returns;
-			}
-		
-			public System.String AfterTargets {
-				get {
-					return this.afterTargets;
-				}
-		
-				set {
-					this.afterTargets = value;
-				}
-			}
-		
-			public System.String BeforeTargets {
-				get {
-					return this.beforeTargets;
-				}
-		
-				set {
-					this.beforeTargets = value;
-				}
-			}
-		
-			public System.String DependsOnTargets {
-				get {
-					return this.dependsOnTargets;
-				}
-		
-				set {
-					this.dependsOnTargets = value;
-				}
-			}
-		
-			public System.String Inputs {
-				get {
-					return this.inputs;
-				}
-		
-				set {
-					this.inputs = value;
-				}
-			}
-		
-			public System.String KeepDuplicateOutputs {
-				get {
-					return this.keepDuplicateOutputs;
-				}
-		
-				set {
-					this.keepDuplicateOutputs = value;
-				}
-			}
-		
-			public System.String Name {
-				get {
-					return this.name;
-				}
-		
-				set {
-					this.name = value;
-				}
-			}
-		
-			public System.String Outputs {
-				get {
-					return this.outputs;
-				}
-		
-				set {
-					this.outputs = value;
-				}
-			}
-		
-			public System.String Returns {
-				get {
-					return this.returns;
-				}
-		
-				set {
-					this.returns = value;
-				}
-			}
-		
-			public new ProjectTargetElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.AfterTargets),
-					ImmutableObjectGraph.Optional.For(this.BeforeTargets),
-					ImmutableObjectGraph.Optional.For(this.DependsOnTargets),
-					ImmutableObjectGraph.Optional.For(this.Inputs),
-					ImmutableObjectGraph.Optional.For(this.KeepDuplicateOutputs),
-					ImmutableObjectGraph.Optional.For(this.Name),
-					ImmutableObjectGraph.Optional.For(this.Outputs),
-					ImmutableObjectGraph.Optional.For(this.Returns));
-			}
 		}
 	}
 	
@@ -16960,88 +16039,6 @@ namespace ImmutableObjectGraph.Tests {
 					name: Optional.For(name.GetValueOrDefault(DefaultInstance.Name)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectTaskElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String continueOnError;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String mSBuildArchitecture;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String mSBuildRuntime;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String name;
-		
-			internal Builder(ProjectTaskElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.continueOnError = immutable.ContinueOnError;
-				this.mSBuildArchitecture = immutable.MSBuildArchitecture;
-				this.mSBuildRuntime = immutable.MSBuildRuntime;
-				this.name = immutable.Name;
-			}
-		
-			public System.String ContinueOnError {
-				get {
-					return this.continueOnError;
-				}
-		
-				set {
-					this.continueOnError = value;
-				}
-			}
-		
-			public System.String MSBuildArchitecture {
-				get {
-					return this.mSBuildArchitecture;
-				}
-		
-				set {
-					this.mSBuildArchitecture = value;
-				}
-			}
-		
-			public System.String MSBuildRuntime {
-				get {
-					return this.mSBuildRuntime;
-				}
-		
-				set {
-					this.mSBuildRuntime = value;
-				}
-			}
-		
-			public System.String Name {
-				get {
-					return this.name;
-				}
-		
-				set {
-					this.name = value;
-				}
-			}
-		
-			public new ProjectTaskElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.ContinueOnError),
-					ImmutableObjectGraph.Optional.For(this.MSBuildArchitecture),
-					ImmutableObjectGraph.Optional.For(this.MSBuildRuntime),
-					ImmutableObjectGraph.Optional.For(this.Name));
-			}
-		}
 	}
 	
 	public partial struct RootedProjectTaskElement : System.IEquatable<RootedProjectTaskElement>, IRecursiveParent {
@@ -17815,56 +16812,6 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: Optional.For(evaluate.GetValueOrDefault(DefaultInstance.Evaluate)),
 					taskBody: Optional.For(taskBody.GetValueOrDefault(DefaultInstance.TaskBody)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectUsingTaskBodyElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String evaluate;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String taskBody;
-		
-			internal Builder(ProjectUsingTaskBodyElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.evaluate = immutable.Evaluate;
-				this.taskBody = immutable.TaskBody;
-			}
-		
-			public System.String Evaluate {
-				get {
-					return this.evaluate;
-				}
-		
-				set {
-					this.evaluate = value;
-				}
-			}
-		
-			public System.String TaskBody {
-				get {
-					return this.taskBody;
-				}
-		
-				set {
-					this.taskBody = value;
-				}
-			}
-		
-			public new ProjectUsingTaskBodyElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(this.Evaluate),
-					ImmutableObjectGraph.Optional.For(this.TaskBody));
-			}
 		}
 	}
 	
@@ -18699,118 +17646,6 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: Optional.For(taskFactory.GetValueOrDefault(DefaultInstance.TaskFactory)),
 					taskName: Optional.For(taskName.GetValueOrDefault(DefaultInstance.TaskName)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectUsingTaskElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String architecture;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String assemblyFile;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String assemblyName;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String runtime;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String taskFactory;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String taskName;
-		
-			internal Builder(ProjectUsingTaskElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.architecture = immutable.Architecture;
-				this.assemblyFile = immutable.AssemblyFile;
-				this.assemblyName = immutable.AssemblyName;
-				this.runtime = immutable.Runtime;
-				this.taskFactory = immutable.TaskFactory;
-				this.taskName = immutable.TaskName;
-			}
-		
-			public System.String Architecture {
-				get {
-					return this.architecture;
-				}
-		
-				set {
-					this.architecture = value;
-				}
-			}
-		
-			public System.String AssemblyFile {
-				get {
-					return this.assemblyFile;
-				}
-		
-				set {
-					this.assemblyFile = value;
-				}
-			}
-		
-			public System.String AssemblyName {
-				get {
-					return this.assemblyName;
-				}
-		
-				set {
-					this.assemblyName = value;
-				}
-			}
-		
-			public System.String Runtime {
-				get {
-					return this.runtime;
-				}
-		
-				set {
-					this.runtime = value;
-				}
-			}
-		
-			public System.String TaskFactory {
-				get {
-					return this.taskFactory;
-				}
-		
-				set {
-					this.taskFactory = value;
-				}
-			}
-		
-			public System.String TaskName {
-				get {
-					return this.taskName;
-				}
-		
-				set {
-					this.taskName = value;
-				}
-			}
-		
-			public new ProjectUsingTaskElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(children),
-					ImmutableObjectGraph.Optional.For(this.Architecture),
-					ImmutableObjectGraph.Optional.For(this.AssemblyFile),
-					ImmutableObjectGraph.Optional.For(this.AssemblyName),
-					ImmutableObjectGraph.Optional.For(this.Runtime),
-					ImmutableObjectGraph.Optional.For(this.TaskFactory),
-					ImmutableObjectGraph.Optional.For(this.TaskName));
-			}
 		}
 	}
 	
@@ -19686,86 +18521,6 @@ namespace ImmutableObjectGraph.Tests {
 					required: Optional.For(required.GetValueOrDefault(DefaultInstance.Required)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElement.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private ProjectUsingTaskParameterElement immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String name;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String output;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String parameterType;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String required;
-		
-			internal Builder(ProjectUsingTaskParameterElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.name = immutable.Name;
-				this.output = immutable.Output;
-				this.parameterType = immutable.ParameterType;
-				this.required = immutable.Required;
-			}
-		
-			public System.String Name {
-				get {
-					return this.name;
-				}
-		
-				set {
-					this.name = value;
-				}
-			}
-		
-			public System.String Output {
-				get {
-					return this.output;
-				}
-		
-				set {
-					this.output = value;
-				}
-			}
-		
-			public System.String ParameterType {
-				get {
-					return this.parameterType;
-				}
-		
-				set {
-					this.parameterType = value;
-				}
-			}
-		
-			public System.String Required {
-				get {
-					return this.required;
-				}
-		
-				set {
-					this.required = value;
-				}
-			}
-		
-			public new ProjectUsingTaskParameterElement ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Condition),
-					ImmutableObjectGraph.Optional.For(this.Label),
-					ImmutableObjectGraph.Optional.For(this.Name),
-					ImmutableObjectGraph.Optional.For(this.Output),
-					ImmutableObjectGraph.Optional.For(this.ParameterType),
-					ImmutableObjectGraph.Optional.For(this.Required));
-			}
-		}
 	}
 	
 	public partial struct RootedProjectUsingTaskParameterElement : System.IEquatable<RootedProjectUsingTaskParameterElement>, IRecursiveType {
@@ -20385,25 +19140,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return DefaultInstance;
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : ProjectElementContainer.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private UsingTaskParameterGroupElement immutable;
-		
-			internal Builder(UsingTaskParameterGroupElement immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new UsingTaskParameterGroupElement ToImmutable() {
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable;
-			}
 		}
 	}
 	

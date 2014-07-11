@@ -257,39 +257,6 @@ namespace ImmutableObjectGraph.Tests {
 			return Empty.CreateWithIdentity(
 				identity: this.Identity);
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private NotSoEmptyDerived immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Boolean oneField;
-		
-			internal Builder(NotSoEmptyDerived immutable) {
-				this.immutable = immutable;
-		
-				this.oneField = immutable.OneField;
-			}
-		
-			public System.Boolean OneField {
-				get {
-					return this.oneField;
-				}
-		
-				set {
-					this.oneField = value;
-				}
-			}
-		
-			public new NotSoEmptyDerived ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.OneField));
-			}
-		}
 	}
 	
 	public partial class NonEmptyBase {
@@ -419,39 +386,6 @@ namespace ImmutableObjectGraph.Tests {
 				oneField: Optional.For(this.OneField),
 				identity: this.Identity);
 		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private NonEmptyBase immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Boolean oneField;
-		
-			internal Builder(NonEmptyBase immutable) {
-				this.immutable = immutable;
-		
-				this.oneField = immutable.OneField;
-			}
-		
-			public System.Boolean OneField {
-				get {
-					return this.oneField;
-				}
-		
-				set {
-					this.oneField = value;
-				}
-			}
-		
-			public NonEmptyBase ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.OneField));
-			}
-		}
 	}
 	
 	public partial class EmptyDerivedFromNonEmptyBase : NonEmptyBase {
@@ -548,24 +482,6 @@ namespace ImmutableObjectGraph.Tests {
 				oneField: Optional.For(this.OneField),
 				identity: this.Identity);
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : NonEmptyBase.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private EmptyDerivedFromNonEmptyBase immutable;
-		
-			internal Builder(EmptyDerivedFromNonEmptyBase immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new EmptyDerivedFromNonEmptyBase ToImmutable() {
-				return this.immutable = this.immutable;
-			}
-		}
 	}
 	
 	public abstract partial class AbstractNonEmpty {
@@ -629,39 +545,6 @@ namespace ImmutableObjectGraph.Tests {
 			return EmptyDerivedFromAbstract.CreateWithIdentity(
 				oneField: Optional.For(this.OneField),
 				identity: this.Identity);
-		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private AbstractNonEmpty immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Boolean oneField;
-		
-			internal Builder(AbstractNonEmpty immutable) {
-				this.immutable = immutable;
-		
-				this.oneField = immutable.OneField;
-			}
-		
-			public System.Boolean OneField {
-				get {
-					return this.oneField;
-				}
-		
-				set {
-					this.oneField = value;
-				}
-			}
-		
-			public AbstractNonEmpty ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.OneField));
-			}
 		}
 	}
 	
@@ -752,24 +635,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return DefaultInstance;
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : AbstractNonEmpty.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private EmptyDerivedFromAbstract immutable;
-		
-			internal Builder(EmptyDerivedFromAbstract immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public new EmptyDerivedFromAbstract ToImmutable() {
-				return this.immutable = this.immutable;
-			}
 		}
 	}
 }

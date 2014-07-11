@@ -13,14 +13,17 @@
 <#@ Import namespace="System.Text" #>
 <#@ Import namespace="System.Data.Entity.Design.PluralizationServices" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt.inc" #>
+<# if (this.DefineInterfaces) { #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt.inc" #>
+<# } #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt.inc" #>
+<# if (this.DefineBuilders) { #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt.inc" #>
-<#
+<# }
 	this.PluralService = PluralizationService.CreateService(CultureInfo.CurrentCulture);
 #>
 // ------------------------------------------------------------------------------
@@ -47,7 +50,7 @@ namespace <#= this.Namespace #> {
 			baseTypes.Add(templateType.Ancestor.TypeName);
 		}
 
-		if (this.DefineInterface) {
+		if (this.DefineInterfaces) {
 			baseTypes.Add("I" + templateType.TypeName);
 		}
 
@@ -343,6 +346,10 @@ if (!templateType.IsAbstract) { #>
 }
 
 <#+
+	public bool DefineInterfaces { get; set; }
+
+	public bool DefineBuilders { get; set; }
+
 	public PluralizationService PluralService { get; set; }
 
 	public string Namespace { get; set; }

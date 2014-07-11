@@ -180,39 +180,6 @@ namespace ImmutableObjectGraph.Tests {
 				field2: field2,
 				field3: field3);
 		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private A immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field1;
-		
-			internal Builder(A immutable) {
-				this.immutable = immutable;
-		
-				this.field1 = immutable.Field1;
-			}
-		
-			public System.Int32 Field1 {
-				get {
-					return this.field1;
-				}
-		
-				set {
-					this.field1 = value;
-				}
-			}
-		
-			public A ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1));
-			}
-		}
 	}
 	
 	public partial class B : A {
@@ -400,40 +367,6 @@ namespace ImmutableObjectGraph.Tests {
 					field2: Optional.For(field2.GetValueOrDefault(this.Field2)),
 					field3: field3);
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : A.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private B immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field2;
-		
-			internal Builder(B immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.field2 = immutable.Field2;
-			}
-		
-			public System.Int32 Field2 {
-				get {
-					return this.field2;
-				}
-		
-				set {
-					this.field2 = value;
-				}
-			}
-		
-			public new B ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1),
-					ImmutableObjectGraph.Optional.For(this.Field2));
-			}
-		}
 	}
 	
 	public partial class C1 : B {
@@ -604,41 +537,6 @@ namespace ImmutableObjectGraph.Tests {
 				field2: Optional.For(this.Field2),
 				identity: this.Identity);
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : B.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private C1 immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field3;
-		
-			internal Builder(C1 immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.field3 = immutable.Field3;
-			}
-		
-			public System.Int32 Field3 {
-				get {
-					return this.field3;
-				}
-		
-				set {
-					this.field3 = value;
-				}
-			}
-		
-			public new C1 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1),
-					ImmutableObjectGraph.Optional.For(this.Field2),
-					ImmutableObjectGraph.Optional.For(this.Field3));
-			}
-		}
 	}
 	
 	public partial class C2 : B {
@@ -808,41 +706,6 @@ namespace ImmutableObjectGraph.Tests {
 				field1: Optional.For(this.Field1),
 				field2: Optional.For(this.Field2),
 				identity: this.Identity);
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : B.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private C2 immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 field3;
-		
-			internal Builder(C2 immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-				this.field3 = immutable.Field3;
-			}
-		
-			public System.Int32 Field3 {
-				get {
-					return this.field3;
-				}
-		
-				set {
-					this.field3 = value;
-				}
-			}
-		
-			public new C2 ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.Field1),
-					ImmutableObjectGraph.Optional.For(this.Field2),
-					ImmutableObjectGraph.Optional.For(this.Field3));
-			}
 		}
 	}
 }

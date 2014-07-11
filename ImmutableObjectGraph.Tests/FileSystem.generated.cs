@@ -275,58 +275,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: this.Identity,
 				children: children);
 		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private FileSystemEntry immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.String pathSegment;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<RichData.Builder> data;
-		
-			internal Builder(FileSystemEntry immutable) {
-				this.immutable = immutable;
-		
-				this.pathSegment = immutable.PathSegment;
-			}
-		
-			public System.String PathSegment {
-				get {
-					return this.pathSegment;
-				}
-		
-				set {
-					this.pathSegment = value;
-				}
-			}
-		
-			public RichData.Builder Data {
-				get {
-					if (!this.data.IsDefined) {
-						this.data = this.immutable.data != null ? this.immutable.data.ToBuilder() : null;
-					}
-		
-					return this.data.Value;
-				}
-		
-				set {
-					this.data = value;
-				}
-			}
-		
-			public FileSystemEntry ToImmutable() {
-				var data = this.data.IsDefined ? (this.data.Value != null ? this.data.Value.ToImmutable() : null) : this.immutable.Data;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.PathSegment),
-					ImmutableObjectGraph.Optional.For(data));
-			}
-		}
 	
 		int IRecursiveType.Identity {
 			get { return this.Identity; }
@@ -743,46 +691,6 @@ namespace ImmutableObjectGraph.Tests {
 					data: Optional.For(data.GetValueOrDefault(DefaultInstance.Data)),
 					attributes: Optional.For(attributes.GetValueOrDefault(DefaultInstance.Attributes)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
-		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : FileSystemEntry.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private FileSystemFile immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>.Builder> attributes;
-		
-			internal Builder(FileSystemFile immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public System.Collections.Immutable.ImmutableHashSet<System.String>.Builder Attributes {
-				get {
-					if (!this.attributes.IsDefined) {
-						this.attributes = this.immutable.attributes != null ? this.immutable.attributes.ToBuilder() : null;
-					}
-		
-					return this.attributes.Value;
-				}
-		
-				set {
-					this.attributes = value;
-				}
-			}
-		
-			public new FileSystemFile ToImmutable() {
-				var data = this.data.IsDefined ? (this.data.Value != null ? this.data.Value.ToImmutable() : null) : this.immutable.Data;
-				var attributes = this.attributes.IsDefined ? (this.attributes.Value != null ? this.attributes.Value.ToImmutable() : null) : this.immutable.Attributes;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.PathSegment),
-					ImmutableObjectGraph.Optional.For(data),
-					ImmutableObjectGraph.Optional.For(attributes));
-			}
 		}
 	}
 	
@@ -1654,46 +1562,6 @@ namespace ImmutableObjectGraph.Tests {
 					children: Optional.For(children.GetValueOrDefault(DefaultInstance.Children)),
 					identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		public new Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public new partial class Builder : FileSystemEntry.Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private FileSystemDirectory immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>.Builder> children;
-		
-			internal Builder(FileSystemDirectory immutable) : base(immutable) {
-				this.immutable = immutable;
-		
-			}
-		
-			public System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>.Builder Children {
-				get {
-					if (!this.children.IsDefined) {
-						this.children = this.immutable.children != null ? this.immutable.children.ToBuilder() : null;
-					}
-		
-					return this.children.Value;
-				}
-		
-				set {
-					this.children = value;
-				}
-			}
-		
-			public new FileSystemDirectory ToImmutable() {
-				var data = this.data.IsDefined ? (this.data.Value != null ? this.data.Value.ToImmutable() : null) : this.immutable.Data;
-				var children = this.children.IsDefined ? (this.children.Value != null ? this.children.Value.ToImmutable() : null) : this.immutable.Children;
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.PathSegment),
-					ImmutableObjectGraph.Optional.For(data),
-					ImmutableObjectGraph.Optional.For(children));
-			}
-		}
 	
 		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
 			get { return this.Children; }
@@ -2138,39 +2006,6 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
 			internal System.Int32 SomeCoolProperty { get; set; }
-		}
-		
-		public Builder ToBuilder() {
-			return new Builder(this);
-		}
-		
-		public partial class Builder {
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private RichData immutable;
-		
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			protected System.Int32 someCoolProperty;
-		
-			internal Builder(RichData immutable) {
-				this.immutable = immutable;
-		
-				this.someCoolProperty = immutable.SomeCoolProperty;
-			}
-		
-			public System.Int32 SomeCoolProperty {
-				get {
-					return this.someCoolProperty;
-				}
-		
-				set {
-					this.someCoolProperty = value;
-				}
-			}
-		
-			public RichData ToImmutable() {
-				return this.immutable = this.immutable.With(
-					ImmutableObjectGraph.Optional.For(this.SomeCoolProperty));
-			}
 		}
 	}
 }
