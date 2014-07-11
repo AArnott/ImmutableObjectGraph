@@ -5,9 +5,10 @@
 <#@ import Namespace="Microsoft.VisualStudio.ProjectSystem.Properties" #>
 <#@ Output Extension=".generated.cs" #>
 <#
+	this.Namespace = "ImmutableObjectGraph.Tests";
 	this.DefineInterfaces = true;
 	this.DefineBuilders = true;
-	this.Namespace = "ImmutableObjectGraph.Tests";
+	this.DefineWithMethodsPerProperty = true;
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt.inc" #>

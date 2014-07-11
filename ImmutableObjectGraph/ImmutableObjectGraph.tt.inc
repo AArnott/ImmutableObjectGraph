@@ -16,7 +16,9 @@
 <# if (this.DefineInterfaces) { #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt.inc" #>
 <# } #>
+<# if (this.DefineWithMethodsPerProperty) { #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt.inc" #>
+<# } #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt.inc" #>
@@ -353,6 +355,8 @@ if (!templateType.IsAbstract) { #>
 	public bool DefineInterfaces { get; set; }
 
 	public bool DefineBuilders { get; set; }
+
+	public bool DefineWithMethodsPerProperty { get; set; }
 
 	public PluralizationService PluralService { get; set; }
 

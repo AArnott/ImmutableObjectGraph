@@ -96,42 +96,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.children; }
 		}
 		
-		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
-		public TreeNode WithCaption(System.String value) {
-			if (value == this.Caption) {
-				return this;
-			}
-		
-			return this.With(caption: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
-		public TreeNode WithFilePath(System.String value) {
-			if (value == this.FilePath) {
-				return this;
-			}
-		
-			return this.With(filePath: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
-		public TreeNode WithVisible(System.Boolean value) {
-			if (value == this.Visible) {
-				return this;
-			}
-		
-			return this.With(visible: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Attributes property set to the specified value.</summary>
-		public TreeNode WithAttributes(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
-			if (value == this.Attributes) {
-				return this;
-			}
-		
-			return this.With(attributes: Optional.For(value));
-		}
-		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public TreeNode WithAttributes(params System.String[] values) {
 			return this.With(attributes: this.Attributes.ResetContents(values));
@@ -177,15 +141,6 @@ namespace ImmutableObjectGraph.Tests {
 			return this.With(attributes: this.Attributes.Clear());
 		}
 		
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public TreeNode WithChildren(System.Collections.Immutable.ImmutableList<TreeNode> value) {
-			if (value == this.Children) {
-				return this;
-			}
-		
-			return this.With(children: Optional.For(value));
-		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public TreeNode WithChildren(params TreeNode[] values) {

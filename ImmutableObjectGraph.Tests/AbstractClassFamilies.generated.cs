@@ -45,24 +45,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.Int32 Abstract1Field2 {
 			get { return this.abstract1Field2; }
 		}
-		
-		/// <summary>Returns a new instance with the Abstract1Field1 property set to the specified value.</summary>
-		public Abstract1 WithAbstract1Field1(System.Int32 value) {
-			if (value == this.Abstract1Field1) {
-				return this;
-			}
-		
-			return this.With(abstract1Field1: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Abstract1Field2 property set to the specified value.</summary>
-		public Abstract1 WithAbstract1Field2(System.Int32 value) {
-			if (value == this.Abstract1Field2) {
-				return this;
-			}
-		
-			return this.With(abstract1Field2: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public Abstract1 With(
@@ -144,34 +126,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public System.Int32 Abstract2Field2 {
 			get { return this.abstract2Field2; }
-		}
-		
-		/// <summary>Returns a new instance with the Abstract1Field1 property set to the specified value.</summary>
-		public new Abstract2 WithAbstract1Field1(System.Int32 value) {
-			return (Abstract2)base.WithAbstract1Field1(value);
-		}
-		
-		/// <summary>Returns a new instance with the Abstract1Field2 property set to the specified value.</summary>
-		public new Abstract2 WithAbstract1Field2(System.Int32 value) {
-			return (Abstract2)base.WithAbstract1Field2(value);
-		}
-		
-		/// <summary>Returns a new instance with the Abstract2Field1 property set to the specified value.</summary>
-		public Abstract2 WithAbstract2Field1(System.Int32 value) {
-			if (value == this.Abstract2Field1) {
-				return this;
-			}
-		
-			return this.With(abstract2Field1: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Abstract2Field2 property set to the specified value.</summary>
-		public Abstract2 WithAbstract2Field2(System.Int32 value) {
-			if (value == this.Abstract2Field2) {
-				return this;
-			}
-		
-			return this.With(abstract2Field2: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -286,44 +240,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public System.Int32 ConcreteField2 {
 			get { return this.concreteField2; }
-		}
-		
-		/// <summary>Returns a new instance with the Abstract1Field1 property set to the specified value.</summary>
-		public new ConcreteOf2Abstracts WithAbstract1Field1(System.Int32 value) {
-			return (ConcreteOf2Abstracts)base.WithAbstract1Field1(value);
-		}
-		
-		/// <summary>Returns a new instance with the Abstract1Field2 property set to the specified value.</summary>
-		public new ConcreteOf2Abstracts WithAbstract1Field2(System.Int32 value) {
-			return (ConcreteOf2Abstracts)base.WithAbstract1Field2(value);
-		}
-		
-		/// <summary>Returns a new instance with the Abstract2Field1 property set to the specified value.</summary>
-		public new ConcreteOf2Abstracts WithAbstract2Field1(System.Int32 value) {
-			return (ConcreteOf2Abstracts)base.WithAbstract2Field1(value);
-		}
-		
-		/// <summary>Returns a new instance with the Abstract2Field2 property set to the specified value.</summary>
-		public new ConcreteOf2Abstracts WithAbstract2Field2(System.Int32 value) {
-			return (ConcreteOf2Abstracts)base.WithAbstract2Field2(value);
-		}
-		
-		/// <summary>Returns a new instance with the ConcreteField1 property set to the specified value.</summary>
-		public ConcreteOf2Abstracts WithConcreteField1(System.Int32 value) {
-			if (value == this.ConcreteField1) {
-				return this;
-			}
-		
-			return this.With(concreteField1: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the ConcreteField2 property set to the specified value.</summary>
-		public ConcreteOf2Abstracts WithConcreteField2(System.Int32 value) {
-			if (value == this.ConcreteField2) {
-				return this;
-			}
-		
-			return this.With(concreteField2: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>

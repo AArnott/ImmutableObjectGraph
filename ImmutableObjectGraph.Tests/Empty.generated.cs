@@ -13,7 +13,10 @@ namespace ImmutableObjectGraph.Tests {
 	using System.Linq;
 	using ImmutableObjectGraph;
 	
-	public partial class Empty {
+	public interface IEmpty {
+	}
+	
+	public partial class Empty : IEmpty {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Empty DefaultInstance = GetDefaultTemplate();
 		
@@ -101,7 +104,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class EmptyDerived : Empty {
+	public interface IEmptyDerived : IEmpty {
+	}
+	
+	public partial class EmptyDerived : Empty, IEmptyDerived {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly EmptyDerived DefaultInstance = GetDefaultTemplate();
 	
@@ -157,7 +163,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial class NotSoEmptyDerived : Empty {
+	public interface INotSoEmptyDerived : IEmpty {
+		System.Boolean OneField { get; }
+	}
+	
+	public partial class NotSoEmptyDerived : Empty, INotSoEmptyDerived {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly NotSoEmptyDerived DefaultInstance = GetDefaultTemplate();
 	
@@ -269,9 +279,46 @@ namespace ImmutableObjectGraph.Tests {
 			return Empty.CreateWithIdentity(
 				identity: this.Identity);
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private NotSoEmptyDerived immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Boolean oneField;
+		
+			internal Builder(NotSoEmptyDerived immutable) {
+				this.immutable = immutable;
+		
+				this.oneField = immutable.OneField;
+			}
+		
+			public System.Boolean OneField {
+				get {
+					return this.oneField;
+				}
+		
+				set {
+					this.oneField = value;
+				}
+			}
+		
+			public new NotSoEmptyDerived ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.OneField));
+			}
+		}
 	}
 	
-	public partial class NonEmptyBase {
+	public interface INonEmptyBase {
+		System.Boolean OneField { get; }
+	}
+	
+	public partial class NonEmptyBase : INonEmptyBase {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly NonEmptyBase DefaultInstance = GetDefaultTemplate();
 		
@@ -402,9 +449,45 @@ namespace ImmutableObjectGraph.Tests {
 				oneField: Optional.For(this.OneField),
 				identity: this.Identity);
 		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private NonEmptyBase immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Boolean oneField;
+		
+			internal Builder(NonEmptyBase immutable) {
+				this.immutable = immutable;
+		
+				this.oneField = immutable.OneField;
+			}
+		
+			public System.Boolean OneField {
+				get {
+					return this.oneField;
+				}
+		
+				set {
+					this.oneField = value;
+				}
+			}
+		
+			public NonEmptyBase ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.OneField));
+			}
+		}
 	}
 	
-	public partial class EmptyDerivedFromNonEmptyBase : NonEmptyBase {
+	public interface IEmptyDerivedFromNonEmptyBase : INonEmptyBase {
+	}
+	
+	public partial class EmptyDerivedFromNonEmptyBase : NonEmptyBase, IEmptyDerivedFromNonEmptyBase {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly EmptyDerivedFromNonEmptyBase DefaultInstance = GetDefaultTemplate();
 	
@@ -502,9 +585,31 @@ namespace ImmutableObjectGraph.Tests {
 				oneField: Optional.For(this.OneField),
 				identity: this.Identity);
 		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : NonEmptyBase.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private EmptyDerivedFromNonEmptyBase immutable;
+		
+			internal Builder(EmptyDerivedFromNonEmptyBase immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new EmptyDerivedFromNonEmptyBase ToImmutable() {
+				return this.immutable = this.immutable;
+			}
+		}
 	}
 	
-	public abstract partial class AbstractNonEmpty {
+	public interface IAbstractNonEmpty {
+		System.Boolean OneField { get; }
+	}
+	
+	public abstract partial class AbstractNonEmpty : IAbstractNonEmpty {
 		
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
@@ -567,9 +672,45 @@ namespace ImmutableObjectGraph.Tests {
 				oneField: Optional.For(this.OneField),
 				identity: this.Identity);
 		}
+		
+		public Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public partial class Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private AbstractNonEmpty immutable;
+		
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			protected System.Boolean oneField;
+		
+			internal Builder(AbstractNonEmpty immutable) {
+				this.immutable = immutable;
+		
+				this.oneField = immutable.OneField;
+			}
+		
+			public System.Boolean OneField {
+				get {
+					return this.oneField;
+				}
+		
+				set {
+					this.oneField = value;
+				}
+			}
+		
+			public AbstractNonEmpty ToImmutable() {
+				return this.immutable = this.immutable.With(
+					ImmutableObjectGraph.Optional.For(this.OneField));
+			}
+		}
 	}
 	
-	public partial class EmptyDerivedFromAbstract : AbstractNonEmpty {
+	public interface IEmptyDerivedFromAbstract : IAbstractNonEmpty {
+	}
+	
+	public partial class EmptyDerivedFromAbstract : AbstractNonEmpty, IEmptyDerivedFromAbstract {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly EmptyDerivedFromAbstract DefaultInstance = GetDefaultTemplate();
 	
@@ -660,6 +801,24 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			return DefaultInstance;
+		}
+		
+		public new Builder ToBuilder() {
+			return new Builder(this);
+		}
+		
+		public new partial class Builder : AbstractNonEmpty.Builder {
+			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+			private EmptyDerivedFromAbstract immutable;
+		
+			internal Builder(EmptyDerivedFromAbstract immutable) : base(immutable) {
+				this.immutable = immutable;
+		
+			}
+		
+			public new EmptyDerivedFromAbstract ToImmutable() {
+				return this.immutable = this.immutable;
+			}
 		}
 	}
 }

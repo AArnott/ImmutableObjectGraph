@@ -95,15 +95,6 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			get { return this.children; }
 		}
 		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RecursiveContainer WithChildren(System.Collections.Immutable.ImmutableList<RootRecursive> value) {
-			if (value == this.Children) {
-				return this;
-			}
-		
-			return this.With(children: Optional.For(value));
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public RecursiveContainer WithChildren(params RootRecursive[] values) {
 			return this.With(children: this.Children.ResetContents(values));
@@ -653,15 +644,6 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			get { return this.metadata; }
 		}
 		
-		/// <summary>Returns a new instance with the Metadata property set to the specified value.</summary>
-		public ContainerOfNonRecursiveCollection WithMetadata(System.Collections.Immutable.ImmutableList<NonRecursiveElement> value) {
-			if (value == this.Metadata) {
-				return this;
-			}
-		
-			return this.With(metadata: Optional.For(value));
-		}
-		
 		/// <summary>Replaces the elements of the Metadata collection with the specified collection.</summary>
 		public ContainerOfNonRecursiveCollection WithMetadata(params NonRecursiveElement[] values) {
 			return this.With(metadata: this.Metadata.ResetContents(values));
@@ -817,24 +799,6 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 	
 		public System.String Value {
 			get { return this.value; }
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public NonRecursiveElement WithName(System.String value) {
-			if (value == this.Name) {
-				return this;
-			}
-		
-			return this.With(name: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
-		public NonRecursiveElement WithValue(System.String value) {
-			if (value == this.Value) {
-				return this;
-			}
-		
-			return this.With(value: Optional.For(value));
 		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>

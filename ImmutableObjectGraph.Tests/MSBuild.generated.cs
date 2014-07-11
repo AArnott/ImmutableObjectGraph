@@ -45,24 +45,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Label {
 			get { return this.label; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public ProjectElement WithCondition(System.String value) {
-			if (value == this.Condition) {
-				return this;
-			}
-		
-			return this.With(condition: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public ProjectElement WithLabel(System.String value) {
-			if (value == this.Label) {
-				return this;
-			}
-		
-			return this.With(label: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		public ProjectElement With(
@@ -939,26 +921,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -1543,25 +1511,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public System.Collections.Immutable.ImmutableList<ProjectElement> Children {
 			get { return this.children; }
-		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectElementContainer WithCondition(System.String value) {
-			return (ProjectElementContainer)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectElementContainer WithLabel(System.String value) {
-			return (ProjectElementContainer)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public ProjectElementContainer WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			if (value == this.Children) {
-				return this;
-			}
-		
-			return this.With(children: Optional.For(value));
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -2692,26 +2641,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectElementContainer WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectElementContainer WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -2723,14 +2658,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectElementContainer WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -3274,21 +3201,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.treatAsLocalProperty; }
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectRootElement WithCondition(System.String value) {
-			return (ProjectRootElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectRootElement WithLabel(System.String value) {
-			return (ProjectRootElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectRootElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectRootElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectRootElement WithChildren(params ProjectElement[] values) {
 			return (ProjectRootElement)base.WithChildren(values);
@@ -3334,60 +3246,6 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectRootElement)base.RemoveChildren();
 		}
 		
-		
-		/// <summary>Returns a new instance with the FullPath property set to the specified value.</summary>
-		public ProjectRootElement WithFullPath(System.String value) {
-			if (value == this.FullPath) {
-				return this;
-			}
-		
-			return this.With(fullPath: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Encoding property set to the specified value.</summary>
-		public ProjectRootElement WithEncoding(System.Text.Encoding value) {
-			if (value == this.Encoding) {
-				return this;
-			}
-		
-			return this.With(encoding: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the ToolsVersion property set to the specified value.</summary>
-		public ProjectRootElement WithToolsVersion(System.String value) {
-			if (value == this.ToolsVersion) {
-				return this;
-			}
-		
-			return this.With(toolsVersion: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the DefaultTargets property set to the specified value.</summary>
-		public ProjectRootElement WithDefaultTargets(System.String value) {
-			if (value == this.DefaultTargets) {
-				return this;
-			}
-		
-			return this.With(defaultTargets: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the InitialTargets property set to the specified value.</summary>
-		public ProjectRootElement WithInitialTargets(System.String value) {
-			if (value == this.InitialTargets) {
-				return this;
-			}
-		
-			return this.With(initialTargets: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the TreatAsLocalProperty property set to the specified value.</summary>
-		public ProjectRootElement WithTreatAsLocalProperty(System.Boolean value) {
-			if (value == this.TreatAsLocalProperty) {
-				return this;
-			}
-		
-			return this.With(treatAsLocalProperty: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -3667,26 +3525,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectRootElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectRootElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -3698,14 +3542,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectRootElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -3837,26 +3673,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.FullPath;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the FullPath property set to the specified value.</summary>
-		public RootedProjectRootElement WithFullPath(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithFullPath(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.Text.Encoding Encoding {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Encoding;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Encoding property set to the specified value.</summary>
-		public RootedProjectRootElement WithEncoding(System.Text.Encoding value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithEncoding(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String ToolsVersion {
@@ -3865,26 +3687,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.ToolsVersion;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the ToolsVersion property set to the specified value.</summary>
-		public RootedProjectRootElement WithToolsVersion(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithToolsVersion(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String DefaultTargets {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.DefaultTargets;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the DefaultTargets property set to the specified value.</summary>
-		public RootedProjectRootElement WithDefaultTargets(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithDefaultTargets(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String InitialTargets {
@@ -3893,26 +3701,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.InitialTargets;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the InitialTargets property set to the specified value.</summary>
-		public RootedProjectRootElement WithInitialTargets(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithInitialTargets(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.Boolean TreatAsLocalProperty {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.TreatAsLocalProperty;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the TreatAsLocalProperty property set to the specified value.</summary>
-		public RootedProjectRootElement WithTreatAsLocalProperty(System.Boolean value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithTreatAsLocalProperty(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -4240,21 +4034,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectPropertyGroupElement WithCondition(System.String value) {
-			return (ProjectPropertyGroupElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectPropertyGroupElement WithLabel(System.String value) {
-			return (ProjectPropertyGroupElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectPropertyGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectPropertyGroupElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectPropertyGroupElement WithChildren(params ProjectElement[] values) {
 			return (ProjectPropertyGroupElement)base.WithChildren(values);
@@ -4457,26 +4236,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectPropertyGroupElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectPropertyGroupElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -4488,14 +4253,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectPropertyGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -4946,21 +4703,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectItemGroupElement WithCondition(System.String value) {
-			return (ProjectItemGroupElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectItemGroupElement WithLabel(System.String value) {
-			return (ProjectItemGroupElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectItemGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectItemGroupElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemGroupElement WithChildren(params ProjectElement[] values) {
 			return (ProjectItemGroupElement)base.WithChildren(values);
@@ -5163,26 +4905,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectItemGroupElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectItemGroupElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -5194,14 +4922,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectItemGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -5652,21 +5372,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectChooseElement WithCondition(System.String value) {
-			return (ProjectChooseElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectChooseElement WithLabel(System.String value) {
-			return (ProjectChooseElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectChooseElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectChooseElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectChooseElement WithChildren(params ProjectElement[] values) {
 			return (ProjectChooseElement)base.WithChildren(values);
@@ -5869,26 +5574,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectChooseElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectChooseElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -5900,14 +5591,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectChooseElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -6358,21 +6041,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectOtherwiseElement WithCondition(System.String value) {
-			return (ProjectOtherwiseElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectOtherwiseElement WithLabel(System.String value) {
-			return (ProjectOtherwiseElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectOtherwiseElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectOtherwiseElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectOtherwiseElement WithChildren(params ProjectElement[] values) {
 			return (ProjectOtherwiseElement)base.WithChildren(values);
@@ -6575,26 +6243,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectOtherwiseElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectOtherwiseElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -6606,14 +6260,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectOtherwiseElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -7064,21 +6710,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectWhenElement WithCondition(System.String value) {
-			return (ProjectWhenElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectWhenElement WithLabel(System.String value) {
-			return (ProjectWhenElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectWhenElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectWhenElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectWhenElement WithChildren(params ProjectElement[] values) {
 			return (ProjectWhenElement)base.WithChildren(values);
@@ -7281,26 +6912,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectWhenElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectWhenElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -7312,14 +6929,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectWhenElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -7787,34 +7396,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Value {
 			get { return this.value; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectPropertyElement WithCondition(System.String value) {
-			return (ProjectPropertyElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectPropertyElement WithLabel(System.String value) {
-			return (ProjectPropertyElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public ProjectPropertyElement WithName(System.String value) {
-			if (value == this.Name) {
-				return this;
-			}
-		
-			return this.With(name: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
-		public ProjectPropertyElement WithValue(System.String value) {
-			if (value == this.Value) {
-				return this;
-			}
-		
-			return this.With(value: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -7994,26 +7575,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectPropertyElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectPropertyElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String Name {
@@ -8022,26 +7589,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Name;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public RootedProjectPropertyElement WithName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithName(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Value {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
-		public RootedProjectPropertyElement WithValue(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithValue(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -8459,21 +8012,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.removeMetadata; }
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectItemElement WithCondition(System.String value) {
-			return (ProjectItemElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectItemElement WithLabel(System.String value) {
-			return (ProjectItemElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectItemElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectItemElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemElement WithChildren(params ProjectElement[] values) {
 			return (ProjectItemElement)base.WithChildren(values);
@@ -8519,69 +8057,6 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectItemElement)base.RemoveChildren();
 		}
 		
-		
-		/// <summary>Returns a new instance with the Exclude property set to the specified value.</summary>
-		public ProjectItemElement WithExclude(System.String value) {
-			if (value == this.Exclude) {
-				return this;
-			}
-		
-			return this.With(exclude: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Include property set to the specified value.</summary>
-		public ProjectItemElement WithInclude(System.String value) {
-			if (value == this.Include) {
-				return this;
-			}
-		
-			return this.With(include: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
-		public ProjectItemElement WithItemType(System.String value) {
-			if (value == this.ItemType) {
-				return this;
-			}
-		
-			return this.With(itemType: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the KeepDuplicates property set to the specified value.</summary>
-		public ProjectItemElement WithKeepDuplicates(System.String value) {
-			if (value == this.KeepDuplicates) {
-				return this;
-			}
-		
-			return this.With(keepDuplicates: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the KeepMetadata property set to the specified value.</summary>
-		public ProjectItemElement WithKeepMetadata(System.String value) {
-			if (value == this.KeepMetadata) {
-				return this;
-			}
-		
-			return this.With(keepMetadata: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Remove property set to the specified value.</summary>
-		public ProjectItemElement WithRemove(System.String value) {
-			if (value == this.Remove) {
-				return this;
-			}
-		
-			return this.With(remove: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the RemoveMetadata property set to the specified value.</summary>
-		public ProjectItemElement WithRemoveMetadata(System.String value) {
-			if (value == this.RemoveMetadata) {
-				return this;
-			}
-		
-			return this.With(removeMetadata: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -8877,26 +8352,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectItemElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectItemElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -8908,14 +8369,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectItemElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -9047,26 +8500,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Exclude;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Exclude property set to the specified value.</summary>
-		public RootedProjectItemElement WithExclude(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithExclude(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Include {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Include;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Include property set to the specified value.</summary>
-		public RootedProjectItemElement WithInclude(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithInclude(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String ItemType {
@@ -9075,26 +8514,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.ItemType;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
-		public RootedProjectItemElement WithItemType(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithItemType(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String KeepDuplicates {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.KeepDuplicates;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the KeepDuplicates property set to the specified value.</summary>
-		public RootedProjectItemElement WithKeepDuplicates(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithKeepDuplicates(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String KeepMetadata {
@@ -9103,13 +8528,6 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.KeepMetadata;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the KeepMetadata property set to the specified value.</summary>
-		public RootedProjectItemElement WithKeepMetadata(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithKeepMetadata(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Remove {
 			get {
@@ -9117,26 +8535,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Remove;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Remove property set to the specified value.</summary>
-		public RootedProjectItemElement WithRemove(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithRemove(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String RemoveMetadata {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.RemoveMetadata;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the RemoveMetadata property set to the specified value.</summary>
-		public RootedProjectItemElement WithRemoveMetadata(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithRemoveMetadata(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -9481,34 +8885,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Value {
 			get { return this.value; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectMetadataElement WithCondition(System.String value) {
-			return (ProjectMetadataElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectMetadataElement WithLabel(System.String value) {
-			return (ProjectMetadataElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public ProjectMetadataElement WithName(System.String value) {
-			if (value == this.Name) {
-				return this;
-			}
-		
-			return this.With(name: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
-		public ProjectMetadataElement WithValue(System.String value) {
-			if (value == this.Value) {
-				return this;
-			}
-		
-			return this.With(value: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -9688,26 +9064,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectMetadataElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectMetadataElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String Name {
@@ -9716,26 +9078,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Name;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public RootedProjectMetadataElement WithName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithName(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Value {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Value property set to the specified value.</summary>
-		public RootedProjectMetadataElement WithValue(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithValue(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -10082,25 +9430,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Content {
 			get { return this.content; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectExtensionsElement WithCondition(System.String value) {
-			return (ProjectExtensionsElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectExtensionsElement WithLabel(System.String value) {
-			return (ProjectExtensionsElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Content property set to the specified value.</summary>
-		public ProjectExtensionsElement WithContent(System.String value) {
-			if (value == this.Content) {
-				return this;
-			}
-		
-			return this.With(content: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -10264,13 +9593,6 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectExtensionsElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
@@ -10278,26 +9600,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Label;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectExtensionsElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Content {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Content;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Content property set to the specified value.</summary>
-		public RootedProjectExtensionsElement WithContent(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithContent(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -10644,25 +9952,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Project {
 			get { return this.project; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectImportElement WithCondition(System.String value) {
-			return (ProjectImportElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectImportElement WithLabel(System.String value) {
-			return (ProjectImportElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Project property set to the specified value.</summary>
-		public ProjectImportElement WithProject(System.String value) {
-			if (value == this.Project) {
-				return this;
-			}
-		
-			return this.With(project: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -10826,13 +10115,6 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectImportElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
@@ -10840,26 +10122,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Label;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectImportElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Project {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Project;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Project property set to the specified value.</summary>
-		public RootedProjectImportElement WithProject(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithProject(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -11200,21 +10468,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectImportGroupElement WithCondition(System.String value) {
-			return (ProjectImportGroupElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectImportGroupElement WithLabel(System.String value) {
-			return (ProjectImportGroupElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectImportGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectImportGroupElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectImportGroupElement WithChildren(params ProjectElement[] values) {
 			return (ProjectImportGroupElement)base.WithChildren(values);
@@ -11417,26 +10670,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectImportGroupElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectImportGroupElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -11448,14 +10687,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectImportGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -11917,21 +11148,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.itemType; }
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectItemDefinitionElement WithCondition(System.String value) {
-			return (ProjectItemDefinitionElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectItemDefinitionElement WithLabel(System.String value) {
-			return (ProjectItemDefinitionElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectItemDefinitionElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectItemDefinitionElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemDefinitionElement WithChildren(params ProjectElement[] values) {
 			return (ProjectItemDefinitionElement)base.WithChildren(values);
@@ -11977,15 +11193,6 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectItemDefinitionElement)base.RemoveChildren();
 		}
 		
-		
-		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
-		public ProjectItemDefinitionElement WithItemType(System.String value) {
-			if (value == this.ItemType) {
-				return this;
-			}
-		
-			return this.With(itemType: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -12185,26 +11392,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectItemDefinitionElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectItemDefinitionElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -12216,14 +11409,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectItemDefinitionElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -12354,13 +11539,6 @@ namespace ImmutableObjectGraph.Tests {
 				this.ThrowIfDefault();
 				return this.greenNode.ItemType;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
-		public RootedProjectItemDefinitionElement WithItemType(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithItemType(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -12688,21 +11866,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectItemDefinitionGroupElement WithCondition(System.String value) {
-			return (ProjectItemDefinitionGroupElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectItemDefinitionGroupElement WithLabel(System.String value) {
-			return (ProjectItemDefinitionGroupElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectItemDefinitionGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectItemDefinitionGroupElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectItemDefinitionGroupElement WithChildren(params ProjectElement[] values) {
 			return (ProjectItemDefinitionGroupElement)base.WithChildren(values);
@@ -12905,26 +12068,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectItemDefinitionGroupElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectItemDefinitionGroupElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -12936,14 +12085,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectItemDefinitionGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -13389,16 +12530,6 @@ namespace ImmutableObjectGraph.Tests {
 				label: Optional.For(label.GetValueOrDefault(DefaultInstance.Label)),
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectOnErrorElement WithCondition(System.String value) {
-			return (ProjectOnErrorElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectOnErrorElement WithLabel(System.String value) {
-			return (ProjectOnErrorElement)base.WithLabel(value);
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -13523,26 +12654,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectOnErrorElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectOnErrorElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -13933,61 +13050,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String TaskParameter {
 			get { return this.taskParameter; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectOutputElement WithCondition(System.String value) {
-			return (ProjectOutputElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectOutputElement WithLabel(System.String value) {
-			return (ProjectOutputElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the IsOutputItem property set to the specified value.</summary>
-		public ProjectOutputElement WithIsOutputItem(System.Boolean value) {
-			if (value == this.IsOutputItem) {
-				return this;
-			}
-		
-			return this.With(isOutputItem: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the IsOutputProperty property set to the specified value.</summary>
-		public ProjectOutputElement WithIsOutputProperty(System.Boolean value) {
-			if (value == this.IsOutputProperty) {
-				return this;
-			}
-		
-			return this.With(isOutputProperty: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
-		public ProjectOutputElement WithItemType(System.String value) {
-			if (value == this.ItemType) {
-				return this;
-			}
-		
-			return this.With(itemType: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the PropertyName property set to the specified value.</summary>
-		public ProjectOutputElement WithPropertyName(System.String value) {
-			if (value == this.PropertyName) {
-				return this;
-			}
-		
-			return this.With(propertyName: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the TaskParameter property set to the specified value.</summary>
-		public ProjectOutputElement WithTaskParameter(System.String value) {
-			if (value == this.TaskParameter) {
-				return this;
-			}
-		
-			return this.With(taskParameter: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -14215,26 +13277,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectOutputElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectOutputElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Boolean IsOutputItem {
@@ -14243,26 +13291,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.IsOutputItem;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the IsOutputItem property set to the specified value.</summary>
-		public RootedProjectOutputElement WithIsOutputItem(System.Boolean value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithIsOutputItem(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.Boolean IsOutputProperty {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.IsOutputProperty;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the IsOutputProperty property set to the specified value.</summary>
-		public RootedProjectOutputElement WithIsOutputProperty(System.Boolean value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithIsOutputProperty(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String ItemType {
@@ -14271,13 +13305,6 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.ItemType;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the ItemType property set to the specified value.</summary>
-		public RootedProjectOutputElement WithItemType(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithItemType(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String PropertyName {
 			get {
@@ -14285,26 +13312,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.PropertyName;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the PropertyName property set to the specified value.</summary>
-		public RootedProjectOutputElement WithPropertyName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithPropertyName(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String TaskParameter {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.TaskParameter;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the TaskParameter property set to the specified value.</summary>
-		public RootedProjectOutputElement WithTaskParameter(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithTaskParameter(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -14733,21 +13746,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.returns; }
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectTargetElement WithCondition(System.String value) {
-			return (ProjectTargetElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectTargetElement WithLabel(System.String value) {
-			return (ProjectTargetElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectTargetElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectTargetElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectTargetElement WithChildren(params ProjectElement[] values) {
 			return (ProjectTargetElement)base.WithChildren(values);
@@ -14793,78 +13791,6 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectTargetElement)base.RemoveChildren();
 		}
 		
-		
-		/// <summary>Returns a new instance with the AfterTargets property set to the specified value.</summary>
-		public ProjectTargetElement WithAfterTargets(System.String value) {
-			if (value == this.AfterTargets) {
-				return this;
-			}
-		
-			return this.With(afterTargets: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the BeforeTargets property set to the specified value.</summary>
-		public ProjectTargetElement WithBeforeTargets(System.String value) {
-			if (value == this.BeforeTargets) {
-				return this;
-			}
-		
-			return this.With(beforeTargets: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the DependsOnTargets property set to the specified value.</summary>
-		public ProjectTargetElement WithDependsOnTargets(System.String value) {
-			if (value == this.DependsOnTargets) {
-				return this;
-			}
-		
-			return this.With(dependsOnTargets: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Inputs property set to the specified value.</summary>
-		public ProjectTargetElement WithInputs(System.String value) {
-			if (value == this.Inputs) {
-				return this;
-			}
-		
-			return this.With(inputs: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the KeepDuplicateOutputs property set to the specified value.</summary>
-		public ProjectTargetElement WithKeepDuplicateOutputs(System.String value) {
-			if (value == this.KeepDuplicateOutputs) {
-				return this;
-			}
-		
-			return this.With(keepDuplicateOutputs: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public ProjectTargetElement WithName(System.String value) {
-			if (value == this.Name) {
-				return this;
-			}
-		
-			return this.With(name: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Outputs property set to the specified value.</summary>
-		public ProjectTargetElement WithOutputs(System.String value) {
-			if (value == this.Outputs) {
-				return this;
-			}
-		
-			return this.With(outputs: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Returns property set to the specified value.</summary>
-		public ProjectTargetElement WithReturns(System.String value) {
-			if (value == this.Returns) {
-				return this;
-			}
-		
-			return this.With(returns: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -15176,26 +14102,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectTargetElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectTargetElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -15207,14 +14119,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectTargetElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -15346,26 +14250,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.AfterTargets;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the AfterTargets property set to the specified value.</summary>
-		public RootedProjectTargetElement WithAfterTargets(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithAfterTargets(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String BeforeTargets {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.BeforeTargets;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the BeforeTargets property set to the specified value.</summary>
-		public RootedProjectTargetElement WithBeforeTargets(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithBeforeTargets(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String DependsOnTargets {
@@ -15374,26 +14264,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.DependsOnTargets;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the DependsOnTargets property set to the specified value.</summary>
-		public RootedProjectTargetElement WithDependsOnTargets(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithDependsOnTargets(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Inputs {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Inputs;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Inputs property set to the specified value.</summary>
-		public RootedProjectTargetElement WithInputs(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithInputs(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String KeepDuplicateOutputs {
@@ -15402,26 +14278,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.KeepDuplicateOutputs;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the KeepDuplicateOutputs property set to the specified value.</summary>
-		public RootedProjectTargetElement WithKeepDuplicateOutputs(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithKeepDuplicateOutputs(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Name {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Name;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public RootedProjectTargetElement WithName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithName(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String Outputs {
@@ -15430,26 +14292,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Outputs;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Outputs property set to the specified value.</summary>
-		public RootedProjectTargetElement WithOutputs(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithOutputs(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Returns {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Returns;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Returns property set to the specified value.</summary>
-		public RootedProjectTargetElement WithReturns(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithReturns(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -15821,21 +14669,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.name; }
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectTaskElement WithCondition(System.String value) {
-			return (ProjectTaskElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectTaskElement WithLabel(System.String value) {
-			return (ProjectTaskElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectTaskElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectTaskElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectTaskElement WithChildren(params ProjectElement[] values) {
 			return (ProjectTaskElement)base.WithChildren(values);
@@ -15881,42 +14714,6 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectTaskElement)base.RemoveChildren();
 		}
 		
-		
-		/// <summary>Returns a new instance with the ContinueOnError property set to the specified value.</summary>
-		public ProjectTaskElement WithContinueOnError(System.String value) {
-			if (value == this.ContinueOnError) {
-				return this;
-			}
-		
-			return this.With(continueOnError: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the MSBuildArchitecture property set to the specified value.</summary>
-		public ProjectTaskElement WithMSBuildArchitecture(System.String value) {
-			if (value == this.MSBuildArchitecture) {
-				return this;
-			}
-		
-			return this.With(mSBuildArchitecture: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the MSBuildRuntime property set to the specified value.</summary>
-		public ProjectTaskElement WithMSBuildRuntime(System.String value) {
-			if (value == this.MSBuildRuntime) {
-				return this;
-			}
-		
-			return this.With(mSBuildRuntime: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public ProjectTaskElement WithName(System.String value) {
-			if (value == this.Name) {
-				return this;
-			}
-		
-			return this.With(name: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -16164,26 +14961,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectTaskElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectTaskElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -16195,14 +14978,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectTaskElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -16334,26 +15109,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.ContinueOnError;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the ContinueOnError property set to the specified value.</summary>
-		public RootedProjectTaskElement WithContinueOnError(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithContinueOnError(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String MSBuildArchitecture {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.MSBuildArchitecture;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the MSBuildArchitecture property set to the specified value.</summary>
-		public RootedProjectTaskElement WithMSBuildArchitecture(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithMSBuildArchitecture(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String MSBuildRuntime {
@@ -16362,26 +15123,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.MSBuildRuntime;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the MSBuildRuntime property set to the specified value.</summary>
-		public RootedProjectTaskElement WithMSBuildRuntime(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithMSBuildRuntime(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Name {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Name;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public RootedProjectTaskElement WithName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithName(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -16726,34 +15473,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String TaskBody {
 			get { return this.taskBody; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectUsingTaskBodyElement WithCondition(System.String value) {
-			return (ProjectUsingTaskBodyElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectUsingTaskBodyElement WithLabel(System.String value) {
-			return (ProjectUsingTaskBodyElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Evaluate property set to the specified value.</summary>
-		public ProjectUsingTaskBodyElement WithEvaluate(System.String value) {
-			if (value == this.Evaluate) {
-				return this;
-			}
-		
-			return this.With(evaluate: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the TaskBody property set to the specified value.</summary>
-		public ProjectUsingTaskBodyElement WithTaskBody(System.String value) {
-			if (value == this.TaskBody) {
-				return this;
-			}
-		
-			return this.With(taskBody: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -16933,26 +15652,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectUsingTaskBodyElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectUsingTaskBodyElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String Evaluate {
@@ -16961,26 +15666,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Evaluate;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Evaluate property set to the specified value.</summary>
-		public RootedProjectUsingTaskBodyElement WithEvaluate(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithEvaluate(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String TaskBody {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.TaskBody;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the TaskBody property set to the specified value.</summary>
-		public RootedProjectUsingTaskBodyElement WithTaskBody(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithTaskBody(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -17387,21 +16078,6 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.taskName; }
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectUsingTaskElement WithCondition(System.String value) {
-			return (ProjectUsingTaskElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectUsingTaskElement WithLabel(System.String value) {
-			return (ProjectUsingTaskElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new ProjectUsingTaskElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (ProjectUsingTaskElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new ProjectUsingTaskElement WithChildren(params ProjectElement[] values) {
 			return (ProjectUsingTaskElement)base.WithChildren(values);
@@ -17447,60 +16123,6 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectUsingTaskElement)base.RemoveChildren();
 		}
 		
-		
-		/// <summary>Returns a new instance with the Architecture property set to the specified value.</summary>
-		public ProjectUsingTaskElement WithArchitecture(System.String value) {
-			if (value == this.Architecture) {
-				return this;
-			}
-		
-			return this.With(architecture: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the AssemblyFile property set to the specified value.</summary>
-		public ProjectUsingTaskElement WithAssemblyFile(System.String value) {
-			if (value == this.AssemblyFile) {
-				return this;
-			}
-		
-			return this.With(assemblyFile: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the AssemblyName property set to the specified value.</summary>
-		public ProjectUsingTaskElement WithAssemblyName(System.String value) {
-			if (value == this.AssemblyName) {
-				return this;
-			}
-		
-			return this.With(assemblyName: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Runtime property set to the specified value.</summary>
-		public ProjectUsingTaskElement WithRuntime(System.String value) {
-			if (value == this.Runtime) {
-				return this;
-			}
-		
-			return this.With(runtime: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the TaskFactory property set to the specified value.</summary>
-		public ProjectUsingTaskElement WithTaskFactory(System.String value) {
-			if (value == this.TaskFactory) {
-				return this;
-			}
-		
-			return this.With(taskFactory: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the TaskName property set to the specified value.</summary>
-		public ProjectUsingTaskElement WithTaskName(System.String value) {
-			if (value == this.TaskName) {
-				return this;
-			}
-		
-			return this.With(taskName: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -17780,26 +16402,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -17811,14 +16419,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
@@ -17950,26 +16550,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Architecture;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Architecture property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithArchitecture(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithArchitecture(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String AssemblyFile {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.AssemblyFile;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the AssemblyFile property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithAssemblyFile(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithAssemblyFile(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String AssemblyName {
@@ -17978,26 +16564,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.AssemblyName;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the AssemblyName property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithAssemblyName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithAssemblyName(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Runtime {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Runtime;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Runtime property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithRuntime(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithRuntime(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String TaskFactory {
@@ -18006,26 +16578,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.TaskFactory;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the TaskFactory property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithTaskFactory(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithTaskFactory(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String TaskName {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.TaskName;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the TaskName property set to the specified value.</summary>
-		public RootedProjectUsingTaskElement WithTaskName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithTaskName(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -18392,52 +16950,6 @@ namespace ImmutableObjectGraph.Tests {
 		public System.String Required {
 			get { return this.required; }
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new ProjectUsingTaskParameterElement WithCondition(System.String value) {
-			return (ProjectUsingTaskParameterElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new ProjectUsingTaskParameterElement WithLabel(System.String value) {
-			return (ProjectUsingTaskParameterElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public ProjectUsingTaskParameterElement WithName(System.String value) {
-			if (value == this.Name) {
-				return this;
-			}
-		
-			return this.With(name: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Output property set to the specified value.</summary>
-		public ProjectUsingTaskParameterElement WithOutput(System.String value) {
-			if (value == this.Output) {
-				return this;
-			}
-		
-			return this.With(output: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the ParameterType property set to the specified value.</summary>
-		public ProjectUsingTaskParameterElement WithParameterType(System.String value) {
-			if (value == this.ParameterType) {
-				return this;
-			}
-		
-			return this.With(parameterType: Optional.For(value));
-		}
-		
-		/// <summary>Returns a new instance with the Required property set to the specified value.</summary>
-		public ProjectUsingTaskParameterElement WithRequired(System.String value) {
-			if (value == this.Required) {
-				return this;
-			}
-		
-			return this.With(required: Optional.For(value));
-		}
 	
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected override ProjectElement WithCore(
@@ -18649,26 +17161,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedProjectUsingTaskParameterElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedProjectUsingTaskParameterElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String Name {
@@ -18677,26 +17175,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Name;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
-		public RootedProjectUsingTaskParameterElement WithName(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithName(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Output {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Output;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Output property set to the specified value.</summary>
-		public RootedProjectUsingTaskParameterElement WithOutput(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithOutput(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.String ParameterType {
@@ -18705,26 +17189,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.ParameterType;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the ParameterType property set to the specified value.</summary>
-		public RootedProjectUsingTaskParameterElement WithParameterType(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithParameterType(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Required {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Required;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Required property set to the specified value.</summary>
-		public RootedProjectUsingTaskParameterElement WithRequired(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithRequired(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
@@ -19065,21 +17535,6 @@ namespace ImmutableObjectGraph.Tests {
 				identity: Optional.For(identity.GetValueOrDefault(DefaultInstance.Identity)));
 		}
 		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public new UsingTaskParameterGroupElement WithCondition(System.String value) {
-			return (UsingTaskParameterGroupElement)base.WithCondition(value);
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public new UsingTaskParameterGroupElement WithLabel(System.String value) {
-			return (UsingTaskParameterGroupElement)base.WithLabel(value);
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public new UsingTaskParameterGroupElement WithChildren(System.Collections.Immutable.ImmutableList<ProjectElement> value) {
-			return (UsingTaskParameterGroupElement)base.WithChildren(value);
-		}
-		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public new UsingTaskParameterGroupElement WithChildren(params ProjectElement[] values) {
 			return (UsingTaskParameterGroupElement)base.WithChildren(values);
@@ -19282,26 +17737,12 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Condition;
 			}
 		}
-		
-		/// <summary>Returns a new instance with the Condition property set to the specified value.</summary>
-		public RootedUsingTaskParameterGroupElement WithCondition(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithCondition(value);
-			return this.NewSpine(mutatedLeaf);
-		}
 	
 		public System.String Label {
 			get {
 				this.ThrowIfDefault();
 				return this.greenNode.Label;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Label property set to the specified value.</summary>
-		public RootedUsingTaskParameterGroupElement WithLabel(System.String value) {
-			this.ThrowIfDefault();
-			var mutatedLeaf = this.greenNode.WithLabel(value);
-			return this.NewSpine(mutatedLeaf);
 		}
 	
 		public System.Collections.Immutable.IImmutableList<RootedProjectElement> Children {
@@ -19313,14 +17754,6 @@ namespace ImmutableObjectGraph.Tests {
 	
 				return this.children.Value;
 			}
-		}
-		
-		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
-		public RootedUsingTaskParameterGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
-			this.ThrowIfDefault();
-			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
-			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
-			return this.NewSpine(mutatedLeaf);
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>

@@ -94,7 +94,7 @@
 		public void RecursiveMutation() {
 			RootedProjectRootElement root = CreateBasicProjectStructure().AsRoot;
 			RootedProjectItemElement aCsItem = root.Children[1].AsProjectElementContainer.Children[0].AsProjectItemElement;
-			RootedProjectItemElement aCsItemUpdated = aCsItem.WithInclude("A.cs");
+			RootedProjectItemElement aCsItemUpdated = aCsItem.With(include: "A.cs");
 			Assert.Equal("A.cs", aCsItemUpdated.Include);
 
 			RootedProjectRootElement rootUpdated = aCsItemUpdated.Root.AsProjectRootElement;

@@ -3,6 +3,7 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 	this.DefineInterfaces = true;
+	this.DefineWithMethodsPerProperty = true;
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt.inc" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt.inc" #>
