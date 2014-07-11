@@ -440,7 +440,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemDirectory ToFileSystemDirectory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
 			var newGreenNode = this.greenNode.ToFileSystemDirectory(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -498,17 +498,17 @@ namespace ImmutableObjectGraph.Tests {
 		Parent = 0x4,
 	
 		/// <summary>
-		/// The PathSegment" /> property was changed.
+		/// The PathSegment property was changed.
 		/// </summary>
 		PathSegment = 0x8,
 	
 		/// <summary>
-		/// The Data" /> property was changed.
+		/// The Data property was changed.
 		/// </summary>
 		Data = 0x10,
 	
 		/// <summary>
-		/// The Attributes" /> property was changed.
+		/// The Attributes property was changed.
 		/// </summary>
 		Attributes = 0x20,
 	
@@ -952,7 +952,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemDirectory ToFileSystemDirectory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry>>)) {
 			var newGreenNode = this.greenNode.ToFileSystemDirectory(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1718,12 +1718,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly FileSystemDirectory greenNode;
 	
 		private readonly FileSystemDirectory root;
-		private Optional<Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>> children;
 	
 		internal RootedFileSystemDirectory(FileSystemDirectory fileSystemDirectory, FileSystemDirectory root) {
 			this.greenNode = fileSystemDirectory;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -1796,7 +1796,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedFileSystemDirectory WithChildren(System.Collections.Immutable.IImmutableSet<RootedFileSystemEntry> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<FileSystemEntry>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -1938,7 +1938,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				pathSegment: pathSegment,
 				data: data,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1950,7 +1950,7 @@ namespace ImmutableObjectGraph.Tests {
 			var greenNode = FileSystemDirectory.Create(
 				pathSegment: pathSegment,
 				data: data,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			return greenNode.AsRoot;
 		}
 	

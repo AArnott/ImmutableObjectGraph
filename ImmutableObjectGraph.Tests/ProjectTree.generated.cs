@@ -1320,12 +1320,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectTree greenNode;
 	
 		private readonly ProjectTree root;
-		private Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>> children;
 	
 		internal RootedProjectTree(ProjectTree projectTree, ProjectTree root) {
 			this.greenNode = projectTree;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -1535,7 +1535,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectTree WithChildren(System.Collections.Immutable.IImmutableSet<RootedProjectTree> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectTree>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -1687,7 +1687,7 @@ namespace ImmutableObjectGraph.Tests {
 				visible: visible,
 				browseObjectProperties: browseObjectProperties,
 				capabilities: capabilities,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1709,7 +1709,7 @@ namespace ImmutableObjectGraph.Tests {
 				visible: visible,
 				browseObjectProperties: browseObjectProperties,
 				capabilities: capabilities,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>));
 			return greenNode.AsRoot;
 		}
 	
@@ -2455,12 +2455,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectItemTree greenNode;
 	
 		private readonly ProjectTree root;
-		private Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>> children;
 	
 		internal RootedProjectItemTree(ProjectItemTree projectItemTree, ProjectTree root) {
 			this.greenNode = projectItemTree;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -2662,7 +2662,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectItemTree WithChildren(System.Collections.Immutable.IImmutableSet<RootedProjectTree> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectTree>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -2859,7 +2859,7 @@ namespace ImmutableObjectGraph.Tests {
 				visible: visible,
 				browseObjectProperties: browseObjectProperties,
 				capabilities: capabilities,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
 				projectPropertiesContext: projectPropertiesContext,
 				propertySheet: propertySheet,
 				isLinked: isLinked);

@@ -1044,7 +1044,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -1058,7 +1058,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1066,7 +1066,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1074,7 +1074,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1082,7 +1082,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1090,7 +1090,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1115,7 +1115,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -1156,7 +1156,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1165,7 +1165,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -1174,7 +1174,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -1212,7 +1212,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -1232,7 +1232,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -1260,7 +1260,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -1288,7 +1288,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -2632,12 +2632,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectElementContainer greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectElementContainer(ProjectElementContainer projectElementContainer, ProjectElementContainer root) {
 			this.greenNode = projectElementContainer;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -2822,7 +2822,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectElementContainer WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -2964,7 +2964,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -3836,12 +3836,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectRootElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectRootElement(ProjectRootElement projectRootElement, ProjectElementContainer root) {
 			this.greenNode = projectRootElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -3914,7 +3914,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectRootElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -4146,7 +4146,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				fullPath: fullPath,
 				encoding: encoding,
 				toolsVersion: toolsVersion,
@@ -4644,12 +4644,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectPropertyGroupElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectPropertyGroupElement(ProjectPropertyGroupElement projectPropertyGroupElement, ProjectElementContainer root) {
 			this.greenNode = projectPropertyGroupElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -4722,7 +4722,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectPropertyGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -4864,7 +4864,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -5368,12 +5368,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectItemGroupElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectItemGroupElement(ProjectItemGroupElement projectItemGroupElement, ProjectElementContainer root) {
 			this.greenNode = projectItemGroupElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -5446,7 +5446,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectItemGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -5588,7 +5588,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -6092,12 +6092,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectChooseElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectChooseElement(ProjectChooseElement projectChooseElement, ProjectElementContainer root) {
 			this.greenNode = projectChooseElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -6170,7 +6170,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectChooseElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -6312,7 +6312,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -6816,12 +6816,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectOtherwiseElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectOtherwiseElement(ProjectOtherwiseElement projectOtherwiseElement, ProjectElementContainer root) {
 			this.greenNode = projectOtherwiseElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -6894,7 +6894,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectOtherwiseElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -7036,7 +7036,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -7540,12 +7540,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectWhenElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectWhenElement(ProjectWhenElement projectWhenElement, ProjectElementContainer root) {
 			this.greenNode = projectWhenElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -7618,7 +7618,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectWhenElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -7760,7 +7760,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8431,7 +8431,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -8445,7 +8445,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8453,7 +8453,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8461,7 +8461,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8469,7 +8469,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8477,7 +8477,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8492,7 +8492,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -8533,7 +8533,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8542,7 +8542,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -8551,7 +8551,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -8589,7 +8589,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -8609,7 +8609,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -8637,7 +8637,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -8665,7 +8665,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -9320,12 +9320,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectItemElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectItemElement(ProjectItemElement projectItemElement, ProjectElementContainer root) {
 			this.greenNode = projectItemElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -9398,7 +9398,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectItemElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -9645,7 +9645,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				exclude: exclude,
 				include: include,
 				itemType: itemType,
@@ -10309,7 +10309,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -10323,7 +10323,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10331,7 +10331,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10339,7 +10339,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10347,7 +10347,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10355,7 +10355,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10380,7 +10380,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -10411,7 +10411,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10420,7 +10420,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -10429,7 +10429,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10467,7 +10467,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -10487,7 +10487,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -10515,7 +10515,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -10543,7 +10543,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10904,7 +10904,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -10918,7 +10918,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10926,7 +10926,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10934,7 +10934,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10942,7 +10942,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10950,7 +10950,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -10975,7 +10975,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -11008,7 +11008,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11017,7 +11017,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -11026,7 +11026,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11064,7 +11064,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -11084,7 +11084,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -11112,7 +11112,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -11140,7 +11140,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11501,7 +11501,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -11515,7 +11515,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11523,7 +11523,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11531,7 +11531,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11539,7 +11539,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11547,7 +11547,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11572,7 +11572,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -11605,7 +11605,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11614,7 +11614,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -11623,7 +11623,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11661,7 +11661,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -11681,7 +11681,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -11709,7 +11709,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -11737,7 +11737,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -11999,12 +11999,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectImportGroupElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectImportGroupElement(ProjectImportGroupElement projectImportGroupElement, ProjectElementContainer root) {
 			this.greenNode = projectImportGroupElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -12077,7 +12077,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectImportGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -12219,7 +12219,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -12804,12 +12804,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectItemDefinitionElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectItemDefinitionElement(ProjectItemDefinitionElement projectItemDefinitionElement, ProjectElementContainer root) {
 			this.greenNode = projectItemDefinitionElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -12882,7 +12882,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectItemDefinitionElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -13039,7 +13039,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -13542,12 +13542,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectItemDefinitionGroupElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectItemDefinitionGroupElement(ProjectItemDefinitionGroupElement projectItemDefinitionGroupElement, ProjectElementContainer root) {
 			this.greenNode = projectItemDefinitionGroupElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -13620,7 +13620,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectItemDefinitionGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -13762,7 +13762,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14272,7 +14272,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -14286,7 +14286,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14294,7 +14294,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14302,7 +14302,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14310,7 +14310,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14318,7 +14318,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14343,7 +14343,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -14384,7 +14384,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14393,7 +14393,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -14402,7 +14402,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -14434,7 +14434,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -14454,7 +14454,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -14482,7 +14482,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -14510,7 +14510,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15143,7 +15143,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -15157,7 +15157,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15165,7 +15165,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15173,7 +15173,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15181,7 +15181,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15189,7 +15189,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15214,7 +15214,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -15255,7 +15255,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15264,7 +15264,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -15273,7 +15273,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -15295,7 +15295,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -15315,7 +15315,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -15343,7 +15343,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -15371,7 +15371,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -16078,12 +16078,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectTargetElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectTargetElement(ProjectTargetElement projectTargetElement, ProjectElementContainer root) {
 			this.greenNode = projectTargetElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -16156,7 +16156,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectTargetElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -16418,7 +16418,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				afterTargets: afterTargets,
 				beforeTargets: beforeTargets,
 				dependsOnTargets: dependsOnTargets,
@@ -17151,12 +17151,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectTaskElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectTaskElement(ProjectTaskElement projectTaskElement, ProjectElementContainer root) {
 			this.greenNode = projectTaskElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -17229,7 +17229,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectTaskElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -17431,7 +17431,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				continueOnError: continueOnError,
 				mSBuildArchitecture: mSBuildArchitecture,
 				mSBuildRuntime: mSBuildRuntime,
@@ -18098,7 +18098,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -18112,7 +18112,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18120,7 +18120,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18128,7 +18128,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18136,7 +18136,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18144,7 +18144,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18169,7 +18169,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -18210,7 +18210,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18219,7 +18219,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -18228,7 +18228,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18266,7 +18266,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -18286,7 +18286,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -18304,7 +18304,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -18332,7 +18332,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -18935,12 +18935,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly ProjectUsingTaskElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedProjectUsingTaskElement(ProjectUsingTaskElement projectUsingTaskElement, ProjectElementContainer root) {
 			this.greenNode = projectUsingTaskElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -19013,7 +19013,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedProjectUsingTaskElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -19245,7 +19245,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				architecture: architecture,
 				assemblyFile: assemblyFile,
 				assemblyName: assemblyName,
@@ -20046,7 +20046,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
 			var newGreenNode = this.greenNode.ToProjectRootElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					fullPath: fullPath,
 					encoding: encoding,
 					toolsVersion: toolsVersion,
@@ -20060,7 +20060,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20068,7 +20068,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20076,7 +20076,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement ToProjectChooseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20084,7 +20084,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20092,7 +20092,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement ToProjectWhenElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20117,7 +20117,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					exclude: exclude,
 					include: include,
 					itemType: itemType,
@@ -20158,7 +20158,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20167,7 +20167,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
@@ -20176,7 +20176,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20214,7 +20214,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTargetElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					afterTargets: afterTargets,
 					beforeTargets: beforeTargets,
 					dependsOnTargets: dependsOnTargets,
@@ -20234,7 +20234,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					continueOnError: continueOnError,
 					mSBuildArchitecture: mSBuildArchitecture,
 					mSBuildRuntime: mSBuildRuntime,
@@ -20262,7 +20262,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
 			var newGreenNode = this.greenNode.ToProjectUsingTaskElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					architecture: architecture,
 					assemblyFile: assemblyFile,
 					assemblyName: assemblyName,
@@ -20276,7 +20276,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableList<RootedProjectElement>>)) {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
-					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
@@ -20538,12 +20538,12 @@ namespace ImmutableObjectGraph.Tests {
 		private readonly UsingTaskParameterGroupElement greenNode;
 	
 		private readonly ProjectElementContainer root;
-		private Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>> children;
 	
 		internal RootedUsingTaskParameterGroupElement(UsingTaskParameterGroupElement usingTaskParameterGroupElement, ProjectElementContainer root) {
 			this.greenNode = usingTaskParameterGroupElement;
 			this.root = root;
-			this.children = default(Optional<Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -20616,7 +20616,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
 		public RootedUsingTaskParameterGroupElement WithChildren(System.Collections.Immutable.IImmutableList<RootedProjectElement> value) {
 			this.ThrowIfDefault();
-			var adapter = (Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)value;
 			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
 			return this.NewSpine(mutatedLeaf);
 		}
@@ -20758,7 +20758,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.With(
 				condition: condition,
 				label: label,
-				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
 			return newGreenNode.WithRoot(newRoot);
 		}
