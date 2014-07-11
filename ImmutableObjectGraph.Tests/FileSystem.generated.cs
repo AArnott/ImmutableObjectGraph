@@ -35,7 +35,8 @@ namespace ImmutableObjectGraph.Tests {
 		protected FileSystemEntry(
 			System.Int32 identity,
 			System.String pathSegment,
-			RichData data)
+			RichData data,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.pathSegment = pathSegment;
@@ -482,14 +483,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String pathSegment,
 			RichData data,
-			System.Collections.Immutable.ImmutableHashSet<System.String> attributes)
+			System.Collections.Immutable.ImmutableHashSet<System.String> attributes,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				pathSegment: pathSegment,
 				data: data)
 		{
 			this.attributes = attributes;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static FileSystemFile Create(
@@ -640,10 +644,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new FileSystemFile(
-				default(System.Int32), 
-				template.PathSegment, 
-				template.Data, 
-				template.Attributes);
+				default(System.Int32),
+				template.PathSegment,
+				template.Data,
+				template.Attributes,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -912,14 +917,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.String pathSegment,
 			RichData data,
 			System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>))
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<FileSystemEntry, System.Int32>>>),
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				pathSegment: pathSegment,
 				data: data)
 		{
 			this.children = children;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 			this.InitializeLookup(lookupTable);
 		}
 	
@@ -1081,10 +1089,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new FileSystemDirectory(
-				default(System.Int32), 
-				template.PathSegment, 
-				template.Data, 
-				template.Children);
+				default(System.Int32),
+				template.PathSegment,
+				template.Data,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -1918,11 +1927,14 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the RichData class.</summary>
 		protected RichData(
 			System.Int32 identity,
-			System.Int32 someCoolProperty)
+			System.Int32 someCoolProperty,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.someCoolProperty = someCoolProperty;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static RichData Create(
@@ -1999,8 +2011,9 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new RichData(
-				default(System.Int32), 
-				template.SomeCoolProperty);
+				default(System.Int32),
+				template.SomeCoolProperty,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

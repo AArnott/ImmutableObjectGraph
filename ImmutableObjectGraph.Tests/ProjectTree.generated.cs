@@ -68,7 +68,8 @@ namespace ImmutableObjectGraph.Tests {
 			Microsoft.VisualStudio.ProjectSystem.Properties.IRule browseObjectProperties,
 			System.Collections.Immutable.ImmutableHashSet<System.String> capabilities,
 			System.Collections.Immutable.ImmutableSortedSet<ProjectTree> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>))
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>),
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.caption = caption;
@@ -79,7 +80,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.browseObjectProperties = browseObjectProperties;
 			this.capabilities = capabilities;
 			this.children = children;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 			this.InitializeLookup(lookupTable);
 		}
 	
@@ -413,15 +416,16 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectTree(
-				default(System.Int32), 
-				template.Caption, 
-				template.FilePath, 
-				template.Icon, 
-				template.ExpandedIcon, 
-				template.Visible, 
-				template.BrowseObjectProperties, 
-				template.Capabilities, 
-				template.Children);
+				default(System.Int32),
+				template.Caption,
+				template.FilePath,
+				template.Icon,
+				template.ExpandedIcon,
+				template.Visible,
+				template.BrowseObjectProperties,
+				template.Capabilities,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -1904,7 +1908,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Collections.Immutable.ImmutableSortedSet<ProjectTree> children,
 			Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext projectPropertiesContext,
 			Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet propertySheet,
-			System.Boolean isLinked)
+			System.Boolean isLinked,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				caption: caption,
@@ -1919,7 +1924,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.projectPropertiesContext = projectPropertiesContext;
 			this.propertySheet = propertySheet;
 			this.isLinked = isLinked;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectItemTree Create(
@@ -2256,18 +2263,19 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemTree(
-				default(System.Int32), 
-				template.Caption, 
-				template.FilePath, 
-				template.Icon, 
-				template.ExpandedIcon, 
-				template.Visible, 
-				template.BrowseObjectProperties, 
-				template.Capabilities, 
-				template.Children, 
-				template.ProjectPropertiesContext, 
-				template.PropertySheet, 
-				template.IsLinked);
+				default(System.Int32),
+				template.Caption,
+				template.FilePath,
+				template.Icon,
+				template.ExpandedIcon,
+				template.Visible,
+				template.BrowseObjectProperties,
+				template.Capabilities,
+				template.Children,
+				template.ProjectPropertiesContext,
+				template.PropertySheet,
+				template.IsLinked,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

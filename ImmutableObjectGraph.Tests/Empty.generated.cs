@@ -24,10 +24,13 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the Empty class.</summary>
 		protected Empty(
-			System.Int32 identity)
+			System.Int32 identity,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static Empty Create() {
@@ -57,7 +60,8 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Empty(
-				default(System.Int32));
+				default(System.Int32),
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -103,11 +107,14 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the EmptyDerived class.</summary>
 		protected EmptyDerived(
-			System.Int32 identity)
+			System.Int32 identity,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static EmptyDerived Create() {
@@ -128,7 +135,8 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new EmptyDerived(
-				default(System.Int32));
+				default(System.Int32),
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -159,12 +167,15 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the NotSoEmptyDerived class.</summary>
 		protected NotSoEmptyDerived(
 			System.Int32 identity,
-			System.Boolean oneField)
+			System.Boolean oneField,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity)
 		{
 			this.oneField = oneField;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static NotSoEmptyDerived Create(
@@ -232,8 +243,9 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new NotSoEmptyDerived(
-				default(System.Int32), 
-				template.OneField);
+				default(System.Int32),
+				template.OneField,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -274,11 +286,14 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the NonEmptyBase class.</summary>
 		protected NonEmptyBase(
 			System.Int32 identity,
-			System.Boolean oneField)
+			System.Boolean oneField,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.oneField = oneField;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static NonEmptyBase Create(
@@ -355,8 +370,9 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new NonEmptyBase(
-				default(System.Int32), 
-				template.OneField);
+				default(System.Int32),
+				template.OneField,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -395,12 +411,15 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the EmptyDerivedFromNonEmptyBase class.</summary>
 		protected EmptyDerivedFromNonEmptyBase(
 			System.Int32 identity,
-			System.Boolean oneField)
+			System.Boolean oneField,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				oneField: oneField)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static EmptyDerivedFromNonEmptyBase Create(
@@ -458,8 +477,9 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new EmptyDerivedFromNonEmptyBase(
-				default(System.Int32), 
-				template.OneField);
+				default(System.Int32),
+				template.OneField,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -497,7 +517,8 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the AbstractNonEmpty class.</summary>
 		protected AbstractNonEmpty(
 			System.Int32 identity,
-			System.Boolean oneField)
+			System.Boolean oneField,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.oneField = oneField;
@@ -555,12 +576,15 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the EmptyDerivedFromAbstract class.</summary>
 		protected EmptyDerivedFromAbstract(
 			System.Int32 identity,
-			System.Boolean oneField)
+			System.Boolean oneField,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				oneField: oneField)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static EmptyDerivedFromAbstract Create(
@@ -618,8 +642,9 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new EmptyDerivedFromAbstract(
-				default(System.Int32), 
-				template.OneField);
+				default(System.Int32),
+				template.OneField,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

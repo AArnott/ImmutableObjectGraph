@@ -28,11 +28,14 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the Family class.</summary>
 		protected Family(
 			System.Int32 identity,
-			System.Collections.Immutable.ImmutableSortedSet<Person> members)
+			System.Collections.Immutable.ImmutableSortedSet<Person> members,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.members = members;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static Family Create(
@@ -155,8 +158,9 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Family(
-				default(System.Int32), 
-				template.Members);
+				default(System.Int32),
+				template.Members,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -225,13 +229,16 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String name,
 			System.Int32 age,
-			Watch watch)
+			Watch watch,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.name = name;
 			this.age = age;
 			this.watch = watch;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static Person Create(
@@ -352,10 +359,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Person(
-				default(System.Int32), 
-				template.Name, 
-				template.Age, 
-				template.Watch);
+				default(System.Int32),
+				template.Name,
+				template.Age,
+				template.Watch,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -454,12 +462,15 @@ namespace ImmutableObjectGraph.Tests {
 		protected Watch(
 			System.Int32 identity,
 			System.String color,
-			System.Int32 size)
+			System.Int32 size,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.color = color;
 			this.size = size;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static Watch Create(
@@ -558,9 +569,10 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Watch(
-				default(System.Int32), 
-				template.Color, 
-				template.Size);
+				default(System.Int32),
+				template.Color,
+				template.Size,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

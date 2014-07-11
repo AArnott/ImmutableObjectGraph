@@ -26,7 +26,8 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the XmlNode class.</summary>
 		protected XmlNode(
 			System.Int32 identity,
-			System.String localName)
+			System.String localName,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.localName = localName;
@@ -143,14 +144,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.String localName,
 			System.String namespaceName,
 			System.Collections.Immutable.ImmutableList<XmlNode> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>))
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>),
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				localName: localName)
 		{
 			this.namespaceName = namespaceName;
 			this.children = children;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 			this.InitializeLookup(lookupTable);
 		}
 	
@@ -318,10 +322,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlElement(
-				default(System.Int32), 
-				template.LocalName, 
-				template.NamespaceName, 
-				template.Children);
+				default(System.Int32),
+				template.LocalName,
+				template.NamespaceName,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -840,7 +845,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String localName,
 			System.String namespaceName,
 			System.Collections.Immutable.ImmutableList<XmlNode> children,
-			System.String content)
+			System.String content,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				localName: localName,
@@ -848,7 +854,9 @@ namespace ImmutableObjectGraph.Tests {
 				children: children)
 		{
 			this.content = content;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static XmlElementWithContent Create(
@@ -1022,11 +1030,12 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlElementWithContent(
-				default(System.Int32), 
-				template.LocalName, 
-				template.NamespaceName, 
-				template.Children, 
-				template.Content);
+				default(System.Int32),
+				template.LocalName,
+				template.NamespaceName,
+				template.Children,
+				template.Content,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -1082,14 +1091,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String localName,
 			System.String namespaceName,
-			System.String value)
+			System.String value,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				localName: localName)
 		{
 			this.namespaceName = namespaceName;
 			this.value = value;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static XmlAttribute Create(
@@ -1200,10 +1212,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlAttribute(
-				default(System.Int32), 
-				template.LocalName, 
-				template.NamespaceName, 
-				template.Value);
+				default(System.Int32),
+				template.LocalName,
+				template.NamespaceName,
+				template.Value,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

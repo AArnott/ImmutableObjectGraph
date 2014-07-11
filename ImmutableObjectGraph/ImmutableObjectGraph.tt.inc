@@ -111,7 +111,8 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		if (templateType.Equals(templateType.RecursiveParent)) {
 			WriteParameters(new [] { templateType.LookupTableField }, ParameterStyle.Optional, concatenated: true);
 		}
-#>)
+#>,
+		ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 <# if (templateType.HasAncestor) { #>
 		: base(<# WriteArguments(templateType.RequiredIdentityField.Concat(templateType.AllFields.Where(f => f.DeclaringType != templateType)), ArgSource.Argument); #>)
 <# } #>
@@ -131,7 +132,9 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 
 	if (!templateType.IsAbstract) {
 #>
-		this.Validate();
+		if (!skipValidation.Value) {
+			this.Validate();
+		}
 <#	} #>
 <#	OnHandleType(templateType, HandleTypePosition.InsideConstructor); #>
 	}
@@ -273,12 +276,13 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 		WriteLine("");
 		Write("default({0})", templateType.RequiredIdentityField.TypeName);
 		foreach(var field in templateType.AllFields) {
-			Write(", ");
-			WriteLine("");
+			WriteLine(",");
 			Write("template.");
 			Write(field.NamePascalCase);
 		}
 
+		WriteLine(",");
+		Write("skipValidation: true");
 		this.PopIndent();
 #>);
 	}

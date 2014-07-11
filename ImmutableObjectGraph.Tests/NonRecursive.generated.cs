@@ -22,7 +22,8 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 	
 		/// <summary>Initializes a new instance of the RootRecursive class.</summary>
 		protected RootRecursive(
-			System.Int32 identity)
+			System.Int32 identity,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 		}
@@ -81,7 +82,8 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		protected RecursiveContainer(
 			System.Int32 identity,
 			System.Collections.Immutable.ImmutableList<RootRecursive> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>>))
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>>),
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity)
 		{
@@ -628,12 +630,15 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// <summary>Initializes a new instance of the ContainerOfNonRecursiveCollection class.</summary>
 		protected ContainerOfNonRecursiveCollection(
 			System.Int32 identity,
-			System.Collections.Immutable.ImmutableList<NonRecursiveElement> metadata)
+			System.Collections.Immutable.ImmutableList<NonRecursiveElement> metadata,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity)
 		{
 			this.metadata = metadata;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ContainerOfNonRecursiveCollection Create(
@@ -747,8 +752,9 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ContainerOfNonRecursiveCollection(
-				default(System.Int32), 
-				template.Metadata);
+				default(System.Int32),
+				template.Metadata,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -783,13 +789,16 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		protected NonRecursiveElement(
 			System.Int32 identity,
 			System.String name,
-			System.String value)
+			System.String value,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity)
 		{
 			this.name = name;
 			this.value = value;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static NonRecursiveElement Create(
@@ -879,9 +888,10 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new NonRecursiveElement(
-				default(System.Int32), 
-				template.Name, 
-				template.Value);
+				default(System.Int32),
+				template.Name,
+				template.Value,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

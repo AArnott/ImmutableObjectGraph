@@ -30,7 +30,8 @@ namespace ImmutableObjectGraph.Tests {
 		protected ProjectElement(
 			System.Int32 identity,
 			System.String condition,
-			System.String label)
+			System.String label,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.condition = condition;
@@ -1529,7 +1530,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>>))
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>>),
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -3205,7 +3207,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String toolsVersion,
 			System.String defaultTargets,
 			System.String initialTargets,
-			System.Boolean treatAsLocalProperty)
+			System.Boolean treatAsLocalProperty,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -3218,7 +3221,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.defaultTargets = defaultTargets;
 			this.initialTargets = initialTargets;
 			this.treatAsLocalProperty = treatAsLocalProperty;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectRootElement Create(
@@ -3504,16 +3509,17 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectRootElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children, 
-				template.FullPath, 
-				template.Encoding, 
-				template.ToolsVersion, 
-				template.DefaultTargets, 
-				template.InitialTargets, 
-				template.TreatAsLocalProperty);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				template.FullPath,
+				template.Encoding,
+				template.ToolsVersion,
+				template.DefaultTargets,
+				template.InitialTargets,
+				template.TreatAsLocalProperty,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -4209,14 +4215,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectPropertyGroupElement Create(
@@ -4357,10 +4366,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectPropertyGroupElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -4911,14 +4921,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectItemGroupElement Create(
@@ -5059,10 +5072,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemGroupElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -5613,14 +5627,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectChooseElement Create(
@@ -5761,10 +5778,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectChooseElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -6315,14 +6333,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectOtherwiseElement Create(
@@ -6463,10 +6484,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectOtherwiseElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -7017,14 +7039,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectWhenElement Create(
@@ -7165,10 +7190,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectWhenElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -7726,7 +7752,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String condition,
 			System.String label,
 			System.String name,
-			System.String value)
+			System.String value,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -7734,7 +7761,9 @@ namespace ImmutableObjectGraph.Tests {
 		{
 			this.name = name;
 			this.value = value;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectPropertyElement Create(
@@ -7861,11 +7890,12 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectPropertyElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Name, 
-				template.Value);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Name,
+				template.Value,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -8355,7 +8385,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String keepDuplicates,
 			System.String keepMetadata,
 			System.String remove,
-			System.String removeMetadata)
+			System.String removeMetadata,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -8369,7 +8400,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.keepMetadata = keepMetadata;
 			this.remove = remove;
 			this.removeMetadata = removeMetadata;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectItemElement Create(
@@ -8677,17 +8710,18 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children, 
-				template.Exclude, 
-				template.Include, 
-				template.ItemType, 
-				template.KeepDuplicates, 
-				template.KeepMetadata, 
-				template.Remove, 
-				template.RemoveMetadata);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				template.Exclude,
+				template.Include,
+				template.ItemType,
+				template.KeepDuplicates,
+				template.KeepMetadata,
+				template.Remove,
+				template.RemoveMetadata,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -9412,7 +9446,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String condition,
 			System.String label,
 			System.String name,
-			System.String value)
+			System.String value,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -9420,7 +9455,9 @@ namespace ImmutableObjectGraph.Tests {
 		{
 			this.name = name;
 			this.value = value;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectMetadataElement Create(
@@ -9547,11 +9584,12 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectMetadataElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Name, 
-				template.Value);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Name,
+				template.Value,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -10016,14 +10054,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.String content)
+			System.String content,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label)
 		{
 			this.content = content;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectExtensionsElement Create(
@@ -10128,10 +10169,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectExtensionsElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Content);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Content,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -10574,14 +10616,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.String project)
+			System.String project,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label)
 		{
 			this.project = project;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectImportElement Create(
@@ -10686,10 +10731,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectImportElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Project);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Project,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -11129,14 +11175,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectImportGroupElement Create(
@@ -11277,10 +11326,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectImportGroupElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -11835,7 +11885,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
-			System.String itemType)
+			System.String itemType,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -11843,7 +11894,9 @@ namespace ImmutableObjectGraph.Tests {
 				children: children)
 		{
 			this.itemType = itemType;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectItemDefinitionElement Create(
@@ -12019,11 +12072,12 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemDefinitionElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children, 
-				template.ItemType);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				template.ItemType,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -12609,14 +12663,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectItemDefinitionGroupElement Create(
@@ -12757,10 +12814,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemDefinitionGroupElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -13310,13 +13368,16 @@ namespace ImmutableObjectGraph.Tests {
 		protected ProjectOnErrorElement(
 			System.Int32 identity,
 			System.String condition,
-			System.String label)
+			System.String label,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectOnErrorElement Create(
@@ -13388,9 +13449,10 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectOnErrorElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -13815,7 +13877,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Boolean isOutputProperty,
 			System.String itemType,
 			System.String propertyName,
-			System.String taskParameter)
+			System.String taskParameter,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -13826,7 +13889,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.itemType = itemType;
 			this.propertyName = propertyName;
 			this.taskParameter = taskParameter;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectOutputElement Create(
@@ -14019,14 +14084,15 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectOutputElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.IsOutputItem, 
-				template.IsOutputProperty, 
-				template.ItemType, 
-				template.PropertyName, 
-				template.TaskParameter);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.IsOutputItem,
+				template.IsOutputProperty,
+				template.ItemType,
+				template.PropertyName,
+				template.TaskParameter,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -14586,7 +14652,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String keepDuplicateOutputs,
 			System.String name,
 			System.String outputs,
-			System.String returns)
+			System.String returns,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -14601,7 +14668,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.name = name;
 			this.outputs = outputs;
 			this.returns = returns;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectTargetElement Create(
@@ -14931,18 +15000,19 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectTargetElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children, 
-				template.AfterTargets, 
-				template.BeforeTargets, 
-				template.DependsOnTargets, 
-				template.Inputs, 
-				template.KeepDuplicateOutputs, 
-				template.Name, 
-				template.Outputs, 
-				template.Returns);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				template.AfterTargets,
+				template.BeforeTargets,
+				template.DependsOnTargets,
+				template.Inputs,
+				template.KeepDuplicateOutputs,
+				template.Name,
+				template.Outputs,
+				template.Returns,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -15698,7 +15768,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String continueOnError,
 			System.String mSBuildArchitecture,
 			System.String mSBuildRuntime,
-			System.String name)
+			System.String name,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -15709,7 +15780,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.mSBuildArchitecture = mSBuildArchitecture;
 			this.mSBuildRuntime = mSBuildRuntime;
 			this.name = name;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectTaskElement Create(
@@ -15951,14 +16024,15 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectTaskElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children, 
-				template.ContinueOnError, 
-				template.MSBuildArchitecture, 
-				template.MSBuildRuntime, 
-				template.Name);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				template.ContinueOnError,
+				template.MSBuildArchitecture,
+				template.MSBuildRuntime,
+				template.Name,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -16617,7 +16691,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String condition,
 			System.String label,
 			System.String evaluate,
-			System.String taskBody)
+			System.String taskBody,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -16625,7 +16700,9 @@ namespace ImmutableObjectGraph.Tests {
 		{
 			this.evaluate = evaluate;
 			this.taskBody = taskBody;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectUsingTaskBodyElement Create(
@@ -16752,11 +16829,12 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectUsingTaskBodyElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Evaluate, 
-				template.TaskBody);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Evaluate,
+				template.TaskBody,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -17242,7 +17320,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String assemblyName,
 			System.String runtime,
 			System.String taskFactory,
-			System.String taskName)
+			System.String taskName,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -17255,7 +17334,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.runtime = runtime;
 			this.taskFactory = taskFactory;
 			this.taskName = taskName;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectUsingTaskElement Create(
@@ -17541,16 +17622,17 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectUsingTaskElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children, 
-				template.Architecture, 
-				template.AssemblyFile, 
-				template.AssemblyName, 
-				template.Runtime, 
-				template.TaskFactory, 
-				template.TaskName);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				template.Architecture,
+				template.AssemblyFile,
+				template.AssemblyName,
+				template.Runtime,
+				template.TaskFactory,
+				template.TaskName,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -18261,7 +18343,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String name,
 			System.String output,
 			System.String parameterType,
-			System.String required)
+			System.String required,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
@@ -18271,7 +18354,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.output = output;
 			this.parameterType = parameterType;
 			this.required = required;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ProjectUsingTaskParameterElement Create(
@@ -18442,13 +18527,14 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectUsingTaskParameterElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Name, 
-				template.Output, 
-				template.ParameterType, 
-				template.Required);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Name,
+				template.Output,
+				template.ParameterType,
+				template.Required,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -18954,14 +19040,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.String condition,
 			System.String label,
-			System.Collections.Immutable.ImmutableList<ProjectElement> children)
+			System.Collections.Immutable.ImmutableList<ProjectElement> children,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				condition: condition,
 				label: label,
 				children: children)
 		{
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static UsingTaskParameterGroupElement Create(
@@ -19102,10 +19191,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new UsingTaskParameterGroupElement(
-				default(System.Int32), 
-				template.Condition, 
-				template.Label, 
-				template.Children);
+				default(System.Int32),
+				template.Condition,
+				template.Label,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

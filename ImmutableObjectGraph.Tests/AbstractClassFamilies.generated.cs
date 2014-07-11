@@ -30,7 +30,8 @@ namespace ImmutableObjectGraph.Tests {
 		protected Abstract1(
 			System.Int32 identity,
 			System.Int32 abstract1Field1,
-			System.Int32 abstract1Field2)
+			System.Int32 abstract1Field2,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.abstract1Field1 = abstract1Field1;
@@ -126,7 +127,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 abstract1Field1,
 			System.Int32 abstract1Field2,
 			System.Int32 abstract2Field1,
-			System.Int32 abstract2Field2)
+			System.Int32 abstract2Field2,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				abstract1Field1: abstract1Field1,
@@ -244,7 +246,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 abstract2Field1,
 			System.Int32 abstract2Field2,
 			System.Int32 concreteField1,
-			System.Int32 concreteField2)
+			System.Int32 concreteField2,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				abstract1Field1: abstract1Field1,
@@ -254,7 +257,9 @@ namespace ImmutableObjectGraph.Tests {
 		{
 			this.concreteField1 = concreteField1;
 			this.concreteField2 = concreteField2;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ConcreteOf2Abstracts Create(
@@ -422,13 +427,14 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ConcreteOf2Abstracts(
-				default(System.Int32), 
-				template.Abstract1Field1, 
-				template.Abstract1Field2, 
-				template.Abstract2Field1, 
-				template.Abstract2Field2, 
-				template.ConcreteField1, 
-				template.ConcreteField2);
+				default(System.Int32),
+				template.Abstract1Field1,
+				template.Abstract1Field2,
+				template.Abstract2Field1,
+				template.Abstract2Field2,
+				template.ConcreteField1,
+				template.ConcreteField2,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

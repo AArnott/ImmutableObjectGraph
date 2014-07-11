@@ -28,11 +28,14 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Initializes a new instance of the A class.</summary>
 		protected A(
 			System.Int32 identity,
-			System.Int32 field1)
+			System.Int32 field1,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.field1 = field1;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static A Create(
@@ -109,8 +112,9 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new A(
-				default(System.Int32), 
-				template.Field1);
+				default(System.Int32),
+				template.Field1,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -193,13 +197,16 @@ namespace ImmutableObjectGraph.Tests {
 		protected B(
 			System.Int32 identity,
 			System.Int32 field1,
-			System.Int32 field2)
+			System.Int32 field2,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				field1: field1)
 		{
 			this.field2 = field2;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static B Create(
@@ -288,9 +295,10 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new B(
-				default(System.Int32), 
-				template.Field1, 
-				template.Field2);
+				default(System.Int32),
+				template.Field1,
+				template.Field2,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -381,14 +389,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.Int32 field1,
 			System.Int32 field2,
-			System.Int32 field3)
+			System.Int32 field3,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				field1: field1,
 				field2: field2)
 		{
 			this.field3 = field3;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static C1 Create(
@@ -500,10 +511,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new C1(
-				default(System.Int32), 
-				template.Field1, 
-				template.Field2, 
-				template.Field3);
+				default(System.Int32),
+				template.Field1,
+				template.Field2,
+				template.Field3,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -551,14 +563,17 @@ namespace ImmutableObjectGraph.Tests {
 			System.Int32 identity,
 			System.Int32 field1,
 			System.Int32 field2,
-			System.Int32 field3)
+			System.Int32 field3,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				field1: field1,
 				field2: field2)
 		{
 			this.field3 = field3;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static C2 Create(
@@ -670,10 +685,11 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new C2(
-				default(System.Int32), 
-				template.Field1, 
-				template.Field2, 
-				template.Field3);
+				default(System.Int32),
+				template.Field1,
+				template.Field2,
+				template.Field3,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

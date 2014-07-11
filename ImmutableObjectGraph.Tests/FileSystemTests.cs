@@ -7,6 +7,7 @@
 	using System.Linq;
 	using System.Text;
 	using System.Threading.Tasks;
+	using Validation;
 	using Xunit;
 
 	public class FileSystemTests {
@@ -447,6 +448,11 @@
 			Assert.Equal(FileSystemEntryChangedProperties.Attributes, changesList[0].Changes);
 		}
 
+		[Fact]
+		public void EmptyPathSegment() {
+			Assert.Throws<ArgumentNullException>(() => FileSystemDirectory.Create(null));
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
@@ -549,6 +555,10 @@
 
 		static partial void CreateDefaultTemplate(ref FileSystemDirectory.Template template) {
 			template.Children = ImmutableSortedSet.Create<FileSystemEntry>(SiblingComparer.Instance);
+		}
+
+		partial void Validate() {
+			Requires.NotNullOrEmpty(this.PathSegment, "PathSegment");
 		}
 	}
 

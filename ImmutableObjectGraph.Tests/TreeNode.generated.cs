@@ -45,7 +45,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.Boolean visible,
 			System.Collections.Immutable.ImmutableHashSet<System.String> attributes,
 			System.Collections.Immutable.ImmutableList<TreeNode> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>>))
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<TreeNode, System.Int32>>>),
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.caption = caption;
@@ -53,7 +54,9 @@ namespace ImmutableObjectGraph.Tests {
 			this.visible = visible;
 			this.attributes = attributes;
 			this.children = children;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 			this.InitializeLookup(lookupTable);
 		}
 	
@@ -321,12 +324,13 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new TreeNode(
-				default(System.Int32), 
-				template.Caption, 
-				template.FilePath, 
-				template.Visible, 
-				template.Attributes, 
-				template.Children);
+				default(System.Int32),
+				template.Caption,
+				template.FilePath,
+				template.Visible,
+				template.Attributes,
+				template.Children,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>

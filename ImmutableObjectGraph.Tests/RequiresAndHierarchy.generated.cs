@@ -32,12 +32,15 @@ namespace ImmutableObjectGraph.Tests {
 		protected ReqAndHierL1(
 			System.Int32 identity,
 			System.String l1Field1,
-			System.String l1Field2)
+			System.String l1Field2,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.l1Field1 = l1Field1;
 			this.l1Field2 = l1Field2;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ReqAndHierL1 Create(
@@ -136,9 +139,10 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ReqAndHierL1(
-				default(System.Int32), 
-				template.L1Field1, 
-				template.L1Field2);
+				default(System.Int32),
+				template.L1Field1,
+				template.L1Field2,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -198,7 +202,8 @@ namespace ImmutableObjectGraph.Tests {
 			System.String l1Field1,
 			System.String l1Field2,
 			System.String l2Field1,
-			System.String l2Field2)
+			System.String l2Field2,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
 				l1Field1: l1Field1,
@@ -206,7 +211,9 @@ namespace ImmutableObjectGraph.Tests {
 		{
 			this.l2Field1 = l2Field1;
 			this.l2Field2 = l2Field2;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static ReqAndHierL2 Create(
@@ -333,11 +340,12 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ReqAndHierL2(
-				default(System.Int32), 
-				template.L1Field1, 
-				template.L1Field2, 
-				template.L2Field1, 
-				template.L2Field2);
+				default(System.Int32),
+				template.L1Field1,
+				template.L1Field2,
+				template.L2Field1,
+				template.L2Field2,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
