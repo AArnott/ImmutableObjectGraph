@@ -1,8 +1,8 @@
 ﻿<#@ assembly name="System.Core" #>
 <#@ assembly name="System.Runtime" #>
 <#@ assembly name="System.Data.Entity.Design" #>
-<#@ assembly name="$(ProjectDir)..\packages\Microsoft.Bcl.Immutable.1.0.27\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll" #>
-<#@ assembly name="$(ProjectDir)bin\debug\ImmutableObjectGraph.dll" #>
+<#@ assembly name="$(SolutionDir)packages\Microsoft.Bcl.Immutable.1.0.27\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)ImmutableObjectGraph.dll" #>
 <#@ Import Namespace="ImmutableObjectGraph" #>
 <#@ Import namespace="System.Globalization" #>
 <#@ Import Namespace="System.Collections.Generic" #>
@@ -12,14 +12,14 @@
 <#@ Import Namespace="System.Reflection" #>
 <#@ Import namespace="System.Text" #>
 <#@ Import namespace="System.Data.Entity.Design.PluralizationServices" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt.inc" #>
 <#
 	this.PluralService = PluralizationService.CreateService(CultureInfo.CurrentCulture);
 #>

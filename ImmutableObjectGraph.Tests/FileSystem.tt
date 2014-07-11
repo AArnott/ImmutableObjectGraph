@@ -3,9 +3,9 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc" #>
 <#+
 	abstract class FileSystemEntry {
 		[Required]

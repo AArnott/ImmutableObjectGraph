@@ -3,9 +3,9 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt.inc" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc" #>
 <#+
 	// Note that ProjectElementContainer-derived types lack any properties that expose
 	// the specific types of children they support. And the Children member that is exposed

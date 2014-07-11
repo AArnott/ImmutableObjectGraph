@@ -74,17 +74,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ImmutableObjectGraph.Delta.tt" />
-    <None Include="ImmutableObjectGraph.FastSpine.tt" />
-    <None Include="ImmutableObjectGraph.RedNode.tt" />
-    <None Include="ImmutableObjectGraph.Interface.tt" />
-    <None Include="ImmutableObjectGraph.DeepMutation.tt" />
-    <None Include="ImmutableObjectGraph.TypeConversion.tt" />
-    <None Include="ImmutableObjectGraph.WithProperty.tt" />
-    <None Include="ImmutableObjectGraph.Discovery.tt" />
-    <None Include="ImmutableObjectGraph.Builders.tt" />
-    <None Include="ImmutableObjectGraph.CollectionHelpers.tt" />
-    <None Include="ImmutableObjectGraph.tt" />
+    <Content Include="ImmutableObjectGraph.Delta.tt.inc" />
+    <Content Include="ImmutableObjectGraph.FastSpine.tt.inc" />
+    <Content Include="ImmutableObjectGraph.RedNode.tt.inc" />
+    <Content Include="ImmutableObjectGraph.Interface.tt.inc" />
+    <Content Include="ImmutableObjectGraph.DeepMutation.tt.inc" />
+    <Content Include="ImmutableObjectGraph.TypeConversion.tt.inc" />
+    <Content Include="ImmutableObjectGraph.WithProperty.tt.inc" />
+    <Content Include="ImmutableObjectGraph.Discovery.tt.inc" />
+    <Content Include="ImmutableObjectGraph.Builders.tt.inc" />
+    <Content Include="ImmutableObjectGraph.CollectionHelpers.tt.inc" />
+    <Content Include="ImmutableObjectGraph.tt.inc" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

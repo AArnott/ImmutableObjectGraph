@@ -3,7 +3,7 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests.NonRecursive";
 #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc" #>
 <#+
 	abstract class RootRecursive {
 	}

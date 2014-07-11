@@ -48,38 +48,38 @@
     <Folder Include="content\ImmutableObjectGraph\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.FastSpine.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt.inc</Link>
     </Content>
-    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt">
-      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt</Link>
+    <Content Include="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt.inc">
+      <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt.inc</Link>
     </Content>
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
