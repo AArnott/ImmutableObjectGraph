@@ -64,14 +64,13 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>ImmutableObjectGraph.T4</Id>
-    <Version>0.1.0-beta2</Version>
+    <Version>0.1.0-beta3</Version>
     <Title>ImmutableObjectGraph T4 Templates</Title>
     <Authors>Andrew Arnott</Authors>
     <Owners>Andrew Arnott</Owners>
     <Summary>T4 templates for creating immutable types</Summary>
     <Description>T4 templates that transform simple mutable type definitions into fully functional immutable types with persistent characteristics.</Description>
-    <ReleaseNotes>
-    </ReleaseNotes>
+    <ReleaseNotes>A known issue exists that prevents the ImmutableObjectGraph NuGet package dependency from automatically installing with this one. Please install the ImmutableObjectGraph package as well as this one.</ReleaseNotes>
     <ProjectUrl>https://github.com/aarnott/immutableobjectgraph</ProjectUrl>
     <LicenseUrl>
     </LicenseUrl>
