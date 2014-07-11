@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.NuGet\ImmutableObjectGraph.NuGet.nuproj" />
-    <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="content\ImmutableObjectGraph\" />
@@ -70,7 +69,8 @@
     <Owners>Andrew Arnott</Owners>
     <Summary>T4 templates for creating immutable types</Summary>
     <Description>T4 templates that transform simple mutable type definitions into fully functional immutable types with persistent characteristics.</Description>
-    <ReleaseNotes>A known issue exists that prevents the ImmutableObjectGraph NuGet package dependency from automatically installing with this one. Please install the ImmutableObjectGraph package as well as this one.</ReleaseNotes>
+    <ReleaseNotes>
+    </ReleaseNotes>
     <ProjectUrl>https://github.com/aarnott/immutableobjectgraph</ProjectUrl>
     <LicenseUrl>
     </LicenseUrl>
