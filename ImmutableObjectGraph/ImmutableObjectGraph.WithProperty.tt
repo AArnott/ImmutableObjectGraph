@@ -30,7 +30,7 @@ this.HandleRedField += (templateType, field) => {
 /// <summary>Returns a new instance with the <#= field.NamePascalCase #> property set to the specified value.</summary>
 public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(<#= field.TypeName #> value) {
 	this.ThrowIfDefault();
-	var adapter = (Adapters.IImmutableCollectionAdapter<<#= templateType.GreenType.RecursiveTypeFromFamily.TypeName #>>)value;
+	var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<<#= templateType.GreenType.RecursiveTypeFromFamily.TypeName #>>)value;
 	var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(adapter.UnderlyingCollection);
 	return this.NewSpine(mutatedLeaf);
 }

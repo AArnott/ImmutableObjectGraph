@@ -346,7 +346,7 @@ protected class RedMetaType : MetaType {
 			get {
 				return string.Format(
 					CultureInfo.InvariantCulture,
-					"Adapters.Immutable{3}RootAdapter<{0}, {1}, {2}>",
+					"ImmutableObjectGraph.Adapters.Immutable{3}RootAdapter<{0}, {1}, {2}>",
 					this.DeclaringType.RecursiveParent.GreenType.RecursiveType.TypeName,
 					this.DeclaringType.RecursiveParent.RecursiveType.TypeName,
 					this.DeclaringType.RecursiveParent.GreenType.RecursiveParent.TypeName,
@@ -384,7 +384,7 @@ protected class RedMetaType : MetaType {
 		public override string ArgumentReference {
 			get {
 				if (this.IsRecursiveCollection) {
-					return string.Format("{1}.IsDefined ? ({2})((Adapters.IImmutableCollectionAdapter<{0}>){1}.Value).UnderlyingCollection : default({3})", this.GreenField.ElementTypeName, this.NameCamelCase, this.GreenField.TypeName, this.GreenField.OptionalTypeName);
+					return string.Format("{1}.IsDefined ? ({2})((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<{0}>){1}.Value).UnderlyingCollection : default({3})", this.GreenField.ElementTypeName, this.NameCamelCase, this.GreenField.TypeName, this.GreenField.OptionalTypeName);
 				} else {
 					return base.ArgumentReference;
 				}
