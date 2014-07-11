@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.Proj
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.NuGet", "ImmutableObjectGraph.NuGet\ImmutableObjectGraph.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
 EndProject
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.T4.NuGet", "ImmutableObjectGraph.T4.NuGet\ImmutableObjectGraph.T4.NuGet.nuproj", "{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
