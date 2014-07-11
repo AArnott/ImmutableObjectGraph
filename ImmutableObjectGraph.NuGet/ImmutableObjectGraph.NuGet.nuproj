@@ -82,5 +82,8 @@
       <Link>content\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt.inc</Link>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="content\YourImmutableTypeDefinition.cs" />
+  </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
