@@ -1,0 +1,28 @@
+﻿<#@ template debug="true" language="C#" #>
+<#@ Output Extension=".generated.cs" #>
+<#
+	this.Namespace = "YourNamespace";
+#>
+<#@ Include File="ImmutableObjectGraph\ImmutableObjectGraph.RedNode.tt" #>
+<#@ Include File="ImmutableObjectGraph\ImmutableObjectGraph.Delta.tt" #>
+<#@ Include File="ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#+
+	abstract class FileSystemEntry {
+		[Required]
+		string pathSegment;
+
+		RichData data;
+	}
+
+	class FileSystemFile : FileSystemEntry {
+		ImmutableHashSet<string> attributes;
+	}
+
+	class FileSystemDirectory : FileSystemEntry {
+		ImmutableSortedSet<FileSystemEntry> children;
+	}
+
+	class RichData {
+		int someCoolProperty;
+	}
+#>
