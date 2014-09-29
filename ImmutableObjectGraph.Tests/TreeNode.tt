@@ -7,6 +7,7 @@
 <#@ Import Namespace="System.Collections.Immutable" #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.ForLocalTests.tt" #>
 <#+
+	#pragma warning disable 0169 // The field '{0}' is never used
 	class TreeNode {
 		string caption;
 		string filePath;
@@ -14,4 +15,5 @@
 		ImmutableHashSet<string> attributes;
 		ImmutableList<TreeNode> children;
 	}
+	#pragma warning restore 0169
 #>

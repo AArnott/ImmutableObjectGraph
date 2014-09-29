@@ -5,8 +5,10 @@
 #>
 <#@ Include File="BaseImmutableObjectGraph.tt" #>
 <#+
+#pragma warning disable 0169 // The field '{0}' is never used
 class Fruit {
 	string color;
 	int skinThickness;
 }
+#pragma warning restore 0169
 #>

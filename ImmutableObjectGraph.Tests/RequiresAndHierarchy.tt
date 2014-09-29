@@ -5,6 +5,7 @@
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.ForLocalTests.tt" #>
 <#+
+	#pragma warning disable 0169 // The field '{0}' is never used
 	class ReqAndHierL1 {
 		string l1Field1;
 		[Required]
@@ -16,4 +17,5 @@
 		[Required]
 		string l2Field2;
 	}
+	#pragma warning restore 0169
 #>
