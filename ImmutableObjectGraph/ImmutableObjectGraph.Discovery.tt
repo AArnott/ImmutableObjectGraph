@@ -212,15 +212,15 @@ protected class MetaType {
 
 	public Type Type { get; private set; }
 
-	public ImmutableList<MetaField> LocalFields {
-		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToImmutableList(); }
+	public IReadOnlyCollection<MetaField> LocalFields {
+		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(f => new MetaField(f, this)).ToList().AsReadOnly(); }
 	}
 
-	public ImmutableList<MetaField> AllFields {
+	public IReadOnlyCollection<MetaField> AllFields {
 		get {
 			var fieldsWithBase = this.LocalFields;
 			if (this.HasAncestor) {
-				fieldsWithBase = fieldsWithBase.InsertRange(0, this.Ancestor.AllFields);
+				fieldsWithBase = this.Ancestor.AllFields.Concat(fieldsWithBase).ToList().AsReadOnly();
 			}
 
 			return fieldsWithBase;
@@ -286,14 +286,14 @@ protected class MetaType {
 		}
 	}
 
-	public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor) {
-		var fields = ImmutableList.Create<MetaField>();
+	public IReadOnlyCollection<MetaField> GetFieldsBeyond(MetaType ancestor) {
+		var fields = new List<MetaField>();
 		if (ancestor != this) {
-			fields = fields.AddRange(this.LocalFields)
-				            .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
+			fields.AddRange(this.LocalFields);
+			fields.InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
 		}
 
-		return fields;
+		return fields.AsReadOnly();
 	}
 
 	public override int GetHashCode() {

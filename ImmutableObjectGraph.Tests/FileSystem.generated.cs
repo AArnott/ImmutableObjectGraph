@@ -169,22 +169,22 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public FileSystemFile WithAttributes(params System.String[] values) {
-			return this.With(attributes: this.Attributes.ResetContents(values));
+			return this.With(attributes: CollectionHelpers.ResetContents(this.Attributes, values));
 		}
 		
 		/// <summary>Replaces the elements of the Attributes collection with the specified collection.</summary>
 		public FileSystemFile WithAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
-			return this.With(attributes: this.Attributes.ResetContents(values));
+			return this.With(attributes: CollectionHelpers.ResetContents(this.Attributes, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public FileSystemFile AddAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
-			return this.With(attributes: this.Attributes.AddRange(values));
+			return this.With(attributes: CollectionHelpers.AddRange(this.Attributes, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Attributes collection.</summary>
 		public FileSystemFile AddAttributes(params System.String[] values) {
-			return this.With(attributes: this.Attributes.AddRange(values));
+			return this.With(attributes: CollectionHelpers.AddRange(this.Attributes, values));
 		}
 		
 		/// <summary>Adds the specified element from the Attributes collection.</summary>
@@ -194,12 +194,12 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public FileSystemFile RemoveAttributes(System.Collections.Generic.IEnumerable<System.String> values) {
-			return this.With(attributes: this.Attributes.RemoveRange(values));
+			return this.With(attributes: CollectionHelpers.RemoveRange(this.Attributes, values));
 		}
 		
 		/// <summary>Removes the specified elements from the Attributes collection.</summary>
 		public FileSystemFile RemoveAttributes(params System.String[] values) {
-			return this.With(attributes: this.Attributes.RemoveRange(values));
+			return this.With(attributes: CollectionHelpers.RemoveRange(this.Attributes, values));
 		}
 		
 		/// <summary>Removes the specified element from the Attributes collection.</summary>
@@ -297,6 +297,43 @@ namespace ImmutableObjectGraph.Tests {
 					ImmutableObjectGraph.Optional.For(attributes));
 			}
 		}
+		
+		protected static class CollectionHelpers {
+			public static System.Collections.Immutable.ImmutableList<T> ResetContents<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.SequenceEqual(values) ? list : list.Clear().AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> AddRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> AddRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> AddRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> RemoveRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.RemoveRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> Replace<T>(System.Collections.Immutable.ImmutableList<T> list, T oldValue, T newValue) {
+				return list.Replace(oldValue, newValue);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> Replace<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, T oldValue, T newValue) {
+				var alteredSet = set.Remove(oldValue);
+				return alteredSet != set ? alteredSet.Add(newValue) : set;
+			}
+		}
 	}
 	
 	public interface IFileSystemDirectory : IFileSystemEntry {
@@ -354,22 +391,22 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public FileSystemDirectory WithChildren(params FileSystemEntry[] values) {
-			return this.With(children: this.Children.ResetContents(values));
+			return this.With(children: CollectionHelpers.ResetContents(this.Children, values));
 		}
 		
 		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
 		public FileSystemDirectory WithChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
-			return this.With(children: this.Children.ResetContents(values));
+			return this.With(children: CollectionHelpers.ResetContents(this.Children, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public FileSystemDirectory AddChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
-			return this.With(children: this.Children.AddRange(values));
+			return this.With(children: CollectionHelpers.AddRange(this.Children, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Children collection.</summary>
 		public FileSystemDirectory AddChildren(params FileSystemEntry[] values) {
-			return this.With(children: this.Children.AddRange(values));
+			return this.With(children: CollectionHelpers.AddRange(this.Children, values));
 		}
 		
 		/// <summary>Adds the specified element from the Children collection.</summary>
@@ -379,12 +416,12 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren(System.Collections.Generic.IEnumerable<FileSystemEntry> values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: CollectionHelpers.RemoveRange(this.Children, values));
 		}
 		
 		/// <summary>Removes the specified elements from the Children collection.</summary>
 		public FileSystemDirectory RemoveChildren(params FileSystemEntry[] values) {
-			return this.With(children: this.Children.RemoveRange(values));
+			return this.With(children: CollectionHelpers.RemoveRange(this.Children, values));
 		}
 		
 		/// <summary>Removes the specified element from the Children collection.</summary>
@@ -455,7 +492,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
 			// TODO: fix this horribly inefficient algorithm.
-			var newChildren = this.Children.Replace(current, replacement);
+			var newChildren = CollectionHelpers.Replace(this.Children, current, replacement);
 			if (this.Children != newChildren) {
 				return this.WithChildren(newChildren);
 			}
@@ -464,7 +501,7 @@ namespace ImmutableObjectGraph.Tests {
 			{
 				var newChild = child.ReplaceDescendent(current, replacement);
 				if (newChild != child) {
-					newChildren = this.Children.Replace(child, newChild);
+					newChildren = CollectionHelpers.Replace(this.Children, child, newChild);
 					return this.WithChildren(newChildren);
 				}
 			}
@@ -507,6 +544,43 @@ namespace ImmutableObjectGraph.Tests {
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(this.PathSegment),
 					ImmutableObjectGraph.Optional.For(children));
+			}
+		}
+		
+		protected static class CollectionHelpers {
+			public static System.Collections.Immutable.ImmutableList<T> ResetContents<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.SequenceEqual(values) ? list : list.Clear().AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> AddRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> AddRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> AddRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> RemoveRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.RemoveRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> Replace<T>(System.Collections.Immutable.ImmutableList<T> list, T oldValue, T newValue) {
+				return list.Replace(oldValue, newValue);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> Replace<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, T oldValue, T newValue) {
+				var alteredSet = set.Remove(oldValue);
+				return alteredSet != set ? alteredSet.Add(newValue) : set;
 			}
 		}
 	}

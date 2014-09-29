@@ -1,10 +1,8 @@
 ﻿<#@ assembly name="System.Core" #>
 <#@ assembly name="System.Runtime" #>
-<#@ assembly name="$(ProjectDir)..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll" #>
 <#@ assembly name="$(ProjectDir)bin\debug\ImmutableObjectGraph.dll" #>
 <#@ Import Namespace="ImmutableObjectGraph" #>
 <#@ Import Namespace="System.Collections.Generic" #>
-<#@ Import Namespace="System.Collections.Immutable" #>
 <#@ import namespace="System.Linq" #>
 <#@ Import Namespace="System.Reflection" #>
 <#@ import namespace="System.Text" #>
@@ -187,6 +185,7 @@ if (!templateType.IsAbstract) { #>
 <#	} /* !IsAbstract */
 
 	this.OnHandleType(templateType, HandleTypePosition.WithinTypeDeclaration, indent: 1);
+	this.OnHandleType(templateType, HandleTypePosition.BeforeEndOfTypeDeclaration, indent: 1);
 #>
 }
 <#
@@ -205,7 +204,9 @@ if (!templateType.IsAbstract) { #>
 
 		WithinTypeDeclaration,
 
-		AfterTypeDeclaration,
+		BeforeEndOfTypeDeclaration,
+
+		AfterTypeDeclaration
 	}
 
 	protected event Action<MetaType, HandleTypePosition> HandleType;

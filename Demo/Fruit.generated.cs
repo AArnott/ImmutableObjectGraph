@@ -10,6 +10,7 @@
 
 namespace Demo {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
 	
 	public interface IFruit {

@@ -9,7 +9,7 @@ this.HandleType += (templateType, position) => {
 
 public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.RecursiveType.TypeName #> current, <#= templateType.RecursiveType.TypeName #> replacement) {
 	// TODO: fix this horribly inefficient algorithm.
-	var newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(current, replacement);
+	var newChildren = CollectionHelpers.Replace(this.<#= templateType.RecursiveField.NamePascalCase #>, current, replacement);
 	if (this.<#= templateType.RecursiveField.NamePascalCase #> != newChildren) {
 		return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
 	}
@@ -18,7 +18,7 @@ public <#= templateType.TypeName #> ReplaceDescendent(<#= templateType.Recursive
 	{
 		var newChild = child.ReplaceDescendent(current, replacement);
 		if (newChild != child) {
-			newChildren = this.<#= templateType.RecursiveField.NamePascalCase #>.Replace(child, newChild);
+			newChildren = CollectionHelpers.Replace(this.<#= templateType.RecursiveField.NamePascalCase #>, child, newChild);
 			return this.With<#= templateType.RecursiveField.NamePascalCase #>(newChildren);
 		}
 	}

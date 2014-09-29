@@ -4,22 +4,22 @@ this.HandleField += (templateType, field) => {
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
 public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
-	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
+	return this.With(<#= field.NameCamelCase #>: CollectionHelpers.ResetContents(this.<#=field.NamePascalCase#>, values));
 }
 
 /// <summary>Replaces the elements of the <#= field.NamePascalCase #> collection with the specified collection.</summary>
 public <#= templateType.TypeName #> With<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
-	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.ResetContents(values));
+	return this.With(<#= field.NameCamelCase #>: CollectionHelpers.ResetContents(this.<#=field.NamePascalCase#>, values));
 }
 
 /// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
-	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
+	return this.With(<#= field.NameCamelCase #>: CollectionHelpers.AddRange(this.<#=field.NamePascalCase#>, values));
 }
 
 /// <summary>Adds the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
-	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.AddRange(values));
+	return this.With(<#= field.NameCamelCase #>: CollectionHelpers.AddRange(this.<#=field.NamePascalCase#>, values));
 }
 
 /// <summary>Adds the specified element from the <#= field.NamePascalCase #> collection.</summary>
@@ -29,12 +29,12 @@ public <#= templateType.TypeName #> Add<#= field.NamePascalCase #>(<#= field.Ele
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(System.Collections.Generic.IEnumerable<<#= field.ElementTypeName #>> values) {
-	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
+	return this.With(<#= field.NameCamelCase #>: CollectionHelpers.RemoveRange(this.<#=field.NamePascalCase#>, values));
 }
 
 /// <summary>Removes the specified elements from the <#= field.NamePascalCase #> collection.</summary>
 public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>(params <#= field.ElementTypeName #>[] values) {
-	return this.With(<#= field.NameCamelCase #>: this.<#=field.NamePascalCase#>.RemoveRange(values));
+	return this.With(<#= field.NameCamelCase #>: CollectionHelpers.RemoveRange(this.<#=field.NamePascalCase#>, values));
 }
 
 /// <summary>Removes the specified element from the <#= field.NamePascalCase #> collection.</summary>
@@ -49,5 +49,52 @@ public <#= templateType.TypeName #> Remove<#= field.NamePascalCase #>() {
 
 <#
 	} // if field type is a collection
+}; // event handler
+this.HandleType += (templateType, position) => {
+	if (position != HandleTypePosition.BeforeEndOfTypeDeclaration) {
+		return;
+	}
+
+	if (!templateType.LocalFields.Any(f => f.IsCollection))
+		return;
+#>
+
+protected static class CollectionHelpers {
+	public static System.Collections.Immutable.ImmutableList<T> ResetContents<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+		return list.SequenceEqual(values) ? list : list.Clear().AddRange(values);
+	}
+	public static System.Collections.Immutable.ImmutableSortedSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+		return set.SetEquals(values) ? set : set.Clear().Union(values);
+	}
+	public static System.Collections.Immutable.ImmutableHashSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+		return set.SetEquals(values) ? set : set.Clear().Union(values);
+	}
+	public static System.Collections.Immutable.ImmutableList<T> AddRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+		return list.AddRange(values);
+	}
+	public static System.Collections.Immutable.ImmutableSortedSet<T> AddRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+		return set.Union(values);
+	}
+	public static System.Collections.Immutable.ImmutableHashSet<T> AddRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+		return set.Union(values);
+	}
+	public static System.Collections.Immutable.ImmutableList<T> RemoveRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+		return list.RemoveRange(values);
+	}
+	public static System.Collections.Immutable.ImmutableSortedSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+		return set.Except(values);
+	}
+	public static System.Collections.Immutable.ImmutableHashSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+		return set.Except(values);
+	}
+	public static System.Collections.Immutable.ImmutableList<T> Replace<T>(System.Collections.Immutable.ImmutableList<T> list, T oldValue, T newValue) {
+		return list.Replace(oldValue, newValue);
+	}
+	public static System.Collections.Immutable.ImmutableSortedSet<T> Replace<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, T oldValue, T newValue) {
+		var alteredSet = set.Remove(oldValue);
+		return alteredSet != set ? alteredSet.Add(newValue) : set;
+	}
+}
+<#
 }; // event handler
 #>

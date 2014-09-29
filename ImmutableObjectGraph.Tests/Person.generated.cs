@@ -59,22 +59,22 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Replaces the elements of the Members collection with the specified collection.</summary>
 		public Family WithMembers(params Person[] values) {
-			return this.With(members: this.Members.ResetContents(values));
+			return this.With(members: CollectionHelpers.ResetContents(this.Members, values));
 		}
 		
 		/// <summary>Replaces the elements of the Members collection with the specified collection.</summary>
 		public Family WithMembers(System.Collections.Generic.IEnumerable<Person> values) {
-			return this.With(members: this.Members.ResetContents(values));
+			return this.With(members: CollectionHelpers.ResetContents(this.Members, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Members collection.</summary>
 		public Family AddMembers(System.Collections.Generic.IEnumerable<Person> values) {
-			return this.With(members: this.Members.AddRange(values));
+			return this.With(members: CollectionHelpers.AddRange(this.Members, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Members collection.</summary>
 		public Family AddMembers(params Person[] values) {
-			return this.With(members: this.Members.AddRange(values));
+			return this.With(members: CollectionHelpers.AddRange(this.Members, values));
 		}
 		
 		/// <summary>Adds the specified element from the Members collection.</summary>
@@ -84,12 +84,12 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Removes the specified elements from the Members collection.</summary>
 		public Family RemoveMembers(System.Collections.Generic.IEnumerable<Person> values) {
-			return this.With(members: this.Members.RemoveRange(values));
+			return this.With(members: CollectionHelpers.RemoveRange(this.Members, values));
 		}
 		
 		/// <summary>Removes the specified elements from the Members collection.</summary>
 		public Family RemoveMembers(params Person[] values) {
-			return this.With(members: this.Members.RemoveRange(values));
+			return this.With(members: CollectionHelpers.RemoveRange(this.Members, values));
 		}
 		
 		/// <summary>Removes the specified element from the Members collection.</summary>
@@ -170,6 +170,43 @@ namespace ImmutableObjectGraph.Tests {
 				var members = this.members.IsDefined ? (this.members.Value != null ? this.members.Value.ToImmutable() : null) : this.immutable.Members;
 				return this.immutable = this.immutable.With(
 					ImmutableObjectGraph.Optional.For(members));
+			}
+		}
+		
+		protected static class CollectionHelpers {
+			public static System.Collections.Immutable.ImmutableList<T> ResetContents<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.SequenceEqual(values) ? list : list.Clear().AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> AddRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> AddRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> AddRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> RemoveRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.RemoveRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> Replace<T>(System.Collections.Immutable.ImmutableList<T> list, T oldValue, T newValue) {
+				return list.Replace(oldValue, newValue);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> Replace<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, T oldValue, T newValue) {
+				var alteredSet = set.Remove(oldValue);
+				return alteredSet != set ? alteredSet.Add(newValue) : set;
 			}
 		}
 	}
