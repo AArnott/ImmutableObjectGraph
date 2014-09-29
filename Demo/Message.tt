@@ -5,7 +5,7 @@
 #>
 <#@ assembly name="$(ProjectDir)..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll" #>
 <#@ Import Namespace="System.Collections.Immutable" #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.ForLocalTests.tt" #>
 <#+
 	class Message {
 		Contact author;

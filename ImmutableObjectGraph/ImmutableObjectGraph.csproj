@@ -57,6 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ImmutableObjectGraph.ForLocalTests.tt" />
+    <None Include="ImmutableObjectGraph.Core.tt" />
     <None Include="ImmutableObjectGraph.Interface.tt" />
     <None Include="ImmutableObjectGraph.DeepMutation.tt" />
     <None Include="ImmutableObjectGraph.TypeConversion.tt" />

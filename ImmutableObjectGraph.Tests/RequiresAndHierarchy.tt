@@ -3,7 +3,7 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.ForLocalTests.tt" #>
 <#+
 	class ReqAndHierL1 {
 		string l1Field1;
