@@ -1,7 +1,7 @@
 ﻿<#
 	// This will reference the dll and templates from the NuGet location and should be used by consumers of the NuGet package
 #>
-<#@ assembly name="$(SolutionDir)packages\ImmutableObjectGraph.1.0.0\lib\portable-windows8+net45\ImmutableObjectGraph.dll" #>
+<#@ assembly name="$(SolutionDir)packages\ImmutableObjectGraph.1.0.0\lib\portable-net45+wp8+win8\ImmutableObjectGraph.dll" #>
 <#@ Include File="$(SolutionDir)packages\ImmutableObjectGraph.1.0.0\templates\ImmutableObjectGraph.Discovery.tt" #>
 <#@ Include File="$(SolutionDir)packages\ImmutableObjectGraph.1.0.0\templates\ImmutableObjectGraph.Interface.tt" #>
 <#@ Include File="$(SolutionDir)packages\ImmutableObjectGraph.1.0.0\templates\ImmutableObjectGraph.WithProperty.tt" #>

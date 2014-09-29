@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>ImmutableObjectGraph</id>
+        <version>1.0.0</version>
+        <title>C# ImmutableObjectGraph T4 Templates</title>
+        <authors>Andrew Arnott</authors>
+        <owners>Andrew Arnott</owners>
+        <licenseUrl>https://github.com/AArnott/ImmutableObjectGraph/blob/master/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/AArnott/ImmutableObjectGraph</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A NuGet representation of the "T4 template for immutable type generation" by Andrew Arnott.</description>
+        <summary />
+    </metadata>
+    <files>
+        <file src="lib\ImmutableObjectGraph.dll" target="lib\portable-net45+wp8+win8\ImmutableObjectGraph.dll" />
+        <file src="templates\ImmutableObjectGraph.Builders.tt" target="templates\ImmutableObjectGraph.Builders.tt" />
+        <file src="templates\ImmutableObjectGraph.CollectionHelpers.tt" target="templates\ImmutableObjectGraph.CollectionHelpers.tt" />
+        <file src="templates\ImmutableObjectGraph.Core.tt" target="templates\ImmutableObjectGraph.Core.tt" />
+        <file src="templates\ImmutableObjectGraph.DeepMutation.tt" target="templates\ImmutableObjectGraph.DeepMutation.tt" />
+        <file src="templates\ImmutableObjectGraph.Discovery.tt" target="templates\ImmutableObjectGraph.Discovery.tt" />
+        <file src="templates\ImmutableObjectGraph.Interface.tt" target="templates\ImmutableObjectGraph.Interface.tt" />
+        <file src="templates\ImmutableObjectGraph.tt" target="templates\ImmutableObjectGraph.tt" />
+        <file src="templates\ImmutableObjectGraph.TypeConversion.tt" target="templates\ImmutableObjectGraph.TypeConversion.tt" />
+        <file src="templates\ImmutableObjectGraph.WithProperty.tt" target="templates\ImmutableObjectGraph.WithProperty.tt" />
+    </files>
+</package>
