@@ -46,6 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseImmutableObjectGraph.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BaseImmutableObjectGraph.tt</DependentUpon>
+    </Compile>
     <Compile Include="Fruit.generated.cs">
       <DependentUpon>Fruit.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -61,6 +66,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="BaseImmutableObjectGraph.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BaseImmutableObjectGraph.cs</LastGenOutput>
+    </None>
     <None Include="Fruit.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Fruit.generated.cs</LastGenOutput>
