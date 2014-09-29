@@ -56,10 +56,13 @@ public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 <#		} #>
 
 	public <#= templateType.HasAncestor ? "new ": "" #><#= templateType.TypeName #> ToImmutable() {
+<#			if (templateType.LocalFields.Count == 0) { #>
+		return this.immutable;
+<#			} else { #>
 <#			foreach(var templateField in templateType.AllFields.Where(f => !f.IsPrimitiveType)) { #>
 		var <#= templateField.NameCamelCase #> = this.<#= templateField.NameCamelCase #>.IsDefined ? (this.<#= templateField.NameCamelCase #>.Value != null ? this.<#= templateField.NameCamelCase #>.Value.ToImmutable() : null) : this.immutable.<#= templateField.NamePascalCase #>;
 <#			} #>
-		return this.immutable = this.immutable<# if (templateType.LocalFields.Count > 0) { #>.With(<#
+		return this.immutable = this.immutable.With(<#
 		bool firstInSequence = true;
 		foreach(var field in templateType.AllFields) {
 			if (!firstInSequence) { Write(","); }
@@ -71,7 +74,7 @@ public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 			}
 			firstInSequence = false;
 		} #>
-)<# } /* if (templateType.LocalFields.Count > 0) */ #>;
+)<# } #>;
 	}
 }
 <#
