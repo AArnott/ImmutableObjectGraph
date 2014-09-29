@@ -62,7 +62,8 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			public Empty ToImmutable() {
-				return this.immutable = this.immutable;
+				return this.immutable;
+		;
 			}
 		}
 	}

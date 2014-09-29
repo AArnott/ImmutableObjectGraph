@@ -1,0 +1,12 @@
+﻿<#
+	// This will reference the dll and templates  from the NuGet location and should be used by consumers of the NuGet package
+#>
+<#@ assembly name="$(ProjectDir)$(OutDir)ImmutableObjectGraph.dll" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Discovery.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Interface.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.WithProperty.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.CollectionHelpers.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.DeepMutation.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.TypeConversion.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Builders.tt" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.Core.tt" #>

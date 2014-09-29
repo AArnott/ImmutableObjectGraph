@@ -10,8 +10,8 @@
 
 namespace Demo {
 	using System.Diagnostics;
+	using System.Linq;
 	using ImmutableObjectGraph;
-
 	
 	public interface IMessage {
 		Contact Author { get; }
@@ -107,41 +107,43 @@ namespace Demo {
 		public System.String Body {
 			get { return this.body; }
 		}
+		
 		/// <summary>Returns a new instance with the Author property set to the specified value.</summary>
 		public Message WithAuthor(Contact value) {
 			if (value == this.Author) {
 				return this;
 			}
-	
+		
 			return this.With(author: value);
 		}
+		
 		/// <summary>Returns a new instance with the To property set to the specified value.</summary>
 		public Message WithTo(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.To) {
 				return this;
 			}
-	
+		
 			return this.With(to: value);
 		}
 		
 		/// <summary>Replaces the elements of the To collection with the specified collection.</summary>
 		public Message WithTo(params Contact[] values) {
-			return this.With(to: this.To.ResetContents(values));
+			return this.With(to: CollectionHelpers.ResetContents(this.To, values));
 		}
 		
 		/// <summary>Replaces the elements of the To collection with the specified collection.</summary>
 		public Message WithTo(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(to: this.To.ResetContents(values));
+			return this.With(to: CollectionHelpers.ResetContents(this.To, values));
 		}
 		
 		/// <summary>Adds the specified elements from the To collection.</summary>
 		public Message AddTo(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(to: this.To.AddRange(values));
+			return this.With(to: CollectionHelpers.AddRange(this.To, values));
 		}
 		
 		/// <summary>Adds the specified elements from the To collection.</summary>
 		public Message AddTo(params Contact[] values) {
-			return this.With(to: this.To.AddRange(values));
+			return this.With(to: CollectionHelpers.AddRange(this.To, values));
 		}
 		
 		/// <summary>Adds the specified element from the To collection.</summary>
@@ -151,12 +153,12 @@ namespace Demo {
 		
 		/// <summary>Removes the specified elements from the To collection.</summary>
 		public Message RemoveTo(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(to: this.To.RemoveRange(values));
+			return this.With(to: CollectionHelpers.RemoveRange(this.To, values));
 		}
 		
 		/// <summary>Removes the specified elements from the To collection.</summary>
 		public Message RemoveTo(params Contact[] values) {
-			return this.With(to: this.To.RemoveRange(values));
+			return this.With(to: CollectionHelpers.RemoveRange(this.To, values));
 		}
 		
 		/// <summary>Removes the specified element from the To collection.</summary>
@@ -169,33 +171,34 @@ namespace Demo {
 			return this.With(to: this.To.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Cc property set to the specified value.</summary>
 		public Message WithCc(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.Cc) {
 				return this;
 			}
-	
+		
 			return this.With(cc: value);
 		}
 		
 		/// <summary>Replaces the elements of the Cc collection with the specified collection.</summary>
 		public Message WithCc(params Contact[] values) {
-			return this.With(cc: this.Cc.ResetContents(values));
+			return this.With(cc: CollectionHelpers.ResetContents(this.Cc, values));
 		}
 		
 		/// <summary>Replaces the elements of the Cc collection with the specified collection.</summary>
 		public Message WithCc(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(cc: this.Cc.ResetContents(values));
+			return this.With(cc: CollectionHelpers.ResetContents(this.Cc, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Cc collection.</summary>
 		public Message AddCc(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(cc: this.Cc.AddRange(values));
+			return this.With(cc: CollectionHelpers.AddRange(this.Cc, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Cc collection.</summary>
 		public Message AddCc(params Contact[] values) {
-			return this.With(cc: this.Cc.AddRange(values));
+			return this.With(cc: CollectionHelpers.AddRange(this.Cc, values));
 		}
 		
 		/// <summary>Adds the specified element from the Cc collection.</summary>
@@ -205,12 +208,12 @@ namespace Demo {
 		
 		/// <summary>Removes the specified elements from the Cc collection.</summary>
 		public Message RemoveCc(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(cc: this.Cc.RemoveRange(values));
+			return this.With(cc: CollectionHelpers.RemoveRange(this.Cc, values));
 		}
 		
 		/// <summary>Removes the specified elements from the Cc collection.</summary>
 		public Message RemoveCc(params Contact[] values) {
-			return this.With(cc: this.Cc.RemoveRange(values));
+			return this.With(cc: CollectionHelpers.RemoveRange(this.Cc, values));
 		}
 		
 		/// <summary>Removes the specified element from the Cc collection.</summary>
@@ -223,33 +226,34 @@ namespace Demo {
 			return this.With(cc: this.Cc.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Bcc property set to the specified value.</summary>
 		public Message WithBcc(System.Collections.Immutable.ImmutableList<Contact> value) {
 			if (value == this.Bcc) {
 				return this;
 			}
-	
+		
 			return this.With(bcc: value);
 		}
 		
 		/// <summary>Replaces the elements of the Bcc collection with the specified collection.</summary>
 		public Message WithBcc(params Contact[] values) {
-			return this.With(bcc: this.Bcc.ResetContents(values));
+			return this.With(bcc: CollectionHelpers.ResetContents(this.Bcc, values));
 		}
 		
 		/// <summary>Replaces the elements of the Bcc collection with the specified collection.</summary>
 		public Message WithBcc(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(bcc: this.Bcc.ResetContents(values));
+			return this.With(bcc: CollectionHelpers.ResetContents(this.Bcc, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Bcc collection.</summary>
 		public Message AddBcc(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(bcc: this.Bcc.AddRange(values));
+			return this.With(bcc: CollectionHelpers.AddRange(this.Bcc, values));
 		}
 		
 		/// <summary>Adds the specified elements from the Bcc collection.</summary>
 		public Message AddBcc(params Contact[] values) {
-			return this.With(bcc: this.Bcc.AddRange(values));
+			return this.With(bcc: CollectionHelpers.AddRange(this.Bcc, values));
 		}
 		
 		/// <summary>Adds the specified element from the Bcc collection.</summary>
@@ -259,12 +263,12 @@ namespace Demo {
 		
 		/// <summary>Removes the specified elements from the Bcc collection.</summary>
 		public Message RemoveBcc(System.Collections.Generic.IEnumerable<Contact> values) {
-			return this.With(bcc: this.Bcc.RemoveRange(values));
+			return this.With(bcc: CollectionHelpers.RemoveRange(this.Bcc, values));
 		}
 		
 		/// <summary>Removes the specified elements from the Bcc collection.</summary>
 		public Message RemoveBcc(params Contact[] values) {
-			return this.With(bcc: this.Bcc.RemoveRange(values));
+			return this.With(bcc: CollectionHelpers.RemoveRange(this.Bcc, values));
 		}
 		
 		/// <summary>Removes the specified element from the Bcc collection.</summary>
@@ -277,20 +281,22 @@ namespace Demo {
 			return this.With(bcc: this.Bcc.Clear());
 		}
 		
+		
 		/// <summary>Returns a new instance with the Subject property set to the specified value.</summary>
 		public Message WithSubject(System.String value) {
 			if (value == this.Subject) {
 				return this;
 			}
-	
+		
 			return this.With(subject: value);
 		}
+		
 		/// <summary>Returns a new instance with the Body property set to the specified value.</summary>
 		public Message WithBody(System.String value) {
 			if (value == this.Body) {
 				return this;
 			}
-	
+		
 			return this.With(body: value);
 		}
 	
@@ -321,9 +327,6 @@ namespace Demo {
 			}
 		}
 	
-	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -344,7 +347,6 @@ namespace Demo {
 				template.Subject, 
 				template.Body);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -485,9 +487,43 @@ namespace Demo {
 			}
 		}
 		
-	
+		protected static class CollectionHelpers {
+			public static System.Collections.Immutable.ImmutableList<T> ResetContents<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.SequenceEqual(values) ? list : list.Clear().AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> ResetContents<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.SetEquals(values) ? set : set.Clear().Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> AddRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.AddRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> AddRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> AddRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Union(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> RemoveRange<T>(System.Collections.Immutable.ImmutableList<T> list, System.Collections.Generic.IEnumerable<T> values) {
+				return list.RemoveRange(values);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableHashSet<T> RemoveRange<T>(System.Collections.Immutable.ImmutableHashSet<T> set, System.Collections.Generic.IEnumerable<T> values) {
+				return set.Except(values);
+			}
+			public static System.Collections.Immutable.ImmutableList<T> Replace<T>(System.Collections.Immutable.ImmutableList<T> list, T oldValue, T newValue) {
+				return list.Replace(oldValue, newValue);
+			}
+			public static System.Collections.Immutable.ImmutableSortedSet<T> Replace<T>(System.Collections.Immutable.ImmutableSortedSet<T> set, T oldValue, T newValue) {
+				var alteredSet = set.Remove(oldValue);
+				return alteredSet != set ? alteredSet.Add(newValue) : set;
+			}
+		}
 	}
-	
 	
 	public interface IContact {
 		System.String Name { get; }
@@ -535,20 +571,22 @@ namespace Demo {
 		public System.String Email {
 			get { return this.email; }
 		}
+		
 		/// <summary>Returns a new instance with the Name property set to the specified value.</summary>
 		public Contact WithName(System.String value) {
 			if (value == this.Name) {
 				return this;
 			}
-	
+		
 			return this.With(name: value);
 		}
+		
 		/// <summary>Returns a new instance with the Email property set to the specified value.</summary>
 		public Contact WithEmail(System.String value) {
 			if (value == this.Email) {
 				return this;
 			}
-	
+		
 			return this.With(email: value);
 		}
 	
@@ -567,9 +605,6 @@ namespace Demo {
 			}
 		}
 	
-	
-	
-	 
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
 		/// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
 		partial void Validate();
@@ -586,7 +621,6 @@ namespace Demo {
 				template.Name, 
 				template.Email);
 		}
-	
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
 		private struct Template {
@@ -642,10 +676,7 @@ namespace Demo {
 					ImmutableObjectGraph.Optional.For(this.Email));
 			}
 		}
-		
-	
 	}
-	
 }
 
 

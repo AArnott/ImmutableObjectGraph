@@ -3,8 +3,11 @@
 <#
 	this.Namespace = "ImmutableObjectGraph.Tests";
 #>
-<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt" #>
+<#@ assembly name="$(ProjectDir)..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll" #>
+<#@ Import Namespace="System.Collections.Immutable" #>
+<#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.ForLocalTests.tt" #>
 <#+
+	#pragma warning disable 0169 // The field '{0}' is never used
 	abstract class XmlNode {
 		string localName;
 	}
@@ -22,4 +25,5 @@
 		string namespaceName;
 		string value;
 	}
+	#pragma warning restore 0169
 #>
