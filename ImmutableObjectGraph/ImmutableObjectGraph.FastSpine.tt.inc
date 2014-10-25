@@ -46,7 +46,7 @@ private void InitializeLookup(ImmutableObjectGraph.Optional<<#= templateType.Nod
 	if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 		this.lookupTable = priorLookupTable.Value;
 	} else {
-		if (this.<#= templateType.RecursiveField.NameCamelCase #> != null) {
+		if (this.<#= templateType.RecursiveField.NameCamelCase #> != null && this.<#= templateType.RecursiveField.NameCamelCase #>.Count > 0) {
 			foreach (var child in this.<#= templateType.RecursiveField.NameCamelCase #>) {
 				var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
 				this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;

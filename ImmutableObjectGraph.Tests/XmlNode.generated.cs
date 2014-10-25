@@ -581,7 +581,7 @@ namespace ImmutableObjectGraph.Tests {
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
 			} else {
-				if (this.children != null) {
+				if (this.children != null && this.children.Count > 0) {
 					foreach (var child in this.children) {
 						var recursiveChild = child as XmlElement;
 						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
