@@ -582,10 +582,12 @@ namespace ImmutableObjectGraph.Tests {
 				this.lookupTable = priorLookupTable.Value;
 			} else {
 				if (this.children != null) {
-					foreach (var child in this.children)
-					{
+					foreach (var child in this.children) {
 						var recursiveChild = child as XmlElement;
 						this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+						if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+							break; // It's ok to under-estimate, once we're above the threshold any further would be a waste of time.
+						}
 					}
 				}
 		

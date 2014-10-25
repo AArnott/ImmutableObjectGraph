@@ -47,10 +47,12 @@ private void InitializeLookup(ImmutableObjectGraph.Optional<<#= templateType.Nod
 		this.lookupTable = priorLookupTable.Value;
 	} else {
 		if (this.<#= templateType.RecursiveField.NameCamelCase #> != null) {
-			foreach (var child in this.<#= templateType.RecursiveField.NameCamelCase #>)
-			{
+			foreach (var child in this.<#= templateType.RecursiveField.NameCamelCase #>) {
 				var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
 				this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+				if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+					break; // It's ok to under-estimate, once we're above the threshold any further would be a waste of time.
+				}
 			}
 		}
 
