@@ -42,31 +42,32 @@ private <#= templateType.NodeLookupTableTypeName #> LookupTable {
 }
 
 private void InitializeLookup(ImmutableObjectGraph.Optional<<#= templateType.NodeLookupTableTypeName #>> priorLookupTable = default(ImmutableObjectGraph.Optional<<#= templateType.NodeLookupTableTypeName #>>)) {
-	this.inefficiencyLoad = 1;
+	int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
 	if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 		this.lookupTable = priorLookupTable.Value;
 	} else {
 		if (this.<#= templateType.RecursiveField.NameCamelCase #> != null) {
 			if (this.<#= templateType.RecursiveField.NameCamelCase #>.Count >= InefficiencyLoadThreshold) {
 				// The number of children alone are enough to put us over the threshold, skip enumeration.
-				this.inefficiencyLoad = InefficiencyLoadThreshold + 1;
+				inefficiencyLoad = InefficiencyLoadThreshold + 1;
 			} else if (this.<#= templateType.RecursiveField.NameCamelCase #>.Count > 0) {
 				foreach (var child in this.<#= templateType.RecursiveField.NameCamelCase #>) {
 					var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
-					this.inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
-					if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
+					inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
+					if (inefficiencyLoad > InefficiencyLoadThreshold) {
 						break; // It's ok to under-estimate once we're above the threshold since any further would be a waste of time.
 					}
 				}
 			}
 		}
 
-		if (this.inefficiencyLoad > InefficiencyLoadThreshold) {
-			this.inefficiencyLoad = 1;
+		if (inefficiencyLoad > InefficiencyLoadThreshold) {
+			inefficiencyLoad = 1;
 			this.lookupTable = lookupTableLazySentinal;
 		}
 	}
 
+	this.inefficiencyLoad = inefficiencyLoad;
 	this.ValidateInternalIntegrityDebugOnly();
 }
 
