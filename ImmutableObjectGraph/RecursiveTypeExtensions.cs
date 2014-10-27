@@ -8,7 +8,45 @@
 	using Validation;
 
 	public static class RecursiveTypeExtensions {
+		/// <summary>
+		/// Tests whether one object is a descendent of another in a graph.
+		/// </summary>
+		/// <param name="candidateAncestor">The node that might be the ancestor.</param>
+		/// <param name="candidateDescendent">The node that might be the descendent.</param>
+		/// <returns>
+		/// <c>true</c> if <paramref name="candidateAncestor"/> is the ancestor to <paramref name="candidateDescendent"/>;
+		/// <c>false</c> otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that if <paramref name="candidateAncestor"/> equals <paramref name="candidateDescendent"/>,
+		/// <c>false</c> is returned.
+		/// </remarks>
+		public static bool HasDescendent(this IRecursiveType candidateAncestor, IRecursiveType candidateDescendent) {
+			Requires.NotNull(candidateAncestor, "candidateAncestor");
+			Requires.NotNull(candidateDescendent, "candidateDescendent");
 
+			var rootAsParent = candidateAncestor as IRecursiveParent;
+			if (rootAsParent != null && rootAsParent.Children != null) {
+				foreach (var child in rootAsParent.Children) {
+					if (child.Identity == candidateDescendent.Identity) {
+						return true;
+					}
+
+					if (HasDescendent(child, candidateDescendent)) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Returns a sequence starting with the given <paramref name="root"/>
+		/// followed by its descendents in a depth-first search.
+		/// </summary>
+		/// <param name="root">The node at which to start enumeration.</param>
+		/// <returns>A sequence of nodes beginning with <paramref name="root"/> and including all descendents.</returns>
 		public static IEnumerable<IRecursiveType> GetSelfAndDescendents(this IRecursiveType root) {
 			yield return root;
 

@@ -25,9 +25,9 @@
 		public void RecursiveDirectories() {
 			var emptyRoot = FileSystemDirectory.Create("c:");
 			Assert.True(emptyRoot is IEnumerable<FileSystemEntry>);
-			Assert.Equal(0, emptyRoot.Count()); // using Linq exercises the enumerable
+			Assert.Equal(0, emptyRoot.Count());	// using Linq exercises the enumerable
 
-			Assert.Equal(3, this.root.Count());  // use Linq to exercise enumerator
+			Assert.Equal(3, this.root.Count());	 // use Linq to exercise enumerator
 			Assert.Equal(1, this.root.OfType<FileSystemDirectory>().Single().Count());
 		}
 
@@ -218,7 +218,7 @@
 			Assert.Throws<InvalidOperationException>(() => missing.WithPathSegment("q"));
 
 			Assert.True(missing.Equals(missing));
-			missing.GetHashCode(); // we don't care what the result is, so long as it doesn't throw.
+			missing.GetHashCode();   // we don't care what the result is, so long as it doesn't throw.
 		}
 
 		[Fact]
@@ -262,7 +262,7 @@
 		public void ModifyPropertyInRootWithLookupTablePreservesLookupTable() {
 			var root = this.GetRootWithLookupTable();
 			var redRoot = root.AsRoot;
-			root.Children.First().WithRoot(root); // force lazy construction of lookup table
+			root.Children.First().WithRoot(root);  // force lazy construction of lookup table
 			var newRoot = redRoot.WithPathSegment("changed");
 		}
 
@@ -378,7 +378,7 @@
 		public void ChildAddedTwiceThrowsWithMutation() {
 			var root = FileSystemDirectory.Create("c:");
 			var child = FileSystemFile.Create("a.txt");
-			var mutatedChild = child.WithPathSegment("b.txt"); // same identity since we mutated an existing one.
+			var mutatedChild = child.WithPathSegment("b.txt");   // same identity since we mutated an existing one.
 			Assert.Throws<RecursiveChildNotUniqueException>(() => root.AddChildren(child).AddChildren(mutatedChild));
 		}
 
@@ -451,6 +451,23 @@
 		[Fact]
 		public void EmptyPathSegment() {
 			Assert.Throws<ArgumentNullException>(() => FileSystemDirectory.Create(null));
+		}
+
+		[Fact]
+		public void HasDescendent() {
+			FileSystemFile file;
+			var root =
+				FileSystemDirectory.Create(@"c:")
+					.AddChild(
+						FileSystemDirectory.Create("dir")
+							.AddChild(file = FileSystemFile.Create("file")));
+			var otherFile = FileSystemFile.Create("file2");
+			Assert.True(root.HasDescendent(file));
+			Assert.False(root.HasDescendent(otherFile));
+
+			Assert.False(file.HasDescendent(root));
+			Assert.False(root.HasDescendent(root));
+			Assert.False(file.HasDescendent(file));
 		}
 
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
