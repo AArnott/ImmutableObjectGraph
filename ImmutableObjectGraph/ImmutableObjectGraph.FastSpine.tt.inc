@@ -55,6 +55,7 @@ bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collectio
 		return true;
 	}
 
+	result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
 	return false;
 }
 

@@ -406,6 +406,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 				return true;
 			}
 		
+			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
 			return false;
 		}
 		

@@ -1374,6 +1374,7 @@ namespace ImmutableObjectGraph.Tests {
 				return true;
 			}
 		
+			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
 			return false;
 		}
 		
