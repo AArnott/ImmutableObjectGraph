@@ -8,37 +8,103 @@
 	using Validation;
 
 	public static class RecursiveTypeExtensions {
-		/// <summary>
-		/// Tests whether one object is a descendent of another in a graph.
-		/// </summary>
-		/// <param name="candidateAncestor">The node that might be the ancestor.</param>
-		/// <param name="candidateDescendent">The node that might be the descendent.</param>
-		/// <returns>
-		/// <c>true</c> if <paramref name="candidateAncestor"/> is the ancestor to <paramref name="candidateDescendent"/>;
-		/// <c>false</c> otherwise.
-		/// </returns>
-		/// <remarks>
-		/// Note that if <paramref name="candidateAncestor"/> equals <paramref name="candidateDescendent"/>,
-		/// <c>false</c> is returned.
-		/// </remarks>
-		public static bool HasDescendent(this IRecursiveType candidateAncestor, IRecursiveType candidateDescendent) {
-			Requires.NotNull(candidateAncestor, "candidateAncestor");
-			Requires.NotNull(candidateDescendent, "candidateDescendent");
+		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
+		public static bool HasDescendent(this IRecursiveParent parent, int identity) {
+			Requires.NotNull(parent, "parent");
 
-			var rootAsParent = candidateAncestor as IRecursiveParent;
-			if (rootAsParent != null && rootAsParent.Children != null) {
-				foreach (var child in rootAsParent.Children) {
-					if (child.Identity == candidateDescendent.Identity) {
+			IRecursiveType result;
+			return parent.TryFind(identity, out result) && result != parent;
+		}
+
+		/// <summary>Checks whether a given object is among this object's descendents.</summary>
+		public static bool HasDescendent(this IRecursiveParent parent, IRecursiveType possibleDescendent) {
+			Requires.NotNull(parent, "parent");
+			Requires.NotNull(possibleDescendent, "possibleDescendent");
+
+			return HasDescendent(parent, possibleDescendent.Identity);
+		}
+
+		public static bool TryFind<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, int identity, out TRecursiveType value)
+				where TRecursiveParent : class, IRecursiveParent, TRecursiveType
+				where TRecursiveType : class, IRecursiveType {
+			Requires.NotNullAllowStructs(parent, "parent");
+
+			if (parent.Identity.Equals(identity)) {
+				value = parent;
+				return true;
+			}
+
+			var parentWithLookup = parent as IRecursiveParentWithFastLookup;
+			if (parentWithLookup != null) {
+				KeyValuePair<IRecursiveType, int> lookupValue;
+				if (parentWithLookup.TryLookup(identity, out lookupValue)) {
+					value = (TRecursiveType)lookupValue.Key;
+					return lookupValue.Key != null;
+				}
+			}
+
+			// No lookup table (or a failed lookup) means we have to exhaustively search each child and its descendents.
+			foreach (var child in parent.Children) {
+				var recursiveChild = child as TRecursiveParent;
+				if (recursiveChild != null) {
+					if (recursiveChild.TryFind(identity, out value)) {
 						return true;
 					}
-
-					if (HasDescendent(child, candidateDescendent)) {
+				} else {
+					if (child.Identity.Equals(identity)) {
+						value = (TRecursiveType)child;
 						return true;
 					}
 				}
 			}
 
+			value = null;
 			return false;
+		}
+
+		public static bool TryFindImmediateChild<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, int identity, out TRecursiveType value)
+			where TRecursiveParent : class, IRecursiveParent, TRecursiveType
+			where TRecursiveType : class, IRecursiveType {
+			Requires.NotNullAllowStructs(parent, "parent");
+
+			var parentWithLookup = parent as IRecursiveParentWithFastLookup;
+			if (parentWithLookup != null) {
+				KeyValuePair<IRecursiveType, int> lookupValue;
+				if (parentWithLookup.TryLookup(identity, out lookupValue)) {
+					if (lookupValue.Value == parent.Identity) {
+						value = (TRecursiveType)lookupValue.Key;
+						return lookupValue.Key != null;
+					} else {
+						// It isn't an immediate child. 
+						value = default(TRecursiveType);
+						return false;
+					}
+				}
+			}
+
+			// No lookup table means we have to exhaustively search each child.
+			foreach (var child in parent.Children) {
+				if (child.Identity.Equals(identity)) {
+					value = (TRecursiveType)child;
+					return true;
+				}
+			}
+
+			value = null;
+			return false;
+		}
+
+		public static TRecursiveType Find<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, int identity)
+			where TRecursiveParent : class, IRecursiveParent, TRecursiveType
+			where TRecursiveType : class, IRecursiveType {
+			Requires.NotNullAllowStructs(parent, "parent");
+
+			TRecursiveType result;
+			if (parent.TryFind(identity, out result)) {
+				return result;
+			}
+
+			throw new KeyNotFoundException();
 		}
 
 		/// <summary>

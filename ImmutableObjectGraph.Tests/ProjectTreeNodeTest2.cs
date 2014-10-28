@@ -172,8 +172,8 @@ namespace ImmutableObjectGraph.Tests {
 			}
 
 			for (int i = 0; i < expectedChain.Count - 1; i++) {
-				Assert.True(expectedChain[i].Contains(expectedChain.Last().Identity));
-				Assert.False(expectedChain[i].Contains(this.NewTree("missing").Identity));
+				Assert.True(expectedChain[i].HasDescendent(expectedChain.Last().Identity));
+				Assert.False(expectedChain[i].HasDescendent(this.NewTree("missing").Identity));
 			}
 		}
 

@@ -345,6 +345,10 @@ protected class MetaType {
 		get { return string.Format("System.Collections.Immutable.ImmutableDictionary<{1}, System.Collections.Generic.KeyValuePair<{0}, {1}>>", this.RecursiveType.TypeName, this.RequiredIdentityField.TypeName); }
 	}
 
+	public virtual string NodeLookupTableKeyValuePairTypeName {
+		get { return string.Format("System.Collections.Generic.KeyValuePair<{0}, {1}>", this.RecursiveType.TypeName, this.RequiredIdentityField.TypeName); }
+	}
+
 	public virtual HashSet<MetaType> GetTypeFamily() {
 		var set = new HashSet<MetaType>();
 		var furthestAncestor = this.Ancestors.LastOrDefault() ?? this;

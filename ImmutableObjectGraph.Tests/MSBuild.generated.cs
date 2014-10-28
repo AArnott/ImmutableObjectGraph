@@ -1492,7 +1492,7 @@ namespace ImmutableObjectGraph.Tests {
 		All = Type | PositionUnderParent | Parent | Condition | Label | FullPath | Encoding | ToolsVersion | DefaultTargets | InitialTargets | TreatAsLocalProperty | Name | Value | Exclude | Include | ItemType | KeepDuplicates | KeepMetadata | Remove | RemoveMetadata | Content | Project | IsOutputItem | IsOutputProperty | PropertyName | TaskParameter | AfterTargets | BeforeTargets | DependsOnTargets | Inputs | KeepDuplicateOutputs | Outputs | Returns | ContinueOnError | MSBuildArchitecture | MSBuildRuntime | Evaluate | TaskBody | Architecture | AssemblyFile | AssemblyName | Runtime | TaskFactory | TaskName | Output | ParameterType | Required,
 	}
 	
-	public abstract partial class ProjectElementContainer : ProjectElement, System.Collections.Generic.IEnumerable<ProjectElement>, IRecursiveParentWithOrderedChildren {
+	public abstract partial class ProjectElementContainer : ProjectElement, System.Collections.Generic.IEnumerable<ProjectElement>, IRecursiveParentWithOrderedChildren, IRecursiveParentWithFastLookup {
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableList<ProjectElement> children;
@@ -1840,6 +1840,17 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
+		bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, int> result) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32> typedResult;
+				this.LookupTable.TryGetValue(identity, out typedResult);
+				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, int>(typedResult.Key, typedResult.Value);
+				return true;
+			}
+		
+			return false;
+		}
+		
 		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>>)) {
 			int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
@@ -1897,39 +1908,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public bool TryFind(System.Int32 identity, out ProjectElement value) {
-			if (this.Identity.Equals(identity)) {
-				value = this;
-				return true;
-			}
-		
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32> lookupValue;
-				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					value = lookupValue.Key;
-					return true;
-				}
-			} else {
-				// No lookup table means we have to exhaustively search each child and its descendents.
-				foreach (var child in this.Children) {
-					var recursiveChild = child as ProjectElementContainer;
-					if (recursiveChild != null) {
-						if (recursiveChild.TryFind(identity, out value)) {
-							return true;
-						}
-					} else {
-						if (child.Identity.Equals(identity)) {
-							value = child;
-							return true;
-						}
-					}
-				}
-			}
-		
-			value = null;
-			return false;
-		}
-		
 		public ProjectElement Find(System.Int32 identity) {
 			ProjectElement result;
 			if (this.TryFind(identity, out result)) {
@@ -1937,33 +1915,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			throw new System.Collections.Generic.KeyNotFoundException();
-		}
-		
-		public bool TryFindImmediateChild(System.Int32 identity, out ProjectElement value) {
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32> lookupValue;
-				if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.Identity) {
-					value = lookupValue.Key;
-					return true;
-				}
-			} else {
-				// No lookup table means we have to exhaustively search each child.
-				foreach (var child in this.Children) {
-					if (child.Identity.Equals(identity)) {
-						value = child;
-						return true;
-					}
-				}
-			}
-		
-			value = null;
-			return false;
-		}
-		
-		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
-		public bool Contains(System.Int32 identity) {
-			ProjectElement result;
-			return this.TryFind(identity, out result) && result != this;
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>

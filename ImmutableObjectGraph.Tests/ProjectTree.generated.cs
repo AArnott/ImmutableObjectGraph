@@ -24,7 +24,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; }
 	}
 	
-	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram> {
+	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>, IRecursiveParentWithFastLookup {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTree DefaultInstance = GetDefaultTemplate();
 		
@@ -897,6 +897,17 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
+		bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, int> result) {
+			if (this.LookupTable != null) {
+				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> typedResult;
+				this.LookupTable.TryGetValue(identity, out typedResult);
+				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, int>(typedResult.Key, typedResult.Value);
+				return true;
+			}
+		
+			return false;
+		}
+		
 		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>)) {
 			int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
@@ -954,39 +965,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public bool TryFind(System.Int32 identity, out ProjectTree value) {
-			if (this.Identity.Equals(identity)) {
-				value = this;
-				return true;
-			}
-		
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
-				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					value = lookupValue.Key;
-					return true;
-				}
-			} else {
-				// No lookup table means we have to exhaustively search each child and its descendents.
-				foreach (var child in this.Children) {
-					var recursiveChild = child as ProjectTree;
-					if (recursiveChild != null) {
-						if (recursiveChild.TryFind(identity, out value)) {
-							return true;
-						}
-					} else {
-						if (child.Identity.Equals(identity)) {
-							value = child;
-							return true;
-						}
-					}
-				}
-			}
-		
-			value = null;
-			return false;
-		}
-		
 		public ProjectTree Find(System.Int32 identity) {
 			ProjectTree result;
 			if (this.TryFind(identity, out result)) {
@@ -994,33 +972,6 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		
 			throw new System.Collections.Generic.KeyNotFoundException();
-		}
-		
-		public bool TryFindImmediateChild(System.Int32 identity, out ProjectTree value) {
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
-				if (this.LookupTable.TryGetValue(identity, out lookupValue) && lookupValue.Value == this.Identity) {
-					value = lookupValue.Key;
-					return true;
-				}
-			} else {
-				// No lookup table means we have to exhaustively search each child.
-				foreach (var child in this.Children) {
-					if (child.Identity.Equals(identity)) {
-						value = child;
-						return true;
-					}
-				}
-			}
-		
-			value = null;
-			return false;
-		}
-		
-		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
-		public bool Contains(System.Int32 identity) {
-			ProjectTree result;
-			return this.TryFind(identity, out result) && result != this;
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>

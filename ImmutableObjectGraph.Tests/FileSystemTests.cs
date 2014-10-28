@@ -464,10 +464,7 @@
 			var otherFile = FileSystemFile.Create("file2");
 			Assert.True(root.HasDescendent(file));
 			Assert.False(root.HasDescendent(otherFile));
-
-			Assert.False(file.HasDescendent(root));
 			Assert.False(root.HasDescendent(root));
-			Assert.False(file.HasDescendent(file));
 		}
 
 		[Fact]
