@@ -416,6 +416,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing FileSystemEntry.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -890,6 +895,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedFileSystemFile NewSpine(FileSystemFile leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing FileSystemFile.</summary>
@@ -1893,6 +1903,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedFileSystemDirectory NewSpine(FileSystemDirectory leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing FileSystemDirectory.</summary>

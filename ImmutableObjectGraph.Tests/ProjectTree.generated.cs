@@ -1785,6 +1785,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectTree.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -2914,6 +2919,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectItemTree NewSpine(ProjectItemTree leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectItemTree.</summary>

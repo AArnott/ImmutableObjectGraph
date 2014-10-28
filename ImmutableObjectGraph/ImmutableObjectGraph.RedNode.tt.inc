@@ -228,6 +228,11 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		return leaf.WithRoot(newRoot);
 	}
 
+	/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+	public bool IsDefault {
+		get { return this.greenNode == null; }
+	}
+
 	/// <summary>Throws an exception if this struct does not have a backing <#= redType.GreenType.TypeName #>.</summary>
 	private void ThrowIfDefault() {
 		if (this.greenNode == null) {

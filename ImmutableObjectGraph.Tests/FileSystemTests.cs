@@ -470,6 +470,14 @@
 			Assert.False(file.HasDescendent(file));
 		}
 
+		[Fact]
+		public void RootedStruct_IsDefault() {
+			var file = new RootedFileSystemDirectory();
+			Assert.True(file.IsDefault);
+			file = FileSystemDirectory.Create("c:").AsRoot;
+			Assert.False(file.IsDefault);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);

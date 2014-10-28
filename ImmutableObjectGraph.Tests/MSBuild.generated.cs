@@ -1231,6 +1231,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -3088,6 +3093,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectElementContainer.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -3987,6 +3997,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectRootElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -4654,6 +4669,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectPropertyGroupElement NewSpine(ProjectPropertyGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectPropertyGroupElement.</summary>
@@ -5325,6 +5345,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectItemGroupElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -5992,6 +6017,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectChooseElement NewSpine(ProjectChooseElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectChooseElement.</summary>
@@ -6663,6 +6693,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectOtherwiseElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -7332,6 +7367,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectWhenElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -7899,6 +7939,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectPropertyElement NewSpine(ProjectPropertyElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectPropertyElement.</summary>
@@ -8821,6 +8866,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectItemElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -9390,6 +9440,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectMetadataElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -9912,6 +9967,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectExtensionsElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -10432,6 +10492,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectImportElement NewSpine(ProjectImportElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectImportElement.</summary>
@@ -11088,6 +11153,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectImportGroupElement NewSpine(ProjectImportGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectImportGroupElement.</summary>
@@ -11819,6 +11889,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectItemDefinitionElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -12488,6 +12563,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectItemDefinitionGroupElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -12964,6 +13044,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectOnErrorElement NewSpine(ProjectOnErrorElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectOnErrorElement.</summary>
@@ -13622,6 +13707,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectOutputElement NewSpine(ProjectOutputElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectOutputElement.</summary>
@@ -14578,6 +14668,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectTargetElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -15409,6 +15504,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectTaskElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -15976,6 +16076,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectUsingTaskBodyElement NewSpine(ProjectUsingTaskBodyElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectUsingTaskBodyElement.</summary>
@@ -16864,6 +16969,11 @@ namespace ImmutableObjectGraph.Tests {
 			return leaf.WithRoot(newRoot);
 		}
 	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectUsingTaskElement.</summary>
 		private void ThrowIfDefault() {
 			if (this.greenNode == null) {
@@ -17499,6 +17609,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedProjectUsingTaskParameterElement NewSpine(ProjectUsingTaskParameterElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing ProjectUsingTaskParameterElement.</summary>
@@ -18155,6 +18270,11 @@ namespace ImmutableObjectGraph.Tests {
 		private RootedUsingTaskParameterGroupElement NewSpine(UsingTaskParameterGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
 			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
 		}
 	
 		/// <summary>Throws an exception if this struct does not have a backing UsingTaskParameterGroupElement.</summary>
