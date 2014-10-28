@@ -113,12 +113,13 @@
 		/// </summary>
 		/// <param name="root">The node at which to start enumeration.</param>
 		/// <returns>A sequence of nodes beginning with <paramref name="root"/> and including all descendents.</returns>
-		public static IEnumerable<IRecursiveType> GetSelfAndDescendents(this IRecursiveType root) {
+		public static IEnumerable<TRecursiveType> GetSelfAndDescendents<TRecursiveType>(this TRecursiveType root)
+			where TRecursiveType : IRecursiveType {
 			yield return root;
 
 			var rootAsParent = root as IRecursiveParent;
 			if (rootAsParent != null && rootAsParent.Children != null) {
-				foreach (var child in rootAsParent.Children) {
+				foreach (TRecursiveType child in rootAsParent.Children) {
 					foreach (var descendent in child.GetSelfAndDescendents()) {
 						yield return descendent;
 					}
@@ -131,8 +132,9 @@
 		/// </summary>
 		/// <param name="root">The node at which to begin the search.</param>
 		/// <returns>A sequence of the given node, and all its descendents.  The given node always comes first in the sequence.</returns>
-		public static IEnumerable<IRecursiveType> GetSelfAndDescendentsBreadthFirst(this IRecursiveType root) {
-			var nodesToVisit = new Queue<IRecursiveType>();
+		public static IEnumerable<TRecursiveType> GetSelfAndDescendentsBreadthFirst<TRecursiveType>(this TRecursiveType root)
+			where TRecursiveType : IRecursiveType {
+			var nodesToVisit = new Queue<TRecursiveType>();
 			nodesToVisit.Enqueue(root);
 
 			while (nodesToVisit.Count > 0) {
@@ -141,7 +143,7 @@
 
 				var visitingAsParent = visiting as IRecursiveParent;
 				if (visitingAsParent != null && visitingAsParent.Children != null) {
-					foreach (var child in visitingAsParent.Children) {
+					foreach (TRecursiveType child in visitingAsParent.Children) {
 						nodesToVisit.Enqueue(child);
 					}
 				}
