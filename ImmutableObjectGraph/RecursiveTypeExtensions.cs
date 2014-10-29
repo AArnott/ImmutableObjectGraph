@@ -256,8 +256,7 @@
 			}
 
 			foreach (var topLevelOperation in added.Concat(removed)) {
-				var parent = (IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>)topLevelOperation.Value;
-				descendentsOfAddOrRemove.UnionWith(parent.GetSelfAndDescendents().Skip(1));
+				descendentsOfAddOrRemove.UnionWith(topLevelOperation.Value.GetSelfAndDescendents().Skip(1));
 			}
 
 			var history = new List<TDiffGram>();
