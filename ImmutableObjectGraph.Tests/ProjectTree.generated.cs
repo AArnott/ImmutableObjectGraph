@@ -1296,6 +1296,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
 		}
 	
+		public static implicit operator ProjectTree(RootedProjectTree rooted) {
+			return rooted.ProjectTree;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectTree Parent {
 			get {
@@ -2446,6 +2450,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = projectItemTree;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
+		}
+	
+		public static implicit operator ProjectItemTree(RootedProjectItemTree rooted) {
+			return rooted.ProjectItemTree;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>

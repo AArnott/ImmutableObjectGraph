@@ -475,6 +475,15 @@
 			Assert.False(file.IsDefault);
 		}
 
+		[Fact]
+		public void RootedStruct_ImplicitConversionToGreenNode() {
+			RootedFileSystemDirectory rootedDrive = RootedFileSystemDirectory.Create("c:");
+			FileSystemDirectory unrootedDrive = rootedDrive;
+			Assert.Same(rootedDrive.FileSystemDirectory, unrootedDrive);
+			FileSystemEntry unrootedEntry = rootedDrive;
+			Assert.Same(rootedDrive.FileSystemDirectory, unrootedEntry);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);

@@ -69,6 +69,10 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 #>
 	}
 
+	public static implicit operator <#= redType.GreenType.TypeName #>(<#= redType.TypeName #> rooted) {
+		return rooted.<#= redType.GreenType.TypeName #>;
+	}
+
 	/// <summary>Gets the parent of this object in the hierarchy.</summary>
 	public <#= redType.RecursiveParent.TypeName #> Parent {
 		get {

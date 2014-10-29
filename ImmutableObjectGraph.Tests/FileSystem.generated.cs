@@ -292,6 +292,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.root = root;
 		}
 	
+		public static implicit operator FileSystemEntry(RootedFileSystemEntry rooted) {
+			return rooted.FileSystemEntry;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get {
@@ -712,6 +716,10 @@ namespace ImmutableObjectGraph.Tests {
 		internal RootedFileSystemFile(FileSystemFile fileSystemFile, FileSystemDirectory root) {
 			this.greenNode = fileSystemFile;
 			this.root = root;
+		}
+	
+		public static implicit operator FileSystemFile(RootedFileSystemFile rooted) {
+			return rooted.FileSystemFile;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -1575,6 +1583,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = fileSystemDirectory;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<FileSystemEntry, RootedFileSystemEntry, FileSystemDirectory>>);
+		}
+	
+		public static implicit operator FileSystemDirectory(RootedFileSystemDirectory rooted) {
+			return rooted.FileSystemDirectory;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>

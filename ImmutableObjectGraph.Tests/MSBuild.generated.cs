@@ -711,6 +711,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.root = root;
 		}
 	
+		public static implicit operator ProjectElement(RootedProjectElement rooted) {
+			return rooted.ProjectElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -2464,6 +2468,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectElementContainer(RootedProjectElementContainer rooted) {
+			return rooted.ProjectElementContainer;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -3473,6 +3481,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectRootElement(RootedProjectRootElement rooted) {
+			return rooted.ProjectRootElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -4197,6 +4209,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectPropertyGroupElement(RootedProjectPropertyGroupElement rooted) {
+			return rooted.ProjectPropertyGroupElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -4877,6 +4893,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = projectItemGroupElement;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		public static implicit operator ProjectItemGroupElement(RootedProjectItemGroupElement rooted) {
+			return rooted.ProjectItemGroupElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -5561,6 +5581,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectChooseElement(RootedProjectChooseElement rooted) {
+			return rooted.ProjectChooseElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -6241,6 +6265,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = projectOtherwiseElement;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		public static implicit operator ProjectOtherwiseElement(RootedProjectOtherwiseElement rooted) {
+			return rooted.ProjectOtherwiseElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -6925,6 +6953,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectWhenElement(RootedProjectWhenElement rooted) {
+			return rooted.ProjectWhenElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -7603,6 +7635,10 @@ namespace ImmutableObjectGraph.Tests {
 		internal RootedProjectPropertyElement(ProjectPropertyElement projectPropertyElement, ProjectElementContainer root) {
 			this.greenNode = projectPropertyElement;
 			this.root = root;
+		}
+	
+		public static implicit operator ProjectPropertyElement(RootedProjectPropertyElement rooted) {
+			return rooted.ProjectPropertyElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -8383,6 +8419,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectItemElement(RootedProjectItemElement rooted) {
+			return rooted.ProjectItemElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -9112,6 +9152,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.root = root;
 		}
 	
+		public static implicit operator ProjectMetadataElement(RootedProjectMetadataElement rooted) {
+			return rooted.ProjectMetadataElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -9646,6 +9690,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.root = root;
 		}
 	
+		public static implicit operator ProjectExtensionsElement(RootedProjectExtensionsElement rooted) {
+			return rooted.ProjectExtensionsElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -10171,6 +10219,10 @@ namespace ImmutableObjectGraph.Tests {
 		internal RootedProjectImportElement(ProjectImportElement projectImportElement, ProjectElementContainer root) {
 			this.greenNode = projectImportElement;
 			this.root = root;
+		}
+	
+		public static implicit operator ProjectImportElement(RootedProjectImportElement rooted) {
+			return rooted.ProjectImportElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -10727,6 +10779,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = projectImportGroupElement;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		public static implicit operator ProjectImportGroupElement(RootedProjectImportGroupElement rooted) {
+			return rooted.ProjectImportGroupElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -11464,6 +11520,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectItemDefinitionElement(RootedProjectItemDefinitionElement rooted) {
+			return rooted.ProjectItemDefinitionElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -12153,6 +12213,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectItemDefinitionGroupElement(RootedProjectItemDefinitionGroupElement rooted) {
+			return rooted.ProjectItemDefinitionGroupElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -12754,6 +12818,10 @@ namespace ImmutableObjectGraph.Tests {
 		internal RootedProjectOnErrorElement(ProjectOnErrorElement projectOnErrorElement, ProjectElementContainer root) {
 			this.greenNode = projectOnErrorElement;
 			this.root = root;
+		}
+	
+		public static implicit operator ProjectOnErrorElement(RootedProjectOnErrorElement rooted) {
+			return rooted.ProjectOnErrorElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -13382,6 +13450,10 @@ namespace ImmutableObjectGraph.Tests {
 		internal RootedProjectOutputElement(ProjectOutputElement projectOutputElement, ProjectElementContainer root) {
 			this.greenNode = projectOutputElement;
 			this.root = root;
+		}
+	
+		public static implicit operator ProjectOutputElement(RootedProjectOutputElement rooted) {
+			return rooted.ProjectOutputElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -14208,6 +14280,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = projectTargetElement;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		public static implicit operator ProjectTargetElement(RootedProjectTargetElement rooted) {
+			return rooted.ProjectTargetElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -15082,6 +15158,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
 		}
 	
+		public static implicit operator ProjectTaskElement(RootedProjectTaskElement rooted) {
+			return rooted.ProjectTaskElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -15788,6 +15868,10 @@ namespace ImmutableObjectGraph.Tests {
 		internal RootedProjectUsingTaskBodyElement(ProjectUsingTaskBodyElement projectUsingTaskBodyElement, ProjectElementContainer root) {
 			this.greenNode = projectUsingTaskBodyElement;
 			this.root = root;
+		}
+	
+		public static implicit operator ProjectUsingTaskBodyElement(RootedProjectUsingTaskBodyElement rooted) {
+			return rooted.ProjectUsingTaskBodyElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -16539,6 +16623,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = projectUsingTaskElement;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		public static implicit operator ProjectUsingTaskElement(RootedProjectUsingTaskElement rooted) {
+			return rooted.ProjectUsingTaskElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -17317,6 +17405,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.root = root;
 		}
 	
+		public static implicit operator ProjectUsingTaskParameterElement(RootedProjectUsingTaskParameterElement rooted) {
+			return rooted.ProjectUsingTaskParameterElement;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectElementContainer Parent {
 			get {
@@ -17892,6 +17984,10 @@ namespace ImmutableObjectGraph.Tests {
 			this.greenNode = usingTaskParameterGroupElement;
 			this.root = root;
 			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableListRootAdapter<ProjectElement, RootedProjectElement, ProjectElementContainer>>);
+		}
+	
+		public static implicit operator UsingTaskParameterGroupElement(RootedUsingTaskParameterGroupElement rooted) {
+			return rooted.UsingTaskParameterGroupElement;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
