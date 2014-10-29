@@ -914,7 +914,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry> Children { get; }
 	}
 	
-	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntry>, IRecursiveParentWithSortedChildren, IRecursiveParentWithFastLookup {
+	public partial class FileSystemDirectory : FileSystemEntry, IFileSystemDirectory, System.Collections.Generic.IEnumerable<FileSystemEntry>, IRecursiveParentWithSortedChildren, IRecursiveParent<FileSystemEntry>, IRecursiveParentWithFastLookup {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly FileSystemDirectory DefaultInstance = GetDefaultTemplate();
 	
@@ -1546,9 +1546,13 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.Children; }
 		}
 	
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		System.Collections.Generic.IEnumerable<FileSystemEntry> IRecursiveParent<FileSystemEntry>.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 			var parented = this.GetParentedNode(identity);
-			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 		}
 		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 			return this.Children.IndexOf((FileSystemEntry)value);
@@ -1558,7 +1562,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedFileSystemDirectory : System.IEquatable<RootedFileSystemDirectory>, IRecursiveParent {
+	public partial struct RootedFileSystemDirectory : System.IEquatable<RootedFileSystemDirectory>, IRecursiveParent<RootedFileSystemEntry> {
 		private static readonly System.Func<RootedFileSystemEntry, FileSystemEntry> toUnrooted = r => r.FileSystemEntry;
 		private static readonly System.Func<FileSystemEntry, FileSystemDirectory, RootedFileSystemEntry> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -1875,11 +1879,19 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Children;
 			}
 		}
+		
+		System.Collections.Generic.IEnumerable<RootedFileSystemEntry> IRecursiveParent<RootedFileSystemEntry>.Children {
+			get {
+				this.ThrowIfDefault();
+				var that = this;
+				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+			}
+		}
 	
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
-			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
+			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	

@@ -14,7 +14,12 @@
 	public interface IRecursiveParent : IRecursiveType {
 		IEnumerable<IRecursiveType> Children { get; }
 
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> GetParentedNode(int identity);
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> GetParentedNode(int identity);
+	}
+
+	public interface IRecursiveParent<out TRecursiveType> : IRecursiveParent
+		where TRecursiveType : IRecursiveType {
+		new IEnumerable<TRecursiveType> Children { get; }
 	}
 
 	public interface IRecursiveParentWithOrderedChildren : IRecursiveParent {
@@ -60,7 +65,7 @@
 	}
 
 	public struct ParentedRecursiveType<TRecursiveParent, TRecursiveType>
-		where TRecursiveParent : IRecursiveParent
+		where TRecursiveParent : IRecursiveParent<TRecursiveType>
 		where TRecursiveType : IRecursiveType {
 		public ParentedRecursiveType(TRecursiveType value, TRecursiveParent parent = default(TRecursiveParent))
 			: this() {

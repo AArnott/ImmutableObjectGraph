@@ -24,7 +24,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; }
 	}
 	
-	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>, IRecursiveParentWithFastLookup {
+	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveParent<ProjectTree>, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>, IRecursiveParentWithFastLookup {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTree DefaultInstance = GetDefaultTemplate();
 		
@@ -1261,9 +1261,13 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.Children; }
 		}
 	
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		System.Collections.Generic.IEnumerable<ProjectTree> IRecursiveParent<ProjectTree>.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 			var parented = this.GetParentedNode(identity);
-			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 		}
 		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 			return this.Children.IndexOf((ProjectTree)value);
@@ -1277,7 +1281,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree>, IRecursiveParent {
+	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree>, IRecursiveParent<RootedProjectTree> {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
 		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -1755,11 +1759,19 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Children;
 			}
 		}
+		
+		System.Collections.Generic.IEnumerable<RootedProjectTree> IRecursiveParent<RootedProjectTree>.Children {
+			get {
+				this.ThrowIfDefault();
+				var that = this;
+				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+			}
+		}
 	
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
-			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
+			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 	
@@ -2421,7 +2433,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedProjectItemTree : System.IEquatable<RootedProjectItemTree>, IRecursiveParent {
+	public partial struct RootedProjectItemTree : System.IEquatable<RootedProjectItemTree>, IRecursiveParent<RootedProjectTree> {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
 		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -2891,11 +2903,19 @@ namespace ImmutableObjectGraph.Tests {
 				return this.greenNode.Children;
 			}
 		}
+		
+		System.Collections.Generic.IEnumerable<RootedProjectTree> IRecursiveParent<RootedProjectTree>.Children {
+			get {
+				this.ThrowIfDefault();
+				var that = this;
+				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+			}
+		}
 	
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
-			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(result.Value, result.Parent);
+			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
 		}
 	}
 }

@@ -62,9 +62,9 @@ namespace <#= this.Namespace #> {
 				baseTypes.Add("IRecursiveParentWithSortedChildren");
 			} else if (templateType.ChildrenAreOrdered) {
 				baseTypes.Add("IRecursiveParentWithOrderedChildren");
-			} else {
-				baseTypes.Add("IRecursiveParent");
 			}
+
+			baseTypes.Add("IRecursiveParent<" + templateType.RecursiveType.TypeName + ">");
 		}
 
 		if (templateType.IsRecursiveType) {
@@ -312,9 +312,13 @@ if (!templateType.IsAbstract) { #>
 		get { return this.Children; }
 	}
 
-	ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+	System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children {
+		get { return this.Children; }
+	}
+
+	ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 		var parented = this.GetParentedNode(identity);
-		return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+		return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 	}
 <#
 		if (templateType.ChildrenAreOrdered) {

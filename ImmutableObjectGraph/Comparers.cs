@@ -12,7 +12,7 @@
 
 		public static IEqualityComparer<ParentedRecursiveType<TRecursiveParent, TRecursiveType>> Parented<TRecursiveParent, TRecursiveType>()
 			where TRecursiveType : class, IRecursiveType
-			where TRecursiveParent : class, IRecursiveParent {
+			where TRecursiveParent : class, IRecursiveParent<TRecursiveType> {
 			return ParentedIdentityEqualityComparer<TRecursiveParent, TRecursiveType>.Default;
 		}
 
@@ -38,7 +38,7 @@
 
 		private class ParentedIdentityEqualityComparer<TRecursiveParent, TRecursiveType> : IEqualityComparer<ParentedRecursiveType<TRecursiveParent, TRecursiveType>>
 			where TRecursiveType : class, IRecursiveType
-			where TRecursiveParent : class, IRecursiveParent {
+			where TRecursiveParent : class, IRecursiveParent<TRecursiveType> {
 			internal static readonly IEqualityComparer<ParentedRecursiveType<TRecursiveParent, TRecursiveType>> Default = new ParentedIdentityEqualityComparer<TRecursiveParent, TRecursiveType>();
 
 			private ParentedIdentityEqualityComparer() {
