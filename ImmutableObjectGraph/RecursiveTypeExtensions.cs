@@ -132,8 +132,12 @@
 			if (rootAsParent != null && rootAsParent.Children != null) {
 				foreach (TRecursiveType child in rootAsParent.Children) {
 					var childAsParent = child as IRecursiveParent<TRecursiveType>;
-					foreach (var descendent in childAsParent.GetSelfAndDescendents()) {
-						yield return descendent;
+					if (childAsParent != null) {
+						foreach (var descendent in childAsParent.GetSelfAndDescendents()) {
+							yield return descendent;
+						}
+					} else {
+						yield return child;
 					}
 				}
 			}
@@ -165,6 +169,8 @@
 		public static IEnumerable<ParentedRecursiveType<TRecursiveParent, TRecursiveType>> GetSelfAndDescendentsWithParents<TRecursiveParent, TRecursiveType>(this TRecursiveParent root, TRecursiveParent parent = default(TRecursiveParent))
 			where TRecursiveParent : class, IRecursiveParent<TRecursiveType>
 			where TRecursiveType : class, IRecursiveType {
+			Requires.NotNull(root, "root");
+
 			IRecursiveType rootAsRecursiveType = root;
 			yield return new ParentedRecursiveType<TRecursiveParent, TRecursiveType>((TRecursiveType)rootAsRecursiveType, parent);
 
@@ -172,8 +178,12 @@
 			if (rootAsParent != null && rootAsParent.Children != null) {
 				foreach (TRecursiveType child in rootAsParent.Children) {
 					var childAsParent = child as TRecursiveParent;
-					foreach (var descendent in childAsParent.GetSelfAndDescendentsWithParents<TRecursiveParent, TRecursiveType>(rootAsParent)) {
-						yield return descendent;
+					if (childAsParent != null) {
+						foreach (var descendent in childAsParent.GetSelfAndDescendentsWithParents<TRecursiveParent, TRecursiveType>(rootAsParent)) {
+							yield return descendent;
+						}
+					} else {
+						yield return new ParentedRecursiveType<TRecursiveParent, TRecursiveType>(child, rootAsParent);
 					}
 				}
 			}
