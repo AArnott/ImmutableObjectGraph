@@ -115,18 +115,7 @@
 		/// <returns>A sequence of nodes beginning with <paramref name="root"/> and including all descendents.</returns>
 		public static IEnumerable<TRecursiveType> GetSelfAndDescendents<TRecursiveType>(this IRecursiveParent<TRecursiveType> root)
 			where TRecursiveType : IRecursiveType {
-			return GetSelfAndDescendents<TRecursiveType>((TRecursiveType)root);
-		}
-
-		/// <summary>
-		/// Returns a sequence starting with the given <paramref name="root"/>
-		/// followed by its descendents in a depth-first search.
-		/// </summary>
-		/// <param name="root">The node at which to start enumeration.</param>
-		/// <returns>A sequence of nodes beginning with <paramref name="root"/> and including all descendents.</returns>
-		public static IEnumerable<TRecursiveType> GetSelfAndDescendents<TRecursiveType>(this TRecursiveType root)
-			where TRecursiveType : IRecursiveType {
-			yield return root;
+			yield return (TRecursiveType)root;
 
 			var rootAsParent = root as IRecursiveParent<TRecursiveType>;
 			if (rootAsParent != null && rootAsParent.Children != null) {
@@ -140,6 +129,22 @@
 						yield return child;
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Returns a sequence starting with the given <paramref name="root"/>
+		/// followed by its descendents in a depth-first search.
+		/// </summary>
+		/// <param name="root">The node at which to start enumeration.</param>
+		/// <returns>A sequence of nodes beginning with <paramref name="root"/> and including all descendents.</returns>
+		public static IEnumerable<IRecursiveType> GetSelfAndDescendents(this IRecursiveType root) {
+
+			var rootAsParent = root as IRecursiveParent<IRecursiveType>;
+			if (rootAsParent != null) {
+				return GetSelfAndDescendents(rootAsParent);
+			} else {
+				return new[] { root };
 			}
 		}
 
