@@ -33,7 +33,7 @@ public <#= redType.HasAncestor ? "new " : "" #><#= redType.TypeName #> WithRoot(
 			var recursiveParent = redType.SelfAndAncestors.FirstOrDefault(a => a.Equals(redType.RecursiveParent));
 			var baseTypes = new List<string>();
 			baseTypes.Add("System.IEquatable<" + redType.TypeName + ">");
-			baseTypes.Add(recursiveParent != null ? ("IRecursiveParent<" + redType.RecursiveType.TypeName + ">") : "IRecursiveType");
+			baseTypes.Add(recursiveParent != null ? ("IRecursiveParent<" + redType.RecursiveTypeFromFamily.TypeName + ">") : "IRecursiveType");
 #>
 
 public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes) #> {
@@ -250,7 +250,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		}
 	}
 	
-	System.Collections.Generic.IEnumerable<<#= redType.RecursiveType.TypeName #>> IRecursiveParent<<#= redType.RecursiveType.TypeName #>>.Children {
+	System.Collections.Generic.IEnumerable<<#= redType.RecursiveTypeFromFamily.TypeName #>> IRecursiveParent<<#= redType.RecursiveTypeFromFamily.TypeName #>>.Children {
 		get {
 			this.ThrowIfDefault();
 			var that = this;

@@ -179,7 +179,7 @@
 			}
 		}
 
-		public static IReadOnlyList<TDiffGram> ChangesSince<TPropertiesEnum, TDiffGram>(this IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>> current, IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>> priorVersion)
+		public static IReadOnlyList<TDiffGram> ChangesSince<TPropertiesEnum, TDiffGram>(this IRecursiveDiffingType<TPropertiesEnum, TDiffGram> current, IRecursiveDiffingType<TPropertiesEnum, TDiffGram> priorVersion)
 			where TPropertiesEnum : struct
 			where TDiffGram : struct {
 			Requires.NotNull(current, "current");
@@ -193,15 +193,24 @@
 				throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
 			}
 
-			IRecursiveParent currentAsParent = current;
+			var currentAsParent = current as IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>;
 			var currentAsRecursiveType = (IRecursiveDiffingType<TPropertiesEnum, TDiffGram>)current;
 
-			var before = new HashSet<ParentedRecursiveType<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(
-				priorVersion.GetSelfAndDescendentsWithParents<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>(),
-				Comparers.Parented<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
-			var after = new HashSet<ParentedRecursiveType<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(
-				current.GetSelfAndDescendentsWithParents<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>(),
-				Comparers.Parented<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+			var before = new HashSet<ParentedRecursiveType<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(Comparers.Parented<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+			var after = new HashSet<ParentedRecursiveType<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(Comparers.Parented<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+
+			var priorVersionAsParent = priorVersion as IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>;
+			if (priorVersionAsParent != null) {
+				before.UnionWith(priorVersionAsParent.GetSelfAndDescendentsWithParents<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+			} else {
+				before.Add(priorVersion.WithParent());
+			}
+
+			if (currentAsParent != null) {
+				after.UnionWith(currentAsParent.GetSelfAndDescendentsWithParents<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
+			} else {
+				after.Add(current.WithParent());
+			}
 
 			var added = new HashSet<ParentedRecursiveType<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(Comparers.Parented<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
 			var removed = new HashSet<ParentedRecursiveType<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>>(Comparers.Parented<IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>, IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>());
@@ -299,6 +308,11 @@
 			}
 
 			return changes;
+		}
+
+		private static ParentedRecursiveType<IRecursiveParent<TRecursiveType>, TRecursiveType> WithParent<TRecursiveType>(this TRecursiveType value, IRecursiveParent<TRecursiveType> parent = null)
+			where TRecursiveType : IRecursiveType {
+			return new ParentedRecursiveType<IRecursiveParent<TRecursiveType>, TRecursiveType>(value, parent);
 		}
 
 		public static void Write(this IRecursiveParent root, TextWriter writer) {

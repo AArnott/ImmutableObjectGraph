@@ -73,7 +73,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		}
 	}
 	
-	public abstract partial class RecursiveContainer : RootRecursive, System.Collections.Generic.IEnumerable<RootRecursive>, IRecursiveParentWithOrderedChildren, IRecursiveParentWithFastLookup {
+	public abstract partial class RecursiveContainer : RootRecursive, System.Collections.Generic.IEnumerable<RootRecursive>, IRecursiveParentWithOrderedChildren, IRecursiveParent<RootRecursive>, IRecursiveParentWithFastLookup {
 	
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableList<RootRecursive> children;
@@ -562,9 +562,13 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			get { return this.Children; }
 		}
 	
-		ParentedRecursiveType<IRecursiveParent, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		System.Collections.Generic.IEnumerable<RootRecursive> IRecursiveParent<RootRecursive>.Children {
+			get { return this.Children; }
+		}
+	
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
 			var parented = this.GetParentedNode(identity);
-			return new ParentedRecursiveType<IRecursiveParent, IRecursiveType>(parented.Value, parented.Parent);
+			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 		}
 		int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value) {
 			return this.Children.IndexOf((RootRecursive)value);

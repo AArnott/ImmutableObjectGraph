@@ -1281,7 +1281,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	}
 	
-	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree>, IRecursiveParent<ProjectTree> {
+	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree>, IRecursiveParent<RootedProjectTree> {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
 		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
 	
@@ -1760,10 +1760,11 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		System.Collections.Generic.IEnumerable<ProjectTree> IRecursiveParent<ProjectTree>.Children {
+		System.Collections.Generic.IEnumerable<RootedProjectTree> IRecursiveParent<RootedProjectTree>.Children {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Children;
+				var that = this;
+				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
 			}
 		}
 	
@@ -2431,3 +2432,492 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	}
+	
+	public partial struct RootedProjectItemTree : System.IEquatable<RootedProjectItemTree>, IRecursiveParent<RootedProjectTree> {
+		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
+		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
+	
+		private readonly ProjectItemTree greenNode;
+	
+		private readonly ProjectTree root;
+		private Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>> children;
+	
+		internal RootedProjectItemTree(ProjectItemTree projectItemTree, ProjectTree root) {
+			this.greenNode = projectItemTree;
+			this.root = root;
+			this.children = default(Optional<ImmutableObjectGraph.Adapters.ImmutableSetRootAdapter<ProjectTree, RootedProjectTree, ProjectTree>>);
+		}
+	
+		/// <summary>Gets the parent of this object in the hierarchy.</summary>
+		public RootedProjectTree Parent {
+			get {
+				this.ThrowIfDefault();
+				var greenParent = this.root.GetParent(this.ProjectItemTree);
+				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectTree);
+			}
+		}
+	
+		public RootedProjectTree Root {
+			get { return this.root != null ? this.root.AsRoot : default(RootedProjectTree); }
+		}
+	
+		public System.Int32 Identity {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Identity;
+			}
+		}
+	
+		public RootedProjectTree AsProjectTree {
+			get { return this.greenNode != null ? ((ProjectTree)this.greenNode).WithRoot(this.root) : default(RootedProjectTree); }
+		}
+	
+		public System.String Caption {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Caption;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Caption property set to the specified value.</summary>
+		public RootedProjectItemTree WithCaption(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCaption(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.String FilePath {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.FilePath;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the FilePath property set to the specified value.</summary>
+		public RootedProjectItemTree WithFilePath(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithFilePath(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Drawing.Image Icon {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Icon;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Icon property set to the specified value.</summary>
+		public RootedProjectItemTree WithIcon(System.Drawing.Image value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithIcon(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Drawing.Image ExpandedIcon {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ExpandedIcon;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ExpandedIcon property set to the specified value.</summary>
+		public RootedProjectItemTree WithExpandedIcon(System.Drawing.Image value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithExpandedIcon(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Boolean Visible {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Visible;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Visible property set to the specified value.</summary>
+		public RootedProjectItemTree WithVisible(System.Boolean value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithVisible(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public Microsoft.VisualStudio.ProjectSystem.Properties.IRule BrowseObjectProperties {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.BrowseObjectProperties;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the BrowseObjectProperties property set to the specified value.</summary>
+		public RootedProjectItemTree WithBrowseObjectProperties(Microsoft.VisualStudio.ProjectSystem.Properties.IRule value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithBrowseObjectProperties(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.ImmutableHashSet<System.String> Capabilities {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Capabilities;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Capabilities property set to the specified value.</summary>
+		public RootedProjectItemTree WithCapabilities(System.Collections.Immutable.ImmutableHashSet<System.String> value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCapabilities(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
+		public RootedProjectItemTree WithCapabilities(params System.String[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCapabilities(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Capabilities collection with the specified collection.</summary>
+		public RootedProjectItemTree WithCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithCapabilities(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
+		public RootedProjectItemTree AddCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddCapabilities(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Capabilities collection.</summary>
+		public RootedProjectItemTree AddCapabilities(params System.String[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddCapabilities(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Capabilities collection.</summary>
+		public RootedProjectItemTree AddCapability(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddCapability(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
+		public RootedProjectItemTree RemoveCapabilities(System.Collections.Generic.IEnumerable<System.String> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveCapabilities(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Capabilities collection.</summary>
+		public RootedProjectItemTree RemoveCapabilities(params System.String[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveCapabilities(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Capabilities collection.</summary>
+		public RootedProjectItemTree RemoveCapability(System.String value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveCapability(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Capabilities collection.</summary>
+		public RootedProjectItemTree RemoveCapabilities() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveCapabilities();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Collections.Immutable.IImmutableSet<RootedProjectTree> Children {
+			get {
+				if (!this.children.IsDefined) {
+					this.ThrowIfDefault();
+					this.children = Optional.For(Adapter.Create(this.greenNode.Children, toRooted, toUnrooted, this.root));
+				}
+	
+				return this.children.Value;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the Children property set to the specified value.</summary>
+		public RootedProjectItemTree WithChildren(System.Collections.Immutable.IImmutableSet<RootedProjectTree> value) {
+			this.ThrowIfDefault();
+			var adapter = (ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)value;
+			var mutatedLeaf = this.greenNode.WithChildren(adapter.UnderlyingCollection);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemTree WithChildren(params RootedProjectTree[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectTree));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemTree WithChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values.Select(r => r.ProjectTree));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree AddChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectTree));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree AddChildren(params RootedProjectTree[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values.Select(r => r.ProjectTree));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree> AddChild(RootedProjectTree value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value.ProjectTree);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectTree(value.ProjectTree, newParent.Root.ProjectTree);
+			return new ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree RemoveChildren(System.Collections.Generic.IEnumerable<RootedProjectTree> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectTree));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree RemoveChildren(params RootedProjectTree[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values.Select(r => r.ProjectTree));
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemTree RemoveChild(RootedProjectTree value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value.ProjectTree);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemTree WithChildren(params ProjectTree[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Replaces the elements of the Children collection with the specified collection.</summary>
+		public RootedProjectItemTree WithChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree AddChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree AddChildren(params ProjectTree[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Adds the specified element from the Children collection.</summary>
+		public ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree> AddChild(ProjectTree value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.AddChild(value);
+			var newParent = this.NewSpine(mutatedLeaf);
+			var newChild = new RootedProjectTree(value, newParent.Root.ProjectTree);
+			return new ParentedRecursiveType<RootedProjectItemTree, RootedProjectTree>(newChild, newParent);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree RemoveChildren(System.Collections.Generic.IEnumerable<ProjectTree> values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified elements from the Children collection.</summary>
+		public RootedProjectItemTree RemoveChildren(params ProjectTree[] values) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren(values);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Removes the specified element from the Children collection.</summary>
+		public RootedProjectItemTree RemoveChild(ProjectTree value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChild(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+		
+		/// <summary>Clears all elements from the Children collection.</summary>
+		public RootedProjectItemTree RemoveChildren() {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.RemoveChildren();
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext ProjectPropertiesContext {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.ProjectPropertiesContext;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the ProjectPropertiesContext property set to the specified value.</summary>
+		public RootedProjectItemTree WithProjectPropertiesContext(Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithProjectPropertiesContext(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet PropertySheet {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.PropertySheet;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the PropertySheet property set to the specified value.</summary>
+		public RootedProjectItemTree WithPropertySheet(Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithPropertySheet(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		public System.Boolean IsLinked {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.IsLinked;
+			}
+		}
+		
+		/// <summary>Returns a new instance with the IsLinked property set to the specified value.</summary>
+		public RootedProjectItemTree WithIsLinked(System.Boolean value) {
+			this.ThrowIfDefault();
+			var mutatedLeaf = this.greenNode.WithIsLinked(value);
+			return this.NewSpine(mutatedLeaf);
+		}
+	
+		/// <summary>Gets the unrooted representation of this object in the hierarchy.</summary>
+		public ProjectItemTree ProjectItemTree {
+			get { return this.greenNode; }
+		}
+	
+		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
+		public RootedProjectItemTree With(
+			ImmutableObjectGraph.Optional<System.String> caption = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.String> filePath = default(ImmutableObjectGraph.Optional<System.String>),
+			ImmutableObjectGraph.Optional<System.Drawing.Image> icon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+			ImmutableObjectGraph.Optional<System.Drawing.Image> expandedIcon = default(ImmutableObjectGraph.Optional<System.Drawing.Image>),
+			ImmutableObjectGraph.Optional<System.Boolean> visible = default(ImmutableObjectGraph.Optional<System.Boolean>),
+			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.IImmutableSet<RootedProjectTree>>),
+			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext> projectPropertiesContext = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
+			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
+			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
+			this.ThrowIfDefault();
+			var newGreenNode = this.greenNode.With(
+				caption: caption,
+				filePath: filePath,
+				icon: icon,
+				expandedIcon: expandedIcon,
+				visible: visible,
+				browseObjectProperties: browseObjectProperties,
+				capabilities: capabilities,
+				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
+				projectPropertiesContext: projectPropertiesContext,
+				propertySheet: propertySheet,
+				isLinked: isLinked);
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(RootedProjectItemTree priorVersion) {
+			this.ThrowIfDefault();
+			return this.greenNode.ChangesSince(priorVersion.ProjectItemTree);
+		}
+		
+		public RootedProjectTree ToProjectTree() {
+			var newGreenNode = this.greenNode.ToProjectTree();
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+			return newGreenNode.WithRoot(newRoot);
+		}
+	
+		public override bool Equals(object obj) {
+			if (obj is RootedProjectItemTree) {
+				var other = (RootedProjectItemTree)obj;
+				return this.Equals(other);
+			}
+	
+			return false;
+		}
+	
+		public bool Equals(RootedProjectItemTree other) {
+			return this.greenNode == other.greenNode && this.root == other.root;
+		}
+	
+		public override int GetHashCode() {
+			return this.greenNode == null ? 0 : this.greenNode.GetHashCode();
+		}
+	
+		private RootedProjectItemTree NewSpine(ProjectItemTree leaf) {
+			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+			return leaf.WithRoot(newRoot);
+		}
+	
+		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
+		public bool IsDefault {
+			get { return this.greenNode == null; }
+		}
+	
+		/// <summary>Throws an exception if this struct does not have a backing ProjectItemTree.</summary>
+		private void ThrowIfDefault() {
+			if (this.greenNode == null) {
+				throw new System.InvalidOperationException();
+			}
+		}
+	
+		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
+			get {
+				this.ThrowIfDefault();
+				return this.greenNode.Children;
+			}
+		}
+		
+		System.Collections.Generic.IEnumerable<RootedProjectTree> IRecursiveParent<RootedProjectTree>.Children {
+			get {
+				this.ThrowIfDefault();
+				var that = this;
+				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+			}
+		}
+	
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+			this.ThrowIfDefault();
+			var result = this.greenNode.GetParentedNode(identity);
+			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
+		}
+	}
+}
+
+
