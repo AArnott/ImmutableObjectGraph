@@ -186,6 +186,19 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			return (RecursiveContainer)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 		}
 		
+		/// <summary>Replaces one node with a modified version of itself (same identity) among this node's descendents</summary>
+		public RecursiveContainer ReplaceDescendent(RootRecursive updatedNode) {
+			var spine = this.GetSpine(updatedNode.Identity);
+		
+			if (spine.IsEmpty) {
+				// The descendent was not found.
+				throw new System.ArgumentException("Old value not found");
+			}
+		
+			return (RecursiveContainer)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
+		}
+		
+		/// <summary>Replaces one node with another node that may have a different identity.</summary>
 		public RecursiveContainer ReplaceDescendent(RootRecursive current, RootRecursive replacement) {
 			var spine = this.GetSpine(current);
 		

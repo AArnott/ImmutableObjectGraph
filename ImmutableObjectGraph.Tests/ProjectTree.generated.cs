@@ -685,6 +685,19 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectTree)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 		}
 		
+		/// <summary>Replaces one node with a modified version of itself (same identity) among this node's descendents</summary>
+		public ProjectTree ReplaceDescendent(ProjectTree updatedNode) {
+			var spine = this.GetSpine(updatedNode.Identity);
+		
+			if (spine.IsEmpty) {
+				// The descendent was not found.
+				throw new System.ArgumentException("Old value not found");
+			}
+		
+			return (ProjectTree)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
+		}
+		
+		/// <summary>Replaces one node with another node that may have a different identity.</summary>
 		public ProjectTree ReplaceDescendent(ProjectTree current, ProjectTree replacement) {
 			var spine = this.GetSpine(current);
 		
@@ -1301,11 +1314,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectTree that, RootedProjectTree other) {
-			return that.ProjectTree == other.ProjectTree;
+			return that.ProjectTree == other.ProjectTree
+			    && that.Root.ProjectTree == other.Root.ProjectTree;
 		}
 	
 		public static bool operator !=(RootedProjectTree that, RootedProjectTree other) {
-			return that.ProjectTree != other.ProjectTree;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -2465,11 +2479,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectItemTree that, RootedProjectItemTree other) {
-			return that.ProjectItemTree == other.ProjectItemTree;
+			return that.ProjectItemTree == other.ProjectItemTree
+			    && that.Root.ProjectTree == other.Root.ProjectTree;
 		}
 	
 		public static bool operator !=(RootedProjectItemTree that, RootedProjectItemTree other) {
-			return that.ProjectItemTree != other.ProjectItemTree;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>

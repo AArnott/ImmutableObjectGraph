@@ -716,11 +716,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectElement that, RootedProjectElement other) {
-			return that.ProjectElement == other.ProjectElement;
+			return that.ProjectElement == other.ProjectElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectElement that, RootedProjectElement other) {
-			return that.ProjectElement != other.ProjectElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -1640,6 +1641,19 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectElementContainer)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 		}
 		
+		/// <summary>Replaces one node with a modified version of itself (same identity) among this node's descendents</summary>
+		public ProjectElementContainer ReplaceDescendent(ProjectElement updatedNode) {
+			var spine = this.GetSpine(updatedNode.Identity);
+		
+			if (spine.IsEmpty) {
+				// The descendent was not found.
+				throw new System.ArgumentException("Old value not found");
+			}
+		
+			return (ProjectElementContainer)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
+		}
+		
+		/// <summary>Replaces one node with another node that may have a different identity.</summary>
 		public ProjectElementContainer ReplaceDescendent(ProjectElement current, ProjectElement replacement) {
 			var spine = this.GetSpine(current);
 		
@@ -2481,11 +2495,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectElementContainer that, RootedProjectElementContainer other) {
-			return that.ProjectElementContainer == other.ProjectElementContainer;
+			return that.ProjectElementContainer == other.ProjectElementContainer
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectElementContainer that, RootedProjectElementContainer other) {
-			return that.ProjectElementContainer != other.ProjectElementContainer;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -3502,11 +3517,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectRootElement that, RootedProjectRootElement other) {
-			return that.ProjectRootElement == other.ProjectRootElement;
+			return that.ProjectRootElement == other.ProjectRootElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectRootElement that, RootedProjectRootElement other) {
-			return that.ProjectRootElement != other.ProjectRootElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -4238,11 +4254,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectPropertyGroupElement that, RootedProjectPropertyGroupElement other) {
-			return that.ProjectPropertyGroupElement == other.ProjectPropertyGroupElement;
+			return that.ProjectPropertyGroupElement == other.ProjectPropertyGroupElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectPropertyGroupElement that, RootedProjectPropertyGroupElement other) {
-			return that.ProjectPropertyGroupElement != other.ProjectPropertyGroupElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -4932,11 +4949,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectItemGroupElement that, RootedProjectItemGroupElement other) {
-			return that.ProjectItemGroupElement == other.ProjectItemGroupElement;
+			return that.ProjectItemGroupElement == other.ProjectItemGroupElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectItemGroupElement that, RootedProjectItemGroupElement other) {
-			return that.ProjectItemGroupElement != other.ProjectItemGroupElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -5626,11 +5644,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectChooseElement that, RootedProjectChooseElement other) {
-			return that.ProjectChooseElement == other.ProjectChooseElement;
+			return that.ProjectChooseElement == other.ProjectChooseElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectChooseElement that, RootedProjectChooseElement other) {
-			return that.ProjectChooseElement != other.ProjectChooseElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -6320,11 +6339,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectOtherwiseElement that, RootedProjectOtherwiseElement other) {
-			return that.ProjectOtherwiseElement == other.ProjectOtherwiseElement;
+			return that.ProjectOtherwiseElement == other.ProjectOtherwiseElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectOtherwiseElement that, RootedProjectOtherwiseElement other) {
-			return that.ProjectOtherwiseElement != other.ProjectOtherwiseElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -7014,11 +7034,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectWhenElement that, RootedProjectWhenElement other) {
-			return that.ProjectWhenElement == other.ProjectWhenElement;
+			return that.ProjectWhenElement == other.ProjectWhenElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectWhenElement that, RootedProjectWhenElement other) {
-			return that.ProjectWhenElement != other.ProjectWhenElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -7706,11 +7727,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectPropertyElement that, RootedProjectPropertyElement other) {
-			return that.ProjectPropertyElement == other.ProjectPropertyElement;
+			return that.ProjectPropertyElement == other.ProjectPropertyElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectPropertyElement that, RootedProjectPropertyElement other) {
-			return that.ProjectPropertyElement != other.ProjectPropertyElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -8496,11 +8518,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectItemElement that, RootedProjectItemElement other) {
-			return that.ProjectItemElement == other.ProjectItemElement;
+			return that.ProjectItemElement == other.ProjectItemElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectItemElement that, RootedProjectItemElement other) {
-			return that.ProjectItemElement != other.ProjectItemElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -9237,11 +9260,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectMetadataElement that, RootedProjectMetadataElement other) {
-			return that.ProjectMetadataElement == other.ProjectMetadataElement;
+			return that.ProjectMetadataElement == other.ProjectMetadataElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectMetadataElement that, RootedProjectMetadataElement other) {
-			return that.ProjectMetadataElement != other.ProjectMetadataElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -9783,11 +9807,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectExtensionsElement that, RootedProjectExtensionsElement other) {
-			return that.ProjectExtensionsElement == other.ProjectExtensionsElement;
+			return that.ProjectExtensionsElement == other.ProjectExtensionsElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectExtensionsElement that, RootedProjectExtensionsElement other) {
-			return that.ProjectExtensionsElement != other.ProjectExtensionsElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -10322,11 +10347,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectImportElement that, RootedProjectImportElement other) {
-			return that.ProjectImportElement == other.ProjectImportElement;
+			return that.ProjectImportElement == other.ProjectImportElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectImportElement that, RootedProjectImportElement other) {
-			return that.ProjectImportElement != other.ProjectImportElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -10890,11 +10916,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectImportGroupElement that, RootedProjectImportGroupElement other) {
-			return that.ProjectImportGroupElement == other.ProjectImportGroupElement;
+			return that.ProjectImportGroupElement == other.ProjectImportGroupElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectImportGroupElement that, RootedProjectImportGroupElement other) {
-			return that.ProjectImportGroupElement != other.ProjectImportGroupElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -11637,11 +11664,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectItemDefinitionElement that, RootedProjectItemDefinitionElement other) {
-			return that.ProjectItemDefinitionElement == other.ProjectItemDefinitionElement;
+			return that.ProjectItemDefinitionElement == other.ProjectItemDefinitionElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectItemDefinitionElement that, RootedProjectItemDefinitionElement other) {
-			return that.ProjectItemDefinitionElement != other.ProjectItemDefinitionElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -12338,11 +12366,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectItemDefinitionGroupElement that, RootedProjectItemDefinitionGroupElement other) {
-			return that.ProjectItemDefinitionGroupElement == other.ProjectItemDefinitionGroupElement;
+			return that.ProjectItemDefinitionGroupElement == other.ProjectItemDefinitionGroupElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectItemDefinitionGroupElement that, RootedProjectItemDefinitionGroupElement other) {
-			return that.ProjectItemDefinitionGroupElement != other.ProjectItemDefinitionGroupElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -12953,11 +12982,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectOnErrorElement that, RootedProjectOnErrorElement other) {
-			return that.ProjectOnErrorElement == other.ProjectOnErrorElement;
+			return that.ProjectOnErrorElement == other.ProjectOnErrorElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectOnErrorElement that, RootedProjectOnErrorElement other) {
-			return that.ProjectOnErrorElement != other.ProjectOnErrorElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -13593,11 +13623,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectOutputElement that, RootedProjectOutputElement other) {
-			return that.ProjectOutputElement == other.ProjectOutputElement;
+			return that.ProjectOutputElement == other.ProjectOutputElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectOutputElement that, RootedProjectOutputElement other) {
-			return that.ProjectOutputElement != other.ProjectOutputElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -14431,11 +14462,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectTargetElement that, RootedProjectTargetElement other) {
-			return that.ProjectTargetElement == other.ProjectTargetElement;
+			return that.ProjectTargetElement == other.ProjectTargetElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectTargetElement that, RootedProjectTargetElement other) {
-			return that.ProjectTargetElement != other.ProjectTargetElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -15315,11 +15347,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectTaskElement that, RootedProjectTaskElement other) {
-			return that.ProjectTaskElement == other.ProjectTaskElement;
+			return that.ProjectTaskElement == other.ProjectTaskElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectTaskElement that, RootedProjectTaskElement other) {
-			return that.ProjectTaskElement != other.ProjectTaskElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -16035,11 +16068,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectUsingTaskBodyElement that, RootedProjectUsingTaskBodyElement other) {
-			return that.ProjectUsingTaskBodyElement == other.ProjectUsingTaskBodyElement;
+			return that.ProjectUsingTaskBodyElement == other.ProjectUsingTaskBodyElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectUsingTaskBodyElement that, RootedProjectUsingTaskBodyElement other) {
-			return that.ProjectUsingTaskBodyElement != other.ProjectUsingTaskBodyElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -16798,11 +16832,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectUsingTaskElement that, RootedProjectUsingTaskElement other) {
-			return that.ProjectUsingTaskElement == other.ProjectUsingTaskElement;
+			return that.ProjectUsingTaskElement == other.ProjectUsingTaskElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectUsingTaskElement that, RootedProjectUsingTaskElement other) {
-			return that.ProjectUsingTaskElement != other.ProjectUsingTaskElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -17586,11 +17621,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedProjectUsingTaskParameterElement that, RootedProjectUsingTaskParameterElement other) {
-			return that.ProjectUsingTaskParameterElement == other.ProjectUsingTaskParameterElement;
+			return that.ProjectUsingTaskParameterElement == other.ProjectUsingTaskParameterElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedProjectUsingTaskParameterElement that, RootedProjectUsingTaskParameterElement other) {
-			return that.ProjectUsingTaskParameterElement != other.ProjectUsingTaskParameterElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -18175,11 +18211,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedUsingTaskParameterGroupElement that, RootedUsingTaskParameterGroupElement other) {
-			return that.UsingTaskParameterGroupElement == other.UsingTaskParameterGroupElement;
+			return that.UsingTaskParameterGroupElement == other.UsingTaskParameterGroupElement
+			    && that.Root.ProjectElementContainer == other.Root.ProjectElementContainer;
 		}
 	
 		public static bool operator !=(RootedUsingTaskParameterGroupElement that, RootedUsingTaskParameterGroupElement other) {
-			return that.UsingTaskParameterGroupElement != other.UsingTaskParameterGroupElement;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
