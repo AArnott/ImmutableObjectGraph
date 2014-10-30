@@ -484,6 +484,22 @@
 			Assert.Same(rootedDrive.FileSystemDirectory, unrootedEntry);
 		}
 
+		[Fact]
+		public void RootedStruct_EqualityOperators()
+		{
+			var r1a = RootedFileSystemDirectory.Create("c:");
+			var r1b = r1a; // struct copy
+			var r2 = RootedFileSystemDirectory.Create("c:");
+
+			// Compare two structs with the same underlying green node reference.
+			Assert.True(r1a == r1b);
+			Assert.False(r1a != r1b);
+
+			// Compare two structs with different underlying green node references.
+			Assert.False(r1a == r2);
+			Assert.True(r1a != r2);
+		}
+
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
 			foreach (var child in directory) {
 				Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);

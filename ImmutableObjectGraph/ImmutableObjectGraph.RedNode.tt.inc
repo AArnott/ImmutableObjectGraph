@@ -73,6 +73,14 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		return rooted.<#= redType.GreenType.TypeName #>;
 	}
 
+	public static bool operator ==(<#= redType.TypeName #> that, <#= redType.TypeName #> other) {
+		return that.<#= redType.GreenType.TypeName #> == other.<#= redType.GreenType.TypeName #>;
+	}
+
+	public static bool operator !=(<#= redType.TypeName #> that, <#= redType.TypeName #> other) {
+		return that.<#= redType.GreenType.TypeName #> != other.<#= redType.GreenType.TypeName #>;
+	}
+
 	/// <summary>Gets the parent of this object in the hierarchy.</summary>
 	public <#= redType.RecursiveParent.TypeName #> Parent {
 		get {

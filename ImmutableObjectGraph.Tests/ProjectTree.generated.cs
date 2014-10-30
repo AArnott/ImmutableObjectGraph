@@ -1300,6 +1300,14 @@ namespace ImmutableObjectGraph.Tests {
 			return rooted.ProjectTree;
 		}
 	
+		public static bool operator ==(RootedProjectTree that, RootedProjectTree other) {
+			return that.ProjectTree == other.ProjectTree;
+		}
+	
+		public static bool operator !=(RootedProjectTree that, RootedProjectTree other) {
+			return that.ProjectTree != other.ProjectTree;
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedProjectTree Parent {
 			get {
@@ -2454,6 +2462,14 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static implicit operator ProjectItemTree(RootedProjectItemTree rooted) {
 			return rooted.ProjectItemTree;
+		}
+	
+		public static bool operator ==(RootedProjectItemTree that, RootedProjectItemTree other) {
+			return that.ProjectItemTree == other.ProjectItemTree;
+		}
+	
+		public static bool operator !=(RootedProjectItemTree that, RootedProjectItemTree other) {
+			return that.ProjectItemTree != other.ProjectItemTree;
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
