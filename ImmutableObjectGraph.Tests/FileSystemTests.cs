@@ -487,9 +487,9 @@
 		[Fact]
 		public void RootedStruct_EqualityOperators()
 		{
-			var r1a = RootedFileSystemDirectory.Create("c:");
+			var r1a = RootedFileSystemDirectory.Create("foo");
 			var r1b = r1a; // struct copy
-			var r2 = RootedFileSystemDirectory.Create("c:");
+			var r2 = RootedFileSystemDirectory.Create("foo");
 
 			// Compare two structs with the same underlying green node reference.
 			Assert.True(r1a == r1b);
@@ -498,6 +498,13 @@
 			// Compare two structs with different underlying green node references.
 			Assert.False(r1a == r2);
 			Assert.True(r1a != r2);
+
+			// Now verify the root node reference aspect to it.
+			var newRoot = RootedFileSystemDirectory.Create("c:")
+				.AddChild(r1a.FileSystemDirectory).Parent;
+			var r1Rerooted = r1a.FileSystemDirectory.WithRoot(newRoot);
+			Assert.False(r1a == r1Rerooted);
+			Assert.True(r1a != r1Rerooted);
 		}
 
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {

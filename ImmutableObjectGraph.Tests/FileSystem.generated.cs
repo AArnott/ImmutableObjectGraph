@@ -297,11 +297,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedFileSystemEntry that, RootedFileSystemEntry other) {
-			return that.FileSystemEntry == other.FileSystemEntry;
+			return that.FileSystemEntry == other.FileSystemEntry
+			    && that.Root.FileSystemDirectory == other.Root.FileSystemDirectory;
 		}
 	
 		public static bool operator !=(RootedFileSystemEntry that, RootedFileSystemEntry other) {
-			return that.FileSystemEntry != other.FileSystemEntry;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -731,11 +732,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedFileSystemFile that, RootedFileSystemFile other) {
-			return that.FileSystemFile == other.FileSystemFile;
+			return that.FileSystemFile == other.FileSystemFile
+			    && that.Root.FileSystemDirectory == other.Root.FileSystemDirectory;
 		}
 	
 		public static bool operator !=(RootedFileSystemFile that, RootedFileSystemFile other) {
-			return that.FileSystemFile != other.FileSystemFile;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -1606,11 +1608,12 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public static bool operator ==(RootedFileSystemDirectory that, RootedFileSystemDirectory other) {
-			return that.FileSystemDirectory == other.FileSystemDirectory;
+			return that.FileSystemDirectory == other.FileSystemDirectory
+			    && that.Root.FileSystemDirectory == other.Root.FileSystemDirectory;
 		}
 	
 		public static bool operator !=(RootedFileSystemDirectory that, RootedFileSystemDirectory other) {
-			return that.FileSystemDirectory != other.FileSystemDirectory;
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
