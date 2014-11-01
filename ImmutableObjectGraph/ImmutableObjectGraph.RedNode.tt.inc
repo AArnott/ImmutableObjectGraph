@@ -111,7 +111,10 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 	}
 
 	public <#=descendent.TypeName#> As<#=greenDescendent.TypeName#> {
-		get { return this.greenNode != null ? ((<#=greenDescendent.TypeName#>)this.greenNode).WithRoot(this.root) : default(<#=descendent.TypeName#>); }
+		get {
+			var downcast = this.greenNode as <#=greenDescendent.TypeName#>;
+			return downcast != null ? downcast.WithRoot(this.root) : default(<#=descendent.TypeName#>);
+		}
 	}
 <#
 			}

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="UnattachedProjectTreeNodeTest2.cs" company="Microsoft">
-//     Copyright (c) Microsoft. All rights reserved.
+//	 Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -243,6 +243,13 @@ namespace ImmutableObjectGraph.Tests {
 				// And test searches for non-related nodes.
 				Assert.True(head.GetSpine(this.node.Identity).IsEmpty);
 			}
+		}
+
+		[Fact]
+		public void AsProjectItemTree_OnNonItem() {
+			var root = ProjectTree.Create("hi").AsRoot;
+			var item = root.AsProjectItemTree;
+			Assert.True(item.IsDefault);
 		}
 
 		[Fact]

@@ -330,7 +330,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemFile AsFileSystemFile {
-			get { return this.greenNode != null ? ((FileSystemFile)this.greenNode).WithRoot(this.root) : default(RootedFileSystemFile); }
+			get {
+				var downcast = this.greenNode as FileSystemFile;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedFileSystemFile);
+			}
 		}
 	
 		public bool IsFileSystemDirectory {
@@ -338,7 +341,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemDirectory AsFileSystemDirectory {
-			get { return this.greenNode != null ? ((FileSystemDirectory)this.greenNode).WithRoot(this.root) : default(RootedFileSystemDirectory); }
+			get {
+				var downcast = this.greenNode as FileSystemDirectory;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedFileSystemDirectory);
+			}
 		}
 	
 		public System.String PathSegment {

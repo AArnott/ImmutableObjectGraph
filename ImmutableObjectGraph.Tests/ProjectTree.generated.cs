@@ -1347,7 +1347,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemTree AsProjectItemTree {
-			get { return this.greenNode != null ? ((ProjectItemTree)this.greenNode).WithRoot(this.root) : default(RootedProjectItemTree); }
+			get {
+				var downcast = this.greenNode as ProjectItemTree;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemTree);
+			}
 		}
 	
 		public bool IsRoot {

@@ -749,7 +749,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get {
+				var downcast = this.greenNode as ProjectElementContainer;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectElementContainer);
+			}
 		}
 	
 		public bool IsProjectRootElement {
@@ -757,7 +760,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectRootElement AsProjectRootElement {
-			get { return this.greenNode != null ? ((ProjectRootElement)this.greenNode).WithRoot(this.root) : default(RootedProjectRootElement); }
+			get {
+				var downcast = this.greenNode as ProjectRootElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectRootElement);
+			}
 		}
 	
 		public bool IsProjectPropertyGroupElement {
@@ -765,7 +771,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectPropertyGroupElement AsProjectPropertyGroupElement {
-			get { return this.greenNode != null ? ((ProjectPropertyGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectPropertyGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectPropertyGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectPropertyGroupElement);
+			}
 		}
 	
 		public bool IsProjectItemGroupElement {
@@ -773,7 +782,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemGroupElement AsProjectItemGroupElement {
-			get { return this.greenNode != null ? ((ProjectItemGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemGroupElement);
+			}
 		}
 	
 		public bool IsProjectChooseElement {
@@ -781,7 +793,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectChooseElement AsProjectChooseElement {
-			get { return this.greenNode != null ? ((ProjectChooseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectChooseElement); }
+			get {
+				var downcast = this.greenNode as ProjectChooseElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectChooseElement);
+			}
 		}
 	
 		public bool IsProjectOtherwiseElement {
@@ -789,7 +804,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectOtherwiseElement AsProjectOtherwiseElement {
-			get { return this.greenNode != null ? ((ProjectOtherwiseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOtherwiseElement); }
+			get {
+				var downcast = this.greenNode as ProjectOtherwiseElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOtherwiseElement);
+			}
 		}
 	
 		public bool IsProjectWhenElement {
@@ -797,7 +815,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectWhenElement AsProjectWhenElement {
-			get { return this.greenNode != null ? ((ProjectWhenElement)this.greenNode).WithRoot(this.root) : default(RootedProjectWhenElement); }
+			get {
+				var downcast = this.greenNode as ProjectWhenElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectWhenElement);
+			}
 		}
 	
 		public bool IsProjectPropertyElement {
@@ -805,7 +826,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectPropertyElement AsProjectPropertyElement {
-			get { return this.greenNode != null ? ((ProjectPropertyElement)this.greenNode).WithRoot(this.root) : default(RootedProjectPropertyElement); }
+			get {
+				var downcast = this.greenNode as ProjectPropertyElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectPropertyElement);
+			}
 		}
 	
 		public bool IsProjectItemElement {
@@ -813,7 +837,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemElement AsProjectItemElement {
-			get { return this.greenNode != null ? ((ProjectItemElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemElement);
+			}
 		}
 	
 		public bool IsProjectMetadataElement {
@@ -821,7 +848,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectMetadataElement AsProjectMetadataElement {
-			get { return this.greenNode != null ? ((ProjectMetadataElement)this.greenNode).WithRoot(this.root) : default(RootedProjectMetadataElement); }
+			get {
+				var downcast = this.greenNode as ProjectMetadataElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectMetadataElement);
+			}
 		}
 	
 		public bool IsProjectExtensionsElement {
@@ -829,7 +859,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectExtensionsElement AsProjectExtensionsElement {
-			get { return this.greenNode != null ? ((ProjectExtensionsElement)this.greenNode).WithRoot(this.root) : default(RootedProjectExtensionsElement); }
+			get {
+				var downcast = this.greenNode as ProjectExtensionsElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectExtensionsElement);
+			}
 		}
 	
 		public bool IsProjectImportElement {
@@ -837,7 +870,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectImportElement AsProjectImportElement {
-			get { return this.greenNode != null ? ((ProjectImportElement)this.greenNode).WithRoot(this.root) : default(RootedProjectImportElement); }
+			get {
+				var downcast = this.greenNode as ProjectImportElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectImportElement);
+			}
 		}
 	
 		public bool IsProjectImportGroupElement {
@@ -845,7 +881,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectImportGroupElement AsProjectImportGroupElement {
-			get { return this.greenNode != null ? ((ProjectImportGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectImportGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectImportGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectImportGroupElement);
+			}
 		}
 	
 		public bool IsProjectItemDefinitionElement {
@@ -853,7 +892,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemDefinitionElement AsProjectItemDefinitionElement {
-			get { return this.greenNode != null ? ((ProjectItemDefinitionElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemDefinitionElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionElement);
+			}
 		}
 	
 		public bool IsProjectItemDefinitionGroupElement {
@@ -861,7 +903,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemDefinitionGroupElement AsProjectItemDefinitionGroupElement {
-			get { return this.greenNode != null ? ((ProjectItemDefinitionGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemDefinitionGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement);
+			}
 		}
 	
 		public bool IsProjectOnErrorElement {
@@ -869,7 +914,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectOnErrorElement AsProjectOnErrorElement {
-			get { return this.greenNode != null ? ((ProjectOnErrorElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOnErrorElement); }
+			get {
+				var downcast = this.greenNode as ProjectOnErrorElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOnErrorElement);
+			}
 		}
 	
 		public bool IsProjectOutputElement {
@@ -877,7 +925,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectOutputElement AsProjectOutputElement {
-			get { return this.greenNode != null ? ((ProjectOutputElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOutputElement); }
+			get {
+				var downcast = this.greenNode as ProjectOutputElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOutputElement);
+			}
 		}
 	
 		public bool IsProjectTargetElement {
@@ -885,7 +936,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectTargetElement AsProjectTargetElement {
-			get { return this.greenNode != null ? ((ProjectTargetElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTargetElement); }
+			get {
+				var downcast = this.greenNode as ProjectTargetElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTargetElement);
+			}
 		}
 	
 		public bool IsProjectTaskElement {
@@ -893,7 +947,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectTaskElement AsProjectTaskElement {
-			get { return this.greenNode != null ? ((ProjectTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTaskElement); }
+			get {
+				var downcast = this.greenNode as ProjectTaskElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTaskElement);
+			}
 		}
 	
 		public bool IsProjectUsingTaskBodyElement {
@@ -901,7 +958,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectUsingTaskBodyElement AsProjectUsingTaskBodyElement {
-			get { return this.greenNode != null ? ((ProjectUsingTaskBodyElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskBodyElement); }
+			get {
+				var downcast = this.greenNode as ProjectUsingTaskBodyElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskBodyElement);
+			}
 		}
 	
 		public bool IsProjectUsingTaskElement {
@@ -909,7 +969,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectUsingTaskElement AsProjectUsingTaskElement {
-			get { return this.greenNode != null ? ((ProjectUsingTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskElement); }
+			get {
+				var downcast = this.greenNode as ProjectUsingTaskElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskElement);
+			}
 		}
 	
 		public bool IsProjectUsingTaskParameterElement {
@@ -917,7 +980,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectUsingTaskParameterElement AsProjectUsingTaskParameterElement {
-			get { return this.greenNode != null ? ((ProjectUsingTaskParameterElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskParameterElement); }
+			get {
+				var downcast = this.greenNode as ProjectUsingTaskParameterElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskParameterElement);
+			}
 		}
 	
 		public bool IsUsingTaskParameterGroupElement {
@@ -925,7 +991,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedUsingTaskParameterGroupElement AsUsingTaskParameterGroupElement {
-			get { return this.greenNode != null ? ((UsingTaskParameterGroupElement)this.greenNode).WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement); }
+			get {
+				var downcast = this.greenNode as UsingTaskParameterGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement);
+			}
 		}
 	
 		public System.String Condition {
@@ -2528,7 +2597,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectRootElement AsProjectRootElement {
-			get { return this.greenNode != null ? ((ProjectRootElement)this.greenNode).WithRoot(this.root) : default(RootedProjectRootElement); }
+			get {
+				var downcast = this.greenNode as ProjectRootElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectRootElement);
+			}
 		}
 	
 		public bool IsProjectPropertyGroupElement {
@@ -2536,7 +2608,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectPropertyGroupElement AsProjectPropertyGroupElement {
-			get { return this.greenNode != null ? ((ProjectPropertyGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectPropertyGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectPropertyGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectPropertyGroupElement);
+			}
 		}
 	
 		public bool IsProjectItemGroupElement {
@@ -2544,7 +2619,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemGroupElement AsProjectItemGroupElement {
-			get { return this.greenNode != null ? ((ProjectItemGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemGroupElement);
+			}
 		}
 	
 		public bool IsProjectChooseElement {
@@ -2552,7 +2630,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectChooseElement AsProjectChooseElement {
-			get { return this.greenNode != null ? ((ProjectChooseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectChooseElement); }
+			get {
+				var downcast = this.greenNode as ProjectChooseElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectChooseElement);
+			}
 		}
 	
 		public bool IsProjectOtherwiseElement {
@@ -2560,7 +2641,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectOtherwiseElement AsProjectOtherwiseElement {
-			get { return this.greenNode != null ? ((ProjectOtherwiseElement)this.greenNode).WithRoot(this.root) : default(RootedProjectOtherwiseElement); }
+			get {
+				var downcast = this.greenNode as ProjectOtherwiseElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOtherwiseElement);
+			}
 		}
 	
 		public bool IsProjectWhenElement {
@@ -2568,7 +2652,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectWhenElement AsProjectWhenElement {
-			get { return this.greenNode != null ? ((ProjectWhenElement)this.greenNode).WithRoot(this.root) : default(RootedProjectWhenElement); }
+			get {
+				var downcast = this.greenNode as ProjectWhenElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectWhenElement);
+			}
 		}
 	
 		public bool IsProjectItemElement {
@@ -2576,7 +2663,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemElement AsProjectItemElement {
-			get { return this.greenNode != null ? ((ProjectItemElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemElement);
+			}
 		}
 	
 		public bool IsProjectImportGroupElement {
@@ -2584,7 +2674,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectImportGroupElement AsProjectImportGroupElement {
-			get { return this.greenNode != null ? ((ProjectImportGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectImportGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectImportGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectImportGroupElement);
+			}
 		}
 	
 		public bool IsProjectItemDefinitionElement {
@@ -2592,7 +2685,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemDefinitionElement AsProjectItemDefinitionElement {
-			get { return this.greenNode != null ? ((ProjectItemDefinitionElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemDefinitionElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionElement);
+			}
 		}
 	
 		public bool IsProjectItemDefinitionGroupElement {
@@ -2600,7 +2696,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectItemDefinitionGroupElement AsProjectItemDefinitionGroupElement {
-			get { return this.greenNode != null ? ((ProjectItemDefinitionGroupElement)this.greenNode).WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement); }
+			get {
+				var downcast = this.greenNode as ProjectItemDefinitionGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement);
+			}
 		}
 	
 		public bool IsProjectTargetElement {
@@ -2608,7 +2707,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectTargetElement AsProjectTargetElement {
-			get { return this.greenNode != null ? ((ProjectTargetElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTargetElement); }
+			get {
+				var downcast = this.greenNode as ProjectTargetElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTargetElement);
+			}
 		}
 	
 		public bool IsProjectTaskElement {
@@ -2616,7 +2718,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectTaskElement AsProjectTaskElement {
-			get { return this.greenNode != null ? ((ProjectTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectTaskElement); }
+			get {
+				var downcast = this.greenNode as ProjectTaskElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTaskElement);
+			}
 		}
 	
 		public bool IsProjectUsingTaskElement {
@@ -2624,7 +2729,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectUsingTaskElement AsProjectUsingTaskElement {
-			get { return this.greenNode != null ? ((ProjectUsingTaskElement)this.greenNode).WithRoot(this.root) : default(RootedProjectUsingTaskElement); }
+			get {
+				var downcast = this.greenNode as ProjectUsingTaskElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskElement);
+			}
 		}
 	
 		public bool IsUsingTaskParameterGroupElement {
@@ -2632,7 +2740,10 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedUsingTaskParameterGroupElement AsUsingTaskParameterGroupElement {
-			get { return this.greenNode != null ? ((UsingTaskParameterGroupElement)this.greenNode).WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement); }
+			get {
+				var downcast = this.greenNode as UsingTaskParameterGroupElement;
+				return downcast != null ? downcast.WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement);
+			}
 		}
 	
 		public RootedProjectElement AsProjectElement {
