@@ -1760,7 +1760,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Children;
+				return this.Children.Cast<IRecursiveType>();
 			}
 		}
 		
@@ -2908,7 +2908,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Children;
+				return this.Children.Cast<IRecursiveType>();
 			}
 		}
 		

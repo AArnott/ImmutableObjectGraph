@@ -39,7 +39,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 
 		[Fact]
-		public void GetSelfAndDescendentsBreadthFirst() {
+		public void GetSelfAndDescendentsBreadthFirst_GreenNode() {
 			var grandChild1 = this.NewNode();
 			var grandChild2 = this.NewNode();
 			var child1 = this.NewNode(grandChild1);
@@ -52,6 +52,22 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Same(child2, array[2]);
 			Assert.Same(grandChild1, array[3]);
 			Assert.Same(grandChild2, array[4]);
+		}
+
+		[Fact]
+		public void GetSelfAndDescendentsBreadthFirst_RedNode() {
+			var grandChild1 = this.NewNode();
+			var grandChild2 = this.NewNode();
+			var child1 = this.NewNode(grandChild1);
+			var child2 = this.NewNode(grandChild2);
+			var parent = this.NewNode(child1, child2);
+
+			var array = parent.AsRoot.GetSelfAndDescendentsBreadthFirst().ToArray();
+			Assert.Same(parent, array[0].ProjectTree);
+			Assert.Same(child1, array[1].ProjectTree);
+			Assert.Same(child2, array[2].ProjectTree);
+			Assert.Same(grandChild1, array[3].ProjectTree);
+			Assert.Same(grandChild2, array[4].ProjectTree);
 		}
 
 		[Fact]

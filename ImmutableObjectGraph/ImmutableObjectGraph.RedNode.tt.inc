@@ -250,7 +250,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 	System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children {
 		get {
 			this.ThrowIfDefault();
-			return this.greenNode.Children;
+			return this.Children.Cast<IRecursiveType>();
 		}
 	}
 	
