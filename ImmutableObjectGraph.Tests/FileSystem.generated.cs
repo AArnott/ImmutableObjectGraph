@@ -296,6 +296,15 @@ namespace ImmutableObjectGraph.Tests {
 			return rooted.FileSystemEntry;
 		}
 	
+		public static bool operator ==(RootedFileSystemEntry that, RootedFileSystemEntry other) {
+			return that.FileSystemEntry == other.FileSystemEntry
+			    && that.Root.FileSystemDirectory == other.Root.FileSystemDirectory;
+		}
+	
+		public static bool operator !=(RootedFileSystemEntry that, RootedFileSystemEntry other) {
+			return !(that == other);
+		}
+	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
 		public RootedFileSystemDirectory Parent {
 			get {
@@ -720,6 +729,15 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static implicit operator FileSystemFile(RootedFileSystemFile rooted) {
 			return rooted.FileSystemFile;
+		}
+	
+		public static bool operator ==(RootedFileSystemFile that, RootedFileSystemFile other) {
+			return that.FileSystemFile == other.FileSystemFile
+			    && that.Root.FileSystemDirectory == other.Root.FileSystemDirectory;
+		}
+	
+		public static bool operator !=(RootedFileSystemFile that, RootedFileSystemFile other) {
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>
@@ -1162,6 +1180,19 @@ namespace ImmutableObjectGraph.Tests {
 			return (FileSystemDirectory)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
 		}
 		
+		/// <summary>Replaces one node with a modified version of itself (same identity) among this node's descendents</summary>
+		public FileSystemDirectory ReplaceDescendent(FileSystemEntry updatedNode) {
+			var spine = this.GetSpine(updatedNode.Identity);
+		
+			if (spine.IsEmpty) {
+				// The descendent was not found.
+				throw new System.ArgumentException("Old value not found");
+			}
+		
+			return (FileSystemDirectory)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
+		}
+		
+		/// <summary>Replaces one node with another node that may have a different identity.</summary>
 		public FileSystemDirectory ReplaceDescendent(FileSystemEntry current, FileSystemEntry replacement) {
 			var spine = this.GetSpine(current);
 		
@@ -1587,6 +1618,15 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public static implicit operator FileSystemDirectory(RootedFileSystemDirectory rooted) {
 			return rooted.FileSystemDirectory;
+		}
+	
+		public static bool operator ==(RootedFileSystemDirectory that, RootedFileSystemDirectory other) {
+			return that.FileSystemDirectory == other.FileSystemDirectory
+			    && that.Root.FileSystemDirectory == other.Root.FileSystemDirectory;
+		}
+	
+		public static bool operator !=(RootedFileSystemDirectory that, RootedFileSystemDirectory other) {
+			return !(that == other);
 		}
 	
 		/// <summary>Gets the parent of this object in the hierarchy.</summary>

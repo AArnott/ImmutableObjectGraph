@@ -56,6 +56,17 @@
 		}
 
 		[Fact]
+		public void ReplaceDescendentUpdatesProperty_OneArgVersion()
+		{
+			var leafToModify = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			var updatedLeaf = leafToModify.WithPathSegment("e.cs");
+			var updatedTree = this.root.ReplaceDescendent(updatedLeaf);
+			Assert.Equal(this.root.PathSegment, updatedTree.PathSegment);
+			var leafFromUpdatedTree = updatedTree.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
+			Assert.Equal(updatedLeaf.PathSegment, leafFromUpdatedTree.PathSegment);
+		}
+
+		[Fact]
 		public void ReplaceDescendentChangesType() {
 			var leafToModify = this.root.OfType<FileSystemDirectory>().Single(c => c.PathSegment == "c").Children.Single();
 			var updatedLeaf = leafToModify.ToFileSystemDirectory().WithPathSegment("f");
@@ -482,6 +493,29 @@
 			Assert.Same(rootedDrive.FileSystemDirectory, unrootedDrive);
 			FileSystemEntry unrootedEntry = rootedDrive;
 			Assert.Same(rootedDrive.FileSystemDirectory, unrootedEntry);
+		}
+
+		[Fact]
+		public void RootedStruct_EqualityOperators()
+		{
+			var r1a = RootedFileSystemDirectory.Create("foo");
+			var r1b = r1a; // struct copy
+			var r2 = RootedFileSystemDirectory.Create("foo");
+
+			// Compare two structs with the same underlying green node reference.
+			Assert.True(r1a == r1b);
+			Assert.False(r1a != r1b);
+
+			// Compare two structs with different underlying green node references.
+			Assert.False(r1a == r2);
+			Assert.True(r1a != r2);
+
+			// Now verify the root node reference aspect to it.
+			var newRoot = RootedFileSystemDirectory.Create("c:")
+				.AddChild(r1a.FileSystemDirectory).Parent;
+			var r1Rerooted = r1a.FileSystemDirectory.WithRoot(newRoot);
+			Assert.False(r1a == r1Rerooted);
+			Assert.True(r1a != r1Rerooted);
 		}
 
 		private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory) {
