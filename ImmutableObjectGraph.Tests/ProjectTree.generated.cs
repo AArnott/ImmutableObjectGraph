@@ -55,11 +55,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableSortedSet<ProjectTree> children;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the ProjectTree class.</summary>
 		protected ProjectTree(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String caption,
 			System.String filePath,
 			System.Drawing.Image icon,
@@ -68,7 +68,7 @@ namespace ImmutableObjectGraph.Tests {
 			Microsoft.VisualStudio.ProjectSystem.Properties.IRule browseObjectProperties,
 			System.Collections.Immutable.ImmutableHashSet<System.String> capabilities,
 			System.Collections.Immutable.ImmutableSortedSet<ProjectTree> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>>),
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
@@ -335,7 +335,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				caption: Optional.For(caption.GetValueOrDefault(this.Caption)),
 				filePath: Optional.For(filePath.GetValueOrDefault(this.FilePath)),
@@ -358,7 +358,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(caption.IsDefined && caption.Value != this.Caption) || 
@@ -369,7 +369,7 @@ namespace ImmutableObjectGraph.Tests {
 				(browseObjectProperties.IsDefined && browseObjectProperties.Value != this.BrowseObjectProperties) || 
 				(capabilities.IsDefined && capabilities.Value != this.Capabilities) || 
 				(children.IsDefined && children.Value != this.Children)) {
-				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>) : Optional.For(this.lookupTable);
+				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>>) : Optional.For(this.lookupTable);
 				return new ProjectTree(
 					identity: identity.GetValueOrDefault(this.Identity),
 					caption: caption.GetValueOrDefault(this.Caption),
@@ -386,13 +386,13 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		public System.Collections.Generic.IEnumerator<ProjectTree> GetEnumerator() {
@@ -416,7 +416,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectTree(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Caption,
 				template.FilePath,
 				template.Icon,
@@ -557,7 +557,7 @@ namespace ImmutableObjectGraph.Tests {
 			/// <summary>
 			/// Gets the identity of the affected object.
 			/// </summary>
-			public System.Int32 Identity {
+			public System.UInt32 Identity {
 				get { return (this.Before ?? this.After).Identity; }
 			}
 		}
@@ -754,7 +754,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// The tail is the node that was removed or replaced.
 		/// </param>
 		/// <returns>An updated lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<ProjectTree> updatedSpine, ImmutableObjectGraph.ImmutableDeque<ProjectTree> oldSpine) {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<ProjectTree> updatedSpine, ImmutableObjectGraph.ImmutableDeque<ProjectTree> oldSpine) {
 			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
 				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
 				return lookupTableLazySentinal;
@@ -804,7 +804,7 @@ namespace ImmutableObjectGraph.Tests {
 				var oldSpineTailRecursive = oldSpineTail as ProjectTree;
 				if (oldSpineTailRecursive != null) {
 					foreach (var child in oldSpineTailRecursive) {
-						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<ProjectTree, int>(child, newSpineTail.Identity);
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>(child, newSpineTail.Identity);
 					}
 				}
 			}
@@ -815,7 +815,7 @@ namespace ImmutableObjectGraph.Tests {
 				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
 				// assume no change is relevant and not apply the change.
 				lookupTable.Remove(node.Identity);
-				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<ProjectTree, int>(node, parent.Identity));
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>(node, parent.Identity));
 				parent = node;
 			}
 		
@@ -843,7 +843,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		protected internal void ValidateInternalIntegrity() {
 			// Each node id appears at most once.
-			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			var observedIdentities = new System.Collections.Generic.HashSet<System.UInt32>();
 			foreach (var node in this.GetSelfAndDescendents()) {
 				if (!observedIdentities.Add(node.Identity)) {
 					throw new RecursiveChildNotUniqueException(node.Identity);
@@ -867,7 +867,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
 		/// </summary>
 		/// <param name="lookupTable">The lookup table being validated.</param>
-		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTable) {
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> lookupTable) {
 			const string ErrorString = "Lookup table integrity failure.";
 		
 			foreach (var child in this.Children) {
@@ -887,9 +887,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>());
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>().Add(default(System.UInt32), new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>());
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> lookupTable;
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> lookupTable;
 		
 		private int inefficiencyLoad;
 		
@@ -899,7 +899,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		internal const int InefficiencyLoadThreshold = 16;
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> LookupTable {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> LookupTable {
 			get {
 				if (this.lookupTable == lookupTableLazySentinal) {
 					this.lookupTable = this.CreateLookupTable();
@@ -910,19 +910,19 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, int> result) {
+		bool IRecursiveParentWithFastLookup.TryLookup(System.UInt32 identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32> result) {
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> typedResult;
+				System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32> typedResult;
 				this.LookupTable.TryGetValue(identity, out typedResult);
-				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, int>(typedResult.Key, typedResult.Value);
+				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>(typedResult.Key, typedResult.Value);
 				return true;
 			}
 		
-			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
+			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>);
 			return false;
 		}
 		
-		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>>)) {
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>>)) {
 			int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
@@ -956,8 +956,8 @@ namespace ImmutableObjectGraph.Tests {
 		/// Creates the lookup table that will contain all this node's children.
 		/// </summary>
 		/// <returns>The lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>> CreateLookupTable() {
-			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>().ToBuilder();
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>().ToBuilder();
 			this.ContributeDescendentsToLookupTable(table);
 			return table.ToImmutable();
 		}
@@ -967,11 +967,11 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
 		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>>.Builder seedLookupTable)
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>.Builder seedLookupTable)
 		{
 			foreach (var child in this.Children)
 			{
-				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32>(child, this.Identity));
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>(child, this.Identity));
 				var recursiveChild = child as ProjectTree;
 				if (recursiveChild != null) {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
@@ -979,7 +979,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public ProjectTree Find(System.Int32 identity) {
+		public ProjectTree Find(System.UInt32 identity) {
 			ProjectTree result;
 			if (this.TryFind(identity, out result)) {
 				return result;
@@ -989,13 +989,13 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedRecursiveType<ProjectTree, ProjectTree> GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<ProjectTree, ProjectTree> GetParentedNode(System.UInt32 identity) {
 			if (this.Identity == identity) {
 				return new ParentedRecursiveType<ProjectTree, ProjectTree>(this, null);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
 					return new ParentedRecursiveType<ProjectTree, ProjectTree>(this.LookupTable[identity].Key, (ProjectTree)this.Find(parentIdentity));
@@ -1025,14 +1025,14 @@ namespace ImmutableObjectGraph.Tests {
 			return this.GetParentedNode(descendent.Identity).Parent;
 		}
 		
-		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.Int32 descendent) {
+		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.UInt32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<ProjectTree>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectTree, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
 				{
 					// Awesome.  We know the node the caller is looking for is a descendent of this node.
@@ -1079,7 +1079,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule> browseObjectProperties = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IRule>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>> capabilities = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableHashSet<System.String>>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -1278,7 +1278,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.Children; }
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 		}
@@ -1289,7 +1289,7 @@ namespace ImmutableObjectGraph.Tests {
 			return this.Children.KeyComparer.Compare((ProjectTree)first, (ProjectTree)second);
 		}
 	
-		int IRecursiveType.Identity {
+		System.UInt32 IRecursiveType.Identity {
 			get { return this.Identity; }
 		}
 	}
@@ -1335,10 +1335,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectTree); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -1710,12 +1710,12 @@ namespace ImmutableObjectGraph.Tests {
 			return greenNode.AsRoot;
 		}
 	
-		public RootedProjectTree Find(System.Int32 identity) {
+		public RootedProjectTree Find(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			return this.greenNode.Find(identity).WithRoot(this.root);
 		}
 	
-		public bool TryFind(System.Int32 identity, out RootedProjectTree value) {
+		public bool TryFind(System.UInt32 identity, out RootedProjectTree value) {
 			this.ThrowIfDefault();
 			ProjectTree greenValue;
 			if (this.greenNode.TryFind(identity, out greenValue)) {
@@ -1797,7 +1797,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -1903,7 +1903,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectItemTree class.</summary>
 		protected ProjectItemTree(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String caption,
 			System.String filePath,
 			System.Drawing.Image icon,
@@ -2195,7 +2195,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext> projectPropertiesContext = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				caption: Optional.For(caption.GetValueOrDefault(this.Caption)),
 				filePath: Optional.For(filePath.GetValueOrDefault(this.FilePath)),
@@ -2224,7 +2224,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext> projectPropertiesContext = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IProjectPropertiesContext>),
 			ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 			ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(caption.IsDefined && caption.Value != this.Caption) || 
@@ -2269,7 +2269,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemTree(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Caption,
 				template.FilePath,
 				template.Icon,
@@ -2355,7 +2355,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>),
 				ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet> propertySheet = default(ImmutableObjectGraph.Optional<Microsoft.VisualStudio.ProjectSystem.Properties.IPropertySheet>),
 				ImmutableObjectGraph.Optional<System.Boolean> isLinked = default(ImmutableObjectGraph.Optional<System.Boolean>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -2503,10 +2503,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectTree); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -2954,7 +2954,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);

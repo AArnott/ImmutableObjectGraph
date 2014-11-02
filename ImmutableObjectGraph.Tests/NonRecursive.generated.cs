@@ -18,23 +18,23 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the RootRecursive class.</summary>
 		protected RootRecursive(
-			System.Int32 identity,
+			System.UInt32 identity,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
 		public virtual ContainerOfNonRecursiveCollection ToContainerOfNonRecursiveCollection(
@@ -68,7 +68,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 				value: value);
 		}
 	
-		int IRecursiveType.Identity {
+		System.UInt32 IRecursiveType.Identity {
 			get { return this.Identity; }
 		}
 	}
@@ -80,9 +80,9 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 	
 		/// <summary>Initializes a new instance of the RecursiveContainer class.</summary>
 		protected RecursiveContainer(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Collections.Immutable.ImmutableList<RootRecursive> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>>>),
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity)
@@ -255,7 +255,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// The tail is the node that was removed or replaced.
 		/// </param>
 		/// <returns>An updated lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<RootRecursive> updatedSpine, ImmutableObjectGraph.ImmutableDeque<RootRecursive> oldSpine) {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<RootRecursive> updatedSpine, ImmutableObjectGraph.ImmutableDeque<RootRecursive> oldSpine) {
 			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
 				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
 				return lookupTableLazySentinal;
@@ -305,7 +305,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 				var oldSpineTailRecursive = oldSpineTail as RecursiveContainer;
 				if (oldSpineTailRecursive != null) {
 					foreach (var child in oldSpineTailRecursive) {
-						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<RootRecursive, int>(child, newSpineTail.Identity);
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>(child, newSpineTail.Identity);
 					}
 				}
 			}
@@ -316,7 +316,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
 				// assume no change is relevant and not apply the change.
 				lookupTable.Remove(node.Identity);
-				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<RootRecursive, int>(node, parent.Identity));
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>(node, parent.Identity));
 				parent = node;
 			}
 		
@@ -344,7 +344,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// </summary>
 		protected internal void ValidateInternalIntegrity() {
 			// Each node id appears at most once.
-			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			var observedIdentities = new System.Collections.Generic.HashSet<System.UInt32>();
 			foreach (var node in this.GetSelfAndDescendents()) {
 				if (!observedIdentities.Add(node.Identity)) {
 					throw new RecursiveChildNotUniqueException(node.Identity);
@@ -368,7 +368,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
 		/// </summary>
 		/// <param name="lookupTable">The lookup table being validated.</param>
-		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>> lookupTable) {
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>> lookupTable) {
 			const string ErrorString = "Lookup table integrity failure.";
 		
 			foreach (var child in this.Children) {
@@ -388,9 +388,9 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			}
 		}
 		
-		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>());
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>>().Add(default(System.UInt32), new System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>());
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>> lookupTable;
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>> lookupTable;
 		
 		private int inefficiencyLoad;
 		
@@ -400,7 +400,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// </summary>
 		internal const int InefficiencyLoadThreshold = 16;
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>> LookupTable {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>> LookupTable {
 			get {
 				if (this.lookupTable == lookupTableLazySentinal) {
 					this.lookupTable = this.CreateLookupTable();
@@ -411,19 +411,19 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			}
 		}
 		
-		bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, int> result) {
+		bool IRecursiveParentWithFastLookup.TryLookup(System.UInt32 identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32> result) {
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32> typedResult;
+				System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32> typedResult;
 				this.LookupTable.TryGetValue(identity, out typedResult);
-				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, int>(typedResult.Key, typedResult.Value);
+				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>(typedResult.Key, typedResult.Value);
 				return true;
 			}
 		
-			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
+			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>);
 			return false;
 		}
 		
-		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>>)) {
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>>>)) {
 			int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
@@ -457,8 +457,8 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// Creates the lookup table that will contain all this node's children.
 		/// </summary>
 		/// <returns>The lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>> CreateLookupTable() {
-			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>().ToBuilder();
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>>().ToBuilder();
 			this.ContributeDescendentsToLookupTable(table);
 			return table.ToImmutable();
 		}
@@ -468,11 +468,11 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// </summary>
 		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
 		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>>.Builder seedLookupTable)
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>>.Builder seedLookupTable)
 		{
 			foreach (var child in this.Children)
 			{
-				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32>(child, this.Identity));
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32>(child, this.Identity));
 				var recursiveChild = child as RecursiveContainer;
 				if (recursiveChild != null) {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
@@ -480,7 +480,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			}
 		}
 		
-		public RootRecursive Find(System.Int32 identity) {
+		public RootRecursive Find(System.UInt32 identity) {
 			RootRecursive result;
 			if (this.TryFind(identity, out result)) {
 				return result;
@@ -490,13 +490,13 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedRecursiveType<RecursiveContainer, RootRecursive> GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<RecursiveContainer, RootRecursive> GetParentedNode(System.UInt32 identity) {
 			if (this.Identity == identity) {
 				return new ParentedRecursiveType<RecursiveContainer, RootRecursive>(this, null);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
 					return new ParentedRecursiveType<RecursiveContainer, RootRecursive>(this.LookupTable[identity].Key, (RecursiveContainer)this.Find(parentIdentity));
@@ -526,14 +526,14 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			return this.GetParentedNode(descendent.Identity).Parent;
 		}
 		
-		public System.Collections.Immutable.ImmutableStack<RootRecursive> GetSpine(System.Int32 descendent) {
+		public System.Collections.Immutable.ImmutableStack<RootRecursive> GetSpine(System.UInt32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<RootRecursive>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<RootRecursive, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
 				{
 					// Awesome.  We know the node the caller is looking for is a descendent of this node.
@@ -579,7 +579,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			get { return this.Children; }
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 		}
@@ -597,7 +597,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 	
 		/// <summary>Initializes a new instance of the ContainerOfNonRecursiveCollection class.</summary>
 		protected ContainerOfNonRecursiveCollection(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Collections.Immutable.ImmutableList<NonRecursiveElement> metadata,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
@@ -677,7 +677,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected virtual ContainerOfNonRecursiveCollection WithCore(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<NonRecursiveElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<NonRecursiveElement>>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				metadata: Optional.For(metadata.GetValueOrDefault(this.Metadata)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
@@ -686,7 +686,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private ContainerOfNonRecursiveCollection WithFactory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<NonRecursiveElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<NonRecursiveElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(metadata.IsDefined && metadata.Value != this.Metadata)) {
@@ -711,7 +711,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ContainerOfNonRecursiveCollection(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Metadata,
 				skipValidation: true);
 		}
@@ -723,7 +723,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		
 		internal static ContainerOfNonRecursiveCollection CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<NonRecursiveElement>> metadata = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<NonRecursiveElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -746,7 +746,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 	
 		/// <summary>Initializes a new instance of the NonRecursiveElement class.</summary>
 		protected NonRecursiveElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String name,
 			System.String value,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
@@ -791,7 +791,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		protected virtual NonRecursiveElement WithCore(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				name: Optional.For(name.GetValueOrDefault(this.Name)),
 				value: Optional.For(value.GetValueOrDefault(this.Value)),
@@ -802,7 +802,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		private NonRecursiveElement WithFactory(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(name.IsDefined && name.Value != this.Name) || 
@@ -829,7 +829,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new NonRecursiveElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Name,
 				template.Value,
 				skipValidation: true);
@@ -845,7 +845,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		internal static NonRecursiveElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}

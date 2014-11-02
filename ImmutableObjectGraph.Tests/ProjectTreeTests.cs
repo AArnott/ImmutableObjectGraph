@@ -41,7 +41,7 @@
 			//lt.Write(Console.Out);
 
 			// Pick one random node to change.
-			int changedNodeIdentity = random.Next(actualSize) + largeTree.Identity;
+			var changedNodeIdentity = ((uint)random.Next(actualSize)) + largeTree.Identity;
 			var originalNode = largeTree.Find(changedNodeIdentity);
 			var changedNode = originalNode.WithCaption("Changed!");
 

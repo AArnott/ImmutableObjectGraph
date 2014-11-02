@@ -6,15 +6,16 @@
 	using System.Text;
 	using System.Threading.Tasks;
 	using Validation;
+    using IdentityFieldType = System.UInt32;
 
 	public interface IRecursiveType {
-		int Identity { get; }
+        IdentityFieldType Identity { get; }
 	}
 
 	public interface IRecursiveParent : IRecursiveType {
 		IEnumerable<IRecursiveType> Children { get; }
 
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> GetParentedNode(int identity);
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> GetParentedNode(IdentityFieldType identity);
 	}
 
 	public interface IRecursiveParent<out TRecursiveType> : IRecursiveParent
@@ -43,7 +44,7 @@
 		/// If the return value is <c>true</c>, then the lookup table exists and the <paramref name="result"/>
 		/// will either be empty or non-empty based on the presence of the descendent.
 		/// </remarks>
-		bool TryLookup(int identity, out KeyValuePair<IRecursiveType, int> result);
+		bool TryLookup(IdentityFieldType identity, out KeyValuePair<IRecursiveType, IdentityFieldType> result);
 	}
 
 	public interface IRecursiveDiffingType<TPropertiesEnum, TDiffGram> : IRecursiveType {

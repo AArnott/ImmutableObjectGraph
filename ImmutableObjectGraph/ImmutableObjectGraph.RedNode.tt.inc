@@ -95,10 +95,10 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		get { return this.root != null ? this.root.AsRoot : default(<#= redType.RecursiveParent.TypeName #>); }
 	}
 
-	public <#= templateType.RequiredIdentityField.TypeName #> Identity {
+	public uint Identity {
 		get {
 			this.ThrowIfDefault();
-			return this.greenNode.Identity;
+			return (uint)this.greenNode.Identity;
 		}
 	}
 <#
@@ -274,7 +274,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		}
 	}
 
-	ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+	ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
 		this.ThrowIfDefault();
 		var result = this.greenNode.GetParentedNode(identity);
 		return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);

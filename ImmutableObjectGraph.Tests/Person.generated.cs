@@ -23,11 +23,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Collections.Immutable.ImmutableSortedSet<Person> members;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Family class.</summary>
 		protected Family(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Collections.Immutable.ImmutableSortedSet<Person> members,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
@@ -115,7 +115,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected virtual Family WithCore(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				members: Optional.For(members.GetValueOrDefault(this.Members)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
@@ -124,7 +124,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private Family WithFactory(
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>> members = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<Person>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(members.IsDefined && members.Value != this.Members)) {
@@ -136,13 +136,13 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -158,7 +158,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Family(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Members,
 				skipValidation: true);
 		}
@@ -222,11 +222,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly Watch watch;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Person class.</summary>
 		protected Person(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String name,
 			System.Int32 age,
 			Watch watch,
@@ -308,7 +308,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				name: Optional.For(name.GetValueOrDefault(this.Name)),
 				age: Optional.For(age.GetValueOrDefault(this.Age)),
@@ -321,7 +321,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> age = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<Watch> watch = default(ImmutableObjectGraph.Optional<Watch>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(name.IsDefined && name.Value != this.Name) || 
@@ -337,13 +337,13 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -359,7 +359,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Person(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Name,
 				template.Age,
 				template.Watch,
@@ -456,11 +456,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 size;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Watch class.</summary>
 		protected Watch(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String color,
 			System.Int32 size,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
@@ -522,7 +522,7 @@ namespace ImmutableObjectGraph.Tests {
 		protected virtual Watch WithCore(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				color: Optional.For(color.GetValueOrDefault(this.Color)),
 				size: Optional.For(size.GetValueOrDefault(this.Size)),
@@ -533,7 +533,7 @@ namespace ImmutableObjectGraph.Tests {
 		private Watch WithFactory(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> size = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(color.IsDefined && color.Value != this.Color) || 
@@ -547,13 +547,13 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -569,7 +569,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Watch(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Color,
 				template.Size,
 				skipValidation: true);

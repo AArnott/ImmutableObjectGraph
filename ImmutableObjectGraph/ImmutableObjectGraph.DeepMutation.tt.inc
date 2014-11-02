@@ -143,7 +143,7 @@ private <#= templateType.NodeLookupTableTypeName #> FixupLookupTable(ImmutableOb
 		var oldSpineTailRecursive = oldSpineTail as <#= templateType.RecursiveParent.TypeName #>;
 		if (oldSpineTailRecursive != null) {
 			foreach (var child in oldSpineTailRecursive) {
-				lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, int>(child, newSpineTail.Identity);
+				lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>(child, newSpineTail.Identity);
 			}
 		}
 	}
@@ -154,7 +154,7 @@ private <#= templateType.NodeLookupTableTypeName #> FixupLookupTable(ImmutableOb
 		// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
 		// assume no change is relevant and not apply the change.
 		lookupTable.Remove(node.Identity);
-		lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, int>(node, parent.Identity));
+		lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>>(node, parent.Identity));
 		parent = node;
 	}
 
@@ -182,7 +182,7 @@ private void ValidateInternalIntegrityDebugOnly() {
 /// </summary>
 protected internal void ValidateInternalIntegrity() {
 	// Each node id appears at most once.
-	var observedIdentities = new System.Collections.Generic.HashSet<int>();
+	var observedIdentities = new System.Collections.Generic.HashSet<<#= templateType.RequiredIdentityField.TypeName #>>();
 	foreach (var node in this.GetSelfAndDescendents()) {
 		if (!observedIdentities.Add(node.Identity)) {
 			throw new RecursiveChildNotUniqueException(node.Identity);

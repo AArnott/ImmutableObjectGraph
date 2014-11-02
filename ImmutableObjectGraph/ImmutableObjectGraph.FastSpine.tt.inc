@@ -47,15 +47,15 @@ private <#= templateType.NodeLookupTableTypeName #> LookupTable {
 	}
 }
 
-bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, int> result) {
+bool IRecursiveParentWithFastLookup.TryLookup(<#= templateType.RequiredIdentityField.TypeName #> identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, <#= templateType.RequiredIdentityField.TypeName #>> result) {
 	if (this.LookupTable != null) {
 		<#= templateType.NodeLookupTableKeyValuePairTypeName #> typedResult;
 		this.LookupTable.TryGetValue(identity, out typedResult);
-		result = new System.Collections.Generic.KeyValuePair<IRecursiveType, int>(typedResult.Key, typedResult.Value);
+		result = new System.Collections.Generic.KeyValuePair<IRecursiveType, <#= templateType.RequiredIdentityField.TypeName #>>(typedResult.Key, typedResult.Value);
 		return true;
 	}
 
-	result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
+	result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, <#= templateType.RequiredIdentityField.TypeName #>>);
 	return false;
 }
 

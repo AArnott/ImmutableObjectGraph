@@ -49,7 +49,7 @@
 			}
 
 			public int GetHashCode(ParentedRecursiveType<TRecursiveParent, TRecursiveType> obj) {
-				return obj.Value.Identity;
+				return (int)obj.Value.Identity;
 			}
 		}
 

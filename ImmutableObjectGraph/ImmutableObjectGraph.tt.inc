@@ -237,13 +237,13 @@ public <#= templateType.IsAbstract ? "abstract " : "" #>partial class <#= templa
 	if (!templateType.HasAncestor) {
 #>
 
-	protected internal <#= templateType.RequiredIdentityField.TypeName #> <#= templateType.RequiredIdentityField.NamePascalCase #> {
-		get { return this.<#= templateType.RequiredIdentityField.NameCamelCase #>; }
+	protected internal uint <#= templateType.RequiredIdentityField.NamePascalCase #> {
+		get { return (uint)this.<#= templateType.RequiredIdentityField.NameCamelCase #>; }
 	}
 
 	/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
 	protected static <#= templateType.RequiredIdentityField.TypeName #> NewIdentity() {
-		return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		return (<#= templateType.RequiredIdentityField.TypeName #>)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 	}
 <#	} // !templateType.HasAncestor
 
@@ -316,7 +316,7 @@ if (!templateType.IsAbstract) { #>
 		get { return this.Children; }
 	}
 
-	ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+	ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
 		var parented = this.GetParentedNode(identity);
 		return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 	}
@@ -340,7 +340,7 @@ if (!templateType.IsAbstract) { #>
 	if (templateType.IsRecursiveType) {
 #>
 
-	int IRecursiveType.Identity {
+	<#= templateType.RequiredIdentityField.TypeName #> IRecursiveType.Identity {
 		get { return this.Identity; }
 	}
 <#

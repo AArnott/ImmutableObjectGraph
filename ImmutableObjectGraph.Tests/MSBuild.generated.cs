@@ -24,11 +24,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String label;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the ProjectElement class.</summary>
 		protected ProjectElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
@@ -60,13 +60,13 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>));
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
 		public RootedProjectElement WithRoot(ProjectElementContainer root) {
@@ -140,7 +140,7 @@ namespace ImmutableObjectGraph.Tests {
 			/// <summary>
 			/// Gets the identity of the affected object.
 			/// </summary>
-			public System.Int32 Identity {
+			public System.UInt32 Identity {
 				get { return (this.Before ?? this.After).Identity; }
 			}
 		}
@@ -696,7 +696,7 @@ namespace ImmutableObjectGraph.Tests {
 				children: children);
 		}
 	
-		int IRecursiveType.Identity {
+		System.UInt32 IRecursiveType.Identity {
 			get { return this.Identity; }
 		}
 	}
@@ -737,10 +737,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -1581,11 +1581,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectElementContainer class.</summary>
 		protected ProjectElementContainer(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>>>),
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
@@ -1779,7 +1779,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// The tail is the node that was removed or replaced.
 		/// </param>
 		/// <returns>An updated lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<ProjectElement> updatedSpine, ImmutableObjectGraph.ImmutableDeque<ProjectElement> oldSpine) {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<ProjectElement> updatedSpine, ImmutableObjectGraph.ImmutableDeque<ProjectElement> oldSpine) {
 			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
 				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
 				return lookupTableLazySentinal;
@@ -1829,7 +1829,7 @@ namespace ImmutableObjectGraph.Tests {
 				var oldSpineTailRecursive = oldSpineTail as ProjectElementContainer;
 				if (oldSpineTailRecursive != null) {
 					foreach (var child in oldSpineTailRecursive) {
-						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<ProjectElement, int>(child, newSpineTail.Identity);
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>(child, newSpineTail.Identity);
 					}
 				}
 			}
@@ -1840,7 +1840,7 @@ namespace ImmutableObjectGraph.Tests {
 				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
 				// assume no change is relevant and not apply the change.
 				lookupTable.Remove(node.Identity);
-				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<ProjectElement, int>(node, parent.Identity));
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>(node, parent.Identity));
 				parent = node;
 			}
 		
@@ -1868,7 +1868,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		protected internal void ValidateInternalIntegrity() {
 			// Each node id appears at most once.
-			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			var observedIdentities = new System.Collections.Generic.HashSet<System.UInt32>();
 			foreach (var node in this.GetSelfAndDescendents()) {
 				if (!observedIdentities.Add(node.Identity)) {
 					throw new RecursiveChildNotUniqueException(node.Identity);
@@ -1892,7 +1892,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
 		/// </summary>
 		/// <param name="lookupTable">The lookup table being validated.</param>
-		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>> lookupTable) {
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>> lookupTable) {
 			const string ErrorString = "Lookup table integrity failure.";
 		
 			foreach (var child in this.Children) {
@@ -1912,9 +1912,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>());
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>>().Add(default(System.UInt32), new System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>());
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>> lookupTable;
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>> lookupTable;
 		
 		private int inefficiencyLoad;
 		
@@ -1924,7 +1924,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		internal const int InefficiencyLoadThreshold = 16;
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>> LookupTable {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>> LookupTable {
 			get {
 				if (this.lookupTable == lookupTableLazySentinal) {
 					this.lookupTable = this.CreateLookupTable();
@@ -1935,19 +1935,19 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, int> result) {
+		bool IRecursiveParentWithFastLookup.TryLookup(System.UInt32 identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32> result) {
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32> typedResult;
+				System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32> typedResult;
 				this.LookupTable.TryGetValue(identity, out typedResult);
-				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, int>(typedResult.Key, typedResult.Value);
+				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>(typedResult.Key, typedResult.Value);
 				return true;
 			}
 		
-			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
+			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>);
 			return false;
 		}
 		
-		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>>)) {
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>>>)) {
 			int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
@@ -1981,8 +1981,8 @@ namespace ImmutableObjectGraph.Tests {
 		/// Creates the lookup table that will contain all this node's children.
 		/// </summary>
 		/// <returns>The lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>> CreateLookupTable() {
-			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>().ToBuilder();
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>>().ToBuilder();
 			this.ContributeDescendentsToLookupTable(table);
 			return table.ToImmutable();
 		}
@@ -1992,11 +1992,11 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
 		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>>.Builder seedLookupTable)
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>>.Builder seedLookupTable)
 		{
 			foreach (var child in this.Children)
 			{
-				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32>(child, this.Identity));
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32>(child, this.Identity));
 				var recursiveChild = child as ProjectElementContainer;
 				if (recursiveChild != null) {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
@@ -2004,7 +2004,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public ProjectElement Find(System.Int32 identity) {
+		public ProjectElement Find(System.UInt32 identity) {
 			ProjectElement result;
 			if (this.TryFind(identity, out result)) {
 				return result;
@@ -2014,13 +2014,13 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedRecursiveType<ProjectElementContainer, ProjectElement> GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<ProjectElementContainer, ProjectElement> GetParentedNode(System.UInt32 identity) {
 			if (this.Identity == identity) {
 				return new ParentedRecursiveType<ProjectElementContainer, ProjectElement>(this, null);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
 					return new ParentedRecursiveType<ProjectElementContainer, ProjectElement>(this.LookupTable[identity].Key, (ProjectElementContainer)this.Find(parentIdentity));
@@ -2050,14 +2050,14 @@ namespace ImmutableObjectGraph.Tests {
 			return this.GetParentedNode(descendent.Identity).Parent;
 		}
 		
-		public System.Collections.Immutable.ImmutableStack<ProjectElement> GetSpine(System.Int32 descendent) {
+		public System.Collections.Immutable.ImmutableStack<ProjectElement> GetSpine(System.UInt32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<ProjectElement>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectElement, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<ProjectElement, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
 				{
 					// Awesome.  We know the node the caller is looking for is a descendent of this node.
@@ -2535,7 +2535,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.Children; }
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 		}
@@ -2585,10 +2585,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -2921,12 +2921,12 @@ namespace ImmutableObjectGraph.Tests {
 			return newGreenNode.WithRoot(newRoot);
 		}
 	
-		public RootedProjectElement Find(System.Int32 identity) {
+		public RootedProjectElement Find(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			return this.greenNode.Find(identity).WithRoot(this.root);
 		}
 	
-		public bool TryFind(System.Int32 identity, out RootedProjectElement value) {
+		public bool TryFind(System.UInt32 identity, out RootedProjectElement value) {
 			this.ThrowIfDefault();
 			ProjectElement greenValue;
 			if (this.greenNode.TryFind(identity, out greenValue)) {
@@ -3226,7 +3226,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -3257,7 +3257,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectRootElement class.</summary>
 		protected ProjectRootElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -3433,7 +3433,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -3458,7 +3458,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -3499,7 +3499,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectRootElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -3589,7 +3589,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> defaultTargets = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> initialTargets = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Boolean> treatAsLocalProperty = default(ImmutableObjectGraph.Optional<System.Boolean>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -3649,10 +3649,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -4151,7 +4151,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -4164,7 +4164,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectPropertyGroupElement class.</summary>
 		protected ProjectPropertyGroupElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -4274,7 +4274,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -4303,7 +4303,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectPropertyGroupElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -4336,7 +4336,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -4386,10 +4386,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -4846,7 +4846,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -4859,7 +4859,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectItemGroupElement class.</summary>
 		protected ProjectItemGroupElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -4969,7 +4969,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -4998,7 +4998,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemGroupElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -5031,7 +5031,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -5081,10 +5081,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -5541,7 +5541,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -5554,7 +5554,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectChooseElement class.</summary>
 		protected ProjectChooseElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -5664,7 +5664,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -5693,7 +5693,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectChooseElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -5726,7 +5726,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -5776,10 +5776,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -6236,7 +6236,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -6249,7 +6249,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectOtherwiseElement class.</summary>
 		protected ProjectOtherwiseElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -6359,7 +6359,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -6388,7 +6388,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectOtherwiseElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -6421,7 +6421,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -6471,10 +6471,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -6931,7 +6931,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -6944,7 +6944,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectWhenElement class.</summary>
 		protected ProjectWhenElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -7054,7 +7054,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -7083,7 +7083,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectWhenElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -7116,7 +7116,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -7166,10 +7166,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -7626,7 +7626,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -7645,7 +7645,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectPropertyElement class.</summary>
 		protected ProjectPropertyElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.String name,
@@ -7713,7 +7713,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -7728,7 +7728,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -7759,7 +7759,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectPropertyElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Name,
@@ -7809,7 +7809,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -7859,10 +7859,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -8234,7 +8234,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectItemElement class.</summary>
 		protected ProjectItemElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -8421,7 +8421,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -8448,7 +8448,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -8491,7 +8491,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -8589,7 +8589,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> keepMetadata = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> remove = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> removeMetadata = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -8650,10 +8650,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -9159,7 +9159,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -9178,7 +9178,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectMetadataElement class.</summary>
 		protected ProjectMetadataElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.String name,
@@ -9246,7 +9246,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -9261,7 +9261,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -9292,7 +9292,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectMetadataElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Name,
@@ -9342,7 +9342,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -9392,10 +9392,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -9749,7 +9749,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectExtensionsElement class.</summary>
 		protected ProjectExtensionsElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.String content,
@@ -9806,7 +9806,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -9819,7 +9819,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -9848,7 +9848,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectExtensionsElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Content,
@@ -9890,7 +9890,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -9939,10 +9939,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -10289,7 +10289,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectImportElement class.</summary>
 		protected ProjectImportElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.String project,
@@ -10346,7 +10346,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -10359,7 +10359,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -10388,7 +10388,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectImportElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Project,
@@ -10430,7 +10430,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> project = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -10479,10 +10479,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -10826,7 +10826,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectImportGroupElement class.</summary>
 		protected ProjectImportGroupElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -10936,7 +10936,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -10965,7 +10965,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectImportGroupElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -10998,7 +10998,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -11048,10 +11048,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -11508,7 +11508,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -11524,7 +11524,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectItemDefinitionElement class.</summary>
 		protected ProjectItemDefinitionElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -11645,7 +11645,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -11660,7 +11660,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -11691,7 +11691,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemDefinitionElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -11741,7 +11741,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -11796,10 +11796,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -12263,7 +12263,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -12276,7 +12276,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectItemDefinitionGroupElement class.</summary>
 		protected ProjectItemDefinitionGroupElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -12386,7 +12386,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -12415,7 +12415,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectItemDefinitionGroupElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -12448,7 +12448,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -12498,10 +12498,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -12958,7 +12958,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -12971,7 +12971,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectOnErrorElement class.</summary>
 		protected ProjectOnErrorElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
@@ -13017,7 +13017,7 @@ namespace ImmutableObjectGraph.Tests {
 		private ProjectOnErrorElement WithFactory(
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -13044,7 +13044,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectOnErrorElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				skipValidation: true);
@@ -13069,7 +13069,7 @@ namespace ImmutableObjectGraph.Tests {
 		internal static ProjectOnErrorElement CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -13114,10 +13114,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -13469,7 +13469,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectOutputElement class.</summary>
 		protected ProjectOutputElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Boolean isOutputItem,
@@ -13570,7 +13570,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -13591,7 +13591,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -13628,7 +13628,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectOutputElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.IsOutputItem,
@@ -13702,7 +13702,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> itemType = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> propertyName = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> taskParameter = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -13755,10 +13755,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -14154,7 +14154,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectTargetElement class.</summary>
 		protected ProjectTargetElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -14352,7 +14352,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -14381,7 +14381,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -14426,7 +14426,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectTargetElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -14532,7 +14532,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> outputs = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> returns = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -14594,10 +14594,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -15110,7 +15110,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -15135,7 +15135,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectTaskElement class.</summary>
 		protected ProjectTaskElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -15289,7 +15289,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -15310,7 +15310,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -15347,7 +15347,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectTaskElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -15421,7 +15421,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> mSBuildArchitecture = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> mSBuildRuntime = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -15479,10 +15479,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -15967,7 +15967,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -15986,7 +15986,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectUsingTaskBodyElement class.</summary>
 		protected ProjectUsingTaskBodyElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.String evaluate,
@@ -16054,7 +16054,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -16069,7 +16069,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -16100,7 +16100,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectUsingTaskBodyElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Evaluate,
@@ -16150,7 +16150,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> evaluate = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> taskBody = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -16200,10 +16200,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -16572,7 +16572,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectUsingTaskElement class.</summary>
 		protected ProjectUsingTaskElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -16748,7 +16748,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -16773,7 +16773,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -16814,7 +16814,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectUsingTaskElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -16904,7 +16904,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> runtime = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> taskFactory = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> taskName = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -16964,10 +16964,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -17466,7 +17466,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
@@ -17491,7 +17491,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ProjectUsingTaskParameterElement class.</summary>
 		protected ProjectUsingTaskParameterElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.String name,
@@ -17581,7 +17581,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				condition: Optional.For(condition.GetValueOrDefault(this.Condition)),
 				label: Optional.For(label.GetValueOrDefault(this.Label)),
@@ -17600,7 +17600,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -17635,7 +17635,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ProjectUsingTaskParameterElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Name,
@@ -17701,7 +17701,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> output = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> parameterType = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> required = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -17753,10 +17753,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -18121,7 +18121,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the UsingTaskParameterGroupElement class.</summary>
 		protected UsingTaskParameterGroupElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String condition,
 			System.String label,
 			System.Collections.Immutable.ImmutableList<ProjectElement> children,
@@ -18231,7 +18231,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(condition.IsDefined && condition.Value != this.Condition) || 
@@ -18260,7 +18260,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new UsingTaskParameterGroupElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Condition,
 				template.Label,
 				template.Children,
@@ -18293,7 +18293,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> condition = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> label = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -18343,10 +18343,10 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.root != null ? this.root.AsRoot : default(RootedProjectElementContainer); }
 		}
 	
-		public System.Int32 Identity {
+		public uint Identity {
 			get {
 				this.ThrowIfDefault();
-				return this.greenNode.Identity;
+				return (uint)this.greenNode.Identity;
 			}
 		}
 	
@@ -18803,7 +18803,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			this.ThrowIfDefault();
 			var result = this.greenNode.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);

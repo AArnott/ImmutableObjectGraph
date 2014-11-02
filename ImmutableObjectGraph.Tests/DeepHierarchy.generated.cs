@@ -23,11 +23,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 field1;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the A class.</summary>
 		protected A(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Int32 field1,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
@@ -60,7 +60,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected virtual A WithCore(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				field1: Optional.For(field1.GetValueOrDefault(this.Field1)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
@@ -69,7 +69,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private A WithFactory(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(field1.IsDefined && field1.Value != this.Field1)) {
@@ -81,13 +81,13 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -103,7 +103,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new A(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Field1,
 				skipValidation: true);
 		}
@@ -115,7 +115,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal static A CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -186,7 +186,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the B class.</summary>
 		protected B(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Int32 field1,
 			System.Int32 field2,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
@@ -234,7 +234,7 @@ namespace ImmutableObjectGraph.Tests {
 		protected virtual B WithCore(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				field1: Optional.For(field1.GetValueOrDefault(this.Field1)),
 				field2: Optional.For(field2.GetValueOrDefault(this.Field2)),
@@ -245,7 +245,7 @@ namespace ImmutableObjectGraph.Tests {
 		private B WithFactory(
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(field1.IsDefined && field1.Value != this.Field1) || 
@@ -272,7 +272,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new B(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Field1,
 				template.Field2,
 				skipValidation: true);
@@ -288,7 +288,7 @@ namespace ImmutableObjectGraph.Tests {
 		internal static B CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -363,7 +363,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the C1 class.</summary>
 		protected C1(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Int32 field1,
 			System.Int32 field2,
 			System.Int32 field3,
@@ -427,7 +427,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				field1: Optional.For(field1.GetValueOrDefault(this.Field1)),
 				field2: Optional.For(field2.GetValueOrDefault(this.Field2)),
@@ -440,7 +440,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(field1.IsDefined && field1.Value != this.Field1) || 
@@ -469,7 +469,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new C1(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Field1,
 				template.Field2,
 				template.Field3,
@@ -489,7 +489,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 				ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -518,7 +518,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the C2 class.</summary>
 		protected C2(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Int32 field1,
 			System.Int32 field2,
 			System.Int32 field3,
@@ -582,7 +582,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				field1: Optional.For(field1.GetValueOrDefault(this.Field1)),
 				field2: Optional.For(field2.GetValueOrDefault(this.Field2)),
@@ -595,7 +595,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(field1.IsDefined && field1.Value != this.Field1) || 
@@ -624,7 +624,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new C2(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Field1,
 				template.Field2,
 				template.Field3,
@@ -644,7 +644,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.Int32> field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 				ImmutableObjectGraph.Optional<System.Int32> field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 				ImmutableObjectGraph.Optional<System.Int32> field3 = default(ImmutableObjectGraph.Optional<System.Int32>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}

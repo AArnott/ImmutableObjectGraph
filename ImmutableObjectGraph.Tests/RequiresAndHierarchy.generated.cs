@@ -26,11 +26,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String l1Field2;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the ReqAndHierL1 class.</summary>
 		protected ReqAndHierL1(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String l1Field1,
 			System.String l1Field2,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
@@ -74,7 +74,7 @@ namespace ImmutableObjectGraph.Tests {
 		protected virtual ReqAndHierL1 WithCore(
 			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				l1Field1: Optional.For(l1Field1.GetValueOrDefault(this.L1Field1)),
 				l1Field2: Optional.For(l1Field2.GetValueOrDefault(this.L1Field2)),
@@ -85,7 +85,7 @@ namespace ImmutableObjectGraph.Tests {
 		private ReqAndHierL1 WithFactory(
 			ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(l1Field1.IsDefined && l1Field1.Value != this.L1Field1) || 
@@ -99,13 +99,13 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -121,7 +121,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ReqAndHierL1(
-				default(System.Int32),
+				default(System.UInt32),
 				template.L1Field1,
 				template.L1Field2,
 				skipValidation: true);
@@ -137,7 +137,7 @@ namespace ImmutableObjectGraph.Tests {
 		internal static ReqAndHierL1 CreateWithIdentity(
 				System.String l1Field2,
 				ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -180,7 +180,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ReqAndHierL2 class.</summary>
 		protected ReqAndHierL2(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String l1Field1,
 			System.String l1Field2,
 			System.String l2Field1,
@@ -248,7 +248,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l2Field2 = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				l1Field1: Optional.For(l1Field1.GetValueOrDefault(this.L1Field1)),
 				l1Field2: Optional.For(l1Field2.GetValueOrDefault(this.L1Field2)),
@@ -263,7 +263,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> l1Field2 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> l2Field2 = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(l1Field1.IsDefined && l1Field1.Value != this.L1Field1) || 
@@ -294,7 +294,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ReqAndHierL2(
-				default(System.Int32),
+				default(System.UInt32),
 				template.L1Field1,
 				template.L1Field2,
 				template.L2Field1,
@@ -318,7 +318,7 @@ namespace ImmutableObjectGraph.Tests {
 				System.String l2Field2,
 				ImmutableObjectGraph.Optional<System.String> l1Field1 = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> l2Field1 = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}

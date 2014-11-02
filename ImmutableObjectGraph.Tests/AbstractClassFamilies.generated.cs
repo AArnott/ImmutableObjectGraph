@@ -24,11 +24,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 abstract1Field2;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Abstract1 class.</summary>
 		protected Abstract1(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Int32 abstract1Field1,
 			System.Int32 abstract1Field2,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
@@ -60,13 +60,13 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> abstract1Field1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> abstract1Field2 = default(ImmutableObjectGraph.Optional<System.Int32>));
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
 		public virtual ConcreteOf2Abstracts ToConcreteOf2Abstracts(
@@ -105,7 +105,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the Abstract2 class.</summary>
 		protected Abstract2(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Int32 abstract1Field1,
 			System.Int32 abstract1Field2,
 			System.Int32 abstract2Field1,
@@ -194,7 +194,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the ConcreteOf2Abstracts class.</summary>
 		protected ConcreteOf2Abstracts(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Int32 abstract1Field1,
 			System.Int32 abstract1Field2,
 			System.Int32 abstract2Field1,
@@ -289,7 +289,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> abstract2Field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> concreteField1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> concreteField2 = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				abstract1Field1: Optional.For(abstract1Field1.GetValueOrDefault(this.Abstract1Field1)),
 				abstract1Field2: Optional.For(abstract1Field2.GetValueOrDefault(this.Abstract1Field2)),
@@ -308,7 +308,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.Int32> abstract2Field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> concreteField1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 			ImmutableObjectGraph.Optional<System.Int32> concreteField2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(abstract1Field1.IsDefined && abstract1Field1.Value != this.Abstract1Field1) || 
@@ -343,7 +343,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new ConcreteOf2Abstracts(
-				default(System.Int32),
+				default(System.UInt32),
 				template.Abstract1Field1,
 				template.Abstract1Field2,
 				template.Abstract2Field1,
@@ -375,7 +375,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.Int32> abstract2Field2 = default(ImmutableObjectGraph.Optional<System.Int32>),
 				ImmutableObjectGraph.Optional<System.Int32> concreteField1 = default(ImmutableObjectGraph.Optional<System.Int32>),
 				ImmutableObjectGraph.Optional<System.Int32> concreteField2 = default(ImmutableObjectGraph.Optional<System.Int32>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}

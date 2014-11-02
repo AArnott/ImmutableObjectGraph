@@ -23,11 +23,11 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>The last identity assigned to a created instance.</summary>
 		private static int lastIdentityProduced;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Empty class.</summary>
 		protected Empty(
-			System.Int32 identity,
+			System.UInt32 identity,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
@@ -41,13 +41,13 @@ namespace ImmutableObjectGraph.Tests {
 			return DefaultInstance;
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -63,7 +63,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Empty(
-				default(System.Int32),
+				default(System.UInt32),
 				skipValidation: true);
 		}
 	
@@ -71,7 +71,7 @@ namespace ImmutableObjectGraph.Tests {
 		private struct Template {	}
 		
 		internal static Empty CreateWithIdentity(
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -113,7 +113,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the EmptyDerived class.</summary>
 		protected EmptyDerived(
-			System.Int32 identity,
+			System.UInt32 identity,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity)
@@ -141,7 +141,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new EmptyDerived(
-				default(System.Int32),
+				default(System.UInt32),
 				skipValidation: true);
 		}
 	
@@ -149,7 +149,7 @@ namespace ImmutableObjectGraph.Tests {
 		private struct Template {	}
 		
 		internal static EmptyDerived CreateWithIdentity(
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -176,7 +176,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the NotSoEmptyDerived class.</summary>
 		protected NotSoEmptyDerived(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Boolean oneField,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
@@ -219,7 +219,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected virtual NotSoEmptyDerived WithCore(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				oneField: Optional.For(oneField.GetValueOrDefault(this.OneField)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
@@ -228,7 +228,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private NotSoEmptyDerived WithFactory(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(oneField.IsDefined && oneField.Value != this.OneField)) {
@@ -253,7 +253,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new NotSoEmptyDerived(
-				default(System.Int32),
+				default(System.UInt32),
 				template.OneField,
 				skipValidation: true);
 		}
@@ -265,7 +265,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal static NotSoEmptyDerived CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -328,11 +328,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Boolean oneField;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the NonEmptyBase class.</summary>
 		protected NonEmptyBase(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Boolean oneField,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
@@ -374,7 +374,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		protected virtual NonEmptyBase WithCore(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				oneField: Optional.For(oneField.GetValueOrDefault(this.OneField)),
 				identity: Optional.For(identity.GetValueOrDefault(this.Identity)));
@@ -383,7 +383,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private NonEmptyBase WithFactory(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(oneField.IsDefined && oneField.Value != this.OneField)) {
@@ -395,13 +395,13 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -417,7 +417,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new NonEmptyBase(
-				default(System.Int32),
+				default(System.UInt32),
 				template.OneField,
 				skipValidation: true);
 		}
@@ -429,7 +429,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal static NonEmptyBase CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -493,7 +493,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the EmptyDerivedFromNonEmptyBase class.</summary>
 		protected EmptyDerivedFromNonEmptyBase(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Boolean oneField,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
@@ -535,7 +535,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private EmptyDerivedFromNonEmptyBase WithFactory(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(oneField.IsDefined && oneField.Value != this.OneField)) {
@@ -560,7 +560,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new EmptyDerivedFromNonEmptyBase(
-				default(System.Int32),
+				default(System.UInt32),
 				template.OneField,
 				skipValidation: true);
 		}
@@ -572,7 +572,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal static EmptyDerivedFromNonEmptyBase CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -617,11 +617,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Boolean oneField;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the AbstractNonEmpty class.</summary>
 		protected AbstractNonEmpty(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Boolean oneField,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
@@ -653,13 +653,13 @@ namespace ImmutableObjectGraph.Tests {
 		protected abstract AbstractNonEmpty WithCore(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>));
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
 		public virtual EmptyDerivedFromAbstract ToEmptyDerivedFromAbstract() {
@@ -716,7 +716,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the EmptyDerivedFromAbstract class.</summary>
 		protected EmptyDerivedFromAbstract(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.Boolean oneField,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
@@ -758,7 +758,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// <summary>Returns a new instance of this object with any number of properties changed.</summary>
 		private EmptyDerivedFromAbstract WithFactory(
 			ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(oneField.IsDefined && oneField.Value != this.OneField)) {
@@ -783,7 +783,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new EmptyDerivedFromAbstract(
-				default(System.Int32),
+				default(System.UInt32),
 				template.OneField,
 				skipValidation: true);
 		}
@@ -795,7 +795,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		internal static EmptyDerivedFromAbstract CreateWithIdentity(
 				ImmutableObjectGraph.Optional<System.Boolean> oneField = default(ImmutableObjectGraph.Optional<System.Boolean>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}

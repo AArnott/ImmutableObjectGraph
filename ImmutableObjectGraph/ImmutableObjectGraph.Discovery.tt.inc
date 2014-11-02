@@ -197,8 +197,9 @@ private static IEnumerable<MetaType.MetaField> SortRequiredFieldsFirst(IEnumerab
 protected class MetaType {
 	public MetaType(Type type) {
 		this.Type = type;
-		this.RequiredIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(int), required: true));
-		this.OptionalIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(int), required: false));
+		this.RequiredIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(uint), required: true));
+		this.OptionalIdentityField = this.CreateField(new SpecialFieldInfo("identity", typeof(uint), required: false));
+		this.ActualIdentityFieldTypeName = "int"; // this is so Interlocked.Increment works.
 	}
 
 	public Type Type { get; private set; }
@@ -221,6 +222,8 @@ protected class MetaType {
 	public MetaField RequiredIdentityField { get; private set; }
 
 	public MetaField OptionalIdentityField { get; private set; }
+
+	public string ActualIdentityFieldTypeName { get; private set; }
 
 	public MetaField LookupTableField {
 		get { return this.CreateField(new SpecialFieldInfo("lookupTable", this.NodeLookupTableTypeName, required: true)); }

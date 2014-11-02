@@ -6,10 +6,11 @@
 	using System.Text;
 	using System.Threading.Tasks;
 	using Validation;
+    using IdentityFieldType = System.UInt32;
 
-	public static class RecursiveTypeExtensions {
+    public static class RecursiveTypeExtensions {
 		/// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
-		public static bool HasDescendent(this IRecursiveParent parent, int identity) {
+		public static bool HasDescendent(this IRecursiveParent parent, IdentityFieldType identity) {
 			Requires.NotNull(parent, "parent");
 
 			IRecursiveType result;
@@ -24,7 +25,7 @@
 			return HasDescendent(parent, possibleDescendent.Identity);
 		}
 
-		public static bool TryFind<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, int identity, out TRecursiveType value)
+		public static bool TryFind<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, IdentityFieldType identity, out TRecursiveType value)
 				where TRecursiveParent : class, IRecursiveParent, TRecursiveType
 				where TRecursiveType : class, IRecursiveType {
 			Requires.NotNullAllowStructs(parent, "parent");
@@ -36,7 +37,7 @@
 
 			var parentWithLookup = parent as IRecursiveParentWithFastLookup;
 			if (parentWithLookup != null) {
-				KeyValuePair<IRecursiveType, int> lookupValue;
+				KeyValuePair<IRecursiveType, IdentityFieldType> lookupValue;
 				if (parentWithLookup.TryLookup(identity, out lookupValue)) {
 					value = (TRecursiveType)lookupValue.Key;
 					return lookupValue.Key != null;
@@ -62,14 +63,14 @@
 			return false;
 		}
 
-		public static bool TryFindImmediateChild<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, int identity, out TRecursiveType value)
+		public static bool TryFindImmediateChild<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, IdentityFieldType identity, out TRecursiveType value)
 			where TRecursiveParent : class, IRecursiveParent, TRecursiveType
 			where TRecursiveType : class, IRecursiveType {
 			Requires.NotNullAllowStructs(parent, "parent");
 
 			var parentWithLookup = parent as IRecursiveParentWithFastLookup;
 			if (parentWithLookup != null) {
-				KeyValuePair<IRecursiveType, int> lookupValue;
+				KeyValuePair<IRecursiveType, IdentityFieldType> lookupValue;
 				if (parentWithLookup.TryLookup(identity, out lookupValue)) {
 					if (lookupValue.Value == parent.Identity) {
 						value = (TRecursiveType)lookupValue.Key;
@@ -94,7 +95,7 @@
 			return false;
 		}
 
-		public static TRecursiveType Find<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, int identity)
+		public static TRecursiveType Find<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, IdentityFieldType identity)
 			where TRecursiveParent : class, IRecursiveParent, TRecursiveType
 			where TRecursiveType : class, IRecursiveType {
 			Requires.NotNullAllowStructs(parent, "parent");

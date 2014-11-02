@@ -21,11 +21,11 @@ namespace ImmutableObjectGraph.Tests {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String localName;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the XmlNode class.</summary>
 		protected XmlNode(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String localName,
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
@@ -57,13 +57,13 @@ namespace ImmutableObjectGraph.Tests {
 		protected abstract XmlNode WithCore(
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>));
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 		
 		public virtual XmlElement ToXmlElement(
@@ -123,7 +123,7 @@ namespace ImmutableObjectGraph.Tests {
 				value: value);
 		}
 	
-		int IRecursiveType.Identity {
+		System.UInt32 IRecursiveType.Identity {
 			get { return this.Identity; }
 		}
 	}
@@ -140,11 +140,11 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the XmlElement class.</summary>
 		protected XmlElement(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String localName,
 			System.String namespaceName,
 			System.Collections.Immutable.ImmutableList<XmlNode> children,
-			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>),
+			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>> lookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>>),
 			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 			: base(
 				identity: identity,
@@ -270,7 +270,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
 				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
@@ -283,13 +283,13 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(localName.IsDefined && localName.Value != this.LocalName) || 
 				(namespaceName.IsDefined && namespaceName.Value != this.NamespaceName) || 
 				(children.IsDefined && children.Value != this.Children)) {
-				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>) : Optional.For(this.lookupTable);
+				var lookupTable = children.IsDefined && children.Value != this.Children ? default(Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>>) : Optional.For(this.lookupTable);
 				return new XmlElement(
 					identity: identity.GetValueOrDefault(this.Identity),
 					localName: localName.GetValueOrDefault(this.LocalName),
@@ -322,7 +322,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlElement(
-				default(System.Int32),
+				default(System.UInt32),
 				template.LocalName,
 				template.NamespaceName,
 				template.Children,
@@ -433,7 +433,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// The tail is the node that was removed or replaced.
 		/// </param>
 		/// <returns>An updated lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<XmlNode> updatedSpine, ImmutableObjectGraph.ImmutableDeque<XmlNode> oldSpine) {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<XmlNode> updatedSpine, ImmutableObjectGraph.ImmutableDeque<XmlNode> oldSpine) {
 			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
 				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
 				return lookupTableLazySentinal;
@@ -483,7 +483,7 @@ namespace ImmutableObjectGraph.Tests {
 				var oldSpineTailRecursive = oldSpineTail as XmlElement;
 				if (oldSpineTailRecursive != null) {
 					foreach (var child in oldSpineTailRecursive) {
-						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<XmlNode, int>(child, newSpineTail.Identity);
+						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>(child, newSpineTail.Identity);
 					}
 				}
 			}
@@ -494,7 +494,7 @@ namespace ImmutableObjectGraph.Tests {
 				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
 				// assume no change is relevant and not apply the change.
 				lookupTable.Remove(node.Identity);
-				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<XmlNode, int>(node, parent.Identity));
+				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>(node, parent.Identity));
 				parent = node;
 			}
 		
@@ -522,7 +522,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		protected internal void ValidateInternalIntegrity() {
 			// Each node id appears at most once.
-			var observedIdentities = new System.Collections.Generic.HashSet<int>();
+			var observedIdentities = new System.Collections.Generic.HashSet<System.UInt32>();
 			foreach (var node in this.GetSelfAndDescendents()) {
 				if (!observedIdentities.Add(node.Identity)) {
 					throw new RecursiveChildNotUniqueException(node.Identity);
@@ -546,7 +546,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
 		/// </summary>
 		/// <param name="lookupTable">The lookup table being validated.</param>
-		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTable) {
+		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>> lookupTable) {
 			const string ErrorString = "Lookup table integrity failure.";
 		
 			foreach (var child in this.Children) {
@@ -566,9 +566,9 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		private static readonly System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>().Add(default(System.Int32), new System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>());
+		private static readonly System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>().Add(default(System.UInt32), new System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>());
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> lookupTable;
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>> lookupTable;
 		
 		private int inefficiencyLoad;
 		
@@ -578,7 +578,7 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		internal const int InefficiencyLoadThreshold = 16;
 		
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> LookupTable {
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>> LookupTable {
 			get {
 				if (this.lookupTable == lookupTableLazySentinal) {
 					this.lookupTable = this.CreateLookupTable();
@@ -589,19 +589,19 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		bool IRecursiveParentWithFastLookup.TryLookup(int identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, int> result) {
+		bool IRecursiveParentWithFastLookup.TryLookup(System.UInt32 identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32> result) {
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> typedResult;
+				System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32> typedResult;
 				this.LookupTable.TryGetValue(identity, out typedResult);
-				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, int>(typedResult.Key, typedResult.Value);
+				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>(typedResult.Key, typedResult.Value);
 				return true;
 			}
 		
-			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, int>);
+			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>);
 			return false;
 		}
 		
-		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>>)) {
+		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>>)) {
 			int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
 			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
 				this.lookupTable = priorLookupTable.Value;
@@ -635,8 +635,8 @@ namespace ImmutableObjectGraph.Tests {
 		/// Creates the lookup table that will contain all this node's children.
 		/// </summary>
 		/// <returns>The lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>> CreateLookupTable() {
-			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>().ToBuilder();
+		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>> CreateLookupTable() {
+			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>().ToBuilder();
 			this.ContributeDescendentsToLookupTable(table);
 			return table.ToImmutable();
 		}
@@ -646,11 +646,11 @@ namespace ImmutableObjectGraph.Tests {
 		/// </summary>
 		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
 		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.Int32, System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>>.Builder seedLookupTable)
+		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>>.Builder seedLookupTable)
 		{
 			foreach (var child in this.Children)
 			{
-				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<XmlNode, System.Int32>(child, this.Identity));
+				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32>(child, this.Identity));
 				var recursiveChild = child as XmlElement;
 				if (recursiveChild != null) {
 					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
@@ -658,7 +658,7 @@ namespace ImmutableObjectGraph.Tests {
 			}
 		}
 		
-		public XmlNode Find(System.Int32 identity) {
+		public XmlNode Find(System.UInt32 identity) {
 			XmlNode result;
 			if (this.TryFind(identity, out result)) {
 				return result;
@@ -668,13 +668,13 @@ namespace ImmutableObjectGraph.Tests {
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedRecursiveType<XmlElement, XmlNode> GetParentedNode(System.Int32 identity) {
+		internal ParentedRecursiveType<XmlElement, XmlNode> GetParentedNode(System.UInt32 identity) {
 			if (this.Identity == identity) {
 				return new ParentedRecursiveType<XmlElement, XmlNode>(this, null);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
 					var parentIdentity = lookupValue.Value;
 					return new ParentedRecursiveType<XmlElement, XmlNode>(this.LookupTable[identity].Key, (XmlElement)this.Find(parentIdentity));
@@ -704,14 +704,14 @@ namespace ImmutableObjectGraph.Tests {
 			return this.GetParentedNode(descendent.Identity).Parent;
 		}
 		
-		public System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(System.Int32 descendent) {
+		public System.Collections.Immutable.ImmutableStack<XmlNode> GetSpine(System.UInt32 descendent) {
 			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<XmlNode>();
 			if (this.Identity.Equals(descendent)) {
 				return emptySpine.Push(this);
 			}
 		
 			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<XmlNode, System.Int32> lookupValue;
+				System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32> lookupValue;
 				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
 				{
 					// Awesome.  We know the node the caller is looking for is a descendent of this node.
@@ -753,7 +753,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -800,7 +800,7 @@ namespace ImmutableObjectGraph.Tests {
 			get { return this.Children; }
 		}
 	
-		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(int identity) {
+		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(System.UInt32 identity) {
 			var parented = this.GetParentedNode(identity);
 			return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
 		}
@@ -818,7 +818,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the XmlElementWithContent class.</summary>
 		protected XmlElementWithContent(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String localName,
 			System.String namespaceName,
 			System.Collections.Immutable.ImmutableList<XmlNode> children,
@@ -961,7 +961,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
 				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
@@ -976,7 +976,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 			ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(localName.IsDefined && localName.Value != this.LocalName) || 
@@ -1007,7 +1007,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlElementWithContent(
-				default(System.Int32),
+				default(System.UInt32),
 				template.LocalName,
 				template.NamespaceName,
 				template.Children,
@@ -1031,7 +1031,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>> children = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<XmlNode>>),
 				ImmutableObjectGraph.Optional<System.String> content = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
@@ -1065,7 +1065,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		/// <summary>Initializes a new instance of the XmlAttribute class.</summary>
 		protected XmlAttribute(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String localName,
 			System.String namespaceName,
 			System.String value,
@@ -1147,7 +1147,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				localName: Optional.For(localName.GetValueOrDefault(this.LocalName)),
 				namespaceName: Optional.For(namespaceName.GetValueOrDefault(this.NamespaceName)),
@@ -1160,7 +1160,7 @@ namespace ImmutableObjectGraph.Tests {
 			ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(localName.IsDefined && localName.Value != this.LocalName) || 
@@ -1189,7 +1189,7 @@ namespace ImmutableObjectGraph.Tests {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new XmlAttribute(
-				default(System.Int32),
+				default(System.UInt32),
 				template.LocalName,
 				template.NamespaceName,
 				template.Value,
@@ -1209,7 +1209,7 @@ namespace ImmutableObjectGraph.Tests {
 				ImmutableObjectGraph.Optional<System.String> localName = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> namespaceName = default(ImmutableObjectGraph.Optional<System.String>),
 				ImmutableObjectGraph.Optional<System.String> value = default(ImmutableObjectGraph.Optional<System.String>),
-				ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+				ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (!identity.IsDefined) {
 				identity = NewIdentity();
 			}
