@@ -56,9 +56,13 @@ public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 <#		} #>
 
 	public <#= templateType.HasAncestor ? "new ": "" #><#= templateType.TypeName #> ToImmutable() {
-<#			foreach(var templateField in templateType.AllFields.Where(f => !f.IsPrimitiveType)) { #>
+<#			foreach(var templateField in templateType.AllFields.Where(f => !f.IsPrimitiveType)) {
+				if (templateField.IsValueType) { #>
+		var <#= templateField.NameCamelCase #> = this.<#= templateField.NameCamelCase #>.IsDefined ? this.<#= templateField.NameCamelCase #>.Value.ToImmutable() : this.immutable.<#= templateField.NamePascalCase #>;
+<#				} else { #>
 		var <#= templateField.NameCamelCase #> = this.<#= templateField.NameCamelCase #>.IsDefined ? (this.<#= templateField.NameCamelCase #>.Value != null ? this.<#= templateField.NameCamelCase #>.Value.ToImmutable() : null) : this.immutable.<#= templateField.NamePascalCase #>;
-<#			} #>
+<#				}
+			} #>
 		return this.immutable = this.immutable<# if (templateType.LocalFields.Count > 0) { #>.With(<#
 		bool firstInSequence = true;
 		foreach(var field in templateType.AllFields) {
