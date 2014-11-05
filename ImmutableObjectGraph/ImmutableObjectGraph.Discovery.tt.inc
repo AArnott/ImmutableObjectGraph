@@ -26,7 +26,9 @@ protected static void DiscoverTemplateTypes() {
 	TemplateTypes = new HashSet<MetaType>();
 	var pendingTypes = new Queue<Type>();
 
-	Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
+	Func<Type, bool> includeTypeTest = t => true
+						&& t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null
+						&& t.GetCustomAttribute<ImmutableObjectGraph.IgnoreAttribute>() == null
 						&& !HiddenTypes.Any(ht => ht.IsEquivalentTo(t));
 
 	foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
@@ -38,6 +40,10 @@ protected static void DiscoverTemplateTypes() {
 	while (pendingTypes.Count > 0)
 	{
 		var type = pendingTypes.Dequeue();
+		if (!includeTypeTest(type)) {
+			continue;
+		}
+
 		var metaType = new MetaType(type);
 		if (TemplateTypes.Add(metaType)) {
 			foreach(var field in metaType.LocalFields) {

@@ -70,6 +70,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FileSystem.tt</DependentUpon>
     </Compile>
+    <Compile Include="ProjectSystemMocks.cs" />
     <Compile Include="MSBuild.cs" />
     <Compile Include="NonRecursive.generated.cs">
       <DependentUpon>NonRecursive.tt</DependentUpon>
@@ -193,10 +194,6 @@
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
       <Name>ImmutableObjectGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.VisualStudio.ProjectSystem.v12Only\Microsoft.VisualStudio.ProjectSystem.v12Only.csproj">
-      <Project>{91668e84-7b80-45a1-892c-fa2ee381e770}</Project>
-      <Name>Microsoft.VisualStudio.ProjectSystem.v12Only</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

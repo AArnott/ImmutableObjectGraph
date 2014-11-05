@@ -67,6 +67,7 @@
     <Compile Include="Adapters\ImmutableSetRootAdapter.cs" />
     <Compile Include="Comparers.cs" />
     <Compile Include="DistinguisherAttribute.cs" />
+    <Compile Include="IgnoreAttribute.cs" />
     <Compile Include="ImmutableDeque.cs" />
     <Compile Include="ImmutableDeque`1.cs" />
     <Compile Include="IRecursiveCollection.cs" />

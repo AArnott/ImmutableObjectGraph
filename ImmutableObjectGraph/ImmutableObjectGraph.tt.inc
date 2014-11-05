@@ -43,6 +43,10 @@ namespace <#= this.Namespace #> {
 	using System.Linq;
 	using ImmutableObjectGraph;
 <#
+	foreach(string ns in this.ImportNamespaces) { #>
+	using <#= ns #>;
+<#	}
+
 	this.PushIndent("\t");
 	foreach(var templateType in TemplateTypes) {
 		this.OnHandleType(templateType, HandleTypePosition.BeforeTypeDeclaration);
@@ -365,6 +369,8 @@ if (!templateType.IsAbstract) { #>
 	public PluralizationService PluralService { get; set; }
 
 	public string Namespace { get; set; }
+
+	public HashSet<string> ImportNamespaces = new HashSet<string>();
 
 	protected enum HandleTypePosition {
 		BeforeTypeDeclaration,
