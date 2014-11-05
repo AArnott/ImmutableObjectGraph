@@ -310,7 +310,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.FileSystemEntry);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedFileSystemDirectory);
+				return greenParent != null ? new RootedFileSystemDirectory(greenParent, this.root) : default(RootedFileSystemDirectory);
 			}
 		}
 	
@@ -332,7 +332,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemFile AsFileSystemFile {
 			get {
 				var downcast = this.greenNode as FileSystemFile;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedFileSystemFile);
+				return downcast != null ? new RootedFileSystemFile(downcast, this.root) : default(RootedFileSystemFile);
 			}
 		}
 	
@@ -343,7 +343,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedFileSystemDirectory AsFileSystemDirectory {
 			get {
 				var downcast = this.greenNode as FileSystemDirectory;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedFileSystemDirectory);
+				return downcast != null ? new RootedFileSystemDirectory(downcast, this.root) : default(RootedFileSystemDirectory);
 			}
 		}
 	
@@ -389,7 +389,7 @@ namespace ImmutableObjectGraph.Tests {
 				pathSegment: pathSegment,
 				data: data);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedFileSystemEntry(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(RootedFileSystemEntry priorVersion) {
@@ -402,7 +402,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToFileSystemFile(
 					attributes: attributes);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedFileSystemFile(newGreenNode, newRoot);
 		}
 		
 		public RootedFileSystemDirectory ToFileSystemDirectory(
@@ -410,7 +410,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToFileSystemDirectory(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedFileSystemDirectory(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -432,7 +432,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedFileSystemEntry NewSpine(FileSystemEntry leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedFileSystemEntry(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -751,7 +751,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.FileSystemFile);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedFileSystemDirectory);
+				return greenParent != null ? new RootedFileSystemDirectory(greenParent, this.root) : default(RootedFileSystemDirectory);
 			}
 		}
 	
@@ -767,7 +767,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemEntry AsFileSystemEntry {
-			get { return this.greenNode != null ? ((FileSystemEntry)this.greenNode).WithRoot(this.root) : default(RootedFileSystemEntry); }
+			get { return this.greenNode != null ? new RootedFileSystemEntry((FileSystemEntry)this.greenNode, this.root) : default(RootedFileSystemEntry); }
 		}
 	
 		public System.String PathSegment {
@@ -891,7 +891,7 @@ namespace ImmutableObjectGraph.Tests {
 				data: data,
 				attributes: attributes);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedFileSystemFile(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<FileSystemEntry.DiffGram> ChangesSince(RootedFileSystemFile priorVersion) {
@@ -904,7 +904,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToFileSystemDirectory(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedFileSystemDirectory(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -926,7 +926,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedFileSystemFile NewSpine(FileSystemFile leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedFileSystemFile(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -1609,7 +1609,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedFileSystemDirectory : System.IEquatable<RootedFileSystemDirectory>, IRecursiveParent<RootedFileSystemEntry> {
 		private static readonly System.Func<RootedFileSystemEntry, FileSystemEntry> toUnrooted = r => r.FileSystemEntry;
-		private static readonly System.Func<FileSystemEntry, FileSystemDirectory, RootedFileSystemEntry> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<FileSystemEntry, FileSystemDirectory, RootedFileSystemEntry> toRooted = (u, r) => new RootedFileSystemEntry(u, r);
 	
 		private readonly FileSystemDirectory greenNode;
 	
@@ -1640,7 +1640,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.FileSystemDirectory);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedFileSystemDirectory);
+				return greenParent != null ? new RootedFileSystemDirectory(greenParent, this.root) : default(RootedFileSystemDirectory);
 			}
 		}
 	
@@ -1656,7 +1656,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedFileSystemEntry AsFileSystemEntry {
-			get { return this.greenNode != null ? ((FileSystemEntry)this.greenNode).WithRoot(this.root) : default(RootedFileSystemEntry); }
+			get { return this.greenNode != null ? new RootedFileSystemEntry((FileSystemEntry)this.greenNode, this.root) : default(RootedFileSystemEntry); }
 		}
 	
 		public bool IsRoot {
@@ -1849,7 +1849,7 @@ namespace ImmutableObjectGraph.Tests {
 				data: data,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<FileSystemEntry>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<FileSystemEntry>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedFileSystemDirectory(newGreenNode, newRoot);
 		}
 	
 		public static RootedFileSystemDirectory Create(
@@ -1865,14 +1865,14 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public RootedFileSystemEntry Find(System.UInt32 identity) {
 			this.ThrowIfDefault();
-			return this.greenNode.Find(identity).WithRoot(this.root);
+			return new RootedFileSystemEntry(this.greenNode.Find(identity), this.root);
 		}
 	
 		public bool TryFind(System.UInt32 identity, out RootedFileSystemEntry value) {
 			this.ThrowIfDefault();
 			FileSystemEntry greenValue;
 			if (this.greenNode.TryFind(identity, out greenValue)) {
-				value = greenValue.WithRoot(this.root);
+				value = new RootedFileSystemEntry(greenValue, this.root);
 				return true;
 			}
 	
@@ -1894,7 +1894,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToFileSystemFile(
 					attributes: attributes);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedFileSystemFile(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -1916,7 +1916,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedFileSystemDirectory NewSpine(FileSystemDirectory leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedFileSystemDirectory(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -1942,7 +1942,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedFileSystemEntry(c, that.root));
 			}
 		}
 	

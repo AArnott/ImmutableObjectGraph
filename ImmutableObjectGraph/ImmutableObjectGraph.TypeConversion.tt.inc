@@ -104,7 +104,7 @@ this.HandleRedType += (templateType, position) => {
 public <#= familyType.TypeName #> To<#= familyType.GreenType.TypeName #>(<# WriteParameters(familyType.GetFieldsBeyond(commonAncestor), ParameterStyle.OptionalOrRequired, indent: 1); #>) {
 	var newGreenNode = this.greenNode.To<#= familyType.GreenType.TypeName #>(<# WriteArguments(familyType.GetFieldsBeyond(commonAncestor), ArgSource.Argument); #>);
 	var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-	return newGreenNode.WithRoot(newRoot);
+	return new <#= familyType.TypeName #>(newGreenNode, newRoot);
 }
 <#
 	} // foreach familyType

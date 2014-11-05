@@ -41,7 +41,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 			if (recursiveParent != null) {
 #>
 	private static readonly System.Func<<#=recursiveParent.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveType.TypeName#>> toUnrooted = r => r.<#=recursiveParent.GreenType.RecursiveType.TypeName#>;
-	private static readonly System.Func<<#=recursiveParent.GreenType.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveParent.TypeName#>, <#=recursiveParent.RecursiveType.TypeName#>> toRooted = (u, r) => u.WithRoot(r);
+	private static readonly System.Func<<#=recursiveParent.GreenType.RecursiveType.TypeName#>, <#=recursiveParent.GreenType.RecursiveParent.TypeName#>, <#=recursiveParent.RecursiveType.TypeName#>> toRooted = (u, r) => new <#=recursiveParent.RecursiveType.TypeName#>(u, r);
 
 <#
 			}
@@ -87,7 +87,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		get {
 			this.ThrowIfDefault();
 			var greenParent = this.root.GetParent(this.<#= redType.GreenType.TypeName #>);
-			return greenParent != null ? greenParent.WithRoot(this.root) : default(<#= redType.RecursiveParent.TypeName #>);
+			return greenParent != null ? new <#=redType.RecursiveParent.TypeName#>(greenParent, this.root) : default(<#= redType.RecursiveParent.TypeName #>);
 		}
 	}
 
@@ -113,7 +113,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 	public <#=descendent.TypeName#> As<#=greenDescendent.TypeName#> {
 		get {
 			var downcast = this.greenNode as <#=greenDescendent.TypeName#>;
-			return downcast != null ? downcast.WithRoot(this.root) : default(<#=descendent.TypeName#>);
+			return downcast != null ? new <#=descendent.TypeName#>(downcast, this.root) : default(<#=descendent.TypeName#>);
 		}
 	}
 <#
@@ -124,7 +124,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 #>
 
 	public <#=ancestor.TypeName#> As<#=greenAncestor.TypeName#> {
-		get { return this.greenNode != null ? ((<#=greenAncestor.TypeName#>)this.greenNode).WithRoot(this.root) : default(<#=ancestor.TypeName#>); }
+		get { return this.greenNode != null ? new <#=ancestor.TypeName#>((<#=greenAncestor.TypeName#>)this.greenNode, this.root) : default(<#=ancestor.TypeName#>); }
 	}
 <#
 			}
@@ -181,7 +181,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		this.ThrowIfDefault();
 		var newGreenNode = this.greenNode.With(<# WriteArguments(redType.AllFields, ArgSource.Argument); #>);
 		var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-		return newGreenNode.WithRoot(newRoot);
+		return new <#= redType.TypeName #>(newGreenNode, newRoot);
 	}
 <#
 			if (redType.IsRecursive) {
@@ -198,14 +198,14 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 
 	public <#=redType.RecursiveType.TypeName#> Find(<#= templateType.RequiredIdentityField.TypeName #> identity) {
 		this.ThrowIfDefault();
-		return this.greenNode.Find(identity).WithRoot(this.root);
+		return new <#=redType.RecursiveType.TypeName#>(this.greenNode.Find(identity), this.root);
 	}
 
 	public bool TryFind(<#= redType.RequiredIdentityField.TypeName #> identity, out <#= redType.RecursiveType.TypeName #> value) {
 		this.ThrowIfDefault();
 		<#= redType.GreenType.RecursiveType.TypeName #> greenValue;
 		if (this.greenNode.TryFind(identity, out greenValue)) {
-			value = greenValue.WithRoot(this.root);
+			value = new <#= redType.RecursiveType.TypeName #>(greenValue, this.root);
 			return true;
 		}
 
@@ -241,7 +241,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 
 	private <#= redType.TypeName #> NewSpine(<#= redType.GreenType.TypeName #> leaf) {
 		var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-		return leaf.WithRoot(newRoot);
+		return new <#= redType.TypeName #>(leaf, newRoot);
 	}
 
 	/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -270,7 +270,7 @@ public partial struct <#= redType.TypeName #> : <#= String.Join(", ", baseTypes)
 		get {
 			this.ThrowIfDefault();
 			var that = this;
-			return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+			return this.greenNode.Children.Select(c => new <#= redType.RecursiveTypeFromFamily.TypeName #>(c, that.root));
 		}
 	}
 

@@ -729,7 +729,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -751,7 +751,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectElementContainer AsProjectElementContainer {
 			get {
 				var downcast = this.greenNode as ProjectElementContainer;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return downcast != null ? new RootedProjectElementContainer(downcast, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -762,7 +762,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectRootElement AsProjectRootElement {
 			get {
 				var downcast = this.greenNode as ProjectRootElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectRootElement);
+				return downcast != null ? new RootedProjectRootElement(downcast, this.root) : default(RootedProjectRootElement);
 			}
 		}
 	
@@ -773,7 +773,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement AsProjectPropertyGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectPropertyGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectPropertyGroupElement);
+				return downcast != null ? new RootedProjectPropertyGroupElement(downcast, this.root) : default(RootedProjectPropertyGroupElement);
 			}
 		}
 	
@@ -784,7 +784,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement AsProjectItemGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectItemGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemGroupElement);
+				return downcast != null ? new RootedProjectItemGroupElement(downcast, this.root) : default(RootedProjectItemGroupElement);
 			}
 		}
 	
@@ -795,7 +795,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement AsProjectChooseElement {
 			get {
 				var downcast = this.greenNode as ProjectChooseElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectChooseElement);
+				return downcast != null ? new RootedProjectChooseElement(downcast, this.root) : default(RootedProjectChooseElement);
 			}
 		}
 	
@@ -806,7 +806,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement AsProjectOtherwiseElement {
 			get {
 				var downcast = this.greenNode as ProjectOtherwiseElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOtherwiseElement);
+				return downcast != null ? new RootedProjectOtherwiseElement(downcast, this.root) : default(RootedProjectOtherwiseElement);
 			}
 		}
 	
@@ -817,7 +817,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement AsProjectWhenElement {
 			get {
 				var downcast = this.greenNode as ProjectWhenElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectWhenElement);
+				return downcast != null ? new RootedProjectWhenElement(downcast, this.root) : default(RootedProjectWhenElement);
 			}
 		}
 	
@@ -828,7 +828,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyElement AsProjectPropertyElement {
 			get {
 				var downcast = this.greenNode as ProjectPropertyElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectPropertyElement);
+				return downcast != null ? new RootedProjectPropertyElement(downcast, this.root) : default(RootedProjectPropertyElement);
 			}
 		}
 	
@@ -839,7 +839,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemElement AsProjectItemElement {
 			get {
 				var downcast = this.greenNode as ProjectItemElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemElement);
+				return downcast != null ? new RootedProjectItemElement(downcast, this.root) : default(RootedProjectItemElement);
 			}
 		}
 	
@@ -850,7 +850,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectMetadataElement AsProjectMetadataElement {
 			get {
 				var downcast = this.greenNode as ProjectMetadataElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectMetadataElement);
+				return downcast != null ? new RootedProjectMetadataElement(downcast, this.root) : default(RootedProjectMetadataElement);
 			}
 		}
 	
@@ -861,7 +861,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectExtensionsElement AsProjectExtensionsElement {
 			get {
 				var downcast = this.greenNode as ProjectExtensionsElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectExtensionsElement);
+				return downcast != null ? new RootedProjectExtensionsElement(downcast, this.root) : default(RootedProjectExtensionsElement);
 			}
 		}
 	
@@ -872,7 +872,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportElement AsProjectImportElement {
 			get {
 				var downcast = this.greenNode as ProjectImportElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectImportElement);
+				return downcast != null ? new RootedProjectImportElement(downcast, this.root) : default(RootedProjectImportElement);
 			}
 		}
 	
@@ -883,7 +883,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement AsProjectImportGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectImportGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectImportGroupElement);
+				return downcast != null ? new RootedProjectImportGroupElement(downcast, this.root) : default(RootedProjectImportGroupElement);
 			}
 		}
 	
@@ -894,7 +894,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionElement AsProjectItemDefinitionElement {
 			get {
 				var downcast = this.greenNode as ProjectItemDefinitionElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionElement);
+				return downcast != null ? new RootedProjectItemDefinitionElement(downcast, this.root) : default(RootedProjectItemDefinitionElement);
 			}
 		}
 	
@@ -905,7 +905,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement AsProjectItemDefinitionGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectItemDefinitionGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement);
+				return downcast != null ? new RootedProjectItemDefinitionGroupElement(downcast, this.root) : default(RootedProjectItemDefinitionGroupElement);
 			}
 		}
 	
@@ -916,7 +916,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOnErrorElement AsProjectOnErrorElement {
 			get {
 				var downcast = this.greenNode as ProjectOnErrorElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOnErrorElement);
+				return downcast != null ? new RootedProjectOnErrorElement(downcast, this.root) : default(RootedProjectOnErrorElement);
 			}
 		}
 	
@@ -927,7 +927,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOutputElement AsProjectOutputElement {
 			get {
 				var downcast = this.greenNode as ProjectOutputElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOutputElement);
+				return downcast != null ? new RootedProjectOutputElement(downcast, this.root) : default(RootedProjectOutputElement);
 			}
 		}
 	
@@ -938,7 +938,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectTargetElement AsProjectTargetElement {
 			get {
 				var downcast = this.greenNode as ProjectTargetElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTargetElement);
+				return downcast != null ? new RootedProjectTargetElement(downcast, this.root) : default(RootedProjectTargetElement);
 			}
 		}
 	
@@ -949,7 +949,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectTaskElement AsProjectTaskElement {
 			get {
 				var downcast = this.greenNode as ProjectTaskElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTaskElement);
+				return downcast != null ? new RootedProjectTaskElement(downcast, this.root) : default(RootedProjectTaskElement);
 			}
 		}
 	
@@ -960,7 +960,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectUsingTaskBodyElement AsProjectUsingTaskBodyElement {
 			get {
 				var downcast = this.greenNode as ProjectUsingTaskBodyElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskBodyElement);
+				return downcast != null ? new RootedProjectUsingTaskBodyElement(downcast, this.root) : default(RootedProjectUsingTaskBodyElement);
 			}
 		}
 	
@@ -971,7 +971,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectUsingTaskElement AsProjectUsingTaskElement {
 			get {
 				var downcast = this.greenNode as ProjectUsingTaskElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskElement);
+				return downcast != null ? new RootedProjectUsingTaskElement(downcast, this.root) : default(RootedProjectUsingTaskElement);
 			}
 		}
 	
@@ -982,7 +982,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectUsingTaskParameterElement AsProjectUsingTaskParameterElement {
 			get {
 				var downcast = this.greenNode as ProjectUsingTaskParameterElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskParameterElement);
+				return downcast != null ? new RootedProjectUsingTaskParameterElement(downcast, this.root) : default(RootedProjectUsingTaskParameterElement);
 			}
 		}
 	
@@ -993,7 +993,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement AsUsingTaskParameterGroupElement {
 			get {
 				var downcast = this.greenNode as UsingTaskParameterGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement);
+				return downcast != null ? new RootedUsingTaskParameterGroupElement(downcast, this.root) : default(RootedUsingTaskParameterGroupElement);
 			}
 		}
 	
@@ -1025,7 +1025,7 @@ namespace ImmutableObjectGraph.Tests {
 				condition: condition,
 				label: label);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectElement priorVersion) {
@@ -1050,7 +1050,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -1058,7 +1058,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -1066,7 +1066,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -1074,7 +1074,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -1082,7 +1082,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -1090,7 +1090,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -1100,7 +1100,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -1122,7 +1122,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -1132,7 +1132,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -1140,7 +1140,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -1148,7 +1148,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -1156,7 +1156,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -1166,7 +1166,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -1174,13 +1174,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -1196,7 +1196,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -1220,7 +1220,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -1236,7 +1236,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -1246,7 +1246,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -1266,7 +1266,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -1280,7 +1280,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -1288,7 +1288,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -1310,7 +1310,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectElement NewSpine(ProjectElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -2546,7 +2546,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectElementContainer : System.IEquatable<RootedProjectElementContainer>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectElementContainer greenNode;
 	
@@ -2577,7 +2577,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectElementContainer);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -2599,7 +2599,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectRootElement AsProjectRootElement {
 			get {
 				var downcast = this.greenNode as ProjectRootElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectRootElement);
+				return downcast != null ? new RootedProjectRootElement(downcast, this.root) : default(RootedProjectRootElement);
 			}
 		}
 	
@@ -2610,7 +2610,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement AsProjectPropertyGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectPropertyGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectPropertyGroupElement);
+				return downcast != null ? new RootedProjectPropertyGroupElement(downcast, this.root) : default(RootedProjectPropertyGroupElement);
 			}
 		}
 	
@@ -2621,7 +2621,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemGroupElement AsProjectItemGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectItemGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemGroupElement);
+				return downcast != null ? new RootedProjectItemGroupElement(downcast, this.root) : default(RootedProjectItemGroupElement);
 			}
 		}
 	
@@ -2632,7 +2632,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectChooseElement AsProjectChooseElement {
 			get {
 				var downcast = this.greenNode as ProjectChooseElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectChooseElement);
+				return downcast != null ? new RootedProjectChooseElement(downcast, this.root) : default(RootedProjectChooseElement);
 			}
 		}
 	
@@ -2643,7 +2643,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectOtherwiseElement AsProjectOtherwiseElement {
 			get {
 				var downcast = this.greenNode as ProjectOtherwiseElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectOtherwiseElement);
+				return downcast != null ? new RootedProjectOtherwiseElement(downcast, this.root) : default(RootedProjectOtherwiseElement);
 			}
 		}
 	
@@ -2654,7 +2654,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectWhenElement AsProjectWhenElement {
 			get {
 				var downcast = this.greenNode as ProjectWhenElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectWhenElement);
+				return downcast != null ? new RootedProjectWhenElement(downcast, this.root) : default(RootedProjectWhenElement);
 			}
 		}
 	
@@ -2665,7 +2665,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemElement AsProjectItemElement {
 			get {
 				var downcast = this.greenNode as ProjectItemElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemElement);
+				return downcast != null ? new RootedProjectItemElement(downcast, this.root) : default(RootedProjectItemElement);
 			}
 		}
 	
@@ -2676,7 +2676,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectImportGroupElement AsProjectImportGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectImportGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectImportGroupElement);
+				return downcast != null ? new RootedProjectImportGroupElement(downcast, this.root) : default(RootedProjectImportGroupElement);
 			}
 		}
 	
@@ -2687,7 +2687,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionElement AsProjectItemDefinitionElement {
 			get {
 				var downcast = this.greenNode as ProjectItemDefinitionElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionElement);
+				return downcast != null ? new RootedProjectItemDefinitionElement(downcast, this.root) : default(RootedProjectItemDefinitionElement);
 			}
 		}
 	
@@ -2698,7 +2698,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemDefinitionGroupElement AsProjectItemDefinitionGroupElement {
 			get {
 				var downcast = this.greenNode as ProjectItemDefinitionGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemDefinitionGroupElement);
+				return downcast != null ? new RootedProjectItemDefinitionGroupElement(downcast, this.root) : default(RootedProjectItemDefinitionGroupElement);
 			}
 		}
 	
@@ -2709,7 +2709,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectTargetElement AsProjectTargetElement {
 			get {
 				var downcast = this.greenNode as ProjectTargetElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTargetElement);
+				return downcast != null ? new RootedProjectTargetElement(downcast, this.root) : default(RootedProjectTargetElement);
 			}
 		}
 	
@@ -2720,7 +2720,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectTaskElement AsProjectTaskElement {
 			get {
 				var downcast = this.greenNode as ProjectTaskElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectTaskElement);
+				return downcast != null ? new RootedProjectTaskElement(downcast, this.root) : default(RootedProjectTaskElement);
 			}
 		}
 	
@@ -2731,7 +2731,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectUsingTaskElement AsProjectUsingTaskElement {
 			get {
 				var downcast = this.greenNode as ProjectUsingTaskElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectUsingTaskElement);
+				return downcast != null ? new RootedProjectUsingTaskElement(downcast, this.root) : default(RootedProjectUsingTaskElement);
 			}
 		}
 	
@@ -2742,12 +2742,12 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedUsingTaskParameterGroupElement AsUsingTaskParameterGroupElement {
 			get {
 				var downcast = this.greenNode as UsingTaskParameterGroupElement;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedUsingTaskParameterGroupElement);
+				return downcast != null ? new RootedUsingTaskParameterGroupElement(downcast, this.root) : default(RootedUsingTaskParameterGroupElement);
 			}
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public bool IsRoot {
@@ -2918,19 +2918,19 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectElementContainer(newGreenNode, newRoot);
 		}
 	
 		public RootedProjectElement Find(System.UInt32 identity) {
 			this.ThrowIfDefault();
-			return this.greenNode.Find(identity).WithRoot(this.root);
+			return new RootedProjectElement(this.greenNode.Find(identity), this.root);
 		}
 	
 		public bool TryFind(System.UInt32 identity, out RootedProjectElement value) {
 			this.ThrowIfDefault();
 			ProjectElement greenValue;
 			if (this.greenNode.TryFind(identity, out greenValue)) {
-				value = greenValue.WithRoot(this.root);
+				value = new RootedProjectElement(greenValue, this.root);
 				return true;
 			}
 	
@@ -2962,37 +2962,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -3002,7 +3002,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -3022,7 +3022,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -3032,7 +3032,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -3040,7 +3040,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -3048,13 +3048,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -3062,19 +3062,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -3090,7 +3090,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -3112,7 +3112,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -3126,7 +3126,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -3136,7 +3136,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -3154,7 +3154,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -3168,13 +3168,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -3196,7 +3196,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectElementContainer NewSpine(ProjectElementContainer leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectElementContainer(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -3222,7 +3222,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -3610,7 +3610,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectRootElement : System.IEquatable<RootedProjectRootElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectRootElement greenNode;
 	
@@ -3641,7 +3641,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectRootElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -3657,11 +3657,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -3882,7 +3882,7 @@ namespace ImmutableObjectGraph.Tests {
 				initialTargets: initialTargets,
 				treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectRootElement priorVersion) {
@@ -3893,31 +3893,31 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -3927,7 +3927,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -3947,7 +3947,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -3957,7 +3957,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -3965,7 +3965,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -3973,13 +3973,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -3987,19 +3987,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -4015,7 +4015,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -4037,7 +4037,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -4051,7 +4051,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -4061,7 +4061,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -4079,7 +4079,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -4093,13 +4093,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -4121,7 +4121,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectRootElement NewSpine(ProjectRootElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectRootElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -4147,7 +4147,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -4347,7 +4347,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectPropertyGroupElement : System.IEquatable<RootedProjectPropertyGroupElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectPropertyGroupElement greenNode;
 	
@@ -4378,7 +4378,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectPropertyGroupElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -4394,11 +4394,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -4565,7 +4565,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectPropertyGroupElement priorVersion) {
@@ -4588,31 +4588,31 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -4622,7 +4622,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -4642,7 +4642,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -4652,7 +4652,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -4660,7 +4660,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -4668,13 +4668,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -4682,19 +4682,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -4710,7 +4710,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -4732,7 +4732,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -4746,7 +4746,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -4756,7 +4756,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -4774,7 +4774,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -4788,13 +4788,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -4816,7 +4816,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectPropertyGroupElement NewSpine(ProjectPropertyGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -4842,7 +4842,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -5042,7 +5042,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectItemGroupElement : System.IEquatable<RootedProjectItemGroupElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectItemGroupElement greenNode;
 	
@@ -5073,7 +5073,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectItemGroupElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -5089,11 +5089,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -5260,7 +5260,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectItemGroupElement priorVersion) {
@@ -5283,31 +5283,31 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -5317,7 +5317,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -5337,7 +5337,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -5347,7 +5347,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -5355,7 +5355,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -5363,13 +5363,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -5377,19 +5377,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -5405,7 +5405,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -5427,7 +5427,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -5441,7 +5441,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -5451,7 +5451,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -5469,7 +5469,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -5483,13 +5483,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -5511,7 +5511,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectItemGroupElement NewSpine(ProjectItemGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -5537,7 +5537,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -5737,7 +5737,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectChooseElement : System.IEquatable<RootedProjectChooseElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectChooseElement greenNode;
 	
@@ -5768,7 +5768,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectChooseElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -5784,11 +5784,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -5955,7 +5955,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectChooseElement priorVersion) {
@@ -5978,31 +5978,31 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -6012,7 +6012,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -6032,7 +6032,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -6042,7 +6042,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -6050,7 +6050,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -6058,13 +6058,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -6072,19 +6072,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -6100,7 +6100,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -6122,7 +6122,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -6136,7 +6136,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -6146,7 +6146,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -6164,7 +6164,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -6178,13 +6178,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -6206,7 +6206,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectChooseElement NewSpine(ProjectChooseElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectChooseElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -6232,7 +6232,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -6432,7 +6432,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectOtherwiseElement : System.IEquatable<RootedProjectOtherwiseElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectOtherwiseElement greenNode;
 	
@@ -6463,7 +6463,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectOtherwiseElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -6479,11 +6479,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -6650,7 +6650,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectOtherwiseElement priorVersion) {
@@ -6673,31 +6673,31 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -6707,7 +6707,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -6727,7 +6727,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -6737,7 +6737,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -6745,7 +6745,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -6753,13 +6753,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -6767,19 +6767,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -6795,7 +6795,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -6817,7 +6817,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -6831,7 +6831,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -6841,7 +6841,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -6859,7 +6859,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -6873,13 +6873,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -6901,7 +6901,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectOtherwiseElement NewSpine(ProjectOtherwiseElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -6927,7 +6927,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -7127,7 +7127,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectWhenElement : System.IEquatable<RootedProjectWhenElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectWhenElement greenNode;
 	
@@ -7158,7 +7158,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectWhenElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -7174,11 +7174,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -7345,7 +7345,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectWhenElement priorVersion) {
@@ -7368,31 +7368,31 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -7402,7 +7402,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -7422,7 +7422,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -7432,7 +7432,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -7440,7 +7440,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -7448,13 +7448,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -7462,19 +7462,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -7490,7 +7490,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -7512,7 +7512,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -7526,7 +7526,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -7536,7 +7536,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -7554,7 +7554,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -7568,13 +7568,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -7596,7 +7596,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectWhenElement NewSpine(ProjectWhenElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectWhenElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -7622,7 +7622,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -7851,7 +7851,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectPropertyElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -7867,7 +7867,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -7916,7 +7916,7 @@ namespace ImmutableObjectGraph.Tests {
 				name: name,
 				value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectPropertyElement priorVersion) {
@@ -7941,7 +7941,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -7949,7 +7949,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -7957,7 +7957,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -7965,7 +7965,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -7973,7 +7973,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -7981,7 +7981,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -8003,7 +8003,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -8013,7 +8013,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -8021,7 +8021,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -8029,7 +8029,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -8037,7 +8037,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -8047,7 +8047,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -8055,13 +8055,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -8077,7 +8077,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -8101,7 +8101,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -8117,7 +8117,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -8127,7 +8127,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -8147,7 +8147,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -8161,7 +8161,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -8169,7 +8169,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -8191,7 +8191,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectPropertyElement NewSpine(ProjectPropertyElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -8611,7 +8611,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectItemElement : System.IEquatable<RootedProjectItemElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectItemElement greenNode;
 	
@@ -8642,7 +8642,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectItemElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -8658,11 +8658,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -8892,7 +8892,7 @@ namespace ImmutableObjectGraph.Tests {
 				remove: remove,
 				removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectItemElement priorVersion) {
@@ -8915,37 +8915,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -8955,7 +8955,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -8965,7 +8965,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -8973,7 +8973,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -8981,13 +8981,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -8995,19 +8995,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -9023,7 +9023,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -9045,7 +9045,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -9059,7 +9059,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -9069,7 +9069,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -9087,7 +9087,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -9101,13 +9101,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -9129,7 +9129,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectItemElement NewSpine(ProjectItemElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectItemElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -9155,7 +9155,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -9384,7 +9384,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectMetadataElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -9400,7 +9400,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -9449,7 +9449,7 @@ namespace ImmutableObjectGraph.Tests {
 				name: name,
 				value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectMetadataElement priorVersion) {
@@ -9474,7 +9474,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -9482,7 +9482,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -9490,7 +9490,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -9498,7 +9498,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -9506,7 +9506,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -9514,7 +9514,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -9524,7 +9524,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -9546,7 +9546,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -9554,7 +9554,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -9562,7 +9562,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -9570,7 +9570,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -9580,7 +9580,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -9588,13 +9588,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -9610,7 +9610,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -9634,7 +9634,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -9650,7 +9650,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -9660,7 +9660,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -9680,7 +9680,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -9694,7 +9694,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -9702,7 +9702,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -9724,7 +9724,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectMetadataElement NewSpine(ProjectMetadataElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -9931,7 +9931,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectExtensionsElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -9947,7 +9947,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -9987,7 +9987,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectExtensionsElement priorVersion) {
@@ -10012,7 +10012,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -10020,7 +10020,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -10028,7 +10028,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -10036,7 +10036,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -10044,7 +10044,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -10052,7 +10052,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -10062,7 +10062,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -10084,7 +10084,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -10094,7 +10094,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -10102,7 +10102,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -10110,7 +10110,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -10120,7 +10120,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -10128,13 +10128,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -10150,7 +10150,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -10174,7 +10174,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -10190,7 +10190,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -10200,7 +10200,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -10220,7 +10220,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -10234,7 +10234,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -10242,7 +10242,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -10264,7 +10264,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectExtensionsElement NewSpine(ProjectExtensionsElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -10471,7 +10471,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectImportElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -10487,7 +10487,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -10527,7 +10527,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectImportElement priorVersion) {
@@ -10552,7 +10552,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -10560,7 +10560,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -10568,7 +10568,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -10576,7 +10576,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -10584,7 +10584,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -10592,7 +10592,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -10602,7 +10602,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -10624,7 +10624,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -10634,7 +10634,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -10642,7 +10642,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -10650,7 +10650,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -10660,7 +10660,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -10668,13 +10668,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -10690,7 +10690,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -10714,7 +10714,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -10730,7 +10730,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -10740,7 +10740,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -10760,7 +10760,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -10774,7 +10774,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -10782,7 +10782,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -10804,7 +10804,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectImportElement NewSpine(ProjectImportElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectImportElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -11009,7 +11009,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectImportGroupElement : System.IEquatable<RootedProjectImportGroupElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectImportGroupElement greenNode;
 	
@@ -11040,7 +11040,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectImportGroupElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -11056,11 +11056,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -11227,7 +11227,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectImportGroupElement priorVersion) {
@@ -11250,37 +11250,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -11290,7 +11290,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -11310,7 +11310,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -11320,7 +11320,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -11328,7 +11328,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -11336,7 +11336,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -11344,19 +11344,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -11372,7 +11372,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -11394,7 +11394,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -11408,7 +11408,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -11418,7 +11418,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -11436,7 +11436,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -11450,13 +11450,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -11478,7 +11478,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectImportGroupElement NewSpine(ProjectImportGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -11504,7 +11504,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -11757,7 +11757,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectItemDefinitionElement : System.IEquatable<RootedProjectItemDefinitionElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectItemDefinitionElement greenNode;
 	
@@ -11788,7 +11788,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectItemDefinitionElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -11804,11 +11804,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -11984,7 +11984,7 @@ namespace ImmutableObjectGraph.Tests {
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 				itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectItemDefinitionElement priorVersion) {
@@ -12007,37 +12007,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -12047,7 +12047,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -12067,7 +12067,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -12077,7 +12077,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -12085,7 +12085,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -12093,25 +12093,25 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -12127,7 +12127,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -12149,7 +12149,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -12163,7 +12163,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -12173,7 +12173,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -12191,7 +12191,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -12205,13 +12205,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -12233,7 +12233,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectItemDefinitionElement NewSpine(ProjectItemDefinitionElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -12259,7 +12259,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -12459,7 +12459,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectItemDefinitionGroupElement : System.IEquatable<RootedProjectItemDefinitionGroupElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectItemDefinitionGroupElement greenNode;
 	
@@ -12490,7 +12490,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectItemDefinitionGroupElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -12506,11 +12506,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -12677,7 +12677,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectItemDefinitionGroupElement priorVersion) {
@@ -12700,37 +12700,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -12740,7 +12740,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -12760,7 +12760,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -12770,7 +12770,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -12778,7 +12778,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -12786,13 +12786,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -12800,13 +12800,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -12822,7 +12822,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -12844,7 +12844,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -12858,7 +12858,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -12868,7 +12868,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -12886,7 +12886,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -12900,13 +12900,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -12928,7 +12928,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectItemDefinitionGroupElement NewSpine(ProjectItemDefinitionGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -12954,7 +12954,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -13106,7 +13106,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectOnErrorElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -13122,7 +13122,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -13153,7 +13153,7 @@ namespace ImmutableObjectGraph.Tests {
 				condition: condition,
 				label: label);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectOnErrorElement priorVersion) {
@@ -13178,7 +13178,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -13186,7 +13186,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -13194,7 +13194,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -13202,7 +13202,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -13210,7 +13210,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -13218,7 +13218,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -13228,7 +13228,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -13250,7 +13250,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -13260,7 +13260,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -13268,7 +13268,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -13276,7 +13276,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -13284,7 +13284,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -13294,7 +13294,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -13302,7 +13302,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -13318,7 +13318,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -13342,7 +13342,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -13358,7 +13358,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -13368,7 +13368,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -13388,7 +13388,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -13402,7 +13402,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -13410,7 +13410,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -13432,7 +13432,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectOnErrorElement NewSpine(ProjectOnErrorElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -13747,7 +13747,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectOutputElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -13763,7 +13763,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -13839,7 +13839,7 @@ namespace ImmutableObjectGraph.Tests {
 				propertyName: propertyName,
 				taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectOutputElement priorVersion) {
@@ -13864,7 +13864,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -13872,7 +13872,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -13880,7 +13880,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -13888,7 +13888,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -13896,7 +13896,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -13904,7 +13904,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -13914,7 +13914,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -13936,7 +13936,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -13946,7 +13946,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -13954,7 +13954,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -13962,7 +13962,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -13970,7 +13970,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -13980,7 +13980,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -13988,13 +13988,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -14018,7 +14018,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -14034,7 +14034,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -14044,7 +14044,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -14064,7 +14064,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -14078,7 +14078,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -14086,7 +14086,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -14108,7 +14108,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectOutputElement NewSpine(ProjectOutputElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectOutputElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -14555,7 +14555,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectTargetElement : System.IEquatable<RootedProjectTargetElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectTargetElement greenNode;
 	
@@ -14586,7 +14586,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectTargetElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -14602,11 +14602,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -14845,7 +14845,7 @@ namespace ImmutableObjectGraph.Tests {
 				outputs: outputs,
 				returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectTargetElement priorVersion) {
@@ -14868,37 +14868,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -14908,7 +14908,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -14928,7 +14928,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -14938,7 +14938,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -14946,7 +14946,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -14954,13 +14954,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -14968,19 +14968,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -14996,7 +14996,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -15010,7 +15010,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -15020,7 +15020,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -15038,7 +15038,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -15052,13 +15052,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -15080,7 +15080,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectTargetElement NewSpine(ProjectTargetElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectTargetElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -15106,7 +15106,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -15440,7 +15440,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectTaskElement : System.IEquatable<RootedProjectTaskElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectTaskElement greenNode;
 	
@@ -15471,7 +15471,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectTaskElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -15487,11 +15487,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -15694,7 +15694,7 @@ namespace ImmutableObjectGraph.Tests {
 				mSBuildRuntime: mSBuildRuntime,
 				name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectTaskElement priorVersion) {
@@ -15717,37 +15717,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -15757,7 +15757,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -15777,7 +15777,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -15787,7 +15787,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -15795,7 +15795,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -15803,13 +15803,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -15817,19 +15817,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -15845,7 +15845,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -15867,7 +15867,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -15877,7 +15877,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -15895,7 +15895,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -15909,13 +15909,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -15937,7 +15937,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectTaskElement NewSpine(ProjectTaskElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectTaskElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -15963,7 +15963,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -16192,7 +16192,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectUsingTaskBodyElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -16208,7 +16208,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -16257,7 +16257,7 @@ namespace ImmutableObjectGraph.Tests {
 				evaluate: evaluate,
 				taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectUsingTaskBodyElement priorVersion) {
@@ -16282,7 +16282,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -16290,7 +16290,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -16298,7 +16298,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -16306,7 +16306,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -16314,7 +16314,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -16322,7 +16322,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -16332,7 +16332,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -16354,7 +16354,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -16364,7 +16364,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -16372,7 +16372,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -16380,7 +16380,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -16388,7 +16388,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -16398,7 +16398,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -16406,13 +16406,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -16428,7 +16428,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -16452,7 +16452,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -16468,7 +16468,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -16488,7 +16488,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -16502,7 +16502,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -16510,7 +16510,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -16532,7 +16532,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectUsingTaskBodyElement NewSpine(ProjectUsingTaskBodyElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -16925,7 +16925,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectUsingTaskElement : System.IEquatable<RootedProjectUsingTaskElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly ProjectUsingTaskElement greenNode;
 	
@@ -16956,7 +16956,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectUsingTaskElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -16972,11 +16972,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -17197,7 +17197,7 @@ namespace ImmutableObjectGraph.Tests {
 				taskFactory: taskFactory,
 				taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectUsingTaskElement priorVersion) {
@@ -17220,37 +17220,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -17260,7 +17260,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -17280,7 +17280,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -17290,7 +17290,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -17298,7 +17298,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -17306,13 +17306,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -17320,19 +17320,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -17348,7 +17348,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -17370,7 +17370,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -17384,7 +17384,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -17394,7 +17394,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -17408,13 +17408,13 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement() {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -17436,7 +17436,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectUsingTaskElement NewSpine(ProjectUsingTaskElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -17462,7 +17462,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	
@@ -17745,7 +17745,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectUsingTaskParameterElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -17761,7 +17761,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -17828,7 +17828,7 @@ namespace ImmutableObjectGraph.Tests {
 				parameterType: parameterType,
 				required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedProjectUsingTaskParameterElement priorVersion) {
@@ -17853,7 +17853,7 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement(
@@ -17861,7 +17861,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement(
@@ -17869,7 +17869,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement(
@@ -17877,7 +17877,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectChooseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement(
@@ -17885,7 +17885,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement(
@@ -17893,7 +17893,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectWhenElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -17903,7 +17903,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -17925,7 +17925,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -17935,7 +17935,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -17943,7 +17943,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -17951,7 +17951,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement(
@@ -17959,7 +17959,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -17969,7 +17969,7 @@ namespace ImmutableObjectGraph.Tests {
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>),
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement(
@@ -17977,13 +17977,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -17999,7 +17999,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -18023,7 +18023,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -18039,7 +18039,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -18049,7 +18049,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -18069,7 +18069,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedUsingTaskParameterGroupElement ToUsingTaskParameterGroupElement(
@@ -18077,7 +18077,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToUsingTaskParameterGroupElement(
 					children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -18099,7 +18099,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectUsingTaskParameterElement NewSpine(ProjectUsingTaskParameterElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -18304,7 +18304,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedUsingTaskParameterGroupElement : System.IEquatable<RootedUsingTaskParameterGroupElement>, IRecursiveParent<RootedProjectElement> {
 		private static readonly System.Func<RootedProjectElement, ProjectElement> toUnrooted = r => r.ProjectElement;
-		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectElement, ProjectElementContainer, RootedProjectElement> toRooted = (u, r) => new RootedProjectElement(u, r);
 	
 		private readonly UsingTaskParameterGroupElement greenNode;
 	
@@ -18335,7 +18335,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.UsingTaskParameterGroupElement);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectElementContainer);
+				return greenParent != null ? new RootedProjectElementContainer(greenParent, this.root) : default(RootedProjectElementContainer);
 			}
 		}
 	
@@ -18351,11 +18351,11 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectElementContainer AsProjectElementContainer {
-			get { return this.greenNode != null ? ((ProjectElementContainer)this.greenNode).WithRoot(this.root) : default(RootedProjectElementContainer); }
+			get { return this.greenNode != null ? new RootedProjectElementContainer((ProjectElementContainer)this.greenNode, this.root) : default(RootedProjectElementContainer); }
 		}
 	
 		public RootedProjectElement AsProjectElement {
-			get { return this.greenNode != null ? ((ProjectElement)this.greenNode).WithRoot(this.root) : default(RootedProjectElement); }
+			get { return this.greenNode != null ? new RootedProjectElement((ProjectElement)this.greenNode, this.root) : default(RootedProjectElement); }
 		}
 	
 		public System.String Condition {
@@ -18522,7 +18522,7 @@ namespace ImmutableObjectGraph.Tests {
 				label: label,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableList<ProjectElement>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectElement>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<ProjectElement>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectElement.DiffGram> ChangesSince(RootedUsingTaskParameterGroupElement priorVersion) {
@@ -18545,37 +18545,37 @@ namespace ImmutableObjectGraph.Tests {
 					initialTargets: initialTargets,
 					treatAsLocalProperty: treatAsLocalProperty);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectRootElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyGroupElement ToProjectPropertyGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectPropertyGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemGroupElement ToProjectItemGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectChooseElement ToProjectChooseElement() {
 			var newGreenNode = this.greenNode.ToProjectChooseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectChooseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOtherwiseElement ToProjectOtherwiseElement() {
 			var newGreenNode = this.greenNode.ToProjectOtherwiseElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOtherwiseElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectWhenElement ToProjectWhenElement() {
 			var newGreenNode = this.greenNode.ToProjectWhenElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectWhenElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectPropertyElement ToProjectPropertyElement(
@@ -18585,7 +18585,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectPropertyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemElement ToProjectItemElement(
@@ -18605,7 +18605,7 @@ namespace ImmutableObjectGraph.Tests {
 					remove: remove,
 					removeMetadata: removeMetadata);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectMetadataElement ToProjectMetadataElement(
@@ -18615,7 +18615,7 @@ namespace ImmutableObjectGraph.Tests {
 					name: name,
 					value: value);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectMetadataElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectExtensionsElement ToProjectExtensionsElement(
@@ -18623,7 +18623,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectExtensionsElement(
 					content: content);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectExtensionsElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportElement ToProjectImportElement(
@@ -18631,13 +18631,13 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectImportElement(
 					project: project);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectImportGroupElement ToProjectImportGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectImportGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectImportGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionElement ToProjectItemDefinitionElement(
@@ -18645,19 +18645,19 @@ namespace ImmutableObjectGraph.Tests {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionElement(
 					itemType: itemType);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectItemDefinitionGroupElement ToProjectItemDefinitionGroupElement() {
 			var newGreenNode = this.greenNode.ToProjectItemDefinitionGroupElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemDefinitionGroupElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOnErrorElement ToProjectOnErrorElement() {
 			var newGreenNode = this.greenNode.ToProjectOnErrorElement();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOnErrorElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectOutputElement ToProjectOutputElement(
@@ -18673,7 +18673,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertyName: propertyName,
 					taskParameter: taskParameter);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectOutputElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTargetElement ToProjectTargetElement(
@@ -18695,7 +18695,7 @@ namespace ImmutableObjectGraph.Tests {
 					outputs: outputs,
 					returns: returns);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTargetElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectTaskElement ToProjectTaskElement(
@@ -18709,7 +18709,7 @@ namespace ImmutableObjectGraph.Tests {
 					mSBuildRuntime: mSBuildRuntime,
 					name: name);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskBodyElement ToProjectUsingTaskBodyElement(
@@ -18719,7 +18719,7 @@ namespace ImmutableObjectGraph.Tests {
 					evaluate: evaluate,
 					taskBody: taskBody);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskBodyElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskElement ToProjectUsingTaskElement(
@@ -18737,7 +18737,7 @@ namespace ImmutableObjectGraph.Tests {
 					taskFactory: taskFactory,
 					taskName: taskName);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskElement(newGreenNode, newRoot);
 		}
 		
 		public RootedProjectUsingTaskParameterElement ToProjectUsingTaskParameterElement(
@@ -18751,7 +18751,7 @@ namespace ImmutableObjectGraph.Tests {
 					parameterType: parameterType,
 					required: required);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectUsingTaskParameterElement(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -18773,7 +18773,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedUsingTaskParameterGroupElement NewSpine(UsingTaskParameterGroupElement leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedUsingTaskParameterGroupElement(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -18799,7 +18799,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectElement(c, that.root));
 			}
 		}
 	

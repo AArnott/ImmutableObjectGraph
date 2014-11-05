@@ -1296,7 +1296,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectTree : System.IEquatable<RootedProjectTree>, IRecursiveParent<RootedProjectTree> {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
-		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => new RootedProjectTree(u, r);
 	
 		private readonly ProjectTree greenNode;
 	
@@ -1327,7 +1327,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectTree);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectTree);
+				return greenParent != null ? new RootedProjectTree(greenParent, this.root) : default(RootedProjectTree);
 			}
 		}
 	
@@ -1349,7 +1349,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectItemTree AsProjectItemTree {
 			get {
 				var downcast = this.greenNode as ProjectItemTree;
-				return downcast != null ? downcast.WithRoot(this.root) : default(RootedProjectItemTree);
+				return downcast != null ? new RootedProjectItemTree(downcast, this.root) : default(RootedProjectItemTree);
 			}
 		}
 	
@@ -1686,7 +1686,7 @@ namespace ImmutableObjectGraph.Tests {
 				capabilities: capabilities,
 				children: children.IsDefined ? (System.Collections.Immutable.ImmutableSortedSet<ProjectTree>)((ImmutableObjectGraph.Adapters.IImmutableCollectionAdapter<ProjectTree>)children.Value).UnderlyingCollection : default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableSortedSet<ProjectTree>>));
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTree(newGreenNode, newRoot);
 		}
 	
 		public static RootedProjectTree Create(
@@ -1712,14 +1712,14 @@ namespace ImmutableObjectGraph.Tests {
 	
 		public RootedProjectTree Find(System.UInt32 identity) {
 			this.ThrowIfDefault();
-			return this.greenNode.Find(identity).WithRoot(this.root);
+			return new RootedProjectTree(this.greenNode.Find(identity), this.root);
 		}
 	
 		public bool TryFind(System.UInt32 identity, out RootedProjectTree value) {
 			this.ThrowIfDefault();
 			ProjectTree greenValue;
 			if (this.greenNode.TryFind(identity, out greenValue)) {
-				value = greenValue.WithRoot(this.root);
+				value = new RootedProjectTree(greenValue, this.root);
 				return true;
 			}
 	
@@ -1745,7 +1745,7 @@ namespace ImmutableObjectGraph.Tests {
 					propertySheet: propertySheet,
 					isLinked: isLinked);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemTree(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -1767,7 +1767,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectTree NewSpine(ProjectTree leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectTree(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -1793,7 +1793,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectTree(c, that.root));
 			}
 		}
 	
@@ -2464,7 +2464,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 	public partial struct RootedProjectItemTree : System.IEquatable<RootedProjectItemTree>, IRecursiveParent<RootedProjectTree> {
 		private static readonly System.Func<RootedProjectTree, ProjectTree> toUnrooted = r => r.ProjectTree;
-		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => u.WithRoot(r);
+		private static readonly System.Func<ProjectTree, ProjectTree, RootedProjectTree> toRooted = (u, r) => new RootedProjectTree(u, r);
 	
 		private readonly ProjectItemTree greenNode;
 	
@@ -2495,7 +2495,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var greenParent = this.root.GetParent(this.ProjectItemTree);
-				return greenParent != null ? greenParent.WithRoot(this.root) : default(RootedProjectTree);
+				return greenParent != null ? new RootedProjectTree(greenParent, this.root) : default(RootedProjectTree);
 			}
 		}
 	
@@ -2511,7 +2511,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 	
 		public RootedProjectTree AsProjectTree {
-			get { return this.greenNode != null ? ((ProjectTree)this.greenNode).WithRoot(this.root) : default(RootedProjectTree); }
+			get { return this.greenNode != null ? new RootedProjectTree((ProjectTree)this.greenNode, this.root) : default(RootedProjectTree); }
 		}
 	
 		public System.String Caption {
@@ -2891,7 +2891,7 @@ namespace ImmutableObjectGraph.Tests {
 				propertySheet: propertySheet,
 				isLinked: isLinked);
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectItemTree(newGreenNode, newRoot);
 		}
 	
 		public System.Collections.Generic.IReadOnlyList<ProjectTree.DiffGram> ChangesSince(RootedProjectItemTree priorVersion) {
@@ -2902,7 +2902,7 @@ namespace ImmutableObjectGraph.Tests {
 		public RootedProjectTree ToProjectTree() {
 			var newGreenNode = this.greenNode.ToProjectTree();
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-			return newGreenNode.WithRoot(newRoot);
+			return new RootedProjectTree(newGreenNode, newRoot);
 		}
 	
 		public override bool Equals(object obj) {
@@ -2924,7 +2924,7 @@ namespace ImmutableObjectGraph.Tests {
 	
 		private RootedProjectItemTree NewSpine(ProjectItemTree leaf) {
 			var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
-			return leaf.WithRoot(newRoot);
+			return new RootedProjectItemTree(leaf, newRoot);
 		}
 	
 		/// <summary>Gets a value indicating whether this struct has not been initialized to represent an object.</summary>
@@ -2950,7 +2950,7 @@ namespace ImmutableObjectGraph.Tests {
 			get {
 				this.ThrowIfDefault();
 				var that = this;
-				return this.greenNode.Children.Select(c => c.WithRoot(that.root));
+				return this.greenNode.Children.Select(c => new RootedProjectTree(c, that.root));
 			}
 		}
 	
