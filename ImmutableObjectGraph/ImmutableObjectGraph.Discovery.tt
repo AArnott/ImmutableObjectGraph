@@ -23,8 +23,10 @@ protected static void DiscoverTemplateTypes() {
 	TemplateTypes = new HashSet<MetaType>();
 	var pendingTypes = new Queue<Type>();
 
-	Func<Type, bool> includeTypeTest = t => t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null 
-						&& !HiddenTypes.Any(ht => ht.IsEquivalentTo(t));
+	Func<Type, bool> includeTypeTest = t =>
+			t.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() == null &&
+			t.GetCustomAttribute<ImmutableObjectGraph.ExternalAttribute>() == null &&
+			!HiddenTypes.Any(ht => ht.IsEquivalentTo(t));
 
 	foreach (var nestedType in rootType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {
 		if (includeTypeTest(nestedType)) {
@@ -40,7 +42,8 @@ protected static void DiscoverTemplateTypes() {
 			foreach(var field in metaType.LocalFields) {
 				var memberType = field.ElementType;
 
-				if (memberType.DeclaringType == type.DeclaringType) { // if this is a type that also appears in the T4 template
+				if (memberType.DeclaringType == type.DeclaringType &&
+					includeTypeTest(memberType)) { // if this is a type that also appears in the T4 template
 					pendingTypes.Enqueue(memberType);
 				}
 			}
@@ -290,7 +293,7 @@ protected class MetaType {
 		var fields = ImmutableList.Create<MetaField>();
 		if (ancestor != this) {
 			fields = fields.AddRange(this.LocalFields)
-				            .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
+							.InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
 		}
 
 		return fields;
