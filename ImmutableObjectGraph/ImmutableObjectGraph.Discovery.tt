@@ -343,6 +343,14 @@ protected class MetaType {
 			get { return !TemplateTypes.Any(mt => mt.Type.IsEquivalentTo(this.FieldType)) && !this.IsCollection; }
 		}
 			
+		public bool IsValueType {
+			get { return this.Field.FieldType.IsValueType; }
+		}
+			
+		public bool IsClassType {
+			get { return this.Field.FieldType.IsClass; }
+		}
+			
 		public Type ElementType {
 			get { return GetTypeOrCollectionMemberType(this.Field.FieldType); }
 		}
