@@ -23,13 +23,19 @@
 
         public int Generate(string inputFilePath, string inputFileContents, string defaultNamespace, IntPtr[] outputFileContents, out uint outputLength, IVsGeneratorProgress generateProgress)
         {
-            Requires.NotNullOrEmpty(inputFilePath, "inputFilePath");
-            Requires.NotNull(outputFileContents, "outputFileContents");
-            Requires.Argument(outputFileContents.Length > 0, "outputFileContents", "Non-empty array expected.");
-
-            outputFileContents[0] = IntPtr.Zero;
             try
             {
+                if (outputFileContents != null && outputFileContents.Length > 0)
+                {
+                    // Do this first, before input validation, so that the
+                    // catch block doesn't try to free memory with an uninitialized pointer.
+                    outputFileContents[0] = IntPtr.Zero;
+                }
+
+                Requires.NotNullOrEmpty(inputFilePath, "inputFilePath");
+                Requires.NotNull(outputFileContents, "outputFileContents");
+                Requires.Argument(outputFileContents.Length > 0, "outputFileContents", "Non-empty array expected.");
+
                 IVsUIHierarchy uiHierarchy;
                 uint itemid;
                 GetSourceProjectItem(inputFilePath, out uiHierarchy, out itemid);
