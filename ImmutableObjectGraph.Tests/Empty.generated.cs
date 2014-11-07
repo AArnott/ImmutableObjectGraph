@@ -689,10 +689,6 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 		
-		public static Builder CreateBuilder() {
-			return new Builder(DefaultInstance);
-		}
-		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private AbstractNonEmpty immutable;
