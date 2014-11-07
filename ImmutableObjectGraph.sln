@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.22305.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A36BA1C-9698-4E6A-B917-D8753FDBE09A}"
 	ProjectSection(SolutionItems) = preProject
+		IntegrationTests.testsettings = IntegrationTests.testsettings
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
+		UnitTests.testsettings = UnitTests.testsettings
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Tests", "ImmutableObjectGraph.Tests\ImmutableObjectGraph.Tests.csproj", "{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}"
@@ -27,6 +29,14 @@ EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.NuGet", "ImmutableObjectGraph.NuGet\ImmutableObjectGraph.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.T4.NuGet", "ImmutableObjectGraph.T4.NuGet\ImmutableObjectGraph.T4.NuGet.nuproj", "{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.SFG", "ImmutableObjectGraph.SFG\ImmutableObjectGraph.SFG.csproj", "{2918B8EF-855A-41F6-8D94-88A049EFB0B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.SFG_IntegrationTests", "ImmutableObjectGraph.SFG\ImmutableObjectGraph.SFG_IntegrationTests\ImmutableObjectGraph.SFG_IntegrationTests.csproj", "{A6F216C8-7D24-42FC-8E7E-274F8923CC55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.SFG_UnitTests", "ImmutableObjectGraph.SFG\ImmutableObjectGraph.SFG_UnitTests\ImmutableObjectGraph.SFG_UnitTests.csproj", "{F2B07036-9C8E-47FD-B37A-5BEA88178145}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFG", "SFG", "{68FFB2A4-7421-4D8C-A5BD-C412A34938FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,8 +68,25 @@ Global
 		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2918B8EF-855A-41F6-8D94-88A049EFB0B3} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
+		{A6F216C8-7D24-42FC-8E7E-274F8923CC55} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
+		{F2B07036-9C8E-47FD-B37A-5BEA88178145} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
 	EndGlobalSection
 EndGlobal
