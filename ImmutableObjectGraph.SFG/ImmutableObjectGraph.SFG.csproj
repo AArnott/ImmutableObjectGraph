@@ -167,6 +167,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGenerationAttribute.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
