@@ -9,6 +9,10 @@ public <#= templateType.HasAncestor ? "new ": "" #>Builder ToBuilder() {
 	return new Builder(this);
 }
 
+public static <#= templateType.HasAncestor ? "new ": "" #>Builder CreateBuilder() {
+	return new Builder(DefaultInstance);
+}
+
 public <#= templateType.HasAncestor ? "new ": "" #>partial class Builder<#
 	if (templateType.HasAncestor && templateType.Ancestor.AllFields.Any()) {
 		Write(" : {0}.Builder", templateType.Ancestor.TypeName);
