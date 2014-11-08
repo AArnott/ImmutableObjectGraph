@@ -3,7 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Threading.Tasks;
@@ -75,7 +77,7 @@
                             method?.AttributeLists ?? type?.AttributeLists);
                         foreach (var generationAttributeSymbol in generationAttributesSymbols)
                         {
-                            CodeGenerationAttribute generationAttribute = null; // TODO: instantiate attribute here
+                            var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol.Key, generationAttributeSymbol.Value, inputSemanticModel.Compilation);
                             if (generationAttribute != null)
                             {
                                 emittedMembers.Add(generationAttribute.Generate(memberNode, inputDocument));
@@ -112,14 +114,13 @@
             }
         }
 
-        private static IReadOnlyList<ISymbol> FindCodeGenerationAttributes(SemanticModel document, SyntaxList<AttributeListSyntax>? attributeLists)
+        private static IEnumerable<KeyValuePair<AttributeSyntax, IMethodSymbol>> FindCodeGenerationAttributes(SemanticModel document, SyntaxList<AttributeListSyntax>? attributeLists)
         {
             if (!attributeLists.HasValue)
             {
-                return ImmutableList.Create<ISymbol>();
+                yield break;
             }
 
-            var results = new List<ISymbol>();
             foreach (var attributeList in attributeLists.Value)
             {
                 foreach (var attribute in attributeList.Attributes)
@@ -128,12 +129,29 @@
                     var symbol = info.Symbol as IMethodSymbol;
                     if (symbol != null)
                     {
-                        results.Add(symbol);
+                        if (IsOrDerivesFromCodeGenerationAttribute(symbol.ContainingType))
+                        {
+                            yield return new KeyValuePair<AttributeSyntax, IMethodSymbol>(attribute, symbol);
+                        }
                     }
                 }
             }
+        }
 
-            return results;
+        private static bool IsOrDerivesFromCodeGenerationAttribute(INamedTypeSymbol type)
+        {
+            if (type != null)
+            {
+                if (type.Name == typeof(CodeGenerationAttribute).Name)
+                {
+                    // Don't sweat accuracy too much at this point.
+                    return true;
+                }
+
+                return IsOrDerivesFromCodeGenerationAttribute(type.BaseType);
+            }
+
+            return false;
         }
 
         private static VisualStudioWorkspace GetRoslynWorkspace()
@@ -144,6 +162,67 @@
             return workspace;
         }
 
+        private static Attribute Instantiate(AttributeSyntax attributeSyntax, IMethodSymbol attributeCtorSymbol, Compilation compilation)
+        {
+            var ctor = GetConstructor(attributeCtorSymbol, compilation);
+            object[] args = GetArguments(attributeSyntax, attributeCtorSymbol);
+            return (Attribute)ctor.Invoke(args);
+        }
+
+        private static object[] GetArguments(AttributeSyntax attributeSyntax, IMethodSymbol attributeCtorSymbol)
+        {
+            // Base parameter count on semantic model rather than syntax to account for default parameters.
+            var args = new object[attributeCtorSymbol.Parameters.Length];
+
+            return args;
+        }
+
+        private static Assembly GetAssembly(IAssemblySymbol symbol, Compilation compilation)
+        {
+            Requires.NotNull(symbol, "symbol");
+            Requires.NotNull(compilation, "compilation");
+
+            var matchingReferences = from reference in compilation.References.OfType<PortableExecutableReference>()
+                                     where string.Equals(Path.GetFileNameWithoutExtension(reference.FilePath), symbol.Identity.Name, StringComparison.OrdinalIgnoreCase) // TODO: make this more correct
+                                     select reference.FilePath;
+            return Assembly.LoadFile(matchingReferences.First());
+        }
+
+        private static Type GetType(INamedTypeSymbol symbol, Compilation compilation)
+        {
+            Requires.NotNull(symbol, "symbol");
+
+            var assembly = GetAssembly(symbol.ContainingAssembly, compilation);
+            var nameBuilder = new StringBuilder();
+            ISymbol symbolOrParent = symbol;
+            while (symbolOrParent != null && !string.IsNullOrEmpty(symbolOrParent.Name))
+            {
+                if (nameBuilder.Length > 0)
+                {
+                    nameBuilder.Insert(0, ".");
+                }
+
+                nameBuilder.Insert(0, symbolOrParent.Name);
+                symbolOrParent = symbolOrParent.ContainingSymbol;
+            }
+
+            Type type = assembly.GetType(nameBuilder.ToString(), true); // How to make this work more generally (nested types, etc)?
+            return type;
+        }
+
+        private static ConstructorInfo GetConstructor(IMethodSymbol symbol, Compilation compilation)
+        {
+            Requires.NotNull(symbol, "symbol");
+
+            Type type = GetType(symbol.ContainingType, compilation);
+            return type.GetConstructors().First(ctor => ctor.GetParameters().Length == symbol.Parameters.Length); // TODO: make this pick overloads based on parameter types
+        }
+
+        private static object Construct(ConstructorInfo constructorInfo, SyntaxNode invocationSyntax, Document document)
+        {
+            // TODO: support parameters
+            return constructorInfo.Invoke(new object[0]);
+        }
 
         /// <summary>
         /// Gets the project and the itemid for the document with the given path.
