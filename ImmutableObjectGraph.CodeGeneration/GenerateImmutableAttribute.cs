@@ -30,8 +30,29 @@
         {
             var classDeclaration = (ClassDeclarationSyntax)applyTo;
 
+            var fields = applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
+            var members = new List<MemberDeclarationSyntax>();
+            foreach (var field in fields)
+            {
+                foreach (var variable in field.Declaration.Variables)
+                {
+                    var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToUpper())
+                        .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                        .WithAccessorList(
+                            SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[] {
+                                SyntaxFactory.AccessorDeclaration(
+                                    SyntaxKind.GetAccessorDeclaration,
+                                    SyntaxFactory.Block(
+                                        SyntaxFactory.ReturnStatement(
+                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(variable.Identifier))
+                                        ))) })));
+                    members.Add(property);
+                }
+            }
+
             return SyntaxFactory.ClassDeclaration(classDeclaration.Identifier)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+                .WithMembers(SyntaxFactory.List(members));
         }
     }
 }
