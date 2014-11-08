@@ -159,8 +159,11 @@
             object[] args = attributeData.ConstructorArguments.Select(a => a.Value).ToArray();
             Attribute result = (Attribute)ctor.Invoke(args);
 
-            // TODO: add named argument support.
-            //attributeData.NamedArguments
+            foreach (var namedArg in attributeData.NamedArguments)
+            {
+                var property = ctor.DeclaringType.GetProperty(namedArg.Key);
+                property.SetValue(result, namedArg.Value.Value);
+            }
 
             return result;
         }
