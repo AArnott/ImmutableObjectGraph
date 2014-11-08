@@ -64,20 +64,17 @@
                     var inputSemanticModel = await inputDocument.GetSemanticModelAsync();
                     var syntaxTree = inputSemanticModel.SyntaxTree;
                     var memberNodes = from syntax in syntaxTree.GetRoot().DescendantNodes(n => n is CompilationUnitSyntax || n is NamespaceDeclarationSyntax || n is TypeDeclarationSyntax).OfType<MemberDeclarationSyntax>()
-                                      where syntax is BaseMethodDeclarationSyntax || syntax is BaseTypeDeclarationSyntax // the two types that have AttributeLists
                                       select syntax;
 
                     var emittedMembers = new List<MemberDeclarationSyntax>();
                     foreach (var memberNode in memberNodes)
                     {
-                        var method = memberNode as BaseMethodDeclarationSyntax;
-                        var type = memberNode as BaseTypeDeclarationSyntax;
                         var generationAttributesSymbols = FindCodeGenerationAttributes(
                             inputSemanticModel,
-                            method?.AttributeLists ?? type?.AttributeLists);
+                            memberNode);
                         foreach (var generationAttributeSymbol in generationAttributesSymbols)
                         {
-                            var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol.Key, generationAttributeSymbol.Value, inputSemanticModel.Compilation);
+                            var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol, inputSemanticModel.Compilation);
                             if (generationAttribute != null)
                             {
                                 emittedMembers.Add(generationAttribute.Generate(memberNode, inputDocument));
@@ -114,25 +111,19 @@
             }
         }
 
-        private static IEnumerable<KeyValuePair<AttributeSyntax, IMethodSymbol>> FindCodeGenerationAttributes(SemanticModel document, SyntaxList<AttributeListSyntax>? attributeLists)
+        private static IEnumerable<AttributeData> FindCodeGenerationAttributes(SemanticModel document, SyntaxNode nodeWithAttributesApplied)
         {
-            if (!attributeLists.HasValue)
-            {
-                yield break;
-            }
+            Requires.NotNull(document, "document");
+            Requires.NotNull(nodeWithAttributesApplied, "nodeWithAttributesApplied");
 
-            foreach (var attributeList in attributeLists.Value)
+            var symbol = document.GetDeclaredSymbol(nodeWithAttributesApplied);
+            if (symbol != null)
             {
-                foreach (var attribute in attributeList.Attributes)
+                foreach (var attribute in symbol.GetAttributes())
                 {
-                    SymbolInfo info = document.GetSymbolInfo(attribute);
-                    var symbol = info.Symbol as IMethodSymbol;
-                    if (symbol != null)
+                    if (IsOrDerivesFromCodeGenerationAttribute(attribute.AttributeClass))
                     {
-                        if (IsOrDerivesFromCodeGenerationAttribute(symbol.ContainingType))
-                        {
-                            yield return new KeyValuePair<AttributeSyntax, IMethodSymbol>(attribute, symbol);
-                        }
+                        yield return attribute;
                     }
                 }
             }
@@ -162,19 +153,16 @@
             return workspace;
         }
 
-        private static Attribute Instantiate(AttributeSyntax attributeSyntax, IMethodSymbol attributeCtorSymbol, Compilation compilation)
+        private static Attribute Instantiate(AttributeData attributeData, Compilation compilation)
         {
-            var ctor = GetConstructor(attributeCtorSymbol, compilation);
-            object[] args = GetArguments(attributeSyntax, attributeCtorSymbol);
-            return (Attribute)ctor.Invoke(args);
-        }
+            var ctor = GetConstructor(attributeData.AttributeConstructor, compilation);
+            object[] args = attributeData.ConstructorArguments.Select(a => a.Value).ToArray();
+            Attribute result = (Attribute)ctor.Invoke(args);
 
-        private static object[] GetArguments(AttributeSyntax attributeSyntax, IMethodSymbol attributeCtorSymbol)
-        {
-            // Base parameter count on semantic model rather than syntax to account for default parameters.
-            var args = new object[attributeCtorSymbol.Parameters.Length];
+            // TODO: add named argument support.
+            //attributeData.NamedArguments
 
-            return args;
+            return result;
         }
 
         private static Assembly GetAssembly(IAssemblySymbol symbol, Compilation compilation)
