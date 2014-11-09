@@ -69,6 +69,8 @@
                     var emittedMembers = new List<MemberDeclarationSyntax>();
                     foreach (var memberNode in memberNodes)
                     {
+                        var namespaceNode = memberNode.Parent as NamespaceDeclarationSyntax;
+
                         var generationAttributesSymbols = FindCodeGenerationAttributes(
                             inputSemanticModel,
                             memberNode);
@@ -77,7 +79,14 @@
                             var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol, inputSemanticModel.Compilation);
                             if (generationAttribute != null)
                             {
-                                emittedMembers.Add(generationAttribute.Generate(memberNode, inputDocument));
+                                var generatedType = generationAttribute.Generate(memberNode, inputDocument);
+                                if (namespaceNode != null)
+                                {
+                                    generatedType = SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
+                                        .WithMembers(SyntaxFactory.List(new[] { generatedType }));
+                                }
+
+                                emittedMembers.Add(generatedType);
                             }
                         }
                     }
