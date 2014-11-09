@@ -36,7 +36,7 @@
             {
                 foreach (var variable in field.Declaration.Variables)
                 {
-                    var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToUpper())
+                    var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToPascalCase())
                         .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
                         .WithAccessorList(
                             SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[] {

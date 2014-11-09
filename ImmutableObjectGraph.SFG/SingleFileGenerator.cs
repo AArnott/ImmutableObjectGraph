@@ -62,8 +62,11 @@
                     var inputDocumentId = workspace.CurrentSolution.GetDocumentIdsWithFilePath(inputFilePath).First();
                     var inputDocument = workspace.CurrentSolution.GetDocument(inputDocumentId);
                     var inputSemanticModel = await inputDocument.GetSemanticModelAsync();
-                    var syntaxTree = inputSemanticModel.SyntaxTree;
-                    var memberNodes = from syntax in syntaxTree.GetRoot().DescendantNodes(n => n is CompilationUnitSyntax || n is NamespaceDeclarationSyntax || n is TypeDeclarationSyntax).OfType<MemberDeclarationSyntax>()
+                    var inputSyntaxTree = inputSemanticModel.SyntaxTree;
+
+                    var inputFileLevelUsingDirectives = inputSyntaxTree.GetRoot().ChildNodes().OfType<UsingDirectiveSyntax>();
+
+                    var memberNodes = from syntax in inputSyntaxTree.GetRoot().DescendantNodes(n => n is CompilationUnitSyntax || n is NamespaceDeclarationSyntax || n is TypeDeclarationSyntax).OfType<MemberDeclarationSyntax>()
                                       select syntax;
 
                     var emittedMembers = new List<MemberDeclarationSyntax>();
@@ -92,6 +95,7 @@
                     }
 
                     var emittedTree = SyntaxFactory.CompilationUnit()
+                        .WithUsings(SyntaxFactory.List(inputFileLevelUsingDirectives))
                         .WithMembers(SyntaxFactory.List(emittedMembers))
                         .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble));
 
