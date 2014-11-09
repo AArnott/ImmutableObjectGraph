@@ -98,7 +98,8 @@
                 .WithModifiers(SyntaxFactory.TokenList(
                      SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                      SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
-                .WithBody(SyntaxFactory.Block());
+                .WithBody(SyntaxFactory.Block(
+                    SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.NotImplementedException"), SyntaxFactory.ArgumentList(), null))));
         }
     }
 }
