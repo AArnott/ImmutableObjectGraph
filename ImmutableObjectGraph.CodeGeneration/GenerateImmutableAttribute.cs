@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics;
     using System.Linq;
     using System.Text;
@@ -11,22 +12,17 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.ImmutableObjectGraph_SFG;
+    using Validation;
 
     [AttributeUsage(AttributeTargets.Class)]
     public class GenerateImmutableAttribute : CodeGenerationAttribute
     {
-        private string positionalArg;
+        private static readonly TypeSyntax IdentityFieldTypeSyntax = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UIntKeyword));
+        private static readonly IdentifierNameSyntax IdentityParameterName = SyntaxFactory.IdentifierName("identity");
 
         public GenerateImmutableAttribute()
         {
         }
-
-        public GenerateImmutableAttribute(string positionalArg)
-        {
-            this.positionalArg = positionalArg;
-        }
-
-        public string NamedArg { get; set; }
 
         public override async Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, CancellationToken cancellationToken)
         {
@@ -36,6 +32,7 @@
 
             var fields = GetFields(classDeclaration);
             var members = new List<MemberDeclarationSyntax>();
+            members.Add(CreateCtor(classDeclaration, document));
 
             if (!isAbstract)
             {
@@ -140,6 +137,14 @@
                     SyntaxFactory.InvocationExpression(
                         CreateDefaultTemplateMethodName,
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(null, SyntaxFactory.Token(SyntaxKind.RefKeyword), templateVarName))))),
+                SyntaxFactory.ReturnStatement(
+                    SyntaxFactory.ObjectCreationExpression(
+                        SyntaxFactory.IdentifierName(applyTo.Identifier),
+                        SyntaxFactory.ArgumentList(CodeGen.JoinSyntaxNodes(
+                            SyntaxKind.CommaToken,
+                            ImmutableArray.Create(SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax))).AddRange(
+                                GetFieldVariables(applyTo).Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Value.Identifier))))))),
+                        null)),
                 // throw new System.NotImplementedException();
                 SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.NotImplementedException"), SyntaxFactory.ArgumentList(), null)));
 
@@ -158,9 +163,53 @@
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
         }
 
+        private static MemberDeclarationSyntax CreateCtor(ClassDeclarationSyntax applyTo, Document document)
+        {
+            return SyntaxFactory.ConstructorDeclaration(
+                applyTo.Identifier)
+                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
+                .WithParameterList(CreateParameterList(applyTo, ParameterStyle.Required).PrependParameter(
+                    SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax)))
+                .WithBody(SyntaxFactory.Block(
+                    // this.someField = someField;
+                    GetFieldVariables(applyTo).Select(f => SyntaxFactory.ExpressionStatement(
+                        SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            CodeGen.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
+                            SyntaxFactory.IdentifierName(f.Value.Identifier))))));
+        }
+
         private static IEnumerable<FieldDeclarationSyntax> GetFields(ClassDeclarationSyntax applyTo)
         {
             return applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
+        }
+
+        private static IEnumerable<KeyValuePair<VariableDeclarationSyntax, VariableDeclaratorSyntax>> GetFieldVariables(ClassDeclarationSyntax applyTo)
+        {
+            foreach (var field in GetFields(applyTo))
+            {
+                foreach (var variable in field.Declaration.Variables)
+                {
+                    yield return new KeyValuePair<VariableDeclarationSyntax, VariableDeclaratorSyntax>(field.Declaration, variable);
+                }
+            }
+        }
+
+        private static ParameterListSyntax CreateParameterList(ClassDeclarationSyntax applyTo, ParameterStyle style)
+        {
+            Requires.NotNull(applyTo, "applyTo");
+
+            return SyntaxFactory.ParameterList(
+                CodeGen.JoinSyntaxNodes(
+                    SyntaxKind.CommaToken,
+                    GetFieldVariables(applyTo).Select(f => SyntaxFactory.Parameter(f.Value.Identifier).WithType(f.Key.Type))));
+        }
+
+        private enum ParameterStyle
+        {
+            Required,
+            Optional,
+            OptionalOrRequired,
         }
     }
 }
