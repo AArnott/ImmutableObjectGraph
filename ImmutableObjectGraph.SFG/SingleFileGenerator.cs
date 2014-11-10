@@ -94,6 +94,7 @@
                                 if (namespaceNode != null)
                                 {
                                     generatedType = SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
+                                        .WithUsings(SyntaxFactory.List(namespaceNode.ChildNodes().OfType<UsingDirectiveSyntax>()))
                                         .WithMembers(SyntaxFactory.List(new[] { generatedType }));
                                 }
 
