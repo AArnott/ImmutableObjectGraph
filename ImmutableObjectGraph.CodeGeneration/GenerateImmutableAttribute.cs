@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using System.Threading;
@@ -24,11 +25,13 @@
         {
         }
 
-        public override async Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, CancellationToken cancellationToken)
+        public override async Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
         {
             var inputSemanticModel = await document.GetSemanticModelAsync();
             var classDeclaration = (ClassDeclarationSyntax)applyTo;
             bool isAbstract = classDeclaration.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
+
+            ValidateInput(classDeclaration, document, progress);
 
             var fields = GetFields(classDeclaration);
             var members = new List<MemberDeclarationSyntax>();
@@ -66,6 +69,21 @@
             return SyntaxFactory.ClassDeclaration(classDeclaration.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                 .WithMembers(SyntaxFactory.List(members));
+        }
+
+        private static void ValidateInput(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress)
+        {
+            foreach (var field in GetFields(applyTo))
+            {
+                if (!field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)))
+                {
+                    var location = field.GetLocation().GetLineSpan().StartLinePosition;
+                    progress.Warning(
+                        string.Format(CultureInfo.CurrentCulture, "Field '{0}' should be marked readonly.", field.Declaration.Variables.First().Identifier),
+                        (uint)location.Line,
+                        (uint)location.Character);
+                }
+            }
         }
 
         private static readonly IdentifierNameSyntax DefaultInstanceFieldName = SyntaxFactory.IdentifierName("DefaultInstance");

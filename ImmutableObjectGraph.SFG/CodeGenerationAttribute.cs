@@ -20,8 +20,9 @@
         /// </summary>
         /// <param name="applyTo">The syntax node this attribute is found on.</param>
         /// <param name="document">The document with the semantic model in which this attribute was found.</param>
+        /// <param name="progress">A way to report progress, errors and warnings.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>The generated member syntax to be added to the project.</returns>
-        public abstract Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, CancellationToken cancellationToken);
+        public abstract Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken);
     }
 }

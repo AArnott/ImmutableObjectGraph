@@ -42,7 +42,7 @@
             return VSConstants.S_OK;
         }
 
-        public int Generate(string inputFilePath, string inputFileContents, string defaultNamespace, IntPtr[] outputFileContents, out uint outputLength, IVsGeneratorProgress generateProgress)
+        public int Generate(string inputFilePath, string inputFileContents, string defaultNamespace, IntPtr[] outputFileContents, out uint outputLength, IVsGeneratorProgress generatorProgress)
         {
             if (outputFileContents != null && outputFileContents.Length > 0)
             {
@@ -90,7 +90,7 @@
                             var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol, inputSemanticModel.Compilation);
                             if (generationAttribute != null)
                             {
-                                var generatedType = await generationAttribute.GenerateAsync(memberNode, inputDocument, CancellationToken.None);
+                                var generatedType = await generationAttribute.GenerateAsync(memberNode, inputDocument, new ProgressShim(generatorProgress), CancellationToken.None);
                                 if (namespaceNode != null)
                                 {
                                     generatedType = SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
@@ -246,6 +246,31 @@
             VisualStudio.OLE.Interop.IServiceProvider sp;
             int docInProject;
             ErrorHandler.ThrowOnFailure(shellDocuments.IsDocumentInAProject(inputFilePath, out hierarchy, out itemid, out sp, out docInProject));
+        }
+
+        private class ProgressShim : IProgressAndErrors
+        {
+            private readonly IVsGeneratorProgress progress;
+
+            internal ProgressShim(IVsGeneratorProgress progress)
+            {
+                this.progress = progress;
+            }
+
+            public void Error(string message, uint line, uint column)
+            {
+                Marshal.ThrowExceptionForHR(this.progress.GeneratorError(0, 0, message, line, column));
+            }
+
+            public void Warning(string message, uint line, uint column)
+            {
+                Marshal.ThrowExceptionForHR(this.progress.GeneratorError(1, 0, message, line, column));
+            }
+
+            public void Report(uint progress, uint total)
+            {
+                this.progress.Progress(progress, total);
+            }
         }
     }
 }
