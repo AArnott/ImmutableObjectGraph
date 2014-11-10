@@ -80,12 +80,17 @@
     <Compile Include="CodeGen.cs" />
     <Compile Include="GenerateImmutableAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequiredAttribute.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.SFG\ImmutableObjectGraph.SFG.csproj">
       <Project>{2918b8ef-855a-41f6-8d94-88a049efb0b3}</Project>
       <Name>ImmutableObjectGraph.SFG</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
+      <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
+      <Name>ImmutableObjectGraph</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

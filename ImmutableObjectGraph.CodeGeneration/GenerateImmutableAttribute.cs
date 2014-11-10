@@ -19,7 +19,10 @@
     public class GenerateImmutableAttribute : CodeGenerationAttribute
     {
         private static readonly TypeSyntax IdentityFieldTypeSyntax = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UIntKeyword));
+        private static readonly TypeSyntax IdentityFieldOptionalTypeSyntax = SyntaxFactory.GenericName(SyntaxFactory.Identifier(nameof(Optional)), SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(IdentityFieldTypeSyntax)));
         private static readonly IdentifierNameSyntax IdentityParameterName = SyntaxFactory.IdentifierName("identity");
+        private static readonly ParameterSyntax RequiredIdentityParameter = SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax);
+        private static readonly ParameterSyntax OptionalIdentityParameter = SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax);
 
         public GenerateImmutableAttribute()
         {
@@ -35,10 +38,13 @@
 
             var fields = GetFields(classDeclaration);
             var members = new List<MemberDeclarationSyntax>();
+            members.Add(CreateLastIdentityProducedField());
             members.Add(CreateCtor(classDeclaration, document));
+            members.Add(CreateNewIdentityMethod(classDeclaration, document));
 
             if (!isAbstract)
             {
+                members.Add(CreateCreateMethod(classDeclaration, document));
                 members.Add(CreateDefaultInstanceField(classDeclaration, document));
                 members.Add(CreateGetDefaultTemplateMethod(classDeclaration, document));
                 members.Add(CreateCreateDefaultTemplatePartialMethod(classDeclaration, document));
@@ -117,6 +123,9 @@
         private static readonly IdentifierNameSyntax varType = SyntaxFactory.IdentifierName("var");
         private static readonly IdentifierNameSyntax NestedTemplateTypeName = SyntaxFactory.IdentifierName("Template");
         private static readonly IdentifierNameSyntax CreateDefaultTemplateMethodName = SyntaxFactory.IdentifierName("CreateDefaultTemplate");
+        private static readonly IdentifierNameSyntax CreateMethodName = SyntaxFactory.IdentifierName("Create");
+        private static readonly IdentifierNameSyntax NewIdentityMethodName = SyntaxFactory.IdentifierName("NewIdentity");
+        private static readonly IdentifierNameSyntax WithFactoryMethodName = SyntaxFactory.IdentifierName("WithFactory");
 
         private MemberDeclarationSyntax CreateCreateDefaultTemplatePartialMethod(ClassDeclarationSyntax applyTo, Document document)
         {
@@ -186,8 +195,7 @@
             return SyntaxFactory.ConstructorDeclaration(
                 applyTo.Identifier)
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
-                .WithParameterList(CreateParameterList(applyTo, ParameterStyle.Required).PrependParameter(
-                    SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax)))
+                .WithParameterList(CreateParameterList(applyTo, ParameterStyle.Required).PrependParameter(RequiredIdentityParameter))
                 .WithBody(SyntaxFactory.Block(
                     // this.someField = someField;
                     GetFieldVariables(applyTo).Select(f => SyntaxFactory.ExpressionStatement(
@@ -195,6 +203,82 @@
                             SyntaxKind.SimpleAssignmentExpression,
                             CodeGen.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
                             SyntaxFactory.IdentifierName(f.Value.Identifier))))));
+        }
+
+        private static MemberDeclarationSyntax CreateCreateMethod(ClassDeclarationSyntax applyTo, Document document)
+        {
+            return SyntaxFactory.MethodDeclaration(
+                SyntaxFactory.IdentifierName(applyTo.Identifier),
+                CreateMethodName.Identifier)
+                .WithModifiers(SyntaxFactory.TokenList(
+                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+                .WithParameterList(CreateParameterList(applyTo, ParameterStyle.OptionalOrRequired))
+                .WithBody(SyntaxFactory.Block(
+                    // var identity = Optional.For(NewIdentity());
+                    SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
+                        varType,
+                        SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier)
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
+                    // return DefaultInstance.With(...)
+                    SyntaxFactory.ReturnStatement(
+                        SyntaxFactory.InvocationExpression(
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                DefaultInstanceFieldName,
+                                WithFactoryMethodName),
+                            CreateArgumentList(applyTo, ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
+                                .AddArguments(SyntaxFactory.Argument(IdentityParameterName))))));
+        }
+
+        private static readonly IdentifierNameSyntax LastIdentityProducedFieldName = SyntaxFactory.IdentifierName("lastIdentityProduced");
+
+        private static MemberDeclarationSyntax CreateLastIdentityProducedField()
+        {
+            // /// <summary>The last identity assigned to a created instance.</summary>
+            // private static int lastIdentityProduced;
+            return SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(
+                SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)),
+                SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(LastIdentityProducedFieldName.Identifier))))
+                .AddModifiers(
+                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+        }
+
+        private static MemberDeclarationSyntax CreateNewIdentityMethod(ClassDeclarationSyntax applyTo, Document document)
+        {
+            // protected static <#= templateType.RequiredIdentityField.TypeName #> NewIdentity() {
+            //     return (<#= templateType.RequiredIdentityField.TypeName #>)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+            // }
+            return SyntaxFactory.MethodDeclaration(
+                IdentityFieldTypeSyntax,
+                NewIdentityMethodName.Identifier)
+                .WithModifiers(SyntaxFactory.TokenList(
+                    SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+                .WithBody(SyntaxFactory.Block(
+                    SyntaxFactory.ReturnStatement(
+                        SyntaxFactory.CastExpression(
+                            IdentityFieldTypeSyntax,
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.ParseName("System.Threading.Interlocked.Increment"),
+                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(
+                                    null,
+                                    SyntaxFactory.Token(SyntaxKind.RefKeyword),
+                                    LastIdentityProducedFieldName))))))));
+        }
+
+        private static ExpressionSyntax OptionalFor(ExpressionSyntax expression)
+        {
+            return SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                        SyntaxFactory.IdentifierName(nameof(Optional))),
+                    SyntaxFactory.IdentifierName(nameof(Optional.For))),
+                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(expression))));
         }
 
         private static IEnumerable<FieldDeclarationSyntax> GetFields(ClassDeclarationSyntax applyTo)
@@ -223,11 +307,32 @@
                     GetFieldVariables(applyTo).Select(f => SyntaxFactory.Parameter(f.Value.Identifier).WithType(f.Key.Type))));
         }
 
+        private static ArgumentListSyntax CreateArgumentList(ClassDeclarationSyntax applyTo, ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
+        {
+            return SyntaxFactory.ArgumentList();
+        }
+
         private enum ParameterStyle
         {
             Required,
             Optional,
             OptionalOrRequired,
+        }
+
+        private enum ArgSource
+        {
+            Property,
+            Argument,
+            OptionalArgumentOrProperty,
+            OptionalArgumentOrTemplate,
+            Missing,
+        }
+
+        private enum OptionalStyle
+        {
+            None,
+            WhenNotRequired,
+            Always,
         }
     }
 }
