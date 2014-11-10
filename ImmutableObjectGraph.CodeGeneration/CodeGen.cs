@@ -62,6 +62,12 @@
                 .AddParameters(list.Parameters.ToArray());
         }
 
+        internal static ArgumentListSyntax PrependArgument(this ArgumentListSyntax list, ArgumentSyntax argument)
+        {
+            return SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(argument))
+                .AddArguments(list.Arguments.ToArray());
+        }
+
         internal static ExpressionSyntax ThisDot(SimpleNameSyntax memberAccess)
         {
             return SyntaxFactory.MemberAccessExpression(
