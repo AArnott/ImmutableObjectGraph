@@ -45,6 +45,8 @@
             {
                 foreach (var variable in field.Declaration.Variables)
                 {
+                    var xmldocComment = field.GetLeadingTrivia().FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+
                     var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToPascalCase())
                         .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
                         .WithAccessorList(
@@ -54,7 +56,8 @@
                                     SyntaxFactory.Block(
                                         SyntaxFactory.ReturnStatement(
                                             SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(variable.Identifier))
-                                        ))) })));
+                                        ))) })))
+                        .WithLeadingTrivia(xmldocComment); // TODO: modify the <summary> to translate "Some description" to "Gets some description."
                     members.Add(property);
                 }
             }
