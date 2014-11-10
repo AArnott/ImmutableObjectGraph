@@ -12,6 +12,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.CodeAnalysis.Formatting;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.ComponentModelHost;
     using Microsoft.VisualStudio.LanguageServices;
@@ -105,7 +106,7 @@
                         .WithMembers(SyntaxFactory.List(emittedMembers))
                         .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble));
 
-                    generated = emittedTree.NormalizeWhitespace().ToFullString();
+                    generated = Formatter.Format(emittedTree, workspace).ToFullString();
                 });
 
                 // Translate the string we've built up into the bytes of COM memory required.
