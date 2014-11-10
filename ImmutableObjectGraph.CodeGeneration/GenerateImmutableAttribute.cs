@@ -41,6 +41,7 @@
             {
                 members.Add(CreateDefaultInstanceField(classDeclaration, document));
                 members.Add(CreateGetDefaultTemplateMethod(classDeclaration, document));
+                members.Add(CreateCreateDefaultTemplatePartialMethod(classDeclaration, document));
             }
 
             foreach (var field in fields)
@@ -97,14 +98,56 @@
             return field;
         }
 
+        private static readonly IdentifierNameSyntax varType = SyntaxFactory.IdentifierName("var");
+        private static readonly IdentifierNameSyntax NestedTemplateTypeName = SyntaxFactory.IdentifierName("Template");
+        private static readonly IdentifierNameSyntax CreateDefaultTemplateMethodName = SyntaxFactory.IdentifierName("CreateDefaultTemplate");
+
+        private MemberDeclarationSyntax CreateCreateDefaultTemplatePartialMethod(ClassDeclarationSyntax applyTo, Document document)
+        {
+            // /// <summary>Provides defaults for fields.</summary>
+            // /// <param name="template">The struct to set default values on.</param>
+            // static partial void CreateDefaultTemplate(ref Template template);
+            return SyntaxFactory.MethodDeclaration(
+                SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                CreateDefaultTemplateMethodName.Identifier)
+                .WithParameterList(SyntaxFactory.ParameterList(
+                    SyntaxFactory.SingletonSeparatedList(
+                        SyntaxFactory.Parameter(SyntaxFactory.Identifier("template"))
+                            .WithType(NestedTemplateTypeName)
+                            .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.RefKeyword))))))
+                .WithModifiers(SyntaxFactory.TokenList(
+                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                    SyntaxFactory.Token(SyntaxKind.PartialKeyword)))
+                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+        }
+
         private MemberDeclarationSyntax CreateGetDefaultTemplateMethod(ClassDeclarationSyntax applyTo, Document document)
         {
+            IdentifierNameSyntax templateVarName = SyntaxFactory.IdentifierName("template");
+            var body = SyntaxFactory.Block(
+                // var template = new Template();
+                SyntaxFactory.LocalDeclarationStatement(
+                    SyntaxFactory.VariableDeclaration(
+                        varType,
+                        SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.VariableDeclarator(
+                                templateVarName.Identifier,
+                                null,
+                                SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(NestedTemplateTypeName, SyntaxFactory.ArgumentList(), null)))))),
+                // CreateDefaultTemplate(ref template);
+                SyntaxFactory.ExpressionStatement(
+                    SyntaxFactory.InvocationExpression(
+                        CreateDefaultTemplateMethodName,
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(null, SyntaxFactory.Token(SyntaxKind.RefKeyword), templateVarName))))),
+                // throw new System.NotImplementedException();
+                SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.NotImplementedException"), SyntaxFactory.ArgumentList(), null)));
+
             return SyntaxFactory.MethodDeclaration(SyntaxFactory.IdentifierName(applyTo.Identifier.ValueText), GetDefaultTemplateMethodName.Identifier)
                 .WithModifiers(SyntaxFactory.TokenList(
                      SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                      SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
-                .WithBody(SyntaxFactory.Block(
-                    SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.NotImplementedException"), SyntaxFactory.ArgumentList(), null))));
+                .WithBody(body);
         }
     }
 }
