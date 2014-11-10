@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -27,8 +28,9 @@
 
         public string NamedArg { get; set; }
 
-        public override MemberDeclarationSyntax Generate(MemberDeclarationSyntax applyTo, Document document)
+        public override async Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, CancellationToken cancellationToken)
         {
+            var inputSemanticModel = await document.GetSemanticModelAsync();
             var classDeclaration = (ClassDeclarationSyntax)applyTo;
             bool isAbstract = classDeclaration.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
 

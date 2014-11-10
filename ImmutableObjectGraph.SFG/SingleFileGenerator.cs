@@ -8,6 +8,7 @@
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -89,7 +90,7 @@
                             var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol, inputSemanticModel.Compilation);
                             if (generationAttribute != null)
                             {
-                                var generatedType = generationAttribute.Generate(memberNode, inputDocument);
+                                var generatedType = await generationAttribute.GenerateAsync(memberNode, inputDocument, CancellationToken.None);
                                 if (namespaceNode != null)
                                 {
                                     generatedType = SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)

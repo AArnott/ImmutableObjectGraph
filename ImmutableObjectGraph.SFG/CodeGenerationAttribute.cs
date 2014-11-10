@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,7 +20,8 @@
         /// </summary>
         /// <param name="applyTo">The syntax node this attribute is found on.</param>
         /// <param name="document">The document with the semantic model in which this attribute was found.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>The generated member syntax to be added to the project.</returns>
-        public abstract MemberDeclarationSyntax Generate(MemberDeclarationSyntax applyTo, Document document);
+        public abstract Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, CancellationToken cancellationToken);
     }
 }
