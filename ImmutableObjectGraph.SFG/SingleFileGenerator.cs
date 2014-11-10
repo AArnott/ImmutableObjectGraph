@@ -14,6 +14,7 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Formatting;
+    using Microsoft.CodeAnalysis.Simplification;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.ComponentModelHost;
     using Microsoft.VisualStudio.LanguageServices;
@@ -108,7 +109,16 @@
                         .WithMembers(SyntaxFactory.List(emittedMembers))
                         .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble));
 
-                    generated = Formatter.Format(emittedTree, workspace, workspace.Options).ToFullString();
+                    // Format the tree to get reasonably good whitespace.
+                    var formattedTree = Formatter.Format(emittedTree, workspace, workspace.Options);
+
+                    // Reduce the document to get rid of unnecessary fully-qualified type names that just hurt readability.
+                    var document = inputDocument.Project.AddDocument("generated.cs", formattedTree.GetText());
+                    var reducedDocument = await Simplifier.ReduceAsync(document);
+
+                    // Now render as a complete string, as necessary by our single file generator.
+                    var reducedDocumentText = await reducedDocument.GetTextAsync();
+                    generated = reducedDocumentText.ToString();
                 });
 
                 // Translate the string we've built up into the bytes of COM memory required.
