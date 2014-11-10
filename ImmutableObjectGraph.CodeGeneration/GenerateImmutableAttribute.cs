@@ -34,7 +34,7 @@
             var classDeclaration = (ClassDeclarationSyntax)applyTo;
             bool isAbstract = classDeclaration.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
 
-            var fields = applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
+            var fields = GetFields(classDeclaration);
             var members = new List<MemberDeclarationSyntax>();
 
             if (!isAbstract)
@@ -42,6 +42,7 @@
                 members.Add(CreateDefaultInstanceField(classDeclaration, document));
                 members.Add(CreateGetDefaultTemplateMethod(classDeclaration, document));
                 members.Add(CreateCreateDefaultTemplatePartialMethod(classDeclaration, document));
+                members.Add(CreateTemplateStruct(classDeclaration, document));
             }
 
             foreach (var field in fields)
@@ -147,6 +148,19 @@
                      SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                      SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
                 .WithBody(body);
+        }
+
+        private MemberDeclarationSyntax CreateTemplateStruct(ClassDeclarationSyntax applyTo, Document document)
+        {
+            return SyntaxFactory.StructDeclaration(NestedTemplateTypeName.Identifier)
+                .WithMembers(SyntaxFactory.List<MemberDeclarationSyntax>(
+                    GetFields(applyTo).Select(f => f.WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword))))))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+        }
+
+        private static IEnumerable<FieldDeclarationSyntax> GetFields(ClassDeclarationSyntax applyTo)
+        {
+            return applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
         }
     }
 }

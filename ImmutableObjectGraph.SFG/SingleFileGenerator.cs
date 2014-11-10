@@ -107,7 +107,7 @@
                         .WithMembers(SyntaxFactory.List(emittedMembers))
                         .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble));
 
-                    generated = Formatter.Format(emittedTree, workspace).ToFullString();
+                    generated = Formatter.Format(emittedTree, workspace, workspace.Options).ToFullString();
                 });
 
                 // Translate the string we've built up into the bytes of COM memory required.
