@@ -69,5 +69,10 @@
                 SyntaxFactory.ThisExpression(),
                 memberAccess);
         }
+
+        internal static ExpressionSyntax ChainBinaryExpressions(this IEnumerable<ExpressionSyntax> expressions, SyntaxKind binaryOperator)
+        {
+            return expressions.Aggregate((ExpressionSyntax)null, (agg, e) => agg != null ? SyntaxFactory.BinaryExpression(binaryOperator, agg, e) : e);
+        }
     }
 }

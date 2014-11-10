@@ -208,6 +208,18 @@
 
         private static MemberDeclarationSyntax CreateWithFactoryMethod(ClassDeclarationSyntax applyTo, SemanticModel semanticModel)
         {
+            // (field.IsDefined && field.Value != this.field)
+            Func<VariableDeclaratorSyntax, ExpressionSyntax> isChanged = v =>
+                SyntaxFactory.ParenthesizedExpression(
+                    SyntaxFactory.BinaryExpression(
+                        SyntaxKind.LogicalAndExpression,
+                        OptionalIsDefined(SyntaxFactory.IdentifierName(v.Identifier)),
+                        SyntaxFactory.BinaryExpression(
+                            SyntaxKind.NotEqualsExpression,
+                            OptionalValue(SyntaxFactory.IdentifierName(v.Identifier)),
+                            CodeGen.ThisDot(SyntaxFactory.IdentifierName(v.Identifier)))));
+            var anyChangesExpression = GetFieldVariables(applyTo).Select(fv => isChanged(fv.Value)).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
+
             // /// <summary>Returns a new instance of this object with any number of properties changed.</summary>
             // private TemplateType WithFactory(...)
             return SyntaxFactory.MethodDeclaration(
@@ -215,7 +227,23 @@
                 WithFactoryMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                 .WithParameterList(CreateParameterList(applyTo, ParameterStyle.Optional, semanticModel).AddParameters(OptionalIdentityParameter))
-                .WithBody(SyntaxFactory.Block());
+                .WithBody(SyntaxFactory.Block(
+                    SyntaxFactory.IfStatement(
+                        anyChangesExpression,
+                        SyntaxFactory.Block(
+                            ),
+                        SyntaxFactory.ElseClause(SyntaxFactory.Block(
+                            SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))))));
+        }
+
+        private static MemberAccessExpressionSyntax OptionalIsDefined(ExpressionSyntax optionalOfTExpression)
+        {
+            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("IsDefined"));
+        }
+
+        private static MemberAccessExpressionSyntax OptionalValue(ExpressionSyntax optionalOfTExpression)
+        {
+            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("Value"));
         }
 
         private static MemberDeclarationSyntax CreateCreateMethod(ClassDeclarationSyntax applyTo, SemanticModel semanticModel)
