@@ -15,6 +15,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Formatting;
     using Microsoft.CodeAnalysis.Simplification;
+    using Microsoft.CodeAnalysis.Text;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.ComponentModelHost;
     using Microsoft.VisualStudio.LanguageServices;
@@ -113,8 +114,12 @@
                     var formattedTree = Formatter.Format(emittedTree, workspace, workspace.Options);
 
                     // Reduce the document to get rid of unnecessary fully-qualified type names that just hurt readability.
-                    var document = inputDocument.Project.AddDocument("generated.cs", formattedTree.GetText());
-                    var reducedDocument = await Simplifier.ReduceAsync(document);
+                    var formattedText = formattedTree.GetText();
+                    var document = inputDocument.Project.AddDocument("generated.cs", formattedText);
+                    var annotatedDocument = document
+                        .WithSyntaxRoot((await document.GetSyntaxRootAsync())
+                        .WithAdditionalAnnotations(Simplifier.Annotation)); // allow simplification of the entire document
+                    var reducedDocument = await Simplifier.ReduceAsync(annotatedDocument);
 
                     // Now render as a complete string, as necessary by our single file generator.
                     var reducedDocumentText = await reducedDocument.GetTextAsync();
