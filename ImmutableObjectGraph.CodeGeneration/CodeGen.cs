@@ -31,6 +31,8 @@
         private static readonly IdentifierNameSyntax NewIdentityMethodName = SyntaxFactory.IdentifierName("NewIdentity");
         private static readonly IdentifierNameSyntax WithFactoryMethodName = SyntaxFactory.IdentifierName("WithFactory");
         private static readonly IdentifierNameSyntax LastIdentityProducedFieldName = SyntaxFactory.IdentifierName("lastIdentityProduced");
+        private static readonly IdentifierNameSyntax ValidateMethodName = SyntaxFactory.IdentifierName("Validate");
+        private static readonly IdentifierNameSyntax SkipValidationParameterName = SyntaxFactory.IdentifierName("skipValidation");
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
@@ -38,6 +40,7 @@
         private readonly CancellationToken cancellationToken;
 
         private SemanticModel semanticModel;
+        private bool isAbstract;
 
         private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
         {
@@ -60,8 +63,7 @@
         private async Task<MemberDeclarationSyntax> GenerateAsync()
         {
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-            bool isAbstract = applyTo.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
+            this.isAbstract = applyTo.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
 
             ValidateInput();
 
@@ -84,6 +86,7 @@
                 members.Add(CreateGetDefaultTemplateMethod());
                 members.Add(CreateCreateDefaultTemplatePartialMethod());
                 members.Add(CreateTemplateStruct());
+                members.Add(CreateValidateMethod());
             }
 
             foreach (var field in fields)
@@ -194,8 +197,9 @@
                         SyntaxFactory.IdentifierName(applyTo.Identifier),
                         SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                             SyntaxKind.CommaToken,
-                            ImmutableArray.Create(SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax))).AddRange(
-                                this.GetFieldVariables().Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Value.Identifier))))))),
+                            ImmutableArray.Create(SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax)))
+                                .AddRange(this.GetFieldVariables().Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Value.Identifier)))))
+                                .Add(SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))))),
                         null)),
                 // throw new System.NotImplementedException();
                 SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.NotImplementedException"), SyntaxFactory.ArgumentList(), null)));
@@ -217,11 +221,7 @@
 
         private MemberDeclarationSyntax CreateCtor()
         {
-            return SyntaxFactory.ConstructorDeclaration(
-                this.applyTo.Identifier)
-                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
-                .WithParameterList(CreateParameterList(ParameterStyle.Required).PrependParameter(RequiredIdentityParameter))
-                .WithBody(SyntaxFactory.Block(
+            BlockSyntax body = SyntaxFactory.Block(
                     ImmutableArray.Create<StatementSyntax>(
                         // this.identity = identity;
                         SyntaxFactory.ExpressionStatement(
@@ -235,7 +235,29 @@
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression,
                                 Syntax.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
-                                SyntaxFactory.IdentifierName(f.Value.Identifier)))))));
+                                SyntaxFactory.IdentifierName(f.Value.Identifier))))));
+
+            if (!this.isAbstract)
+            {
+                body = body.AddStatements(
+                    // if (!skipValidation.Value)
+                    SyntaxFactory.IfStatement(
+                        SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalValue(SkipValidationParameterName)),
+                        // this.Validate();
+                        SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.InvocationExpression(
+                                Syntax.ThisDot(ValidateMethodName),
+                                SyntaxFactory.ArgumentList()))));
+            }
+
+            return SyntaxFactory.ConstructorDeclaration(
+                this.applyTo.Identifier)
+                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
+                .WithParameterList(
+                    CreateParameterList(ParameterStyle.Required)
+                    .PrependParameter(RequiredIdentityParameter)
+                    .AddParameters(Syntax.Optional(SyntaxFactory.Parameter(SkipValidationParameterName.Identifier).WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword))))))
+                .WithBody(body);
         }
 
         private MemberDeclarationSyntax CreateWithFactoryMethod()
@@ -301,6 +323,18 @@
                             CreateArgumentList(ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
                                 .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName)))
                         : DefaultInstanceFieldName)));
+        }
+
+        private MethodDeclarationSyntax CreateValidateMethod()
+        {
+            //// /// <summary>Normalizes and/or validates all properties on this object.</summary>
+            //// /// <exception type="ArgumentException">Thrown if any properties have disallowed values.</exception>
+            //// partial void Validate();
+            return SyntaxFactory.MethodDeclaration(
+                SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                ValidateMethodName.Identifier)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
         }
 
         private static MemberDeclarationSyntax CreateLastIdentityProducedField()
