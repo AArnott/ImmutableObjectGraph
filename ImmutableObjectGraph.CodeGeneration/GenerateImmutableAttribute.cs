@@ -349,8 +349,8 @@
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.QualifiedName(
                         SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
-                        SyntaxFactory.IdentifierName(nameof(Optional))),
-                    SyntaxFactory.IdentifierName(nameof(Optional.For))),
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional))),
+                    SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional.For))),
                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(expression))));
         }
 
