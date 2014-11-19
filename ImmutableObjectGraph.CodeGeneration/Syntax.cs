@@ -11,8 +11,41 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Validation;
 
-    internal static class CodeGen
+    internal static class Syntax
     {
+        internal static ParameterSyntax Optional(ParameterSyntax parameter)
+        {
+            return parameter
+                .WithType(OptionalOf(parameter.Type))
+                .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.DefaultExpression(OptionalOf(parameter.Type))));
+        }
+
+        internal static TypeSyntax OptionalOf(TypeSyntax type)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(Optional)),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(type))));
+        }
+
+        internal static MemberAccessExpressionSyntax OptionalIsDefined(ExpressionSyntax optionalOfTExpression)
+        {
+            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("IsDefined"));
+        }
+
+        internal static InvocationExpressionSyntax OptionalGetValueOrDefault(ExpressionSyntax optionalOfTExpression, ExpressionSyntax defaultValue)
+        {
+            return SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("GetValueOrDefault")),
+                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(defaultValue))));
+        }
+
+        internal static MemberAccessExpressionSyntax OptionalValue(ExpressionSyntax optionalOfTExpression)
+        {
+            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("Value"));
+        }
+
         internal static SeparatedSyntaxList<T> JoinSyntaxNodes<T>(SyntaxKind tokenDelimiter, params T[] nodes)
             where T : SyntaxNode
         {

@@ -22,7 +22,7 @@
         private static readonly TypeSyntax IdentityFieldOptionalTypeSyntax = SyntaxFactory.GenericName(SyntaxFactory.Identifier(nameof(Optional)), SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(IdentityFieldTypeSyntax)));
         private static readonly IdentifierNameSyntax IdentityParameterName = SyntaxFactory.IdentifierName("identity");
         private static readonly ParameterSyntax RequiredIdentityParameter = SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax);
-        private static readonly ParameterSyntax OptionalIdentityParameter = Optional(RequiredIdentityParameter);
+        private static readonly ParameterSyntax OptionalIdentityParameter = Syntax.Optional(RequiredIdentityParameter);
 
         public GenerateImmutableAttribute()
         {
@@ -173,7 +173,7 @@
                 SyntaxFactory.ReturnStatement(
                     SyntaxFactory.ObjectCreationExpression(
                         SyntaxFactory.IdentifierName(applyTo.Identifier),
-                        SyntaxFactory.ArgumentList(CodeGen.JoinSyntaxNodes(
+                        SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                             SyntaxKind.CommaToken,
                             ImmutableArray.Create(SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax))).AddRange(
                                 GetFieldVariables(applyTo).Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Value.Identifier))))))),
@@ -208,14 +208,14 @@
                         SyntaxFactory.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression,
-                                CodeGen.ThisDot(IdentityParameterName),
+                                Syntax.ThisDot(IdentityParameterName),
                                 IdentityParameterName)))
                     .AddRange(
                         // this.someField = someField;
                         GetFieldVariables(applyTo).Select(f => SyntaxFactory.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression,
-                                CodeGen.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
+                                Syntax.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
                                 SyntaxFactory.IdentifierName(f.Value.Identifier)))))));
         }
 
@@ -226,11 +226,11 @@
                 SyntaxFactory.ParenthesizedExpression(
                     SyntaxFactory.BinaryExpression(
                         SyntaxKind.LogicalAndExpression,
-                        OptionalIsDefined(SyntaxFactory.IdentifierName(v.Identifier)),
+                        Syntax.OptionalIsDefined(SyntaxFactory.IdentifierName(v.Identifier)),
                         SyntaxFactory.BinaryExpression(
                             SyntaxKind.NotEqualsExpression,
-                            OptionalValue(SyntaxFactory.IdentifierName(v.Identifier)),
-                            CodeGen.ThisDot(SyntaxFactory.IdentifierName(v.Identifier)))));
+                            Syntax.OptionalValue(SyntaxFactory.IdentifierName(v.Identifier)),
+                            Syntax.ThisDot(SyntaxFactory.IdentifierName(v.Identifier)))));
             var anyChangesExpression = GetFieldVariables(applyTo).Select(fv => isChanged(fv.Value)).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
 
             // /// <summary>Returns a new instance of this object with any number of properties changed.</summary>
@@ -248,27 +248,10 @@
                                 SyntaxFactory.ObjectCreationExpression(
                                     SyntaxFactory.IdentifierName(applyTo.Identifier),
                                     CreateArgumentList(applyTo, semanticModel, ArgSource.OptionalArgumentOrProperty)
-                                        .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), OptionalGetValueOrDefault(SyntaxFactory.IdentifierName(IdentityParameterName.Identifier), CodeGen.ThisDot(IdentityParameterName)))),
+                                        .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalGetValueOrDefault(SyntaxFactory.IdentifierName(IdentityParameterName.Identifier), Syntax.ThisDot(IdentityParameterName)))),
                                     null))),
                         SyntaxFactory.ElseClause(SyntaxFactory.Block(
                             SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))))));
-        }
-
-        private static MemberAccessExpressionSyntax OptionalIsDefined(ExpressionSyntax optionalOfTExpression)
-        {
-            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("IsDefined"));
-        }
-
-        private static InvocationExpressionSyntax OptionalGetValueOrDefault(ExpressionSyntax optionalOfTExpression, ExpressionSyntax defaultValue)
-        {
-            return SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("GetValueOrDefault")),
-                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(defaultValue))));
-        }
-
-        private static MemberAccessExpressionSyntax OptionalValue(ExpressionSyntax optionalOfTExpression)
-        {
-            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("Value"));
         }
 
         private static MemberDeclarationSyntax CreateCreateMethod(ClassDeclarationSyntax applyTo, SemanticModel semanticModel)
@@ -366,15 +349,6 @@
             return isOptional ? OptionalFor(expression) : expression;
         }
 
-        private static TypeSyntax OptionalOf(TypeSyntax type)
-        {
-            return SyntaxFactory.QualifiedName(
-                SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
-                SyntaxFactory.GenericName(
-                    SyntaxFactory.Identifier(nameof(Optional)),
-                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(type))));
-        }
-
         private static IEnumerable<FieldDeclarationSyntax> GetFields(ClassDeclarationSyntax applyTo)
         {
             return applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
@@ -402,10 +376,10 @@
 
             Func<FieldDeclarationSyntax, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !IsFieldRequired(f, semanticModel));
             Func<ParameterSyntax, FieldDeclarationSyntax, ParameterSyntax> setTypeAndDefault = (p, f) => isOptional(f)
-                ? Optional(p.WithType(f.Declaration.Type))
+                ? Syntax.Optional(p.WithType(f.Declaration.Type))
                 : p.WithType(f.Declaration.Type);
             return SyntaxFactory.ParameterList(
-                CodeGen.JoinSyntaxNodes(
+                Syntax.JoinSyntaxNodes(
                     SyntaxKind.CommaToken,
                     GetFieldVariables(applyTo).Select(f => setTypeAndDefault(SyntaxFactory.Parameter(f.Value.Identifier), f.Key))));
         }
@@ -420,33 +394,26 @@
                 switch (fieldSource(f))
                 {
                     case ArgSource.Property:
-                        return CodeGen.ThisDot(name);
+                        return Syntax.ThisDot(name);
                     case ArgSource.Argument:
                         return name;
                     case ArgSource.OptionalArgumentOrProperty:
-                        return OptionalGetValueOrDefault(name, CodeGen.ThisDot(name));
+                        return Syntax.OptionalGetValueOrDefault(name, Syntax.ThisDot(name));
                     case ArgSource.OptionalArgumentOrTemplate:
-                        return OptionalGetValueOrDefault(name, SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, DefaultInstanceFieldName, name));
+                        return Syntax.OptionalGetValueOrDefault(name, SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, DefaultInstanceFieldName, name));
                     case ArgSource.Missing:
-                        return SyntaxFactory.DefaultExpression(OptionalOf(f.Declaration.Type));
+                        return SyntaxFactory.DefaultExpression(Syntax.OptionalOf(f.Declaration.Type));
                     default:
                         throw Assumes.NotReachable();
                 }
             };
-            return SyntaxFactory.ArgumentList(CodeGen.JoinSyntaxNodes(
+            return SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                 SyntaxKind.CommaToken,
                 GetFieldVariables(applyTo).Select(f =>
                     SyntaxFactory.Argument(
                         SyntaxFactory.NameColon(SyntaxFactory.IdentifierName(f.Value.Identifier)),
                         SyntaxFactory.Token(SyntaxKind.None),
                         OptionalForIf(dereference(f.Key, f.Value), optionalWrap(f.Key))))));
-        }
-
-        private static ParameterSyntax Optional(ParameterSyntax parameter)
-        {
-            return parameter
-                .WithType(OptionalOf(parameter.Type))
-                .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.DefaultExpression(OptionalOf(parameter.Type))));
         }
 
         private static bool IsFieldRequired(FieldDeclarationSyntax field, SemanticModel semanticModel)
