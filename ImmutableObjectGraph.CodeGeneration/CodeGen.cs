@@ -289,7 +289,7 @@
                         varType,
                         SyntaxFactory.SingletonSeparatedList(
                             SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier)
-                                .WithInitializer(SyntaxFactory.EqualsValueClause(OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(Syntax.OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
                     // return DefaultInstance.WithFactory(...)
                     SyntaxFactory.ReturnStatement(
                         fields.Any()
@@ -347,23 +347,6 @@
                                     null,
                                     SyntaxFactory.Token(SyntaxKind.RefKeyword),
                                     LastIdentityProducedFieldName))))))));
-        }
-
-        private static ExpressionSyntax OptionalFor(ExpressionSyntax expression)
-        {
-            return SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    SyntaxFactory.QualifiedName(
-                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
-                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional))),
-                    SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional.For))),
-                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(expression))));
-        }
-
-        private static ExpressionSyntax OptionalForIf(ExpressionSyntax expression, bool isOptional)
-        {
-            return isOptional ? OptionalFor(expression) : expression;
         }
 
         private IEnumerable<FieldDeclarationSyntax> GetFields()
@@ -428,7 +411,7 @@
                     SyntaxFactory.Argument(
                         SyntaxFactory.NameColon(SyntaxFactory.IdentifierName(f.Value.Identifier)),
                         SyntaxFactory.Token(SyntaxKind.None),
-                        OptionalForIf(dereference(f.Key, f.Value), optionalWrap(f.Key))))));
+                        Syntax.OptionalForIf(dereference(f.Key, f.Value), optionalWrap(f.Key))))));
         }
 
         private bool IsFieldRequired(FieldDeclarationSyntax field)

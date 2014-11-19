@@ -46,6 +46,23 @@
             return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("Value"));
         }
 
+        internal static ExpressionSyntax OptionalFor(ExpressionSyntax expression)
+        {
+            return SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional))),
+                    SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional.For))),
+                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(expression))));
+        }
+
+        internal static ExpressionSyntax OptionalForIf(ExpressionSyntax expression, bool isOptional)
+        {
+            return isOptional ? OptionalFor(expression) : expression;
+        }
+
         internal static SeparatedSyntaxList<T> JoinSyntaxNodes<T>(SyntaxKind tokenDelimiter, params T[] nodes)
             where T : SyntaxNode
         {
