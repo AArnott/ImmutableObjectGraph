@@ -36,7 +36,7 @@
 
             ValidateInput(classDeclaration, document, progress);
 
-            var fields = GetFields(classDeclaration);
+            var fields = GetFields(classDeclaration).ToList();
             var members = new List<MemberDeclarationSyntax>();
             members.Add(CreateLastIdentityProducedField());
             members.Add(CreateIdentityField());
@@ -46,7 +46,11 @@
             if (!isAbstract)
             {
                 members.Add(CreateCreateMethod(classDeclaration, inputSemanticModel));
-                members.Add(CreateWithFactoryMethod(classDeclaration, inputSemanticModel));
+                if (fields.Count > 0)
+                {
+                    members.Add(CreateWithFactoryMethod(classDeclaration, inputSemanticModel));
+                }
+
                 members.Add(CreateDefaultInstanceField(classDeclaration, document));
                 members.Add(CreateGetDefaultTemplateMethod(classDeclaration, document));
                 members.Add(CreateCreateDefaultTemplatePartialMethod(classDeclaration, document));
@@ -269,6 +273,7 @@
 
         private static MemberDeclarationSyntax CreateCreateMethod(ClassDeclarationSyntax applyTo, SemanticModel semanticModel)
         {
+            var fields = GetFields(applyTo);
             return SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.IdentifierName(applyTo.Identifier),
                 CreateMethodName.Identifier)
@@ -283,15 +288,17 @@
                         SyntaxFactory.SingletonSeparatedList(
                             SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier)
                                 .WithInitializer(SyntaxFactory.EqualsValueClause(OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
-                    // return DefaultInstance.With(...)
+                    // return DefaultInstance.WithFactory(...)
                     SyntaxFactory.ReturnStatement(
-                        SyntaxFactory.InvocationExpression(
+                        fields.Any()
+                        ? (ExpressionSyntax)SyntaxFactory.InvocationExpression(
                             SyntaxFactory.MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 DefaultInstanceFieldName,
                                 WithFactoryMethodName),
                             CreateArgumentList(applyTo, semanticModel, ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
-                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName))))));
+                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName)))
+                        : DefaultInstanceFieldName)));
         }
 
         private static readonly IdentifierNameSyntax LastIdentityProducedFieldName = SyntaxFactory.IdentifierName("lastIdentityProduced");
