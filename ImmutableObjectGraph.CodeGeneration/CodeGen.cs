@@ -54,27 +54,27 @@
 
             bool isAbstract = applyTo.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
 
-            ValidateInput(applyTo, document, progress);
+            ValidateInput();
 
-            var fields = GetFields(applyTo).ToList();
+            var fields = GetFields().ToList();
             var members = new List<MemberDeclarationSyntax>();
             members.Add(CreateLastIdentityProducedField());
             members.Add(CreateIdentityField());
-            members.Add(CreateCtor(applyTo, this.semanticModel));
-            members.Add(CreateNewIdentityMethod(applyTo, document));
+            members.Add(CreateCtor());
+            members.Add(CreateNewIdentityMethod());
 
             if (!isAbstract)
             {
-                members.Add(CreateCreateMethod(applyTo, this.semanticModel));
+                members.Add(CreateCreateMethod());
                 if (fields.Count > 0)
                 {
-                    members.Add(CreateWithFactoryMethod(applyTo, this.semanticModel));
+                    members.Add(CreateWithFactoryMethod());
                 }
 
-                members.Add(CreateDefaultInstanceField(applyTo, document));
-                members.Add(CreateGetDefaultTemplateMethod(applyTo, document));
-                members.Add(CreateCreateDefaultTemplatePartialMethod(applyTo, document));
-                members.Add(CreateTemplateStruct(applyTo, document));
+                members.Add(CreateDefaultInstanceField());
+                members.Add(CreateGetDefaultTemplateMethod());
+                members.Add(CreateCreateDefaultTemplatePartialMethod());
+                members.Add(CreateTemplateStruct());
             }
 
             foreach (var field in fields)
@@ -103,9 +103,9 @@
                 .WithMembers(SyntaxFactory.List(members));
         }
 
-        private static void ValidateInput(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress)
+        private void ValidateInput()
         {
-            foreach (var field in GetFields(applyTo))
+            foreach (var field in this.GetFields())
             {
                 if (!field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)))
                 {
@@ -121,7 +121,7 @@
         private static readonly IdentifierNameSyntax DefaultInstanceFieldName = SyntaxFactory.IdentifierName("DefaultInstance");
         private static readonly IdentifierNameSyntax GetDefaultTemplateMethodName = SyntaxFactory.IdentifierName("GetDefaultTemplate");
 
-        private MemberDeclarationSyntax CreateDefaultInstanceField(ClassDeclarationSyntax applyTo, Document document)
+        private MemberDeclarationSyntax CreateDefaultInstanceField()
         {
             // [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             // private static readonly <#= templateType.TypeName #> DefaultInstance = GetDefaultTemplate();
@@ -153,7 +153,7 @@
         private static readonly IdentifierNameSyntax NewIdentityMethodName = SyntaxFactory.IdentifierName("NewIdentity");
         private static readonly IdentifierNameSyntax WithFactoryMethodName = SyntaxFactory.IdentifierName("WithFactory");
 
-        private MemberDeclarationSyntax CreateCreateDefaultTemplatePartialMethod(ClassDeclarationSyntax applyTo, Document document)
+        private MemberDeclarationSyntax CreateCreateDefaultTemplatePartialMethod()
         {
             // /// <summary>Provides defaults for fields.</summary>
             // /// <param name="template">The struct to set default values on.</param>
@@ -172,7 +172,7 @@
                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
         }
 
-        private MemberDeclarationSyntax CreateGetDefaultTemplateMethod(ClassDeclarationSyntax applyTo, Document document)
+        private MemberDeclarationSyntax CreateGetDefaultTemplateMethod()
         {
             IdentifierNameSyntax templateVarName = SyntaxFactory.IdentifierName("template");
             var body = SyntaxFactory.Block(
@@ -196,7 +196,7 @@
                         SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                             SyntaxKind.CommaToken,
                             ImmutableArray.Create(SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax))).AddRange(
-                                GetFieldVariables(applyTo).Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Value.Identifier))))))),
+                                this.GetFieldVariables().Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Value.Identifier))))))),
                         null)),
                 // throw new System.NotImplementedException();
                 SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.NotImplementedException"), SyntaxFactory.ArgumentList(), null)));
@@ -208,20 +208,20 @@
                 .WithBody(body);
         }
 
-        private MemberDeclarationSyntax CreateTemplateStruct(ClassDeclarationSyntax applyTo, Document document)
+        private MemberDeclarationSyntax CreateTemplateStruct()
         {
             return SyntaxFactory.StructDeclaration(NestedTemplateTypeName.Identifier)
                 .WithMembers(SyntaxFactory.List<MemberDeclarationSyntax>(
-                    GetFields(applyTo).Select(f => f.WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword))))))
+                    GetFields().Select(f => f.WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword))))))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
         }
 
-        private static MemberDeclarationSyntax CreateCtor(ClassDeclarationSyntax applyTo, SemanticModel semanticModel)
+        private MemberDeclarationSyntax CreateCtor()
         {
             return SyntaxFactory.ConstructorDeclaration(
-                applyTo.Identifier)
+                this.applyTo.Identifier)
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
-                .WithParameterList(CreateParameterList(applyTo, ParameterStyle.Required, semanticModel).PrependParameter(RequiredIdentityParameter))
+                .WithParameterList(CreateParameterList(ParameterStyle.Required).PrependParameter(RequiredIdentityParameter))
                 .WithBody(SyntaxFactory.Block(
                     ImmutableArray.Create<StatementSyntax>(
                         // this.identity = identity;
@@ -232,14 +232,14 @@
                                 IdentityParameterName)))
                     .AddRange(
                         // this.someField = someField;
-                        GetFieldVariables(applyTo).Select(f => SyntaxFactory.ExpressionStatement(
+                        this.GetFieldVariables().Select(f => SyntaxFactory.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression,
                                 Syntax.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
                                 SyntaxFactory.IdentifierName(f.Value.Identifier)))))));
         }
 
-        private static MemberDeclarationSyntax CreateWithFactoryMethod(ClassDeclarationSyntax applyTo, SemanticModel semanticModel)
+        private MemberDeclarationSyntax CreateWithFactoryMethod()
         {
             // (field.IsDefined && field.Value != this.field)
             Func<VariableDeclaratorSyntax, ExpressionSyntax> isChanged = v =>
@@ -251,15 +251,15 @@
                             SyntaxKind.NotEqualsExpression,
                             Syntax.OptionalValue(SyntaxFactory.IdentifierName(v.Identifier)),
                             Syntax.ThisDot(SyntaxFactory.IdentifierName(v.Identifier)))));
-            var anyChangesExpression = GetFieldVariables(applyTo).Select(fv => isChanged(fv.Value)).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
+            var anyChangesExpression = this.GetFieldVariables().Select(fv => isChanged(fv.Value)).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
 
             // /// <summary>Returns a new instance of this object with any number of properties changed.</summary>
             // private TemplateType WithFactory(...)
             return SyntaxFactory.MethodDeclaration(
-                SyntaxFactory.IdentifierName(applyTo.Identifier),
+                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                 WithFactoryMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                .WithParameterList(CreateParameterList(applyTo, ParameterStyle.Optional, semanticModel).AddParameters(OptionalIdentityParameter))
+                .WithParameterList(CreateParameterList(ParameterStyle.Optional).AddParameters(OptionalIdentityParameter))
                 .WithBody(SyntaxFactory.Block(
                     SyntaxFactory.IfStatement(
                         anyChangesExpression,
@@ -267,23 +267,23 @@
                             SyntaxFactory.ReturnStatement(
                                 SyntaxFactory.ObjectCreationExpression(
                                     SyntaxFactory.IdentifierName(applyTo.Identifier),
-                                    CreateArgumentList(applyTo, semanticModel, ArgSource.OptionalArgumentOrProperty)
+                                    CreateArgumentList(ArgSource.OptionalArgumentOrProperty)
                                         .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalGetValueOrDefault(SyntaxFactory.IdentifierName(IdentityParameterName.Identifier), Syntax.ThisDot(IdentityParameterName)))),
                                     null))),
                         SyntaxFactory.ElseClause(SyntaxFactory.Block(
                             SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))))));
         }
 
-        private static MemberDeclarationSyntax CreateCreateMethod(ClassDeclarationSyntax applyTo, SemanticModel semanticModel)
+        private MemberDeclarationSyntax CreateCreateMethod()
         {
-            var fields = GetFields(applyTo);
+            var fields = this.GetFields();
             return SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.IdentifierName(applyTo.Identifier),
                 CreateMethodName.Identifier)
                 .WithModifiers(SyntaxFactory.TokenList(
                     SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
-                .WithParameterList(CreateParameterList(applyTo, ParameterStyle.OptionalOrRequired, semanticModel))
+                .WithParameterList(CreateParameterList(ParameterStyle.OptionalOrRequired))
                 .WithBody(SyntaxFactory.Block(
                     // var identity = Optional.For(NewIdentity());
                     SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
@@ -299,7 +299,7 @@
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 DefaultInstanceFieldName,
                                 WithFactoryMethodName),
-                            CreateArgumentList(applyTo, semanticModel, ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
+                            CreateArgumentList(ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
                                 .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName)))
                         : DefaultInstanceFieldName)));
         }
@@ -329,7 +329,7 @@
                     SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
         }
 
-        private static MemberDeclarationSyntax CreateNewIdentityMethod(ClassDeclarationSyntax applyTo, Document document)
+        private static MemberDeclarationSyntax CreateNewIdentityMethod()
         {
             // protected static <#= templateType.RequiredIdentityField.TypeName #> NewIdentity() {
             //     return (<#= templateType.RequiredIdentityField.TypeName #>)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
@@ -369,14 +369,14 @@
             return isOptional ? OptionalFor(expression) : expression;
         }
 
-        private static IEnumerable<FieldDeclarationSyntax> GetFields(ClassDeclarationSyntax applyTo)
+        private IEnumerable<FieldDeclarationSyntax> GetFields()
         {
-            return applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
+            return this.applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
         }
 
-        private static IEnumerable<KeyValuePair<FieldDeclarationSyntax, VariableDeclaratorSyntax>> GetFieldVariables(ClassDeclarationSyntax applyTo)
+        private IEnumerable<KeyValuePair<FieldDeclarationSyntax, VariableDeclaratorSyntax>> GetFieldVariables()
         {
-            foreach (var field in GetFields(applyTo))
+            foreach (var field in this.GetFields())
             {
                 foreach (var variable in field.Declaration.Variables)
                 {
@@ -385,29 +385,27 @@
             }
         }
 
-        private static ParameterListSyntax CreateParameterList(ClassDeclarationSyntax applyTo, ParameterStyle style, SemanticModel semanticModel)
+        private ParameterListSyntax CreateParameterList(ParameterStyle style)
         {
-            Requires.NotNull(applyTo, "applyTo");
-
             if (style == ParameterStyle.OptionalOrRequired)
             {
                 ////fields = SortRequiredFieldsFirst(fields);
             }
 
-            Func<FieldDeclarationSyntax, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !IsFieldRequired(f, semanticModel));
+            Func<FieldDeclarationSyntax, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !IsFieldRequired(f));
             Func<ParameterSyntax, FieldDeclarationSyntax, ParameterSyntax> setTypeAndDefault = (p, f) => isOptional(f)
                 ? Syntax.Optional(p.WithType(f.Declaration.Type))
                 : p.WithType(f.Declaration.Type);
             return SyntaxFactory.ParameterList(
                 Syntax.JoinSyntaxNodes(
                     SyntaxKind.CommaToken,
-                    GetFieldVariables(applyTo).Select(f => setTypeAndDefault(SyntaxFactory.Parameter(f.Value.Identifier), f.Key))));
+                    this.GetFieldVariables().Select(f => setTypeAndDefault(SyntaxFactory.Parameter(f.Value.Identifier), f.Key))));
         }
 
-        private static ArgumentListSyntax CreateArgumentList(ClassDeclarationSyntax applyTo, SemanticModel semanticModel, ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
+        private ArgumentListSyntax CreateArgumentList(ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
         {
-            Func<FieldDeclarationSyntax, ArgSource> fieldSource = f => (source == ArgSource.OptionalArgumentOrTemplate && IsFieldRequired(f, semanticModel)) ? ArgSource.Argument : source;
-            Func<FieldDeclarationSyntax, bool> optionalWrap = f => asOptional != OptionalStyle.None && (asOptional == OptionalStyle.Always || !IsFieldRequired(f, semanticModel));
+            Func<FieldDeclarationSyntax, ArgSource> fieldSource = f => (source == ArgSource.OptionalArgumentOrTemplate && IsFieldRequired(f)) ? ArgSource.Argument : source;
+            Func<FieldDeclarationSyntax, bool> optionalWrap = f => asOptional != OptionalStyle.None && (asOptional == OptionalStyle.Always || !IsFieldRequired(f));
             Func<FieldDeclarationSyntax, VariableDeclaratorSyntax, ExpressionSyntax> dereference = (f, v) =>
             {
                 var name = SyntaxFactory.IdentifierName(v.Identifier);
@@ -429,16 +427,16 @@
             };
             return SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                 SyntaxKind.CommaToken,
-                GetFieldVariables(applyTo).Select(f =>
+                this.GetFieldVariables().Select(f =>
                     SyntaxFactory.Argument(
                         SyntaxFactory.NameColon(SyntaxFactory.IdentifierName(f.Value.Identifier)),
                         SyntaxFactory.Token(SyntaxKind.None),
                         OptionalForIf(dereference(f.Key, f.Value), optionalWrap(f.Key))))));
         }
 
-        private static bool IsFieldRequired(FieldDeclarationSyntax field, SemanticModel semanticModel)
+        private bool IsFieldRequired(FieldDeclarationSyntax field)
         {
-            var fieldSymbol = semanticModel.GetDeclaredSymbol(field.Declaration.Variables.First());
+            var fieldSymbol = this.semanticModel.GetDeclaredSymbol(field.Declaration.Variables.First());
             return fieldSymbol?.GetAttributes().Any(a => IsOrDerivesFrom<RequiredAttribute>(a.AttributeClass)) ?? false;
         }
 
