@@ -296,6 +296,31 @@
         private MemberDeclarationSyntax CreateCreateMethod()
         {
             var fields = this.GetFields();
+            var body = SyntaxFactory.Block();
+            if (fields.Any())
+            {
+                body = body.AddStatements(
+                    // var identity = Optional.For(NewIdentity());
+                    SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
+                        varType,
+                        SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier)
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(Syntax.OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
+                    SyntaxFactory.ReturnStatement(
+                        SyntaxFactory.InvocationExpression(
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                DefaultInstanceFieldName,
+                                WithFactoryMethodName),
+                            CreateArgumentList(ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
+                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName)))));
+            }
+            else
+            {
+                body = body.AddStatements(
+                    SyntaxFactory.ReturnStatement(DefaultInstanceFieldName));
+            }
+
             return SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.IdentifierName(applyTo.Identifier),
                 CreateMethodName.Identifier)
@@ -303,24 +328,7 @@
                     SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
                 .WithParameterList(CreateParameterList(ParameterStyle.OptionalOrRequired))
-                .WithBody(SyntaxFactory.Block(
-                    // var identity = Optional.For(NewIdentity());
-                    SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
-                        varType,
-                        SyntaxFactory.SingletonSeparatedList(
-                            SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier)
-                                .WithInitializer(SyntaxFactory.EqualsValueClause(Syntax.OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
-                    // return DefaultInstance.WithFactory(...)
-                    SyntaxFactory.ReturnStatement(
-                        fields.Any()
-                        ? (ExpressionSyntax)SyntaxFactory.InvocationExpression(
-                            SyntaxFactory.MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                DefaultInstanceFieldName,
-                                WithFactoryMethodName),
-                            CreateArgumentList(ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
-                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName)))
-                        : DefaultInstanceFieldName)));
+                .WithBody(body);
         }
 
         private MethodDeclarationSyntax CreateValidateMethod()
