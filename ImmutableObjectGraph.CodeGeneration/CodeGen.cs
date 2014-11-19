@@ -20,6 +20,7 @@
         private static readonly TypeSyntax IdentityFieldTypeSyntax = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UIntKeyword));
         private static readonly TypeSyntax IdentityFieldOptionalTypeSyntax = SyntaxFactory.GenericName(SyntaxFactory.Identifier(nameof(Optional)), SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(IdentityFieldTypeSyntax)));
         private static readonly IdentifierNameSyntax IdentityParameterName = SyntaxFactory.IdentifierName("identity");
+        private static readonly IdentifierNameSyntax IdentityPropertyName = SyntaxFactory.IdentifierName("Identity");
         private static readonly ParameterSyntax RequiredIdentityParameter = SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax);
         private static readonly ParameterSyntax OptionalIdentityParameter = Syntax.Optional(RequiredIdentityParameter);
         private static readonly IdentifierNameSyntax DefaultInstanceFieldName = SyntaxFactory.IdentifierName("DefaultInstance");
@@ -71,6 +72,7 @@
             var members = new List<MemberDeclarationSyntax>();
             members.Add(CreateLastIdentityProducedField());
             members.Add(CreateIdentityField());
+            members.Add(CreateIdentityProperty());
             members.Add(CreateCtor());
             members.Add(CreateNewIdentityMethod());
 
@@ -364,6 +366,18 @@
                 .AddModifiers(
                     SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                     SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+        }
+
+        private static MemberDeclarationSyntax CreateIdentityProperty()
+        {
+            return SyntaxFactory.PropertyDeclaration(
+                IdentityFieldTypeSyntax,
+                IdentityPropertyName.Identifier)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword))
+                .AddAccessorListAccessors(
+                    SyntaxFactory.AccessorDeclaration(
+                        SyntaxKind.GetAccessorDeclaration,
+                        SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(IdentityParameterName)))));
         }
 
         private static MemberDeclarationSyntax CreateNewIdentityMethod()
