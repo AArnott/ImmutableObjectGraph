@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -38,17 +39,22 @@
         }
 
         [Fact]
-        public async Task Empty_NoBuildBreaks()
+        public async Task CanCreateImmutableTypeWithNoMembers()
         {
-            Document result = await this.GenerateAsync(@"
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
-partial class Empty { }
-");
+            await this.GenerateFromStreamAsync("CanCreateImmutableTypeWithNoMembers");
         }
 
-        protected async Task<Document> GenerateAsync(string inputSource)
+        protected async Task<Document> GenerateFromStreamAsync(string testName)
         {
-            var solution = this.solution.WithDocumentText(this.inputDocumentId, SourceText.From(inputSource));
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
+            {
+                return await this.GenerateAsync(SourceText.From(stream));
+            }
+        }
+
+        protected async Task<Document> GenerateAsync(SourceText inputSource)
+        {
+            var solution = this.solution.WithDocumentText(this.inputDocumentId, inputSource);
             var inputDocument = solution.GetDocument(this.inputDocumentId);
             var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new MockProgress());
 
