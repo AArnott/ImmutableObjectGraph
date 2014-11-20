@@ -41,8 +41,7 @@
         public async Task Empty_NoBuildBreaks()
         {
             Document result = await this.GenerateAsync(@"
-using ImmutableObjectGraph.CodeGeneration;
-[GenerateImmutable]
+[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
 partial class Empty { }
 ");
         }
