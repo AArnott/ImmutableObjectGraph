@@ -182,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGenerationAttribute.cs" />
+    <Compile Include="DocumentTransform.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="IProgressAndErrors.cs" />
     <Compile Include="Resources.Designer.cs">
