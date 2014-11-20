@@ -82,5 +82,13 @@
 			var builder = person.ToBuilder();
 			Assert.Null(builder.Watch);
 		}
+
+		[Fact]
+		public void CreateBuilder() {
+			var builder = Person.CreateBuilder();
+			builder.Name = "name";
+			var immutable = builder.ToImmutable();
+			Assert.Equal("name", immutable.Name);
+		}
 	}
 }
