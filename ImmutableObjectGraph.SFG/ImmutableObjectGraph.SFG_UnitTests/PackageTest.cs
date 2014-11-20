@@ -20,23 +20,23 @@ using Microsoft.ImmutableObjectGraph_SFG;
 
 namespace ImmutableObjectGraph.SFG_UnitTests
 {
-    [TestClass()]
+    [TestClass]
     public class PackageTest
     {
-        [TestMethod()]
+        [TestMethod, Ignore]
         public void CreateInstance()
         {
             ImmutableObjectGraph_SFGPackage package = new ImmutableObjectGraph_SFGPackage();
         }
 
-        [TestMethod()]
+        [TestMethod, Ignore]
         public void IsIVsPackage()
         {
             ImmutableObjectGraph_SFGPackage package = new ImmutableObjectGraph_SFGPackage();
             Assert.IsNotNull(package as IVsPackage, "The object does not implement IVsPackage");
         }
 
-        [TestMethod()]
+        [TestMethod, Ignore]
         public void SetSite()
         {
             // Create the package
