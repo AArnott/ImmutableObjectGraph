@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="TestSources\FamilyPersonWatch.cs" />
     <EmbeddedResource Include="TestSources\CanCreateImmutableTypeWithNoMembers.cs" />
   </ItemGroup>
   <ItemGroup>

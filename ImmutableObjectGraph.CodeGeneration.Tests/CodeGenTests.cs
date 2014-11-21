@@ -30,7 +30,9 @@
                 .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(string).Assembly))
                 .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(GenerateImmutableAttribute).Assembly))
                 .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(CodeGenerationAttribute).Assembly))
-                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(Optional).Assembly));
+                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(Optional).Assembly))
+                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(ImmutableArray).Assembly))
+                .AddMetadataReference(MetadataReference.CreateFromAssembly(Assembly.LoadWithPartialName("System.Runtime")));
             var inputDocument = project.AddDocument("input.cs", string.Empty);
             this.inputDocumentId = inputDocument.Id;
             project = inputDocument.Project;
@@ -42,6 +44,12 @@
         public async Task CanCreateImmutableTypeWithNoMembers()
         {
             await this.GenerateFromStreamAsync("CanCreateImmutableTypeWithNoMembers");
+        }
+
+        [Fact]
+        public async Task FamilyPersonWatch()
+        {
+            await this.GenerateFromStreamAsync("FamilyPersonWatch");
         }
 
         protected async Task<Document> GenerateFromStreamAsync(string testName)
@@ -81,17 +89,14 @@
         {
             public void Error(string message, uint line, uint column)
             {
-                throw new NotImplementedException();
             }
 
             public void Report(uint progress, uint total)
             {
-                throw new NotImplementedException();
             }
 
             public void Warning(string message, uint line, uint column)
             {
-                throw new NotImplementedException();
             }
         }
     }
