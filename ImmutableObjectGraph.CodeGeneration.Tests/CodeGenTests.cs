@@ -52,6 +52,16 @@
             await this.GenerateFromStreamAsync("FamilyPersonWatch");
         }
 
+        [Fact]
+        public async Task OneScalarField_HasWithMethod()
+        {
+            var document = await this.GenerateFromStreamAsync("OneScalarField");
+            var semantic = await document.GetSemanticModelAsync();
+            var declaredSymbol = semantic.GetDeclarationsInSpan(TextSpan.FromBounds(0, semantic.SyntaxTree.Length), true, CancellationToken.None);
+            var declaredMethods = declaredSymbol.Select(s => s.DeclaredSymbol).OfType<IMethodSymbol>();
+            Assert.True(declaredMethods.Any(m => m.Name == "With" && m.Parameters.Any(p => p.Name == "seeds")));
+        }
+
         protected async Task<Document> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))

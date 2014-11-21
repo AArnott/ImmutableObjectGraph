@@ -31,6 +31,8 @@
         private static readonly IdentifierNameSyntax CreateMethodName = SyntaxFactory.IdentifierName("Create");
         private static readonly IdentifierNameSyntax NewIdentityMethodName = SyntaxFactory.IdentifierName("NewIdentity");
         private static readonly IdentifierNameSyntax WithFactoryMethodName = SyntaxFactory.IdentifierName("WithFactory");
+        private static readonly IdentifierNameSyntax WithMethodName = SyntaxFactory.IdentifierName("With");
+        private static readonly IdentifierNameSyntax WithCoreMethodName = SyntaxFactory.IdentifierName("WithCore");
         private static readonly IdentifierNameSyntax LastIdentityProducedFieldName = SyntaxFactory.IdentifierName("lastIdentityProduced");
         private static readonly IdentifierNameSyntax ValidateMethodName = SyntaxFactory.IdentifierName("Validate");
         private static readonly IdentifierNameSyntax SkipValidationParameterName = SyntaxFactory.IdentifierName("skipValidation");
@@ -82,6 +84,8 @@
                 if (fields.Count > 0)
                 {
                     members.Add(CreateWithFactoryMethod());
+                    members.Add(CreateWithMethod());
+                    members.Add(CreateWithCoreMethod());
                 }
 
                 members.Add(CreateDefaultInstanceField());
@@ -258,6 +262,50 @@
                     .PrependParameter(RequiredIdentityParameter)
                     .AddParameters(Syntax.Optional(SyntaxFactory.Parameter(SkipValidationParameterName.Identifier).WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword))))))
                 .WithBody(body);
+        }
+
+        private MethodDeclarationSyntax CreateWithMethod()
+        {
+            return SyntaxFactory.MethodDeclaration(
+                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                WithMethodName.Identifier)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .WithParameterList(CreateParameterList(ParameterStyle.Optional))
+                .WithBody(SyntaxFactory.Block(
+                    SyntaxFactory.ReturnStatement(
+                        SyntaxFactory.CastExpression(
+                            SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                            SyntaxFactory.InvocationExpression(
+                                Syntax.ThisDot(WithCoreMethodName),
+                                this.CreateArgumentList(ArgSource.Argument))))));
+        }
+
+        private MethodDeclarationSyntax CreateWithCoreMethod()
+        {
+            var method = SyntaxFactory.MethodDeclaration(
+                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                WithCoreMethodName.Identifier)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
+                .WithParameterList(this.CreateParameterList(ParameterStyle.Optional));
+            if (this.isAbstract)
+            {
+                method = method
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+            }
+            else
+            {
+                method = method
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                Syntax.ThisDot(WithFactoryMethodName),
+                                this.CreateArgumentList(ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
+                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
+            }
+
+            return method;
         }
 
         private MemberDeclarationSyntax CreateWithFactoryMethod()
