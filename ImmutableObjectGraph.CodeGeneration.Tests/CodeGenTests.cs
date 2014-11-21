@@ -41,9 +41,10 @@
         }
 
         [Fact]
-        public async Task CanCreateImmutableTypeWithNoMembers()
+        public async Task NoFields_HasCreateMethod()
         {
-            await this.GenerateFromStreamAsync("CanCreateImmutableTypeWithNoMembers");
+            var result = await this.GenerateFromStreamAsync("NoFields");
+            Assert.True(result.DeclaredMethods.Any(m => m.Name == "Create" && m.Parameters.Length == 0 && m.IsStatic));
         }
 
         [Fact]
@@ -55,14 +56,18 @@
         [Fact]
         public async Task OneScalarField_HasWithMethod()
         {
-            var document = await this.GenerateFromStreamAsync("OneScalarField");
-            var semantic = await document.GetSemanticModelAsync();
-            var declaredSymbol = semantic.GetDeclarationsInSpan(TextSpan.FromBounds(0, semantic.SyntaxTree.Length), true, CancellationToken.None);
-            var declaredMethods = declaredSymbol.Select(s => s.DeclaredSymbol).OfType<IMethodSymbol>();
-            Assert.True(declaredMethods.Any(m => m.Name == "With" && m.Parameters.Any(p => p.Name == "seeds")));
+            var result = await this.GenerateFromStreamAsync("OneScalarField");
+            Assert.True(result.DeclaredMethods.Any(m => m.Name == "With" && m.Parameters.Single().Name == "seeds" && !m.IsStatic));
         }
 
-        protected async Task<Document> GenerateFromStreamAsync(string testName)
+        [Fact]
+        public async Task OneScalarField_HasCreateMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("OneScalarField");
+            Assert.True(result.DeclaredMethods.Any(m => m.Name == "Create" && m.Parameters.Single().Name == "seeds"));
+        }
+
+        protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
             {
@@ -70,7 +75,7 @@
             }
         }
 
-        protected async Task<Document> GenerateAsync(SourceText inputSource)
+        protected async Task<GenerationResult> GenerateAsync(SourceText inputSource)
         {
             var solution = this.solution.WithDocumentText(this.inputDocumentId, inputSource);
             var inputDocument = solution.GetDocument(this.inputDocumentId);
@@ -92,7 +97,34 @@
 
             Assert.Empty(errors);
 
-            return outputDocument;
+            var semanticModel = await outputDocument.GetSemanticModelAsync();
+            return new GenerationResult(outputDocument, semanticModel);
+        }
+
+        protected class GenerationResult
+        {
+            public GenerationResult(Document document, SemanticModel semanticModel)
+            {
+                this.Document = document;
+                this.SemanticModel = semanticModel;
+                this.Declarations = semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), true, CancellationToken.None);
+            }
+
+            public Document Document { get; private set; }
+
+            public SemanticModel SemanticModel { get; private set; }
+
+            public ImmutableArray<DeclarationInfo> Declarations { get; private set; }
+
+            public IEnumerable<ISymbol> DeclaredSymbols
+            {
+                get { return this.Declarations.Select(d => d.DeclaredSymbol); }
+            }
+
+            public IEnumerable<IMethodSymbol> DeclaredMethods
+            {
+                get { return this.DeclaredSymbols.OfType<IMethodSymbol>(); }
+            }
         }
 
         private class MockProgress : IProgressAndErrors
