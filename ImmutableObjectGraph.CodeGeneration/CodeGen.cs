@@ -36,30 +36,39 @@
         private static readonly IdentifierNameSyntax LastIdentityProducedFieldName = SyntaxFactory.IdentifierName("lastIdentityProduced");
         private static readonly IdentifierNameSyntax ValidateMethodName = SyntaxFactory.IdentifierName("Validate");
         private static readonly IdentifierNameSyntax SkipValidationParameterName = SyntaxFactory.IdentifierName("skipValidation");
+        private static readonly AttributeSyntax DebuggerBrowsableNeverAttribute = SyntaxFactory.Attribute(
+            SyntaxFactory.ParseName(typeof(DebuggerBrowsableAttribute).FullName),
+            SyntaxFactory.AttributeArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.AttributeArgument(
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.ParseName(typeof(DebuggerBrowsableState).FullName),
+                    SyntaxFactory.IdentifierName(nameof(DebuggerBrowsableState.Never)))))));
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
         private readonly IProgressAndErrors progress;
+        private readonly Options options;
         private readonly CancellationToken cancellationToken;
 
         private SemanticModel semanticModel;
         private bool isAbstract;
 
-        private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
+        private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
         {
             this.applyTo = applyTo;
             this.document = document;
             this.progress = progress;
+            this.options = options ?? new Options();
             this.cancellationToken = cancellationToken;
         }
 
-        public static async Task<MemberDeclarationSyntax> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
+        public static async Task<MemberDeclarationSyntax> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
         {
             Requires.NotNull(applyTo, "applyTo");
             Requires.NotNull(document, "document");
             Requires.NotNull(progress, "progress");
 
-            var instance = new CodeGen(applyTo, document, progress, cancellationToken);
+            var instance = new CodeGen(applyTo, document, progress, options, cancellationToken);
             return await instance.GenerateAsync();
         }
 
@@ -116,6 +125,13 @@
                 }
             }
 
+            if (this.options.GenerateBuilder)
+            {
+                var builderGenerator = new BuilderGen(this);
+                var builderMembers = await builderGenerator.GenerateAsync();
+                members.AddRange(builderMembers);
+            }
+
             return SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                 .WithMembers(SyntaxFactory.List(members));
@@ -142,7 +158,7 @@
             // private static readonly <#= templateType.TypeName #> DefaultInstance = GetDefaultTemplate();
             var field = SyntaxFactory.FieldDeclaration(
                  SyntaxFactory.VariableDeclaration(
-                     SyntaxFactory.IdentifierName(applyTo.Identifier.ValueText),
+                     SyntaxFactory.IdentifierName(this.applyTo.Identifier.ValueText),
                      SyntaxFactory.SingletonSeparatedList(
                          SyntaxFactory.VariableDeclarator(DefaultInstanceFieldName.Identifier)
                              .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.InvocationExpression(GetDefaultTemplateMethodName, SyntaxFactory.ArgumentList()))))))
@@ -151,13 +167,7 @@
                      SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                      SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)))
                  .WithAttributeLists(SyntaxFactory.SingletonList(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(
-                     SyntaxFactory.Attribute(
-                         SyntaxFactory.ParseName(typeof(DebuggerBrowsableAttribute).FullName),
-                         SyntaxFactory.AttributeArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.AttributeArgument(
-                             SyntaxFactory.MemberAccessExpression(
-                                 SyntaxKind.SimpleMemberAccessExpression,
-                                 SyntaxFactory.ParseName(typeof(DebuggerBrowsableState).FullName),
-                                 SyntaxFactory.IdentifierName(nameof(DebuggerBrowsableState.Never)))))))))));
+                     DebuggerBrowsableNeverAttribute))));
             return field;
         }
 
@@ -536,6 +546,104 @@
             }
 
             return false;
+        }
+
+        public class Options
+        {
+            public Options() { }
+
+            public bool GenerateBuilder { get; set; }
+        }
+
+        protected class BuilderGen
+        {
+            private static readonly IdentifierNameSyntax BuilderTypeName = SyntaxFactory.IdentifierName("Builder");
+            private static readonly IdentifierNameSyntax ToBuilderMethodName = SyntaxFactory.IdentifierName("ToBuilder");
+            private static readonly IdentifierNameSyntax CreateBuilderMethodName = SyntaxFactory.IdentifierName("CreateBuilder");
+            private static readonly IdentifierNameSyntax ImmutableFieldName = SyntaxFactory.IdentifierName("immutable");
+
+            private readonly CodeGen generator;
+
+            public BuilderGen(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
+            {
+                var outerClassMembers = new List<MemberDeclarationSyntax>
+                {
+                    this.CreateToBuilderMethod(),
+                    this.CreateCreateBuilderMethod(),
+                };
+
+                var innerClassMembers = new List<MemberDeclarationSyntax> {
+                    this.CreateImmutableField(),
+                    this.CreateConstructor(),
+                };
+                var builderType = SyntaxFactory.ClassDeclaration(BuilderTypeName.Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+                    .WithMembers(SyntaxFactory.List(innerClassMembers));
+
+                outerClassMembers.Add(builderType);
+                return outerClassMembers;
+            }
+
+            protected MethodDeclarationSyntax CreateToBuilderMethod()
+            {
+                return SyntaxFactory.MethodDeclaration(
+                    BuilderTypeName,
+                    ToBuilderMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.ObjectCreationExpression(
+                                BuilderTypeName,
+                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))),
+                                null))));
+            }
+
+            protected MethodDeclarationSyntax CreateCreateBuilderMethod()
+            {
+                return SyntaxFactory.MethodDeclaration(
+                    BuilderTypeName,
+                    CreateBuilderMethodName.Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.ObjectCreationExpression(
+                                BuilderTypeName,
+                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(DefaultInstanceFieldName))),
+                                null))));
+            }
+
+            protected MemberDeclarationSyntax CreateImmutableField()
+            {
+                return SyntaxFactory.FieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(
+                        SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier),
+                        SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(ImmutableFieldName.Identifier))))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                    .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute)));
+            }
+
+            protected MemberDeclarationSyntax CreateConstructor()
+            {
+                var immutableParameterName = SyntaxFactory.IdentifierName("immutable");
+                return SyntaxFactory.ConstructorDeclaration(BuilderTypeName.Identifier)
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(immutableParameterName.Identifier).WithType(SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier)))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            Syntax.ThisDot(ImmutableFieldName),
+                            immutableParameterName))));
+            }
         }
 
         private enum ParameterStyle

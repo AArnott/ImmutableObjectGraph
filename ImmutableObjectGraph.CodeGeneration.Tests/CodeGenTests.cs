@@ -67,6 +67,20 @@
             Assert.True(result.DeclaredMethods.Any(m => m.Name == "Create" && m.Parameters.Single().Name == "seeds"));
         }
 
+        [Fact]
+        public async Task OneScalarFieldWithBuilder_HasToBuilderMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
+            Assert.True(result.DeclaredMethods.Any(m => m.Name == "ToBuilder" && m.Parameters.Length == 0 && !m.IsStatic));
+        }
+
+        [Fact]
+        public async Task OneScalarFieldWithBuilder_HasCreateBuilderMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
+            Assert.True(result.DeclaredMethods.Any(m => m.Name == "CreateBuilder" && m.Parameters.Length == 0 && m.IsStatic));
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
