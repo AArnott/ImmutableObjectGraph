@@ -88,6 +88,13 @@
             Assert.True(result.DeclaredProperties.Any(p => p.ContainingType?.Name == "Builder" && p.Name == "Seeds" && p.SetMethod != null && p.GetMethod != null));
         }
 
+        [Fact]
+        public async Task OneScalarFieldWithBuilder_BuilderHasToImmutableMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
+            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Builder" && m.Name == "ToImmutable" && m.Parameters.Length == 0 && !m.IsStatic));
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))

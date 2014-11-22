@@ -558,6 +558,7 @@
         {
             private static readonly IdentifierNameSyntax BuilderTypeName = SyntaxFactory.IdentifierName("Builder");
             private static readonly IdentifierNameSyntax ToBuilderMethodName = SyntaxFactory.IdentifierName("ToBuilder");
+            private static readonly IdentifierNameSyntax ToImmutableMethodName = SyntaxFactory.IdentifierName("ToImmutable");
             private static readonly IdentifierNameSyntax CreateBuilderMethodName = SyntaxFactory.IdentifierName("CreateBuilder");
             private static readonly IdentifierNameSyntax ImmutableFieldName = SyntaxFactory.IdentifierName("immutable");
 
@@ -581,6 +582,7 @@
                 innerClassMembers.AddRange(this.CreateMutableFields());
                 innerClassMembers.Add(this.CreateConstructor());
                 innerClassMembers.AddRange(this.CreateMutableProperties());
+                innerClassMembers.Add(this.CreateToImmutableMethod());
                 var builderType = SyntaxFactory.ClassDeclaration(BuilderTypeName.Identifier)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
@@ -692,6 +694,29 @@
                 }
 
                 return properties;
+            }
+
+            protected MethodDeclarationSyntax CreateToImmutableMethod()
+            {
+                // return this.immutable = this.immutable.With(...)
+                var body = SyntaxFactory.Block(
+                    SyntaxFactory.ReturnStatement(
+                        SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            Syntax.ThisDot(ImmutableFieldName),
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    Syntax.ThisDot(ImmutableFieldName),
+                                    WithMethodName),
+                                this.generator.CreateArgumentList(ArgSource.Property, OptionalStyle.Always)))));
+
+                // public TemplateType ToImmutable() { ... }
+                return SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier),
+                    ToImmutableMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithBody(body);
             }
         }
 
