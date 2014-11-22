@@ -81,6 +81,13 @@
             Assert.True(result.DeclaredMethods.Any(m => m.Name == "CreateBuilder" && m.Parameters.Length == 0 && m.IsStatic));
         }
 
+        [Fact]
+        public async Task OneScalarFieldWithBuilder_BuilderHasMutableProperties()
+        {
+            var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
+            Assert.True(result.DeclaredProperties.Any(p => p.ContainingType?.Name == "Builder" && p.Name == "Seeds" && p.SetMethod != null && p.GetMethod != null));
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
@@ -138,6 +145,11 @@
             public IEnumerable<IMethodSymbol> DeclaredMethods
             {
                 get { return this.DeclaredSymbols.OfType<IMethodSymbol>(); }
+            }
+
+            public IEnumerable<IPropertySymbol> DeclaredProperties
+            {
+                get { return this.DeclaredSymbols.OfType<IPropertySymbol>(); }
             }
         }
 

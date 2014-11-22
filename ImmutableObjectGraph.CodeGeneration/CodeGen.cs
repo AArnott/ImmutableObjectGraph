@@ -104,26 +104,7 @@
                 members.Add(CreateValidateMethod());
             }
 
-            foreach (var field in fields)
-            {
-                foreach (var variable in field.Declaration.Variables)
-                {
-                    var xmldocComment = field.GetLeadingTrivia().FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
-
-                    var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToPascalCase())
-                        .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                        .WithAccessorList(
-                            SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[] {
-                                SyntaxFactory.AccessorDeclaration(
-                                    SyntaxKind.GetAccessorDeclaration,
-                                    SyntaxFactory.Block(
-                                        SyntaxFactory.ReturnStatement(
-                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(variable.Identifier))
-                                        ))) })))
-                        .WithLeadingTrivia(xmldocComment); // TODO: modify the <summary> to translate "Some description" to "Gets some description."
-                    members.Add(property);
-                }
-            }
+            members.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
 
             if (this.options.GenerateBuilder)
             {
@@ -135,6 +116,24 @@
             return SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                 .WithMembers(SyntaxFactory.List(members));
+        }
+
+        private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)
+        {
+            var xmldocComment = field.GetLeadingTrivia().FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+
+            var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToPascalCase())
+                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                .WithAccessorList(
+                    SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[] {
+                                SyntaxFactory.AccessorDeclaration(
+                                    SyntaxKind.GetAccessorDeclaration,
+                                    SyntaxFactory.Block(
+                                        SyntaxFactory.ReturnStatement(
+                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(variable.Identifier))
+                                        ))) })))
+                .WithLeadingTrivia(xmldocComment); // TODO: modify the <summary> to translate "Some description" to "Gets some description."
+            return property;
         }
 
         private void ValidateInput()
@@ -577,10 +576,11 @@
                     this.CreateCreateBuilderMethod(),
                 };
 
-                var innerClassMembers = new List<MemberDeclarationSyntax> {
-                    this.CreateImmutableField(),
-                    this.CreateConstructor(),
-                };
+                var innerClassMembers = new List<MemberDeclarationSyntax>();
+                innerClassMembers.Add(this.CreateImmutableField());
+                innerClassMembers.AddRange(this.CreateMutableFields());
+                innerClassMembers.Add(this.CreateConstructor());
+                innerClassMembers.AddRange(this.CreateMutableProperties());
                 var builderType = SyntaxFactory.ClassDeclaration(BuilderTypeName.Identifier)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
@@ -631,6 +631,20 @@
                     .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute)));
             }
 
+            protected IReadOnlyList<MemberDeclarationSyntax> CreateMutableFields()
+            {
+                var fields = new List<FieldDeclarationSyntax>();
+
+                foreach (var field in this.generator.GetFields())
+                {
+                    fields.Add(field
+                        .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
+                        .WithAttributeLists(SyntaxFactory.SingletonList(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute)))));
+                }
+
+                return fields;
+            }
+
             protected MemberDeclarationSyntax CreateConstructor()
             {
                 var immutableParameterName = SyntaxFactory.IdentifierName("immutable");
@@ -643,6 +657,32 @@
                             SyntaxKind.SimpleAssignmentExpression,
                             Syntax.ThisDot(ImmutableFieldName),
                             immutableParameterName))));
+            }
+
+            protected IReadOnlyList<MemberDeclarationSyntax> CreateMutableProperties()
+            {
+                var properties = new List<PropertyDeclarationSyntax>();
+
+                foreach (var field in this.generator.GetFieldVariables())
+                {
+                    var getterBlock = SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Value.Identifier))));
+                    var setterBlock = SyntaxFactory.Block(
+                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Value.Identifier)),
+                            SyntaxFactory.IdentifierName("value"))));
+
+                    var property = CreatePropertyForField(field.Key, field.Value)
+                        .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[]
+                        {
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, getterBlock),
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration, setterBlock),
+                        })));
+                    properties.Add(property);
+                }
+
+                return properties;
             }
         }
 
