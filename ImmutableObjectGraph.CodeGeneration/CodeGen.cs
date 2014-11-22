@@ -648,15 +648,24 @@
             protected MemberDeclarationSyntax CreateConstructor()
             {
                 var immutableParameterName = SyntaxFactory.IdentifierName("immutable");
+                var body = SyntaxFactory.Block(
+                    SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        Syntax.ThisDot(ImmutableFieldName),
+                        immutableParameterName)));
+                foreach (var field in this.generator.GetFieldVariables())
+                {
+                    body = body.AddStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Value.Identifier)),
+                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, immutableParameterName, SyntaxFactory.IdentifierName(field.Value.Identifier)))));
+                }
+
                 return SyntaxFactory.ConstructorDeclaration(BuilderTypeName.Identifier)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(immutableParameterName.Identifier).WithType(SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier)))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword))
-                    .WithBody(SyntaxFactory.Block(
-                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression,
-                            Syntax.ThisDot(ImmutableFieldName),
-                            immutableParameterName))));
+                    .WithBody(body);
             }
 
             protected IReadOnlyList<MemberDeclarationSyntax> CreateMutableProperties()
