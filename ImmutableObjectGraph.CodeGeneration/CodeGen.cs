@@ -676,6 +676,13 @@
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                     .WithMembers(SyntaxFactory.List(innerClassMembers));
+                if (this.generator.applyToMetaType.HasAncestor)
+                {
+                    builderType = builderType.WithBaseList(SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
+                        SyntaxFactory.SimpleBaseType(SyntaxFactory.QualifiedName(
+                            GetFullyQualifiedSymbolName(this.generator.applyToMetaType.Ancestor.TypeSymbol),
+                            BuilderTypeName)))));
+                }
 
                 outerClassMembers.Add(builderType);
                 return outerClassMembers;
@@ -751,11 +758,20 @@
                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, immutableParameterName, SyntaxFactory.IdentifierName(field.Value.Identifier)))));
                 }
 
-                return SyntaxFactory.ConstructorDeclaration(BuilderTypeName.Identifier)
+                var ctor = SyntaxFactory.ConstructorDeclaration(BuilderTypeName.Identifier)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(immutableParameterName.Identifier).WithType(SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier)))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword))
                     .WithBody(body);
+
+                if (this.generator.applyToMetaType.HasAncestor)
+                {
+                    ctor = ctor.WithInitializer(SyntaxFactory.ConstructorInitializer(
+                        SyntaxKind.BaseConstructorInitializer,
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(immutableParameterName)))));
+                }
+
+                return ctor;
             }
 
             protected IReadOnlyList<MemberDeclarationSyntax> CreateMutableProperties()
@@ -797,7 +813,7 @@
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     Syntax.ThisDot(ImmutableFieldName),
                                     WithMethodName),
-                                this.generator.CreateArgumentList(this.generator.applyToMetaType.LocalFields, ArgSource.Property, OptionalStyle.Always)))));
+                                this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.Property, OptionalStyle.Always)))));
 
                 // public TemplateType ToImmutable() { ... }
                 return SyntaxFactory.MethodDeclaration(

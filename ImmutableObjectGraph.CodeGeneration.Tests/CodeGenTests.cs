@@ -120,6 +120,15 @@
             Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "WithCore" && m.Parameters.Length == 2 && m.IsVirtual));
         }
 
+
+        [Fact]
+        public async Task ClassDerivesFromAnotherWithFieldsAndBuilder_BuildersReflectTypeRelationship()
+        {
+            var result = await this.GenerateFromStreamAsync("ClassDerivesFromAnotherWithFieldsAndBuilder");
+            var fruitBuilder = result.DeclaredTypes.Single(t => t.Name == "Builder" && t.ContainingType.Name == "Fruit");
+            Assert.Same(fruitBuilder, result.DeclaredTypes.Single(t => t.Name == "Builder" && t.ContainingType.Name == "Apple").BaseType);
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
@@ -182,6 +191,11 @@
             public IEnumerable<IPropertySymbol> DeclaredProperties
             {
                 get { return this.DeclaredSymbols.OfType<IPropertySymbol>(); }
+            }
+
+            public IEnumerable<INamedTypeSymbol> DeclaredTypes
+            {
+                get { return this.DeclaredSymbols.OfType<INamedTypeSymbol>(); }
             }
         }
 
