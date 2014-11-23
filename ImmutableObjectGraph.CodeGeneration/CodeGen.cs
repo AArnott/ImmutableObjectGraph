@@ -51,6 +51,8 @@
         private readonly CancellationToken cancellationToken;
 
         private SemanticModel semanticModel;
+        private INamedTypeSymbol applyToSymbol;
+        private MetaType applyToMetaType;
         private bool isAbstract;
 
         private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
@@ -77,15 +79,22 @@
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             this.isAbstract = applyTo.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
 
+            this.applyToSymbol = this.semanticModel.GetDeclaredSymbol(this.applyTo, this.cancellationToken);
+            this.applyToMetaType = new MetaType(this.applyToSymbol);
+
             ValidateInput();
 
             var fields = GetFields().ToList();
             var members = new List<MemberDeclarationSyntax>();
-            members.Add(CreateLastIdentityProducedField());
-            members.Add(CreateIdentityField());
-            members.Add(CreateIdentityProperty());
+            if (!this.applyToMetaType.HasAncestor)
+            {
+                members.Add(CreateLastIdentityProducedField());
+                members.Add(CreateIdentityField());
+                members.Add(CreateIdentityProperty());
+                members.Add(CreateNewIdentityMethod());
+            }
+
             members.Add(CreateCtor());
-            members.Add(CreateNewIdentityMethod());
 
             if (!isAbstract)
             {
@@ -213,7 +222,7 @@
                         SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                             SyntaxKind.CommaToken,
                             ImmutableArray.Create(SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax)))
-                                .AddRange(this.GetFieldVariables().Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Value.Identifier)))))
+                                .AddRange(this.applyToMetaType.AllFields.Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Name)))))
                                 .Add(SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))))),
                         null)));
 
@@ -228,27 +237,32 @@
         {
             return SyntaxFactory.StructDeclaration(NestedTemplateTypeName.Identifier)
                 .WithMembers(SyntaxFactory.List<MemberDeclarationSyntax>(
-                    GetFields().Select(f => f.WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword))))))
+                    this.applyToMetaType.AllFields.Select(f =>
+                        ((FieldDeclarationSyntax)f.DeclaringSyntaxReferences.First().GetSyntax().Parent.Parent).WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword))))))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
         }
 
         private MemberDeclarationSyntax CreateCtor()
         {
             BlockSyntax body = SyntaxFactory.Block(
-                    ImmutableArray.Create<StatementSyntax>(
+                // this.someField = someField;
+                this.GetFieldVariables().Select(f => SyntaxFactory.ExpressionStatement(
+                    SyntaxFactory.AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        Syntax.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
+                        SyntaxFactory.IdentifierName(f.Value.Identifier)))));
+
+            if (!this.applyToMetaType.HasAncestor)
+            {
+                body = body.WithStatements(
+                    body.Statements.Insert(0,
                         // this.identity = identity;
                         SyntaxFactory.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression,
                                 Syntax.ThisDot(IdentityParameterName),
-                                IdentityParameterName)))
-                    .AddRange(
-                        // this.someField = someField;
-                        this.GetFieldVariables().Select(f => SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.AssignmentExpression(
-                                SyntaxKind.SimpleAssignmentExpression,
-                                Syntax.ThisDot(SyntaxFactory.IdentifierName(f.Value.Identifier)),
-                                SyntaxFactory.IdentifierName(f.Value.Identifier))))));
+                                IdentityParameterName))));
+            }
 
             if (!this.isAbstract)
             {
@@ -263,14 +277,26 @@
                                 SyntaxFactory.ArgumentList()))));
             }
 
-            return SyntaxFactory.ConstructorDeclaration(
+            var ctor = SyntaxFactory.ConstructorDeclaration(
                 this.applyTo.Identifier)
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
                 .WithParameterList(
-                    CreateParameterList(ParameterStyle.Required)
+                    CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Required)
                     .PrependParameter(RequiredIdentityParameter)
                     .AddParameters(Syntax.Optional(SyntaxFactory.Parameter(SkipValidationParameterName.Identifier).WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword))))))
                 .WithBody(body);
+
+            if (this.applyToMetaType.HasAncestor)
+            {
+                ctor = ctor.WithInitializer(
+                    SyntaxFactory.ConstructorInitializer(
+                        SyntaxKind.BaseConstructorInitializer,
+                        this.CreateArgumentList(this.applyToMetaType.InheritedFields, ArgSource.Argument)
+                            .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName))
+                            .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), SyntaxFactory.Token(SyntaxKind.None), SkipValidationParameterName))));
+            }
+
+            return ctor;
         }
 
         private MethodDeclarationSyntax CreateWithMethod()
@@ -279,14 +305,14 @@
                 SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                 WithMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .WithParameterList(CreateParameterList(ParameterStyle.Optional))
+                .WithParameterList(CreateParameterList(this.applyToMetaType.LocalFields, ParameterStyle.Optional))
                 .WithBody(SyntaxFactory.Block(
                     SyntaxFactory.ReturnStatement(
                         SyntaxFactory.CastExpression(
                             SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                             SyntaxFactory.InvocationExpression(
                                 Syntax.ThisDot(WithCoreMethodName),
-                                this.CreateArgumentList(ArgSource.Argument))))));
+                                this.CreateArgumentList(this.applyToMetaType.LocalFields, ArgSource.Argument))))));
         }
 
         private MethodDeclarationSyntax CreateWithCoreMethod()
@@ -295,7 +321,7 @@
                 SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                 WithCoreMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
-                .WithParameterList(this.CreateParameterList(ParameterStyle.Optional));
+                .WithParameterList(this.CreateParameterList(this.applyToMetaType.LocalFields, ParameterStyle.Optional));
             if (this.isAbstract)
             {
                 method = method
@@ -310,7 +336,7 @@
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
                                 Syntax.ThisDot(WithFactoryMethodName),
-                                this.CreateArgumentList(ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
+                                this.CreateArgumentList(this.applyToMetaType.LocalFields, ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
                                 .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
             }
 
@@ -320,16 +346,16 @@
         private MemberDeclarationSyntax CreateWithFactoryMethod()
         {
             // (field.IsDefined && field.Value != this.field)
-            Func<VariableDeclaratorSyntax, ExpressionSyntax> isChanged = v =>
+            Func<IFieldSymbol, ExpressionSyntax> isChanged = v =>
                 SyntaxFactory.ParenthesizedExpression(
                     SyntaxFactory.BinaryExpression(
                         SyntaxKind.LogicalAndExpression,
-                        Syntax.OptionalIsDefined(SyntaxFactory.IdentifierName(v.Identifier)),
+                        Syntax.OptionalIsDefined(SyntaxFactory.IdentifierName(v.Name)),
                         SyntaxFactory.BinaryExpression(
                             SyntaxKind.NotEqualsExpression,
-                            Syntax.OptionalValue(SyntaxFactory.IdentifierName(v.Identifier)),
-                            Syntax.ThisDot(SyntaxFactory.IdentifierName(v.Identifier)))));
-            var anyChangesExpression = this.GetFieldVariables().Select(fv => isChanged(fv.Value)).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
+                            Syntax.OptionalValue(SyntaxFactory.IdentifierName(v.Name)),
+                            Syntax.ThisDot(SyntaxFactory.IdentifierName(v.Name.ToPascalCase())))));
+            var anyChangesExpression = this.applyToMetaType.AllFields.Select(isChanged).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
 
             // /// <summary>Returns a new instance of this object with any number of properties changed.</summary>
             // private TemplateType WithFactory(...)
@@ -337,7 +363,7 @@
                 SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                 WithFactoryMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                .WithParameterList(CreateParameterList(ParameterStyle.Optional).AddParameters(OptionalIdentityParameter))
+                .WithParameterList(CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional).AddParameters(OptionalIdentityParameter))
                 .WithBody(SyntaxFactory.Block(
                     SyntaxFactory.IfStatement(
                         anyChangesExpression,
@@ -345,8 +371,8 @@
                             SyntaxFactory.ReturnStatement(
                                 SyntaxFactory.ObjectCreationExpression(
                                     SyntaxFactory.IdentifierName(applyTo.Identifier),
-                                    CreateArgumentList(ArgSource.OptionalArgumentOrProperty)
-                                        .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalGetValueOrDefault(SyntaxFactory.IdentifierName(IdentityParameterName.Identifier), Syntax.ThisDot(IdentityParameterName)))),
+                                    CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrProperty)
+                                        .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalGetValueOrDefault(SyntaxFactory.IdentifierName(IdentityParameterName.Identifier), Syntax.ThisDot(IdentityPropertyName)))),
                                     null))),
                         SyntaxFactory.ElseClause(SyntaxFactory.Block(
                             SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))))));
@@ -371,7 +397,7 @@
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 DefaultInstanceFieldName,
                                 WithFactoryMethodName),
-                            CreateArgumentList(ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
+                            CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
                                 .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName)))));
             }
             else
@@ -386,7 +412,7 @@
                 .WithModifiers(SyntaxFactory.TokenList(
                     SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
-                .WithParameterList(CreateParameterList(ParameterStyle.OptionalOrRequired))
+                .WithParameterList(CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.OptionalOrRequired))
                 .WithBody(body);
         }
 
@@ -476,58 +502,59 @@
             }
         }
 
-        private ParameterListSyntax CreateParameterList(ParameterStyle style)
+        private ParameterListSyntax CreateParameterList(IEnumerable<IFieldSymbol> fields, ParameterStyle style)
         {
             if (style == ParameterStyle.OptionalOrRequired)
             {
                 ////fields = SortRequiredFieldsFirst(fields);
             }
 
-            Func<FieldDeclarationSyntax, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !IsFieldRequired(f));
-            Func<ParameterSyntax, FieldDeclarationSyntax, ParameterSyntax> setTypeAndDefault = (p, f) => isOptional(f)
-                ? Syntax.Optional(p.WithType(f.Declaration.Type))
-                : p.WithType(f.Declaration.Type);
+            Func<IFieldSymbol, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !IsFieldRequired(f));
+            Func<ParameterSyntax, IFieldSymbol, ParameterSyntax> setTypeAndDefault = (p, f) => isOptional(f)
+                ? Syntax.Optional(p.WithType(GetFullyQualifiedSymbolName(f.Type)))
+                : p.WithType(GetFullyQualifiedSymbolName(f.Type));
             return SyntaxFactory.ParameterList(
                 Syntax.JoinSyntaxNodes(
                     SyntaxKind.CommaToken,
-                    this.GetFieldVariables().Select(f => setTypeAndDefault(SyntaxFactory.Parameter(f.Value.Identifier), f.Key))));
+                    fields.Select(f => setTypeAndDefault(SyntaxFactory.Parameter(SyntaxFactory.Identifier(f.Name)), f))));
         }
 
-        private ArgumentListSyntax CreateArgumentList(ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
+        private ArgumentListSyntax CreateArgumentList(IEnumerable<IFieldSymbol> fields, ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
         {
-            Func<FieldDeclarationSyntax, ArgSource> fieldSource = f => (source == ArgSource.OptionalArgumentOrTemplate && IsFieldRequired(f)) ? ArgSource.Argument : source;
-            Func<FieldDeclarationSyntax, bool> optionalWrap = f => asOptional != OptionalStyle.None && (asOptional == OptionalStyle.Always || !IsFieldRequired(f));
-            Func<FieldDeclarationSyntax, VariableDeclaratorSyntax, ExpressionSyntax> dereference = (f, v) =>
+            Func<IFieldSymbol, ArgSource> fieldSource = f => (source == ArgSource.OptionalArgumentOrTemplate && IsFieldRequired(f)) ? ArgSource.Argument : source;
+            Func<IFieldSymbol, bool> optionalWrap = f => asOptional != OptionalStyle.None && (asOptional == OptionalStyle.Always || !IsFieldRequired(f));
+            Func<IFieldSymbol, ExpressionSyntax> dereference = f =>
             {
-                var name = SyntaxFactory.IdentifierName(v.Identifier);
+                var name = SyntaxFactory.IdentifierName(f.Name);
+                var propertyName = SyntaxFactory.IdentifierName(f.Name.ToPascalCase());
                 switch (fieldSource(f))
                 {
                     case ArgSource.Property:
-                        return Syntax.ThisDot(name);
+                        return Syntax.ThisDot(propertyName);
                     case ArgSource.Argument:
                         return name;
                     case ArgSource.OptionalArgumentOrProperty:
-                        return Syntax.OptionalGetValueOrDefault(name, Syntax.ThisDot(name));
+                        return Syntax.OptionalGetValueOrDefault(name, Syntax.ThisDot(propertyName));
                     case ArgSource.OptionalArgumentOrTemplate:
-                        return Syntax.OptionalGetValueOrDefault(name, SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, DefaultInstanceFieldName, name));
+                        return Syntax.OptionalGetValueOrDefault(name, SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, DefaultInstanceFieldName, propertyName));
                     case ArgSource.Missing:
-                        return SyntaxFactory.DefaultExpression(Syntax.OptionalOf(f.Declaration.Type));
+                        return SyntaxFactory.DefaultExpression(Syntax.OptionalOf(GetFullyQualifiedSymbolName(f.Type)));
                     default:
                         throw Assumes.NotReachable();
                 }
             };
+
             return SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                 SyntaxKind.CommaToken,
-                this.GetFieldVariables().Select(f =>
+                fields.Select(f =>
                     SyntaxFactory.Argument(
-                        SyntaxFactory.NameColon(SyntaxFactory.IdentifierName(f.Value.Identifier)),
+                        SyntaxFactory.NameColon(SyntaxFactory.IdentifierName(f.Name)),
                         SyntaxFactory.Token(SyntaxKind.None),
-                        Syntax.OptionalForIf(dereference(f.Key, f.Value), optionalWrap(f.Key))))));
+                        Syntax.OptionalForIf(dereference(f), optionalWrap(f))))));
         }
 
-        private bool IsFieldRequired(FieldDeclarationSyntax field)
+        private bool IsFieldRequired(IFieldSymbol fieldSymbol)
         {
-            var fieldSymbol = this.semanticModel.GetDeclaredSymbol(field.Declaration.Variables.First());
             return fieldSymbol?.GetAttributes().Any(a => IsOrDerivesFrom<RequiredAttribute>(a.AttributeClass)) ?? false;
         }
 
@@ -545,6 +572,50 @@
             }
 
             return false;
+        }
+
+        private static bool IsAttribute<T>(INamedTypeSymbol type)
+        {
+            if (type != null)
+            {
+                if (type.Name == typeof(T).Name)
+                {
+                    // Don't sweat accuracy too much at this point.
+                    return true;
+                }
+
+                return IsAttribute<T>(type.BaseType);
+            }
+
+            return false;
+        }
+
+        private static bool HasAttribute<T>(INamedTypeSymbol type)
+        {
+            return type?.GetAttributes().Any(a => IsAttribute<T>(a.AttributeClass)) ?? false;
+        }
+
+        private static NameSyntax GetFullyQualifiedSymbolName(INamespaceOrTypeSymbol symbol)
+        {
+            if (symbol == null || string.IsNullOrEmpty(symbol.Name))
+            {
+                return null;
+            }
+
+            var parent = GetFullyQualifiedSymbolName(symbol.ContainingSymbol as INamespaceOrTypeSymbol);
+            SimpleNameSyntax leafName = SyntaxFactory.IdentifierName(symbol.Name);
+            var typeSymbol = symbol as INamedTypeSymbol;
+            if (typeSymbol != null && typeSymbol.IsGenericType)
+            {
+                leafName = SyntaxFactory.GenericName(symbol.Name)
+                    .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(Syntax.JoinSyntaxNodes<TypeSyntax>(
+                        SyntaxKind.CommaToken,
+                        typeSymbol.TypeArguments.Select(GetFullyQualifiedSymbolName))));
+            }
+
+            return parent != null
+                ? (NameSyntax)SyntaxFactory.QualifiedName(parent, leafName)
+                : leafName;
         }
 
         public class Options
@@ -709,7 +780,7 @@
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     Syntax.ThisDot(ImmutableFieldName),
                                     WithMethodName),
-                                this.generator.CreateArgumentList(ArgSource.Property, OptionalStyle.Always)))));
+                                this.generator.CreateArgumentList(this.generator.applyToMetaType.LocalFields, ArgSource.Property, OptionalStyle.Always)))));
 
                 // public TemplateType ToImmutable() { ... }
                 return SyntaxFactory.MethodDeclaration(
@@ -717,6 +788,73 @@
                     ToImmutableMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithBody(body);
+            }
+        }
+
+        protected struct MetaType
+        {
+            public MetaType(INamedTypeSymbol typeSymbol)
+            {
+                this.TypeSymbol = typeSymbol;
+            }
+
+            public INamedTypeSymbol TypeSymbol { get; private set; }
+
+            public bool IsDefault
+            {
+                get { return this.TypeSymbol == null; }
+            }
+
+            public IEnumerable<IFieldSymbol> LocalFields
+            {
+                get { return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>() ?? ImmutableArray<IFieldSymbol>.Empty; }
+            }
+
+            public IEnumerable<IFieldSymbol> AllFields
+            {
+                get
+                {
+                    foreach (var field in this.InheritedFields)
+                    {
+                        yield return field;
+                    }
+
+                    foreach (var field in this.LocalFields)
+                    {
+                        yield return field;
+                    }
+                }
+            }
+
+            public IEnumerable<IFieldSymbol> InheritedFields
+            {
+                get
+                {
+                    if (this.TypeSymbol == null)
+                    {
+                        yield break;
+                    }
+
+                    foreach (var field in this.Ancestor.AllFields)
+                    {
+                        yield return field;
+                    }
+                }
+            }
+
+            public MetaType Ancestor
+            {
+                get
+                {
+                    return HasAttribute<GenerateImmutableAttribute>(this.TypeSymbol.BaseType)
+                        ? new MetaType(this.TypeSymbol.BaseType)
+                        : default(MetaType);
+                }
+            }
+
+            public bool HasAncestor
+            {
+                get { return !this.Ancestor.IsDefault; }
             }
         }
 

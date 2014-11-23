@@ -95,6 +95,14 @@
             Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Builder" && m.Name == "ToImmutable" && m.Parameters.Length == 0 && !m.IsStatic));
         }
 
+        [Fact]
+        public async Task ClassDerivesFromAnotherWithFields_DerivedCreateParametersIncludeBaseFields()
+        {
+            var result = await this.GenerateFromStreamAsync("ClassDerivesFromAnotherWithFields");
+            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Fruit" && m.Name == "Create" && m.Parameters.Length == 1));
+            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "Create" && m.Parameters.Length == 2));
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
