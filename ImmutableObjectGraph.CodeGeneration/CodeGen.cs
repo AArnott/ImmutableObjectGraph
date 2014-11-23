@@ -103,7 +103,7 @@
                 {
                     members.Add(CreateWithFactoryMethod());
                     members.Add(CreateWithMethod());
-                    members.Add(CreateWithCoreMethod());
+                    members.AddRange(CreateWithCoreMethods());
                 }
 
                 members.Add(CreateDefaultInstanceField());
@@ -315,7 +315,7 @@
                                 this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.Argument))))));
         }
 
-        private MethodDeclarationSyntax CreateWithCoreMethod()
+        private IEnumerable<MethodDeclarationSyntax> CreateWithCoreMethods()
         {
             var method = SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.IdentifierName(this.applyTo.Identifier),
@@ -340,7 +340,25 @@
                                 .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
             }
 
-            return method;
+            yield return method;
+
+            foreach (var ancestor in this.applyToMetaType.Ancestors.Where(a => a.LocalFields.Any()))
+            {
+                var overrideMethod = SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.IdentifierName(ancestor.TypeSymbol.Name),
+                    WithCoreMethodName.Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
+                        SyntaxFactory.Token(SyntaxKind.OverrideKeyword))
+                    .WithParameterList(this.CreateParameterList(ancestor.AllFields, ParameterStyle.Optional))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                Syntax.ThisDot(WithFactoryMethodName),
+                                this.CreateArgumentList(ancestor.AllFields, ArgSource.Argument)
+                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
+                yield return overrideMethod;
+            }
         }
 
         private MemberDeclarationSyntax CreateWithFactoryMethod()
@@ -849,6 +867,19 @@
                     return HasAttribute<GenerateImmutableAttribute>(this.TypeSymbol.BaseType)
                         ? new MetaType(this.TypeSymbol.BaseType)
                         : default(MetaType);
+                }
+            }
+
+            public IEnumerable<MetaType> Ancestors
+            {
+                get
+                {
+                    var ancestor = this.Ancestor;
+                    while (!ancestor.IsDefault)
+                    {
+                        yield return ancestor;
+                        ancestor = ancestor.Ancestor;
+                    }
                 }
             }
 
