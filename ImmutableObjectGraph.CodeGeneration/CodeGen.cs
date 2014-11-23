@@ -355,8 +355,7 @@
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
                                 Syntax.ThisDot(WithFactoryMethodName),
-                                this.CreateArgumentList(ancestor.AllFields, ArgSource.Argument)
-                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
+                                this.CreateArgumentList(ancestor.AllFields, ArgSource.Argument)))));
                 yield return overrideMethod;
             }
         }
