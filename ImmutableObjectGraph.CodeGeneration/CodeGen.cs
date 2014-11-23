@@ -238,12 +238,14 @@
 
         private MemberDeclarationSyntax CreateTemplateStruct()
         {
-            // TODO: deal with fields that declare multiple variables in one field declaration.
-            // TODO: try to avoid pragmas by assigning all fields to their default values explicitly.
             return SyntaxFactory.StructDeclaration(NestedTemplateTypeName.Identifier)
                 .WithMembers(SyntaxFactory.List<MemberDeclarationSyntax>(
                     this.applyToMetaType.AllFields.Select(f =>
-                        ((FieldDeclarationSyntax)f.DeclaringSyntaxReferences.First().GetSyntax().Parent.Parent).WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword))))))
+                        SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(
+                            GetFullyQualifiedSymbolName(f.Type),
+                            SyntaxFactory.SingletonSeparatedList(
+                                SyntaxFactory.VariableDeclarator(f.Name))))
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword)))))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                 .WithLeadingTrivia(SyntaxFactory.Trivia(
                     SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.DisableKeyword), true)
