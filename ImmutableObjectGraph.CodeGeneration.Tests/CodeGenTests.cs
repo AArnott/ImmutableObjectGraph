@@ -149,6 +149,9 @@
             var errors = from diagnostic in diagnostics
                          where diagnostic.Severity >= DiagnosticSeverity.Error
                          select diagnostic;
+            var warnings = from diagnostic in diagnostics
+                           where diagnostic.Severity >= DiagnosticSeverity.Warning
+                           select diagnostic;
 
             Console.WriteLine(await outputDocument.GetTextAsync());
 
@@ -157,7 +160,13 @@
                 Console.WriteLine(error);
             }
 
+            foreach (var warning in warnings)
+            {
+                Console.WriteLine(warning);
+            }
+
             Assert.Empty(errors);
+            Assert.Empty(warnings);
 
             var semanticModel = await outputDocument.GetSemanticModelAsync();
             return new GenerationResult(outputDocument, semanticModel);

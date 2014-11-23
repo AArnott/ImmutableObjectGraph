@@ -235,11 +235,23 @@
 
         private MemberDeclarationSyntax CreateTemplateStruct()
         {
+            // TODO: deal with fields that declare multiple variables in one field declaration.
+            // TODO: try to avoid pragmas by assigning all fields to their default values explicitly.
             return SyntaxFactory.StructDeclaration(NestedTemplateTypeName.Identifier)
                 .WithMembers(SyntaxFactory.List<MemberDeclarationSyntax>(
                     this.applyToMetaType.AllFields.Select(f =>
                         ((FieldDeclarationSyntax)f.DeclaringSyntaxReferences.First().GetSyntax().Parent.Parent).WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword))))))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                .WithLeadingTrivia(SyntaxFactory.Trivia(
+                    SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.DisableKeyword), true)
+                    .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                        SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
+                    .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))))
+                .WithTrailingTrivia(SyntaxFactory.Trivia(
+                    SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.RestoreKeyword), true)
+                    .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                        SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
+                    .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))));
         }
 
         private MemberDeclarationSyntax CreateCtor()
@@ -678,10 +690,12 @@
                     .WithMembers(SyntaxFactory.List(innerClassMembers));
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
-                    builderType = builderType.WithBaseList(SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
-                        SyntaxFactory.SimpleBaseType(SyntaxFactory.QualifiedName(
-                            GetFullyQualifiedSymbolName(this.generator.applyToMetaType.Ancestor.TypeSymbol),
-                            BuilderTypeName)))));
+                    builderType = builderType
+                        .WithBaseList(SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
+                            SyntaxFactory.SimpleBaseType(SyntaxFactory.QualifiedName(
+                                GetFullyQualifiedSymbolName(this.generator.applyToMetaType.Ancestor.TypeSymbol),
+                                BuilderTypeName)))))
+                        .WithModifiers(builderType.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));
                 }
 
                 outerClassMembers.Add(builderType);
@@ -690,7 +704,7 @@
 
             protected MethodDeclarationSyntax CreateToBuilderMethod()
             {
-                return SyntaxFactory.MethodDeclaration(
+                var method = SyntaxFactory.MethodDeclaration(
                     BuilderTypeName,
                     ToBuilderMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
@@ -700,11 +714,18 @@
                                 BuilderTypeName,
                                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))),
                                 null))));
+
+                if (this.generator.applyToMetaType.HasAncestor)
+                {
+                    method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.NewKeyword));
+                }
+
+                return method;
             }
 
             protected MethodDeclarationSyntax CreateCreateBuilderMethod()
             {
-                return SyntaxFactory.MethodDeclaration(
+                var method = SyntaxFactory.MethodDeclaration(
                     BuilderTypeName,
                     CreateBuilderMethodName.Identifier)
                     .AddModifiers(
@@ -716,6 +737,13 @@
                                 BuilderTypeName,
                                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(DefaultInstanceFieldName))),
                                 null))));
+
+                if (this.generator.applyToMetaType.HasAncestor)
+                {
+                    method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.NewKeyword));
+                }
+
+                return method;
             }
 
             protected MemberDeclarationSyntax CreateImmutableField()
@@ -816,11 +844,18 @@
                                 this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.Property, OptionalStyle.Always)))));
 
                 // public TemplateType ToImmutable() { ... }
-                return SyntaxFactory.MethodDeclaration(
+                var method = SyntaxFactory.MethodDeclaration(
                     SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier),
                     ToImmutableMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithBody(body);
+
+                if (this.generator.applyToMetaType.HasAncestor)
+                {
+                    method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.NewKeyword));
+                }
+
+                return method;
             }
         }
 
