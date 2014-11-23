@@ -103,6 +103,14 @@
             Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "Create" && m.Parameters.Length == 2));
         }
 
+        [Fact]
+        public async Task ClassDerivesFromAnotherWithFields_DerivedWithParametersIncludeBaseFields()
+        {
+            var result = await this.GenerateFromStreamAsync("ClassDerivesFromAnotherWithFields");
+            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Fruit" && m.Name == "With" && m.Parameters.Length == 1));
+            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "With" && m.Parameters.Length == 2));
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))

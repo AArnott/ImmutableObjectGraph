@@ -305,14 +305,14 @@
                 SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                 WithMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .WithParameterList(CreateParameterList(this.applyToMetaType.LocalFields, ParameterStyle.Optional))
+                .WithParameterList(CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional))
                 .WithBody(SyntaxFactory.Block(
                     SyntaxFactory.ReturnStatement(
                         SyntaxFactory.CastExpression(
                             SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                             SyntaxFactory.InvocationExpression(
                                 Syntax.ThisDot(WithCoreMethodName),
-                                this.CreateArgumentList(this.applyToMetaType.LocalFields, ArgSource.Argument))))));
+                                this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.Argument))))));
         }
 
         private MethodDeclarationSyntax CreateWithCoreMethod()
@@ -321,7 +321,7 @@
                 SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                 WithCoreMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
-                .WithParameterList(this.CreateParameterList(this.applyToMetaType.LocalFields, ParameterStyle.Optional));
+                .WithParameterList(this.CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional));
             if (this.isAbstract)
             {
                 method = method
@@ -336,7 +336,7 @@
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
                                 Syntax.ThisDot(WithFactoryMethodName),
-                                this.CreateArgumentList(this.applyToMetaType.LocalFields, ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
+                                this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
                                 .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
             }
 
