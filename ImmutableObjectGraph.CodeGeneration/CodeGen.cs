@@ -84,7 +84,6 @@
 
             ValidateInput();
 
-            var fields = GetFields().ToList();
             var members = new List<MemberDeclarationSyntax>();
             if (!this.applyToMetaType.HasAncestor)
             {
@@ -95,15 +94,14 @@
             }
 
             members.Add(CreateCtor());
+            members.AddRange(CreateWithCoreMethods());
 
             if (!isAbstract)
             {
                 members.Add(CreateCreateMethod());
-                if (fields.Count > 0)
+                if (this.applyToMetaType.AllFields.Any())
                 {
                     members.Add(CreateWithFactoryMethod());
-                    members.Add(CreateWithMethod());
-                    members.AddRange(CreateWithCoreMethods());
                 }
 
                 members.Add(CreateDefaultInstanceField());
@@ -111,6 +109,11 @@
                 members.Add(CreateCreateDefaultTemplatePartialMethod());
                 members.Add(CreateTemplateStruct());
                 members.Add(CreateValidateMethod());
+            }
+
+            if (this.applyToMetaType.AllFields.Any())
+            {
+                members.Add(CreateWithMethod());
             }
 
             members.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
@@ -313,7 +316,7 @@
 
         private MethodDeclarationSyntax CreateWithMethod()
         {
-            return SyntaxFactory.MethodDeclaration(
+            var method = SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                 WithMethodName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
@@ -325,34 +328,44 @@
                             SyntaxFactory.InvocationExpression(
                                 Syntax.ThisDot(WithCoreMethodName),
                                 this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.Argument))))));
+
+            if (!this.applyToMetaType.LocalFields.Any())
+            {
+                method = Syntax.AddNewKeyword(method);
+            }
+
+            return method;
         }
 
         private IEnumerable<MethodDeclarationSyntax> CreateWithCoreMethods()
         {
-            var method = SyntaxFactory.MethodDeclaration(
-                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
-                WithCoreMethodName.Identifier)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
-                .WithParameterList(this.CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional));
-            if (this.isAbstract)
+            if (this.applyToMetaType.LocalFields.Any())
             {
-                method = method
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
-                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-            }
-            else
-            {
-                method = method
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
-                    .WithBody(SyntaxFactory.Block(
-                        SyntaxFactory.ReturnStatement(
-                            SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(WithFactoryMethodName),
-                                this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
-                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
-            }
+                var method = SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                    WithCoreMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
+                    .WithParameterList(this.CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional));
+                if (this.isAbstract)
+                {
+                    method = method
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                }
+                else
+                {
+                    method = method
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
+                        .WithBody(SyntaxFactory.Block(
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.InvocationExpression(
+                                    Syntax.ThisDot(WithFactoryMethodName),
+                                    this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
+                                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
+                }
 
-            yield return method;
+                yield return method;
+            }
 
             foreach (var ancestor in this.applyToMetaType.Ancestors.Where(a => a.LocalFields.Any()))
             {
@@ -717,7 +730,7 @@
 
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
-                    method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.NewKeyword));
+                    method = Syntax.AddNewKeyword(method);
                 }
 
                 return method;
@@ -740,7 +753,7 @@
 
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
-                    method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.NewKeyword));
+                    method = Syntax.AddNewKeyword(method);
                 }
 
                 return method;
@@ -852,7 +865,7 @@
 
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
-                    method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.NewKeyword));
+                    method = Syntax.AddNewKeyword(method);
                 }
 
                 return method;
