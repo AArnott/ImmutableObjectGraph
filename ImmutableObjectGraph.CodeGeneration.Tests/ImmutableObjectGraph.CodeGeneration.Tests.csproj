@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
     <EmbeddedResource Include="TestSources\AbstractClassFamilies.cs" />
     <EmbeddedResource Include="TestSources\DeepHierarchy.cs" />
     <EmbeddedResource Include="TestSources\OneScalarFieldAndEmptyDerived.cs" />

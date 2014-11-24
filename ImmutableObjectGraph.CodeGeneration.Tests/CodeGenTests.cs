@@ -202,6 +202,13 @@
             var result = await this.GenerateFromStreamAsync("AbstractClassFamilies");
         }
 
+        [Fact]
+        public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
+        {
+            var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
+
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
