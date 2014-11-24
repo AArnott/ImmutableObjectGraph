@@ -108,6 +108,9 @@
   <ItemGroup>
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="TestSources\OneScalarFieldAndEmptyDerived.cs" />
+    <EmbeddedResource Include="TestSources\NoFieldsAndNoFieldsDerived.cs" />
+    <EmbeddedResource Include="TestSources\NoFieldsAndOneScalarFieldDerived.cs" />
     <EmbeddedResource Include="TestSources\AbstractNonEmptyWithDerivedEmpty.cs" />
     <EmbeddedResource Include="TestSources\ClassDerivesFromAnotherWithFieldsAndBuilder.cs" />
     <EmbeddedResource Include="TestSources\ClassDerivesFromAnotherWithFields.cs" />

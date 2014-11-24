@@ -450,7 +450,7 @@
                     SyntaxFactory.ReturnStatement(DefaultInstanceFieldName));
             }
 
-            return SyntaxFactory.MethodDeclaration(
+            var method = SyntaxFactory.MethodDeclaration(
                 SyntaxFactory.IdentifierName(applyTo.Identifier),
                 CreateMethodName.Identifier)
                 .WithModifiers(SyntaxFactory.TokenList(
@@ -458,6 +458,13 @@
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
                 .WithParameterList(CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.OptionalOrRequired))
                 .WithBody(body);
+
+            if (this.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract && a.AllFields.Count() == this.applyToMetaType.AllFields.Count()))
+            {
+                method = Syntax.AddNewKeyword(method);
+            }
+
+            return method;
         }
 
         private MethodDeclarationSyntax CreateValidateMethod()

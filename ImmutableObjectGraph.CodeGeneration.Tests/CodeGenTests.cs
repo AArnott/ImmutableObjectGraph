@@ -48,6 +48,28 @@
         }
 
         [Fact]
+        public async Task NoFieldsAndNoFieldsDerived_HasCreateMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("NoFieldsAndNoFieldsDerived");
+            Assert.Equal(2, result.DeclaredMethods.Count(m => m.Name == "Create" && m.Parameters.Length == 0 && m.IsStatic));
+        }
+
+        [Fact]
+        public async Task NoFieldsAndOneScalarFieldDerived_HasCreateMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("NoFieldsAndOneScalarFieldDerived");
+            Assert.Equal(1, result.DeclaredMethods.Count(m => m.ContainingType.Name == "Empty" && m.Name == "Create" && m.Parameters.Length == 0 && m.IsStatic));
+            Assert.Equal(1, result.DeclaredMethods.Count(m => m.ContainingType.Name == "NotSoEmptyDerived" && m.Name == "Create" && m.Parameters.Length == 1 && m.IsStatic));
+        }
+
+        [Fact]
+        public async Task OneScalarFieldAndEmptyDerived_HasCreateMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("OneScalarFieldAndEmptyDerived");
+            Assert.Equal(2, result.DeclaredMethods.Count(m => m.Name == "Create" && m.Parameters.Length == 1 && m.IsStatic));
+        }
+
+        [Fact]
         public async Task FamilyPersonWatch()
         {
             await this.GenerateFromStreamAsync("FamilyPersonWatch");
