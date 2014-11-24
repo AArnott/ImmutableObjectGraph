@@ -142,7 +142,6 @@
             Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "WithCore" && m.Parameters.Length == 2 && m.IsVirtual));
         }
 
-
         [Fact]
         public async Task ClassDerivesFromAnotherWithFieldsAndBuilder_BuildersReflectTypeRelationship()
         {
@@ -189,6 +188,12 @@
             var result = await this.GenerateFromStreamAsync("AbstractNonEmptyWithDerivedEmpty");
             Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "WithFactory" && m.Parameters.Length == 2));
             Assert.False(result.DeclaredMethods.Any(m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "WithFactory" && m.Parameters.Length == 2));
+        }
+
+        [Fact]
+        public async Task DeepHierarchy_Compiles()
+        {
+            var result = await this.GenerateFromStreamAsync("DeepHierarchy");
         }
 
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
