@@ -247,16 +247,20 @@
                                 SyntaxFactory.VariableDeclarator(f.Name))))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword)))))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                .WithLeadingTrivia(SyntaxFactory.Trivia(
-                    SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.DisableKeyword), true)
-                    .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
-                        SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
-                    .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))))
-                .WithTrailingTrivia(SyntaxFactory.Trivia(
-                    SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.RestoreKeyword), true)
-                    .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
-                        SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
-                    .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))));
+                .WithLeadingTrivia(
+                    SyntaxFactory.LineFeed,
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.DisableKeyword), true)
+                        .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
+                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))))
+                .WithTrailingTrivia(
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.RestoreKeyword), true)
+                        .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
+                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))),
+                    SyntaxFactory.LineFeed);
         }
 
         private MemberDeclarationSyntax CreateCtor()
