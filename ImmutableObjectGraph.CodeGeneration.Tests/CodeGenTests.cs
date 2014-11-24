@@ -196,6 +196,12 @@
             var result = await this.GenerateFromStreamAsync("DeepHierarchy");
         }
 
+        [Fact]
+        public async Task AbstractClassFamilies_Compiles()
+        {
+            var result = await this.GenerateFromStreamAsync("AbstractClassFamilies");
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))

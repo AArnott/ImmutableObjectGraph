@@ -374,21 +374,24 @@
                 yield return method;
             }
 
-            foreach (var ancestor in this.applyToMetaType.Ancestors.Where(a => a.LocalFields.Any()))
+            if (!this.applyToSymbol.IsAbstract)
             {
-                var overrideMethod = SyntaxFactory.MethodDeclaration(
-                    SyntaxFactory.IdentifierName(ancestor.TypeSymbol.Name),
-                    WithCoreMethodName.Identifier)
-                    .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
-                        SyntaxFactory.Token(SyntaxKind.OverrideKeyword))
-                    .WithParameterList(this.CreateParameterList(ancestor.AllFields, ParameterStyle.Optional))
-                    .WithBody(SyntaxFactory.Block(
-                        SyntaxFactory.ReturnStatement(
-                            SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(WithFactoryMethodName),
-                                this.CreateArgumentList(ancestor.AllFields, ArgSource.Argument)))));
-                yield return overrideMethod;
+                foreach (var ancestor in this.applyToMetaType.Ancestors.Where(a => a.LocalFields.Any()))
+                {
+                    var overrideMethod = SyntaxFactory.MethodDeclaration(
+                        SyntaxFactory.IdentifierName(ancestor.TypeSymbol.Name),
+                        WithCoreMethodName.Identifier)
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
+                            SyntaxFactory.Token(SyntaxKind.OverrideKeyword))
+                        .WithParameterList(this.CreateParameterList(ancestor.AllFields, ParameterStyle.Optional))
+                        .WithBody(SyntaxFactory.Block(
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.InvocationExpression(
+                                    Syntax.ThisDot(WithFactoryMethodName),
+                                    this.CreateArgumentList(ancestor.AllFields, ArgSource.Argument)))));
+                    yield return overrideMethod;
+                }
             }
         }
 
