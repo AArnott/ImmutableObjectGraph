@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ImmutableObjectGraph;
 
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
+[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true)]
 abstract partial class FileSystemEntry
 {
     [Required]
@@ -10,19 +10,19 @@ abstract partial class FileSystemEntry
     readonly RichData data;
 }
 
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
+[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true)]
 partial class FileSystemFile : FileSystemEntry
 {
     readonly ImmutableHashSet<string> attributes;
 }
 
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
+[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true)]
 partial class FileSystemDirectory : FileSystemEntry
 {
     readonly ImmutableSortedSet<FileSystemEntry> children;
 }
 
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
+[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true)]
 partial class RichData
 {
     readonly int someCoolProperty;

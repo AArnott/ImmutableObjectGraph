@@ -24,11 +24,14 @@
 
         public bool GenerateBuilder { get; set; }
 
-        public override Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
+        public bool Delta { get; set; }
+
+        public override Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
         {
             var options = new CodeGen.Options
             {
                 GenerateBuilder = this.GenerateBuilder,
+                Delta = this.Delta,
             };
 
             return CodeGen.GenerateAsync((ClassDeclarationSyntax)applyTo, document, progress, options, cancellationToken);
