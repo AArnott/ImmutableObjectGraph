@@ -860,18 +860,28 @@
 
             protected MethodDeclarationSyntax CreateToImmutableMethod()
             {
-                // return this.immutable = this.immutable.With(...)
+                ExpressionSyntax returnExpression;
+                if (this.generator.applyToMetaType.AllFields.Any())
+                {
+                    // this.immutable = this.immutable.With(...)
+                    returnExpression = SyntaxFactory.AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        Syntax.ThisDot(ImmutableFieldName),
+                        SyntaxFactory.InvocationExpression(
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                Syntax.ThisDot(ImmutableFieldName),
+                                WithMethodName),
+                            this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.Property, OptionalStyle.Always)));
+                }
+                else
+                {
+                    // this.immutable
+                    returnExpression = Syntax.ThisDot(ImmutableFieldName);
+                }
+
                 var body = SyntaxFactory.Block(
-                    SyntaxFactory.ReturnStatement(
-                        SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression,
-                            Syntax.ThisDot(ImmutableFieldName),
-                            SyntaxFactory.InvocationExpression(
-                                SyntaxFactory.MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    Syntax.ThisDot(ImmutableFieldName),
-                                    WithMethodName),
-                                this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.Property, OptionalStyle.Always)))));
+                    SyntaxFactory.ReturnStatement(returnExpression));
 
                 // public TemplateType ToImmutable() { ... }
                 var method = SyntaxFactory.MethodDeclaration(
