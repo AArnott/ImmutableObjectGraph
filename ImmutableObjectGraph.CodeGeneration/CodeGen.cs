@@ -704,8 +704,12 @@
                 var outerClassMembers = new List<MemberDeclarationSyntax>
                 {
                     this.CreateToBuilderMethod(),
-                    this.CreateCreateBuilderMethod(),
                 };
+
+                if (!this.generator.isAbstract)
+                {
+                    outerClassMembers.Add(this.CreateCreateBuilderMethod());
+                }
 
                 var innerClassMembers = new List<MemberDeclarationSyntax>();
                 innerClassMembers.Add(this.CreateImmutableField());
@@ -768,7 +772,7 @@
                                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(DefaultInstanceFieldName))),
                                 null))));
 
-                if (this.generator.applyToMetaType.HasAncestor)
+                if (this.generator.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract))
                 {
                     method = Syntax.AddNewKeyword(method);
                 }
