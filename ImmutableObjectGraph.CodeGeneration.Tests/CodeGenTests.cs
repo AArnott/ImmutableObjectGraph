@@ -202,6 +202,12 @@
             var result = await this.GenerateFromStreamAsync("AbstractClassFamilies");
         }
 
+        [Fact]
+        public async Task FileSystem_Compiles()
+        {
+            var result = await this.GenerateFromStreamAsync("FileSystem");
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
