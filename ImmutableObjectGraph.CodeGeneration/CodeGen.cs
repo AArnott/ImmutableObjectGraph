@@ -136,6 +136,8 @@
                 generatedTypeAndSiblings.AddRange(deltaMembers.SiblingsOfGeneratedType);
             }
 
+            members.Sort(StyleCop.Sort);
+
             generatedTypeAndSiblings.Add(SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                 .WithMembers(SyntaxFactory.List(members)));
