@@ -50,6 +50,16 @@
         private readonly Options options;
         private readonly CancellationToken cancellationToken;
 
+        /// <summary>
+        /// The members injected into the primary generated type.
+        /// </summary>
+        private readonly List<MemberDeclarationSyntax> innerMembers = new List<MemberDeclarationSyntax>();
+
+        /// <summary>
+        /// The members injected into the generated document, including the primary generated type.
+        /// </summary>
+        private readonly List<MemberDeclarationSyntax> outerMembers = new List<MemberDeclarationSyntax>();
+
         private SemanticModel semanticModel;
         private INamedTypeSymbol applyToSymbol;
         private MetaType applyToMetaType;
@@ -74,6 +84,13 @@
             return await instance.GenerateAsync();
         }
 
+        private async Task MergeFeatureAsync(IFeatureGenerator featureGenerator)
+        {
+            var typeConversionMembers = await featureGenerator.GenerateAsync();
+            this.innerMembers.AddRange(typeConversionMembers.MembersOfGeneratedType);
+            this.outerMembers.AddRange(typeConversionMembers.SiblingsOfGeneratedType);
+        }
+
         private async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
         {
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
@@ -84,65 +101,56 @@
 
             ValidateInput();
 
-            var members = new List<MemberDeclarationSyntax>();
-            var generatedTypeAndSiblings = new List<MemberDeclarationSyntax>();
-
             if (!this.applyToMetaType.HasAncestor)
             {
-                members.Add(CreateLastIdentityProducedField());
-                members.Add(CreateIdentityField());
-                members.Add(CreateIdentityProperty());
-                members.Add(CreateNewIdentityMethod());
+                this.innerMembers.Add(CreateLastIdentityProducedField());
+                this.innerMembers.Add(CreateIdentityField());
+                this.innerMembers.Add(CreateIdentityProperty());
+                this.innerMembers.Add(CreateNewIdentityMethod());
             }
 
-            members.Add(CreateCtor());
-            members.AddRange(CreateWithCoreMethods());
+            this.innerMembers.Add(CreateCtor());
+            this.innerMembers.AddRange(CreateWithCoreMethods());
 
             if (!isAbstract)
             {
-                members.Add(CreateCreateMethod());
+                this.innerMembers.Add(CreateCreateMethod());
                 if (this.applyToMetaType.AllFields.Any())
                 {
-                    members.Add(CreateWithFactoryMethod());
+                    this.innerMembers.Add(CreateWithFactoryMethod());
                 }
 
-                members.Add(CreateDefaultInstanceField());
-                members.Add(CreateGetDefaultTemplateMethod());
-                members.Add(CreateCreateDefaultTemplatePartialMethod());
-                members.Add(CreateTemplateStruct());
-                members.Add(CreateValidateMethod());
+                this.innerMembers.Add(CreateDefaultInstanceField());
+                this.innerMembers.Add(CreateGetDefaultTemplateMethod());
+                this.innerMembers.Add(CreateCreateDefaultTemplatePartialMethod());
+                this.innerMembers.Add(CreateTemplateStruct());
+                this.innerMembers.Add(CreateValidateMethod());
             }
 
             if (this.applyToMetaType.AllFields.Any())
             {
-                members.Add(CreateWithMethod());
+                this.innerMembers.Add(CreateWithMethod());
             }
 
-            members.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
+            this.innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
 
             if (this.options.GenerateBuilder)
             {
-                var builderGenerator = new BuilderGen(this);
-                var builderMembers = await builderGenerator.GenerateAsync();
-                members.AddRange(builderMembers.MembersOfGeneratedType);
-                generatedTypeAndSiblings.AddRange(builderMembers.SiblingsOfGeneratedType);
+                await this.MergeFeatureAsync(new BuilderGen(this));
             }
 
             if (this.options.Delta)
             {
-                var deltaGenerator = new DeltaGen(this);
-                var deltaMembers = await deltaGenerator.GenerateAsync();
-                members.AddRange(deltaMembers.MembersOfGeneratedType);
-                generatedTypeAndSiblings.AddRange(deltaMembers.SiblingsOfGeneratedType);
+                await this.MergeFeatureAsync(new DeltaGen(this));
             }
 
-            members.Sort(StyleCop.Sort);
+            this.innerMembers.Sort(StyleCop.Sort);
 
-            generatedTypeAndSiblings.Add(SyntaxFactory.ClassDeclaration(applyTo.Identifier)
+            this.outerMembers.Add(SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                .WithMembers(SyntaxFactory.List(members)));
+                .WithMembers(SyntaxFactory.List(this.innerMembers)));
 
-            return generatedTypeAndSiblings;
+            return outerMembers;
         }
 
         protected struct GenerationResult
@@ -708,7 +716,7 @@
             public bool Delta { get; set; }
         }
 
-        protected class DeltaGen
+        protected class DeltaGen : IFeatureGenerator
         {
             private static readonly IdentifierNameSyntax EnumValueNone = SyntaxFactory.IdentifierName("None");
             private static readonly IdentifierNameSyntax EnumValueType = SyntaxFactory.IdentifierName("Type");
@@ -758,7 +766,7 @@
             }
         }
 
-        protected class BuilderGen
+        protected class BuilderGen : IFeatureGenerator
         {
             private static readonly IdentifierNameSyntax BuilderTypeName = SyntaxFactory.IdentifierName("Builder");
             private static readonly IdentifierNameSyntax ToBuilderMethodName = SyntaxFactory.IdentifierName("ToBuilder");
@@ -975,6 +983,11 @@
 
                 return method;
             }
+        }
+
+        protected interface IFeatureGenerator
+        {
+            Task<GenerationResult> GenerateAsync();
         }
 
         protected struct MetaType
