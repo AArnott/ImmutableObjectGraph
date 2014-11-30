@@ -51,12 +51,6 @@
                 string generated = null;
                 ThreadHelper.JoinableTaskFactory.Run(async delegate
                 {
-                    IVsUIHierarchy uiHierarchy;
-                    uint itemid;
-                    GetSourceProjectItem(inputFilePath, out uiHierarchy, out itemid);
-                    object projectNameObject;
-                    ErrorHandler.ThrowOnFailure(uiHierarchy.GetProperty((uint)VSConstants.VSITEMID.Root, (int)__VSHPROPID.VSHPROPID_Name, out projectNameObject));
-
                     VisualStudioWorkspace workspace = GetRoslynWorkspace();
                     var inputDocumentId = workspace.CurrentSolution.GetDocumentIdsWithFilePath(inputFilePath).First();
                     var inputDocument = workspace.CurrentSolution.GetDocument(inputDocumentId);

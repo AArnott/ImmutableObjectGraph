@@ -64,7 +64,7 @@
             this.cancellationToken = cancellationToken;
         }
 
-        public static async Task<MemberDeclarationSyntax> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
+        public static async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
         {
             Requires.NotNull(applyTo, "applyTo");
             Requires.NotNull(document, "document");
@@ -74,7 +74,7 @@
             return await instance.GenerateAsync();
         }
 
-        private async Task<MemberDeclarationSyntax> GenerateAsync()
+        private async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
         {
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             this.isAbstract = applyTo.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
@@ -85,6 +85,8 @@
             ValidateInput();
 
             var members = new List<MemberDeclarationSyntax>();
+            var generatedTypeAndSiblings = new List<MemberDeclarationSyntax>();
+
             if (!this.applyToMetaType.HasAncestor)
             {
                 members.Add(CreateLastIdentityProducedField());
@@ -122,12 +124,32 @@
             {
                 var builderGenerator = new BuilderGen(this);
                 var builderMembers = await builderGenerator.GenerateAsync();
-                members.AddRange(builderMembers);
+                members.AddRange(builderMembers.MembersOfGeneratedType);
+                generatedTypeAndSiblings.AddRange(builderMembers.SiblingsOfGeneratedType);
             }
 
-            return SyntaxFactory.ClassDeclaration(applyTo.Identifier)
+            if (this.options.Delta)
+            {
+                var deltaGenerator = new DeltaGen(this);
+                var deltaMembers = await deltaGenerator.GenerateAsync();
+                members.AddRange(deltaMembers.MembersOfGeneratedType);
+                generatedTypeAndSiblings.AddRange(deltaMembers.SiblingsOfGeneratedType);
+            }
+
+            members.Sort(StyleCop.Sort);
+
+            generatedTypeAndSiblings.Add(SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                .WithMembers(SyntaxFactory.List(members));
+                .WithMembers(SyntaxFactory.List(members)));
+
+            return generatedTypeAndSiblings;
+        }
+
+        protected struct GenerationResult
+        {
+            public SyntaxList<MemberDeclarationSyntax> MembersOfGeneratedType { get; set; }
+
+            public SyntaxList<MemberDeclarationSyntax> SiblingsOfGeneratedType { get; set; }
         }
 
         private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)
@@ -682,6 +704,58 @@
             public Options() { }
 
             public bool GenerateBuilder { get; set; }
+
+            public bool Delta { get; set; }
+        }
+
+        protected class DeltaGen
+        {
+            private static readonly IdentifierNameSyntax EnumValueNone = SyntaxFactory.IdentifierName("None");
+            private static readonly IdentifierNameSyntax EnumValueType = SyntaxFactory.IdentifierName("Type");
+            private static readonly IdentifierNameSyntax EnumValuePositionUnderParent = SyntaxFactory.IdentifierName("PositionUnderParent");
+            private static readonly IdentifierNameSyntax EnumValueParent = SyntaxFactory.IdentifierName("Parent");
+
+            private readonly CodeGen generator;
+            private readonly string enumTypeName;
+
+            public DeltaGen(CodeGen generator)
+            {
+                this.generator = generator;
+                this.enumTypeName = generator.applyToMetaType.TypeSymbol.Name + "ChangedProperties";
+            }
+
+            public async Task<GenerationResult> GenerateAsync()
+            {
+                var outerMembers = new List<MemberDeclarationSyntax>();
+
+                outerMembers.Add(this.CreateChangedPropertiesEnum());
+
+                return new GenerationResult { SiblingsOfGeneratedType = SyntaxFactory.List(outerMembers) };
+            }
+
+            private EnumDeclarationSyntax CreateChangedPropertiesEnum()
+            {
+                TypeSyntax enumBaseType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(
+                    this.generator.applyToMetaType.AllFields.Count() > 32
+                        ? SyntaxKind.ULongKeyword
+                        : SyntaxKind.UIntKeyword));
+
+                var result = SyntaxFactory.EnumDeclaration(this.enumTypeName)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithBaseList(SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(SyntaxFactory.SimpleBaseType(enumBaseType))))
+                    .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Attribute(
+                        SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName("System"), SyntaxFactory.IdentifierName("Flags"))))))
+                    .AddMembers(
+                        SyntaxFactory.EnumMemberDeclaration(SyntaxFactory.List<AttributeListSyntax>(), EnumValueNone.Identifier, SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal("0x0", 0x0)))),
+                        SyntaxFactory.EnumMemberDeclaration(SyntaxFactory.List<AttributeListSyntax>(), EnumValueType.Identifier, SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal("0x1", 0x1)))),
+                        SyntaxFactory.EnumMemberDeclaration(SyntaxFactory.List<AttributeListSyntax>(), EnumValuePositionUnderParent.Identifier, SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal("0x2", 0x2)))),
+                        SyntaxFactory.EnumMemberDeclaration(SyntaxFactory.List<AttributeListSyntax>(), EnumValueParent.Identifier, SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal("0x4", 0x4)))))
+                    .AddMembers(
+                        // TODO: add *all* fields up and down the hierarchy here, as found in Delta.tt.inc
+                        );
+
+                return result;
+            }
         }
 
         protected class BuilderGen
@@ -699,13 +773,17 @@
                 this.generator = generator;
             }
 
-            public async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
+            public async Task<GenerationResult> GenerateAsync()
             {
                 var outerClassMembers = new List<MemberDeclarationSyntax>
                 {
                     this.CreateToBuilderMethod(),
-                    this.CreateCreateBuilderMethod(),
                 };
+
+                if (!this.generator.isAbstract)
+                {
+                    outerClassMembers.Add(this.CreateCreateBuilderMethod());
+                }
 
                 var innerClassMembers = new List<MemberDeclarationSyntax>();
                 innerClassMembers.Add(this.CreateImmutableField());
@@ -729,7 +807,7 @@
                 }
 
                 outerClassMembers.Add(builderType);
-                return outerClassMembers;
+                return new GenerationResult { MembersOfGeneratedType = SyntaxFactory.List(outerClassMembers) };
             }
 
             protected MethodDeclarationSyntax CreateToBuilderMethod()
@@ -768,7 +846,7 @@
                                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(DefaultInstanceFieldName))),
                                 null))));
 
-                if (this.generator.applyToMetaType.HasAncestor)
+                if (this.generator.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract))
                 {
                     method = Syntax.AddNewKeyword(method);
                 }
@@ -860,18 +938,28 @@
 
             protected MethodDeclarationSyntax CreateToImmutableMethod()
             {
-                // return this.immutable = this.immutable.With(...)
+                ExpressionSyntax returnExpression;
+                if (this.generator.applyToMetaType.AllFields.Any())
+                {
+                    // this.immutable = this.immutable.With(...)
+                    returnExpression = SyntaxFactory.AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        Syntax.ThisDot(ImmutableFieldName),
+                        SyntaxFactory.InvocationExpression(
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                Syntax.ThisDot(ImmutableFieldName),
+                                WithMethodName),
+                            this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.Property, OptionalStyle.Always)));
+                }
+                else
+                {
+                    // this.immutable
+                    returnExpression = Syntax.ThisDot(ImmutableFieldName);
+                }
+
                 var body = SyntaxFactory.Block(
-                    SyntaxFactory.ReturnStatement(
-                        SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression,
-                            Syntax.ThisDot(ImmutableFieldName),
-                            SyntaxFactory.InvocationExpression(
-                                SyntaxFactory.MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    Syntax.ThisDot(ImmutableFieldName),
-                                    WithMethodName),
-                                this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.Property, OptionalStyle.Always)))));
+                    SyntaxFactory.ReturnStatement(returnExpression));
 
                 // public TemplateType ToImmutable() { ... }
                 var method = SyntaxFactory.MethodDeclaration(

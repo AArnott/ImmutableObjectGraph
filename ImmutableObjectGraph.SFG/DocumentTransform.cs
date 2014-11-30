@@ -27,7 +27,7 @@
 // ------------------------------------------------------------------------------
 ";
 
-        private DocumentTransform ()
+        private DocumentTransform()
         {
         }
 
@@ -55,15 +55,17 @@
                     var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol, inputSemanticModel.Compilation);
                     if (generationAttribute != null)
                     {
-                        var generatedType = await generationAttribute.GenerateAsync(memberNode, inputDocument, progress, CancellationToken.None);
+                        var generatedTypes = await generationAttribute.GenerateAsync(memberNode, inputDocument, progress, CancellationToken.None);
                         if (namespaceNode != null)
                         {
-                            generatedType = SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
+                            emittedMembers.Add(SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
                                 .WithUsings(SyntaxFactory.List(namespaceNode.ChildNodes().OfType<UsingDirectiveSyntax>()))
-                                .WithMembers(SyntaxFactory.List(new[] { generatedType }));
+                                .WithMembers(SyntaxFactory.List(generatedTypes)));
                         }
-
-                        emittedMembers.Add(generatedType);
+                        else
+                        {
+                            emittedMembers.AddRange(generatedTypes);
+                        }
                     }
                 }
             }
