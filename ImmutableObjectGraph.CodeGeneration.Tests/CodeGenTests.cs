@@ -191,9 +191,10 @@
         }
 
         [Fact]
-        public async Task DeepHierarchy_Compiles()
+        public async Task DeepHierarchy_HasTypeConverters()
         {
             var result = await this.GenerateFromStreamAsync("DeepHierarchy");
+            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "A" && m.Name == "ToB" && m.Parameters.Length == 1 && m.Parameters[0].Name == "field2"));
         }
 
         [Fact]

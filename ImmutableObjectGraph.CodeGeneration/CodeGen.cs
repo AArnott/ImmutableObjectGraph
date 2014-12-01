@@ -12,6 +12,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.CodeAnalysis.Text;
     using Microsoft.ImmutableObjectGraph_SFG;
     using Validation;
 
@@ -23,6 +24,8 @@
         private static readonly IdentifierNameSyntax IdentityPropertyName = SyntaxFactory.IdentifierName("Identity");
         private static readonly ParameterSyntax RequiredIdentityParameter = SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax);
         private static readonly ParameterSyntax OptionalIdentityParameter = Syntax.Optional(RequiredIdentityParameter);
+        private static readonly ArgumentSyntax OptionalIdentityArgument = SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), IdentityParameterName);
+        private static readonly ArgumentSyntax RequiredIdentityArgumentFromProperty = SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.ThisDot(IdentityPropertyName));
         private static readonly IdentifierNameSyntax DefaultInstanceFieldName = SyntaxFactory.IdentifierName("DefaultInstance");
         private static readonly IdentifierNameSyntax GetDefaultTemplateMethodName = SyntaxFactory.IdentifierName("GetDefaultTemplate");
         private static readonly IdentifierNameSyntax varType = SyntaxFactory.IdentifierName("var");
@@ -62,8 +65,10 @@
 
         private SemanticModel semanticModel;
         private INamedTypeSymbol applyToSymbol;
+        private ImmutableArray<DeclarationInfo> inputDeclarations;
         private MetaType applyToMetaType;
         private bool isAbstract;
+        private TypeSyntax applyToTypeName;
 
         private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
         {
@@ -95,9 +100,11 @@
         {
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             this.isAbstract = applyTo.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
+            this.applyToTypeName = SyntaxFactory.IdentifierName(this.applyTo.Identifier);
 
+            this.inputDeclarations = this.semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, this.semanticModel.SyntaxTree.Length), true, this.cancellationToken);
             this.applyToSymbol = this.semanticModel.GetDeclaredSymbol(this.applyTo, this.cancellationToken);
-            this.applyToMetaType = new MetaType(this.applyToSymbol);
+            this.applyToMetaType = new MetaType(this, this.applyToSymbol);
 
             ValidateInput();
 
@@ -143,6 +150,8 @@
             {
                 await this.MergeFeatureAsync(new DeltaGen(this));
             }
+
+            await this.MergeFeatureAsync(new TypeConversionGen(this));
 
             this.innerMembers.Sort(StyleCop.Sort);
 
@@ -190,6 +199,17 @@
                         (uint)location.Line,
                         (uint)location.Character);
                 }
+            }
+        }
+
+        private IEnumerable<INamedTypeSymbol> TypesInInputDocument
+        {
+            get
+            {
+                return from declaration in this.inputDeclarations
+                       let typeSymbol = declaration.DeclaredSymbol as INamedTypeSymbol
+                       where typeSymbol != null
+                       select typeSymbol;
             }
         }
 
@@ -990,10 +1010,239 @@
             Task<GenerationResult> GenerateAsync();
         }
 
+        protected class TypeConversionGen : IFeatureGenerator
+        {
+            private static readonly IdentifierNameSyntax CreateWithIdentityMethodName = SyntaxFactory.IdentifierName("CreateWithIdentity");
+            private readonly CodeGen generator;
+
+            public TypeConversionGen(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public async Task<GenerationResult> GenerateAsync()
+            {
+                var members = new List<MemberDeclarationSyntax>();
+                if (!this.generator.applyToSymbol.IsAbstract && (this.generator.applyToMetaType.HasAncestor || this.generator.applyToMetaType.Descendents.Any()))
+                {
+                    members.Add(this.CreateCreateWithIdentityMethod());
+                }
+
+                if (this.generator.applyToMetaType.HasAncestor && !this.generator.applyToMetaType.Ancestor.TypeSymbol.IsAbstract)
+                {
+                    members.Add(this.CreateToAncestorTypeMethod());
+                }
+
+                foreach (MetaType derivedType in this.generator.applyToMetaType.Descendents.Where(d => !d.TypeSymbol.IsAbstract))
+                {
+                    members.Add(this.CreateToDerivedTypeMethod(derivedType));
+
+                    foreach (MetaType ancestor in this.generator.applyToMetaType.Ancestors)
+                    {
+                        members.Add(this.CreateToDerivedTypeOverrideMethod(derivedType, ancestor));
+                    }
+                }
+
+                return new GenerationResult { MembersOfGeneratedType = SyntaxFactory.List(members) };
+            }
+
+            internal static IdentifierNameSyntax GetToTypeMethodName(string typeName)
+            {
+                return SyntaxFactory.IdentifierName("To" + typeName);
+            }
+
+            private MemberDeclarationSyntax CreateCreateWithIdentityMethod()
+            {
+                ExpressionSyntax returnExpression = DefaultInstanceFieldName;
+                if (this.generator.applyToMetaType.LocalFields.Any())
+                {
+                    returnExpression = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            returnExpression,
+                            WithFactoryMethodName),
+                        this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrTemplate, OptionalStyle.Always)
+                            .AddArguments(OptionalIdentityArgument));
+                }
+
+                var method = SyntaxFactory.MethodDeclaration(
+                    this.generator.applyToTypeName,
+                    CreateWithIdentityMethodName.Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.InternalKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .WithParameterList(
+                        this.generator.CreateParameterList(
+                            this.generator.applyToMetaType.AllFields,
+                            ParameterStyle.OptionalOrRequired)
+                        .AddParameters(OptionalIdentityParameter))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(IdentityParameterName)),
+                            SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                IdentityParameterName,
+                                SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList())))),
+                        SyntaxFactory.ReturnStatement(returnExpression)));
+
+                // BUG: the condition should be if there are local fields on *any* ancestor
+                // from the closest non-abstract ancestor (exclusive) to this type (inclusive).
+                if (!this.generator.applyToMetaType.LocalFields.Any() && this.generator.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract))
+                {
+                    method = Syntax.AddNewKeyword(method);
+                }
+
+                return method;
+            }
+
+            private MemberDeclarationSyntax CreateToAncestorTypeMethod()
+            {
+                var ancestor = this.generator.applyToMetaType.Ancestor;
+                var ancestorType = GetFullyQualifiedSymbolName(ancestor.TypeSymbol);
+                return SyntaxFactory.MethodDeclaration(
+                    ancestorType,
+                    GetToTypeMethodName(this.generator.applyToMetaType.Ancestor.TypeSymbol.Name).Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    ancestorType,
+                                    CreateWithIdentityMethodName),
+                                this.generator.CreateArgumentList(ancestor.AllFields, asOptional: OptionalStyle.WhenNotRequired)
+                                    .AddArguments(RequiredIdentityArgumentFromProperty)))));
+            }
+
+            private MemberDeclarationSyntax CreateToDerivedTypeMethod(MetaType derivedType)
+            {
+                var derivedTypeName = GetFullyQualifiedSymbolName(derivedType.TypeSymbol);
+                var thatLocal = SyntaxFactory.IdentifierName("that");
+                var body = new List<StatementSyntax>();
+
+                // var that = this as DerivedType;
+                body.Add(SyntaxFactory.LocalDeclarationStatement(
+                    SyntaxFactory.VariableDeclaration(
+                        varType,
+                        SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.VariableDeclarator(thatLocal.Identifier)
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.BinaryExpression(
+                                        SyntaxKind.AsExpression,
+                                        SyntaxFactory.ThisExpression(),
+                                        derivedTypeName)))))));
+
+                // this.GetType()
+                var thisDotGetType = SyntaxFactory.InvocationExpression(
+                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName("GetType")),
+                    SyntaxFactory.ArgumentList());
+
+                // {0}.IsEquivalentTo(typeof(derivedType))
+                var thisTypeIsEquivalentToDerivedType =
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            thisDotGetType,
+                            SyntaxFactory.IdentifierName("IsEquivalentTo")),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(
+                            SyntaxFactory.TypeOfExpression(derivedTypeName)))));
+
+                var ifEquivalentTypeBlock = new List<StatementSyntax>();
+                var fieldsBeyond = derivedType.GetFieldsBeyond(this.generator.applyToMetaType);
+                if (fieldsBeyond.Any())
+                {
+                    Func<IFieldSymbol, ExpressionSyntax> isUnchanged = v =>
+                        SyntaxFactory.ParenthesizedExpression(
+                            this.generator.IsFieldRequired(v)
+                                ? // ({0} == that.{1})
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.EqualsExpression,
+                                    SyntaxFactory.IdentifierName(v.Name),
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        thatLocal,
+                                        SyntaxFactory.IdentifierName(v.Name)))
+                                : // (!{0}.IsDefined || {0}.Value == that.{1})
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.LogicalOrExpression,
+                                    SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(SyntaxFactory.IdentifierName(v.Name))),
+                                    SyntaxFactory.BinaryExpression(
+                                        SyntaxKind.EqualsExpression,
+                                        Syntax.OptionalValue(SyntaxFactory.IdentifierName(v.Name)),
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            thatLocal,
+                                            SyntaxFactory.IdentifierName(v.Name.ToPascalCase())))));
+                    var noChangesExpression = fieldsBeyond.Select(isUnchanged).ChainBinaryExpressions(SyntaxKind.LogicalAndExpression);
+
+                    ifEquivalentTypeBlock.Add(SyntaxFactory.IfStatement(
+                        noChangesExpression,
+                        SyntaxFactory.ReturnStatement(thatLocal)));
+                }
+                else
+                {
+                    ifEquivalentTypeBlock.Add(SyntaxFactory.ReturnStatement(thatLocal));
+                }
+
+                // if (that != null && this.GetType().IsEquivalentTo(typeof(derivedType))) { ... }
+                body.Add(SyntaxFactory.IfStatement(
+                    SyntaxFactory.BinaryExpression(
+                        SyntaxKind.LogicalAndExpression,
+                        SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, thatLocal, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                        thisTypeIsEquivalentToDerivedType),
+                    SyntaxFactory.Block(ifEquivalentTypeBlock)));
+
+                // return DerivedType.CreateWithIdentity(...)
+                body.Add(SyntaxFactory.ReturnStatement(
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            derivedTypeName,
+                            CreateWithIdentityMethodName),
+                        this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, asOptional: OptionalStyle.WhenNotRequired)
+                            .AddArguments(RequiredIdentityArgumentFromProperty)
+                            .AddArguments(this.generator.CreateArgumentList(fieldsBeyond, ArgSource.Argument).Arguments.ToArray()))));
+
+                return SyntaxFactory.MethodDeclaration(
+                    derivedTypeName,
+                    GetToTypeMethodName(derivedType.TypeSymbol.Name).Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
+                    .WithParameterList(this.generator.CreateParameterList(fieldsBeyond, ParameterStyle.OptionalOrRequired))
+                    .WithBody(SyntaxFactory.Block(body));
+            }
+
+            private MemberDeclarationSyntax CreateToDerivedTypeOverrideMethod(MetaType derivedType, MetaType ancestor)
+            {
+                var derivedTypeName = GetFullyQualifiedSymbolName(derivedType.TypeSymbol);
+                return SyntaxFactory.MethodDeclaration(
+                    derivedTypeName,
+                    GetToTypeMethodName(derivedType.TypeSymbol.Name).Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.OverrideKeyword))
+                    .WithParameterList(
+                        this.generator.CreateParameterList(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.BaseExpression(),
+                                    GetToTypeMethodName(derivedType.TypeSymbol.Name)),
+                                this.generator.CreateArgumentList(this.generator.applyToMetaType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty, OptionalStyle.WhenNotRequired)
+                                    .AddArguments(this.generator.CreateArgumentList(derivedType.GetFieldsBeyond(this.generator.applyToMetaType), ArgSource.Argument).Arguments.ToArray())))));
+            }
+        }
+
         protected struct MetaType
         {
-            public MetaType(INamedTypeSymbol typeSymbol)
+            private CodeGen generator;
+
+            public MetaType(CodeGen codeGen, INamedTypeSymbol typeSymbol)
             {
+                this.generator = codeGen;
                 this.TypeSymbol = typeSymbol;
             }
 
@@ -1046,7 +1295,7 @@
                 get
                 {
                     return HasAttribute<GenerateImmutableAttribute>(this.TypeSymbol.BaseType)
-                        ? new MetaType(this.TypeSymbol.BaseType)
+                        ? new MetaType(this.generator, this.TypeSymbol.BaseType)
                         : default(MetaType);
                 }
             }
@@ -1067,6 +1316,30 @@
             public bool HasAncestor
             {
                 get { return !this.Ancestor.IsDefault; }
+            }
+
+            public IEnumerable<MetaType> Descendents
+            {
+                get
+                {
+                    var that = this;
+                    return from type in this.generator.TypesInInputDocument
+                           where type != that.TypeSymbol
+                           let metaType = new MetaType(that.generator, type)
+                           where metaType.Ancestors.Any(a => a.TypeSymbol == that.TypeSymbol)
+                           select metaType;
+                }
+            }
+
+            public IEnumerable<IFieldSymbol> GetFieldsBeyond(MetaType ancestor)
+            {
+                if (ancestor.TypeSymbol == this.TypeSymbol)
+                {
+                    return ImmutableList.Create<IFieldSymbol>();
+                }
+
+                return ImmutableList.CreateRange(this.LocalFields)
+                    .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
             }
         }
 
