@@ -69,6 +69,7 @@
         private MetaType applyToMetaType;
         private bool isAbstract;
         private TypeSyntax applyToTypeName;
+        private List<IFeatureGenerator> mergedFeatures = new List<IFeatureGenerator>();
 
         private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
         {
@@ -94,6 +95,7 @@
             var typeConversionMembers = await featureGenerator.GenerateAsync();
             this.innerMembers.AddRange(typeConversionMembers.MembersOfGeneratedType);
             this.outerMembers.AddRange(typeConversionMembers.SiblingsOfGeneratedType);
+            this.mergedFeatures.Add(featureGenerator);
         }
 
         private async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
@@ -151,6 +153,11 @@
                 await this.MergeFeatureAsync(new DeltaGen(this));
             }
 
+            if (this.options.DefineInterface)
+            {
+                await this.MergeFeatureAsync(new InterfacesGen(this));
+            }
+
             await this.MergeFeatureAsync(new TypeConversionGen(this));
 
             this.innerMembers.Sort(StyleCop.Sort);
@@ -159,7 +166,12 @@
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                 .WithMembers(SyntaxFactory.List(this.innerMembers)));
 
-            return outerMembers;
+            foreach (var mergedFeature in this.mergedFeatures.OfType<IFeatureGeneratorWithPostProcessing>())
+            {
+                await mergedFeature.PostProcessAsync();
+            }
+
+            return this.outerMembers;
         }
 
         protected struct GenerationResult
@@ -734,6 +746,8 @@
             public bool GenerateBuilder { get; set; }
 
             public bool Delta { get; set; }
+
+            public bool DefineInterface { get; set; }
         }
 
         protected class DeltaGen : IFeatureGenerator
@@ -1005,9 +1019,63 @@
             }
         }
 
+        protected class InterfacesGen : IFeatureGeneratorWithPostProcessing
+        {
+            private readonly CodeGen generator;
+
+            public InterfacesGen(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public async Task<GenerationResult> GenerateAsync()
+            {
+                var iface = SyntaxFactory.InterfaceDeclaration(
+                    "I" + this.generator.applyTo.Identifier.Text)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithMembers(
+                        SyntaxFactory.List<MemberDeclarationSyntax>(
+                            from field in this.generator.applyToMetaType.LocalFields
+                            select SyntaxFactory.PropertyDeclaration(
+                                GetFullyQualifiedSymbolName(field.Type),
+                                field.Name.ToPascalCase())
+                                .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.SingletonList(
+                                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))))));
+                if (this.generator.applyToMetaType.HasAncestor)
+                {
+                    iface = iface.WithBaseList(SyntaxFactory.BaseList(
+                        SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(SyntaxFactory.SimpleBaseType(
+                            SyntaxFactory.IdentifierName("I" + this.generator.applyToMetaType.Ancestor.TypeSymbol.Name)))));
+                }
+
+                return new GenerationResult()
+                {
+                    SiblingsOfGeneratedType = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(iface)
+                };
+            }
+
+            public async Task PostProcessAsync()
+            {
+                var applyToPrimaryType = this.generator.outerMembers.OfType<ClassDeclarationSyntax>()
+                    .First(c => c.Identifier.Text == this.generator.applyTo.Identifier.Text);
+                var updatedPrimaryType = applyToPrimaryType.WithBaseList(
+                    (applyToPrimaryType.BaseList ?? SyntaxFactory.BaseList()).AddTypes(SyntaxFactory.SimpleBaseType(
+                        SyntaxFactory.IdentifierName("I" + this.generator.applyTo.Identifier.Text))));
+
+                this.generator.outerMembers.Remove(applyToPrimaryType);
+                this.generator.outerMembers.Add(updatedPrimaryType);
+            }
+        }
+
         protected interface IFeatureGenerator
         {
             Task<GenerationResult> GenerateAsync();
+        }
+
+        protected interface IFeatureGeneratorWithPostProcessing : IFeatureGenerator
+        {
+            Task PostProcessAsync();
         }
 
         protected class TypeConversionGen : IFeatureGenerator
