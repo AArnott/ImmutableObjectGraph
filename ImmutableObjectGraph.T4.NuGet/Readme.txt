@@ -12,4 +12,9 @@ If you run into code generation issues again, make sure the ImmutableObjectGraph
 already exists in your bin\$(Configuration) directory.
 
 Now open the YourImmutableTypeDefinition.tt file and start making changes to it. 
+You may want to start with:
+ 1. Fix the namespace of the generated code by changing the YourImmutableTypeDefinition.tt line:
+    this.Namespace = "YourNamespace";
+    Also fix the namespace in the YourImmutableTypeDefinition.cs file (partial class that you author).
+
 Send issues to https://github.com/aarnott/immutableobjectgraph/issues
