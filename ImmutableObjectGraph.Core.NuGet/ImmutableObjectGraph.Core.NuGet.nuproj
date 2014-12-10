@@ -22,9 +22,9 @@
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
-    <Id>ImmutableObjectGraph</Id>
+    <Id>ImmutableObjectGraph.Core</Id>
     <Version>0.1.0-beta4</Version>
-    <Title>ImmutableObjectGraph</Title>
+    <Title>ImmutableObjectGraph Core</Title>
     <Authors>Andrew Arnott</Authors>
     <Owners>Andrew Arnott</Owners>
     <Summary>Runtime library for immutable types</Summary>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.22317.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30421.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBConsumerTests", "VBConsumerTests\VBConsumerTests.vbproj", "{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.NuGet", "ImmutableObjectGraph.NuGet\ImmutableObjectGraph.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Core.NuGet", "ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.T4.NuGet", "ImmutableObjectGraph.T4.NuGet\ImmutableObjectGraph.T4.NuGet.nuproj", "{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}"
 EndProject

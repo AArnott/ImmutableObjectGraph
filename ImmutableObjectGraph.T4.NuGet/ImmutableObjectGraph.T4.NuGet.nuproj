@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.NuGet\ImmutableObjectGraph.NuGet.nuproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="content\ImmutableObjectGraph\" />
