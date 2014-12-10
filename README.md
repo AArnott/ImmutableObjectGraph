@@ -42,10 +42,11 @@ appear in a type in C#.
 
 Usage
 -----
-This project is a sample. Its suggested use is to copy the
-`ImmutableObjectGraph.tt` file to your own project and include it into your own
-T4 template as demonstrated in the `Demo\Message.tt` or 
-`ImmutableObjectGraph.Tests\Person.tt` files.
+This project is made up of both reference assemblies and T4 templates that
+should be included in your project. The easiest way to get started is to
+install [the NuGet package][2]:
+
+    Install-Package ImmutableObjectGraph.T4 -Pre
 
 Example
 -------
@@ -217,3 +218,5 @@ so that your additions do not get reverted with each run of the code
 generator.
 
   [1]: http://www.bing.com/search?setmkt=en-US&q=visual+studio+t4
+  [2]: https://www.nuget.org/packages/immutableobjectgraph.t4
+  
