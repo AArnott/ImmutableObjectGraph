@@ -90,9 +90,9 @@
             return await instance.GenerateAsync();
         }
 
-        private async Task MergeFeatureAsync(IFeatureGenerator featureGenerator)
+        private void MergeFeature(IFeatureGenerator featureGenerator)
         {
-            var typeConversionMembers = await featureGenerator.GenerateAsync();
+            var typeConversionMembers = featureGenerator.Generate();
             this.innerMembers.AddRange(typeConversionMembers.MembersOfGeneratedType);
             this.outerMembers.AddRange(typeConversionMembers.SiblingsOfGeneratedType);
             this.mergedFeatures.Add(featureGenerator);
@@ -145,20 +145,20 @@
 
             if (this.options.GenerateBuilder)
             {
-                await this.MergeFeatureAsync(new BuilderGen(this));
+                this.MergeFeature(new BuilderGen(this));
             }
 
             if (this.options.Delta)
             {
-                await this.MergeFeatureAsync(new DeltaGen(this));
+                this.MergeFeature(new DeltaGen(this));
             }
 
             if (this.options.DefineInterface)
             {
-                await this.MergeFeatureAsync(new InterfacesGen(this));
+                this.MergeFeature(new InterfacesGen(this));
             }
 
-            await this.MergeFeatureAsync(new TypeConversionGen(this));
+            this.MergeFeature(new TypeConversionGen(this));
 
             this.innerMembers.Sort(StyleCop.Sort);
 
@@ -168,7 +168,7 @@
 
             foreach (var mergedFeature in this.mergedFeatures.OfType<IFeatureGeneratorWithPostProcessing>())
             {
-                await mergedFeature.PostProcessAsync();
+                mergedFeature.PostProcess();
             }
 
             return this.outerMembers;
@@ -766,7 +766,7 @@
                 this.enumTypeName = generator.applyToMetaType.TypeSymbol.Name + "ChangedProperties";
             }
 
-            public async Task<GenerationResult> GenerateAsync()
+            public GenerationResult Generate()
             {
                 var outerMembers = new List<MemberDeclarationSyntax>();
 
@@ -815,7 +815,7 @@
                 this.generator = generator;
             }
 
-            public async Task<GenerationResult> GenerateAsync()
+            public GenerationResult Generate()
             {
                 var outerClassMembers = new List<MemberDeclarationSyntax>
                 {
@@ -1028,7 +1028,7 @@
                 this.generator = generator;
             }
 
-            public async Task<GenerationResult> GenerateAsync()
+            public GenerationResult Generate()
             {
                 var iface = SyntaxFactory.InterfaceDeclaration(
                     "I" + this.generator.applyTo.Identifier.Text)
@@ -1055,7 +1055,7 @@
                 };
             }
 
-            public async Task PostProcessAsync()
+            public void PostProcess()
             {
                 var applyToPrimaryType = this.generator.outerMembers.OfType<ClassDeclarationSyntax>()
                     .First(c => c.Identifier.Text == this.generator.applyTo.Identifier.Text);
@@ -1070,12 +1070,12 @@
 
         protected interface IFeatureGenerator
         {
-            Task<GenerationResult> GenerateAsync();
+            GenerationResult Generate();
         }
 
         protected interface IFeatureGeneratorWithPostProcessing : IFeatureGenerator
         {
-            Task PostProcessAsync();
+            void PostProcess();
         }
 
         protected class TypeConversionGen : IFeatureGenerator
@@ -1088,7 +1088,7 @@
                 this.generator = generator;
             }
 
-            public async Task<GenerationResult> GenerateAsync()
+            public GenerationResult Generate()
             {
                 var members = new List<MemberDeclarationSyntax>();
                 if (!this.generator.applyToSymbol.IsAbstract && (this.generator.applyToMetaType.HasAncestor || this.generator.applyToMetaType.Descendents.Any()))
