@@ -148,6 +148,11 @@
                 this.MergeFeature(new BuilderGen(this));
             }
 
+            if (this.options.DefineRootedStruct)
+            {
+                this.MergeFeature(new RootedStructGen(this));
+            }
+
             if (this.options.Delta)
             {
                 this.MergeFeature(new DeltaGen(this));
@@ -748,6 +753,8 @@
             public bool Delta { get; set; }
 
             public bool DefineInterface { get; set; }
+
+            public bool DefineRootedStruct { get; set; }
         }
 
         protected class DeltaGen : IFeatureGenerator
@@ -825,6 +832,27 @@
                     .AddMembers(fieldEnumValues.ToArray())
                     .AddMembers(allEnumValue);
                 return result;
+            }
+        }
+
+        protected class RootedStructGen : IFeatureGenerator
+        {
+            private readonly CodeGen codeGen;
+
+            public RootedStructGen(CodeGen codeGen)
+            {
+                this.codeGen = codeGen;
+            }
+
+            public GenerationResult Generate()
+            {
+                var outerClassMembers = new List<MemberDeclarationSyntax>();
+                var innerClassMembers = new List<MemberDeclarationSyntax>();
+
+                return new GenerationResult {
+                    MembersOfGeneratedType = SyntaxFactory.List(innerClassMembers),
+                    SiblingsOfGeneratedType = SyntaxFactory.List(outerClassMembers),
+                };
             }
         }
 
