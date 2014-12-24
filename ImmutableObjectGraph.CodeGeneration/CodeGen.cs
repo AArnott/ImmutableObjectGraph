@@ -756,6 +756,7 @@
             private static readonly IdentifierNameSyntax EnumValueType = SyntaxFactory.IdentifierName("Type");
             private static readonly IdentifierNameSyntax EnumValuePositionUnderParent = SyntaxFactory.IdentifierName("PositionUnderParent");
             private static readonly IdentifierNameSyntax EnumValueParent = SyntaxFactory.IdentifierName("Parent");
+            private static readonly IdentifierNameSyntax EnumValueAll = SyntaxFactory.IdentifierName("All");
 
             private readonly CodeGen generator;
             private readonly string enumTypeName;
@@ -777,8 +778,37 @@
 
             private EnumDeclarationSyntax CreateChangedPropertiesEnum()
             {
+                var fields = this.generator.applyToMetaType.Concat(this.generator.applyToMetaType.Descendents)
+                    .SelectMany(t => t.LocalFields)
+                    ////.Where(f => !f.IsRecursiveCollection) // TODO
+                    .GroupBy(f => f.Name.ToPascalCase());
+                int fieldsCount = 4 + fields.Count();
+                int counter = 3;
+                var fieldEnumValues = new List<EnumMemberDeclarationSyntax>();
+                foreach (var field in fields)
+                {
+                    fieldEnumValues.Add(
+                        SyntaxFactory.EnumMemberDeclaration(
+                            SyntaxFactory.List<AttributeListSyntax>(),
+                            SyntaxFactory.Identifier(field.Key),
+                            SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.LiteralExpression(
+                                    SyntaxKind.NumericLiteralExpression,
+                                    SyntaxFactory.Literal(string.Format(CultureInfo.InvariantCulture, "0x{0:x}", (ulong)Math.Pow(2, counter)), counter)))));
+                    counter++;
+                }
+
+                var allEnumValue = SyntaxFactory.EnumMemberDeclaration(
+                        SyntaxFactory.List<AttributeListSyntax>(),
+                        EnumValueAll.Identifier,
+                        SyntaxFactory.EqualsValueClause(
+                            Syntax.ChainBinaryExpressions(
+                                new[] { EnumValueType, EnumValuePositionUnderParent, EnumValueParent }.Concat(
+                                fields.Select(f => SyntaxFactory.IdentifierName(f.Key))),
+                                SyntaxKind.BitwiseOrExpression)));
+
                 TypeSyntax enumBaseType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(
-                    this.generator.applyToMetaType.AllFields.Count() > 32
+                    fieldsCount > 32
                         ? SyntaxKind.ULongKeyword
                         : SyntaxKind.UIntKeyword));
 
@@ -792,10 +822,8 @@
                         SyntaxFactory.EnumMemberDeclaration(SyntaxFactory.List<AttributeListSyntax>(), EnumValueType.Identifier, SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal("0x1", 0x1)))),
                         SyntaxFactory.EnumMemberDeclaration(SyntaxFactory.List<AttributeListSyntax>(), EnumValuePositionUnderParent.Identifier, SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal("0x2", 0x2)))),
                         SyntaxFactory.EnumMemberDeclaration(SyntaxFactory.List<AttributeListSyntax>(), EnumValueParent.Identifier, SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal("0x4", 0x4)))))
-                    .AddMembers(
-                        // TODO: add *all* fields up and down the hierarchy here, as found in Delta.tt.inc
-                        );
-
+                    .AddMembers(fieldEnumValues.ToArray())
+                    .AddMembers(allEnumValue);
                 return result;
             }
         }
@@ -1049,8 +1077,7 @@
                             SyntaxFactory.IdentifierName("I" + this.generator.applyToMetaType.Ancestor.TypeSymbol.Name)))));
                 }
 
-                return new GenerationResult()
-                {
+                return new GenerationResult() {
                     SiblingsOfGeneratedType = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(iface)
                 };
             }
