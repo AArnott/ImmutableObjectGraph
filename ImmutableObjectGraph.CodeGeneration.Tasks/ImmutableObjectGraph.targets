@@ -2,16 +2,15 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <UsingTask TaskName="GenerateCodeFromAttributes" AssemblyFile="bin\debug\ImmutableObjectGraph.CodeGeneration.Tasks.dll" />
 
-  <Target Name="GenerateCodeFromAttributes" DependsOnTargets="ResolveReferences">
+  <Target Name="GenerateCodeFromAttributes" DependsOnTargets="ResolveReferences" BeforeTargets="CoreCompile">
     <Message Importance="high" Text="Hi" />
     <GenerateCodeFromAttributes
-      ProjectFile="$(MSBuildProjectFullPath)"
-      InputFiles="@(Compile)"
-      IntermediateOutputDirectory="$(IntermediateOutputPath)"
-      Condition=" '%(Compile.Generator)' == 'MSBuild:GenerateCodeFromAttributes' "
-      >
-      <Output TaskParameter="OutputFiles" ItemName="GeneratedCodeFromAttribute_Compile" />
+      Compile="@(Compile)"
+      ReferencePath="@(ReferencePath)"
+      IntermediateOutputDirectory="$(IntermediateOutputPath)">
+      <Output TaskParameter="GeneratedCompile" ItemName="GeneratedCodeFromAttribute_Compile" />
     </GenerateCodeFromAttributes>
+    <Message Importance="high" Text="Generated: @(GeneratedCodeFromAttribute_Compile)" />
     <ItemGroup>
       <Compile Include="@(GeneratedCodeFromAttribute_Compile)" />
     </ItemGroup>

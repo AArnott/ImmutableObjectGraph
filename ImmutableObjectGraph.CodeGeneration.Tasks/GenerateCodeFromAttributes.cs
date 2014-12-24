@@ -8,7 +8,10 @@
     using System.Threading;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.MSBuild;
+    using Microsoft.CodeAnalysis.Text;
     using Microsoft.ImmutableObjectGraph_SFG;
     using Task = System.Threading.Tasks.Task;
 
@@ -17,59 +20,81 @@
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
 
         [Required]
-        public string ProjectFile { get; set; }
+        public ITaskItem[] Compile { get; set; }
 
         [Required]
-        public ITaskItem[] InputFiles { get; set; }
+        public ITaskItem[] ReferencePath { get; set; }
 
         [Required]
         public string IntermediateOutputDirectory { get; set; }
 
         [Output]
-        public ITaskItem[] OutputFiles { get; set; }
+        public ITaskItem[] GeneratedCompile { get; set; }
 
         public override bool Execute()
         {
             return Task.Run(async delegate
             {
-                var project = await MSBuildWorkspace.Create()
-                    .OpenProjectAsync(this.ProjectFile, this.cts.Token);
-                var outputFiles = new List<ITaskItem>();
-
-                foreach (var inputFile in this.InputFiles)
+                try
                 {
-                    if (this.cts.Token.IsCancellationRequested)
+                    var a = typeof(Microsoft.CodeAnalysis.CodeGeneration.SyntaxGenerator).Assembly;
+
+                    var project = this.CreateProject();
+                    var outputFiles = new List<ITaskItem>();
+
+                    foreach (var inputDocument in project.Documents)
                     {
-                        this.Log.LogMessage(MessageImportance.High, "Canceled.");
-                        return false;
+                        this.cts.Token.ThrowIfCancellationRequested();
+
+                        string outputFilePath = Path.Combine(this.IntermediateOutputDirectory, Path.GetFileNameWithoutExtension(inputDocument.FilePath) + ".generated.cs");
+                        this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputDocument.FilePath, outputFilePath);
+
+                        var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new ProgressLogger(this.Log, inputDocument.FilePath));
+                        var outputText = await outputDocument.GetTextAsync(this.cts.Token);
+                        using (var outputFileStream = File.OpenWrite(outputFilePath))
+                        using (var outputWriter = new StreamWriter(outputFileStream))
+                        {
+                            outputText.Write(outputWriter);
+                        }
+
+                        var outputItem = new TaskItem(outputFilePath);
+                        outputFiles.Add(outputItem);
                     }
 
-                    string outputFilePath = Path.Combine(this.IntermediateOutputDirectory, Path.GetFileNameWithoutExtension(inputFile.ItemSpec) + ".generated.cs");
-                    this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputFile.ItemSpec, outputFilePath);
-
-                    var inputDocumentId = project.Solution.GetDocumentIdsWithFilePath(inputFile.GetMetadata("FullPath")).First();
-                    var inputDocument = project.GetDocument(inputDocumentId);
-                    var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new ProgressLogger(this.Log, inputFile.ItemSpec));
-                    var outputText = await outputDocument.GetTextAsync(this.cts.Token);
-                    using (var outputFileStream = File.OpenWrite(outputFilePath))
-                    using (var outputWriter = new StreamWriter(outputFileStream))
-                    {
-                        outputText.Write(outputWriter);
-                    }
-
-                    var outputItem = new TaskItem(outputFilePath);
-                    inputFile.CopyMetadataTo(outputItem);
-                    outputFiles.Add(outputItem);
+                    this.GeneratedCompile = outputFiles.ToArray();
+                    return !this.Log.HasLoggedErrors;
                 }
-
-                this.OutputFiles = outputFiles.ToArray();
-                return !this.Log.HasLoggedErrors;
+                catch (OperationCanceledException)
+                {
+                    this.Log.LogMessage(MessageImportance.High, "Canceled.");
+                    return false;
+                }
             }).Result;
         }
 
         public void Cancel()
         {
             cts.Cancel();
+        }
+
+        private Project CreateProject()
+        {
+            var workspace = new CustomWorkspace();
+            var project = workspace.CurrentSolution.AddProject("codegen", "codegen", "C#")
+                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                .WithMetadataReferences(this.ReferencePath.Select(p => MetadataReference.CreateFromFile(p.ItemSpec)));
+
+            foreach (var sourceFile in this.Compile)
+            {
+                using (var stream = File.OpenRead(sourceFile.ItemSpec))
+                {
+                    this.cts.Token.ThrowIfCancellationRequested();
+                    var text = SourceText.From(stream);
+                    project = project.AddDocument(sourceFile.ItemSpec, text).Project;
+                }
+            }
+
+            return project;
         }
 
         private class ProgressLogger : IProgressAndErrors

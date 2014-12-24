@@ -108,9 +108,6 @@
   <ItemGroup>
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestSources\CanCreateImmutableTypeWithNoMembers.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
     <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
     <EmbeddedResource Include="TestSources\FileSystem.cs" />
     <EmbeddedResource Include="TestSources\AbstractClassFamilies.cs" />
@@ -124,7 +121,9 @@
     <EmbeddedResource Include="TestSources\OneScalarFieldWithBuilder.cs" />
     <EmbeddedResource Include="TestSources\OneScalarField.cs" />
     <EmbeddedResource Include="TestSources\FamilyPersonWatch.cs" />
-    <EmbeddedResource Include="TestSources\NoFields.cs" />
+    <EmbeddedResource Include="TestSources\NoFields.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
