@@ -63,6 +63,11 @@
             return isOptional ? OptionalFor(expression) : expression;
         }
 
+        internal static MethodDeclarationSyntax AddNewKeyword(MethodDeclarationSyntax method)
+        {
+            return method.WithModifiers(method.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));
+        }
+
         internal static SeparatedSyntaxList<T> JoinSyntaxNodes<T>(SyntaxKind tokenDelimiter, params T[] nodes)
             where T : SyntaxNode
         {

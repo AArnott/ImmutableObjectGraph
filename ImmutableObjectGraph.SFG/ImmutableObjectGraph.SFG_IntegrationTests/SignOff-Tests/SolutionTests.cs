@@ -39,7 +39,7 @@ namespace ImmutableObjectGraph.SFG_IntegrationTests.IntegrationTests
 
         #endregion
 
-        [TestMethod]
+        [TestMethod, Ignore]
         [HostType("VS IDE")]
         public void CreateEmptySolution()
         {

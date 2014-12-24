@@ -22,9 +22,25 @@
         {
         }
 
-        public override Task<MemberDeclarationSyntax> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
+        public bool GenerateBuilder { get; set; }
+
+        public bool Delta { get; set; }
+
+        public bool DefineInterface { get; set; }
+
+        public bool DefineRootedStruct { get; set; }
+
+        public override Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
         {
-            return CodeGen.GenerateAsync((ClassDeclarationSyntax)applyTo, document, progress, cancellationToken);
+            var options = new CodeGen.Options
+            {
+                GenerateBuilder = this.GenerateBuilder,
+                Delta = this.Delta,
+                DefineInterface = this.DefineInterface,
+                DefineRootedStruct = this.DefineRootedStruct,
+            };
+
+            return CodeGen.GenerateAsync((ClassDeclarationSyntax)applyTo, document, progress, options, cancellationToken);
         }
     }
 }

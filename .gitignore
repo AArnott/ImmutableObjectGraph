@@ -41,6 +41,7 @@ local.properties
 *.user
 *.sln.docstates
 *.sln.ide
+UpgradeLog*htm
 
 # Build results
 [Dd]ebug/

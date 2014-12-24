@@ -36,7 +36,7 @@ namespace ImmutableObjectGraph.SFG_IntegrationTests
             }
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         [HostType("VS IDE")]
         public void PackageLoadTest()
         {

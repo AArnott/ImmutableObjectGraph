@@ -58,7 +58,7 @@ namespace ImmutableObjectGraph.SFG_IntegrationTests.IntegrationTests
         #endregion
 
         [HostType("VS IDE")]
-        [TestMethod]
+        [TestMethod, Ignore]
         public void CPPWinformsApplication()
         {
             UIThreadInvoker.Invoke((ThreadInvoker)delegate()

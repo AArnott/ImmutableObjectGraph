@@ -172,6 +172,10 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 		
+		public static Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
+		}
+		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Family immutable;
@@ -379,6 +383,10 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 		
+		public static Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
+		}
+		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private Person immutable;
@@ -584,6 +592,10 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public Builder ToBuilder() {
 			return new Builder(this);
+		}
+		
+		public static Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
 		}
 		
 		public partial class Builder {

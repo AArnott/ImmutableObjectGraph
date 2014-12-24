@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.22317.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30421.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A36BA1C-9698-4E6A-B917-D8753FDBE09A}"
 	ProjectSection(SolutionItems) = preProject
 		IntegrationTests.testsettings = IntegrationTests.testsettings
+		NuGet.Config = NuGet.Config
 		UnitTests.testsettings = UnitTests.testsettings
 	EndProjectSection
 EndProject
@@ -23,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBConsumerTests", "VBConsumerTests\VBConsumerTests.vbproj", "{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.NuGet", "ImmutableObjectGraph.NuGet\ImmutableObjectGraph.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Core.NuGet", "ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.T4.NuGet", "ImmutableObjectGraph.T4.NuGet\ImmutableObjectGraph.T4.NuGet.nuproj", "{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}"
 EndProject
@@ -40,6 +41,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tests", "ImmutableObjectGraph.CodeGeneration.Tests\ImmutableObjectGraph.CodeGeneration.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tasks", "ImmutableObjectGraph.CodeGeneration.Tasks\ImmutableObjectGraph.CodeGeneration.Tasks.csproj", "{64053579-3A50-4FFA-9499-172ABE58FD0B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roslyn", "Roslyn", "{6288222B-94FA-434F-89E7-A06D3A83417E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "T4", "T4", "{71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,8 +104,15 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
+		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
+		{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
+		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
 		{2918B8EF-855A-41F6-8D94-88A049EFB0B3} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
 		{A6F216C8-7D24-42FC-8E7E-274F8923CC55} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
 		{F2B07036-9C8E-47FD-B37A-5BEA88178145} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
+		{68FFB2A4-7421-4D8C-A5BD-C412A34938FF} = {6288222B-94FA-434F-89E7-A06D3A83417E}
+		{90C68B38-ECF1-46E1-AECD-86A562C50AD0} = {6288222B-94FA-434F-89E7-A06D3A83417E}
+		{480D7D29-47EB-4110-A365-1246B49687D2} = {6288222B-94FA-434F-89E7-A06D3A83417E}
 	EndGlobalSection
 EndGlobal

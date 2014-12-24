@@ -284,6 +284,10 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 		
+		public static new Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
+		}
+		
 		public new partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private NotSoEmptyDerived immutable;
@@ -454,6 +458,10 @@ namespace ImmutableObjectGraph.Tests {
 			return new Builder(this);
 		}
 		
+		public static Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
+		}
+		
 		public partial class Builder {
 			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 			private NonEmptyBase immutable;
@@ -588,6 +596,10 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public new Builder ToBuilder() {
 			return new Builder(this);
+		}
+		
+		public static new Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
 		}
 		
 		public new partial class Builder : NonEmptyBase.Builder {
@@ -805,6 +817,10 @@ namespace ImmutableObjectGraph.Tests {
 		
 		public new Builder ToBuilder() {
 			return new Builder(this);
+		}
+		
+		public static new Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
 		}
 		
 		public new partial class Builder : AbstractNonEmpty.Builder {
