@@ -33,6 +33,8 @@
 
         public static async Task<Document> TransformAsync(Document inputDocument, IProgressAndErrors progress)
         {
+            Requires.NotNull(inputDocument, "inputDocument");
+
             var workspace = inputDocument.Project.Solution.Workspace;
             var inputSemanticModel = await inputDocument.GetSemanticModelAsync();
             var inputSyntaxTree = inputSemanticModel.SyntaxTree;

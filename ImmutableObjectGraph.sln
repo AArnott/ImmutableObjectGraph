@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30421.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22419.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
@@ -41,6 +41,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tests", "ImmutableObjectGraph.CodeGeneration.Tests\ImmutableObjectGraph.CodeGeneration.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tasks", "ImmutableObjectGraph.CodeGeneration.Tasks\ImmutableObjectGraph.CodeGeneration.Tasks.csproj", "{64053579-3A50-4FFA-9499-172ABE58FD0B}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roslyn", "Roslyn", "{6288222B-94FA-434F-89E7-A06D3A83417E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "T4", "T4", "{71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}"

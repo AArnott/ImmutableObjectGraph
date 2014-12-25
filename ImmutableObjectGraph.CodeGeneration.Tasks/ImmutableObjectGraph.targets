@@ -3,7 +3,6 @@
   <UsingTask TaskName="GenerateCodeFromAttributes" AssemblyFile="bin\debug\ImmutableObjectGraph.CodeGeneration.Tasks.dll" />
 
   <Target Name="GenerateCodeFromAttributes" DependsOnTargets="ResolveReferences" BeforeTargets="CoreCompile">
-    <Message Importance="high" Text="Hi" />
     <GenerateCodeFromAttributes
       Compile="@(Compile)"
       ReferencePath="@(ReferencePath)"

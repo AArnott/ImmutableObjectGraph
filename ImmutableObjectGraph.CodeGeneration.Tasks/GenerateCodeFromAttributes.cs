@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Threading;
     using Microsoft.Build.Framework;
@@ -33,24 +34,75 @@
 
         public override bool Execute()
         {
-            return Task.Run(async delegate
+            // Run under our own AppDomain so we can control the version of Roslyn we load.
+            var appDomainSetup = new AppDomainSetup();
+            appDomainSetup.ApplicationBase = Path.GetDirectoryName(this.GetType().Assembly.Location);
+            var appDomain = AppDomain.CreateDomain("codegen", AppDomain.CurrentDomain.Evidence, appDomainSetup);
+            try
             {
+                var helper = (Helper)appDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(Helper).FullName);
+                helper.Compile = this.Compile;
+                helper.ReferencePath = this.ReferencePath;
+                helper.IntermediateOutputDirectory = this.IntermediateOutputDirectory;
+                helper.Log = this.Log;
+
                 try
                 {
-                    var a = typeof(Microsoft.CodeAnalysis.CodeGeneration.SyntaxGenerator).Assembly;
+                    helper.Execute();
 
+                    // Copy the contents of the output parameters into our own. Don't just copy the reference
+                    // because we're going to unload the AppDomain.
+                    this.GeneratedCompile = helper.GeneratedCompile.Select(i => new TaskItem(i)).ToArray();
+
+                    return !this.Log.HasLoggedErrors;
+                }
+                catch (OperationCanceledException)
+                {
+                    this.Log.LogMessage(MessageImportance.High, "Canceled.");
+                    return false;
+                }
+            }
+            finally
+            {
+                AppDomain.Unload(appDomain);
+            }
+        }
+
+        public void Cancel()
+        {
+            cts.Cancel();
+        }
+
+        private class Helper : MarshalByRefObject
+        {
+            public CancellationToken CancellationToken { get; set; }
+
+            public ITaskItem[] Compile { get; set; }
+
+            public ITaskItem[] ReferencePath { get; set; }
+
+            public string IntermediateOutputDirectory { get; set; }
+
+            public ITaskItem[] GeneratedCompile { get; set; }
+
+            public TaskLoggingHelper Log { get; set; }
+
+            public void Execute()
+            {
+                Task.Run(async delegate
+                {
                     var project = this.CreateProject();
                     var outputFiles = new List<ITaskItem>();
 
                     foreach (var inputDocument in project.Documents)
                     {
-                        this.cts.Token.ThrowIfCancellationRequested();
+                        this.CancellationToken.ThrowIfCancellationRequested();
 
-                        string outputFilePath = Path.Combine(this.IntermediateOutputDirectory, Path.GetFileNameWithoutExtension(inputDocument.FilePath) + ".generated.cs");
-                        this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputDocument.FilePath, outputFilePath);
+                        string outputFilePath = Path.Combine(this.IntermediateOutputDirectory, Path.GetFileNameWithoutExtension(inputDocument.Name) + ".generated.cs");
+                        this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputDocument.Name, outputFilePath);
 
-                        var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new ProgressLogger(this.Log, inputDocument.FilePath));
-                        var outputText = await outputDocument.GetTextAsync(this.cts.Token);
+                        var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new ProgressLogger(this.Log, inputDocument.Name));
+                        var outputText = await outputDocument.GetTextAsync(this.CancellationToken);
                         using (var outputFileStream = File.OpenWrite(outputFilePath))
                         using (var outputWriter = new StreamWriter(outputFileStream))
                         {
@@ -62,39 +114,28 @@
                     }
 
                     this.GeneratedCompile = outputFiles.ToArray();
-                    return !this.Log.HasLoggedErrors;
-                }
-                catch (OperationCanceledException)
-                {
-                    this.Log.LogMessage(MessageImportance.High, "Canceled.");
-                    return false;
-                }
-            }).Result;
-        }
-
-        public void Cancel()
-        {
-            cts.Cancel();
-        }
-
-        private Project CreateProject()
-        {
-            var workspace = new CustomWorkspace();
-            var project = workspace.CurrentSolution.AddProject("codegen", "codegen", "C#")
-                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .WithMetadataReferences(this.ReferencePath.Select(p => MetadataReference.CreateFromFile(p.ItemSpec)));
-
-            foreach (var sourceFile in this.Compile)
-            {
-                using (var stream = File.OpenRead(sourceFile.ItemSpec))
-                {
-                    this.cts.Token.ThrowIfCancellationRequested();
-                    var text = SourceText.From(stream);
-                    project = project.AddDocument(sourceFile.ItemSpec, text).Project;
-                }
+                }).GetAwaiter().GetResult();
             }
 
-            return project;
+            private Project CreateProject()
+            {
+                var workspace = new CustomWorkspace();
+                var project = workspace.CurrentSolution.AddProject("codegen", "codegen", "C#")
+                    .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                    .WithMetadataReferences(this.ReferencePath.Select(p => MetadataReference.CreateFromFile(p.ItemSpec)));
+
+                foreach (var sourceFile in this.Compile)
+                {
+                    using (var stream = File.OpenRead(sourceFile.ItemSpec))
+                    {
+                        this.CancellationToken.ThrowIfCancellationRequested();
+                        var text = SourceText.From(stream);
+                        project = project.AddDocument(sourceFile.ItemSpec, text).Project;
+                    }
+                }
+
+                return project;
+            }
         }
 
         private class ProgressLogger : IProgressAndErrors
