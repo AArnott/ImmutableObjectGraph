@@ -102,15 +102,21 @@
                         this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputDocument.Name, outputFilePath);
 
                         var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new ProgressLogger(this.Log, inputDocument.Name));
-                        var outputText = await outputDocument.GetTextAsync(this.CancellationToken);
-                        using (var outputFileStream = File.OpenWrite(outputFilePath))
-                        using (var outputWriter = new StreamWriter(outputFileStream))
-                        {
-                            outputText.Write(outputWriter);
-                        }
 
-                        var outputItem = new TaskItem(outputFilePath);
-                        outputFiles.Add(outputItem);
+                        // Only produce a new file if the generated document is not empty.
+                        var semanticModel = await outputDocument.GetSemanticModelAsync(this.CancellationToken);
+                        if (!semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), false, this.CancellationToken).IsEmpty)
+                        {
+                            var outputText = await outputDocument.GetTextAsync(this.CancellationToken);
+                            using (var outputFileStream = File.OpenWrite(outputFilePath))
+                            using (var outputWriter = new StreamWriter(outputFileStream))
+                            {
+                                outputText.Write(outputWriter);
+                            }
+
+                            var outputItem = new TaskItem(outputFilePath);
+                            outputFiles.Add(outputItem);
+                        }
                     }
 
                     this.GeneratedCompile = outputFiles.ToArray();
