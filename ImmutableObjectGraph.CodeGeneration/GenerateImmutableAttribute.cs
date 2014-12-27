@@ -30,6 +30,8 @@
 
         public bool DefineRootedStruct { get; set; }
 
+        public bool DefineWithMethodsPerProperty { get; set; }
+
         public override Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken)
         {
             var options = new CodeGen.Options
@@ -38,6 +40,7 @@
                 Delta = this.Delta,
                 DefineInterface = this.DefineInterface,
                 DefineRootedStruct = this.DefineRootedStruct,
+                DefineWithMethodsPerProperty = this.DefineWithMethodsPerProperty,
             };
 
             return CodeGen.GenerateAsync((ClassDeclarationSyntax)applyTo, document, progress, options, cancellationToken);

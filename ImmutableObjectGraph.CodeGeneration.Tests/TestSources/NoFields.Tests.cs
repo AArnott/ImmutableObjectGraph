@@ -47,7 +47,7 @@
         public void EmptyDerivedFromNonEmptyBaseReinstantiatesCorrectType()
         {
             EmptyDerivedFromNonEmptyBase value = EmptyDerivedFromNonEmptyBase.Create();
-            EmptyDerivedFromNonEmptyBase updatedValue = value.With(oneField: true); // TODO: Call value.WithOneField(true);
+            EmptyDerivedFromNonEmptyBase updatedValue = value.WithOneField(true);
             EmptyDerivedFromNonEmptyBase updatedValue2 = value.With(true);
         }
     }

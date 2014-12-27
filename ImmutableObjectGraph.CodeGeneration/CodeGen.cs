@@ -46,6 +46,8 @@
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.ParseName(typeof(DebuggerBrowsableState).FullName),
                     SyntaxFactory.IdentifierName(nameof(DebuggerBrowsableState.Never)))))));
+        private static readonly ThrowStatementSyntax ThrowNotImplementedException = SyntaxFactory.ThrowStatement(
+            SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeof(NotImplementedException).FullName), SyntaxFactory.ArgumentList(), null));
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
@@ -161,6 +163,11 @@
             if (this.options.DefineInterface)
             {
                 this.MergeFeature(new InterfacesGen(this));
+            }
+
+            if (this.options.DefineWithMethodsPerProperty)
+            {
+                this.MergeFeature(new DefineWithMethodsPerPropertyGen(this));
             }
 
             this.MergeFeature(new TypeConversionGen(this));
@@ -774,6 +781,8 @@
             public bool DefineInterface { get; set; }
 
             public bool DefineRootedStruct { get; set; }
+
+            public bool DefineWithMethodsPerProperty { get; set; }
         }
 
         protected class DeltaGen : IFeatureGenerator
@@ -1377,6 +1386,89 @@
                                     GetToTypeMethodName(derivedType.TypeSymbol.Name)),
                                 this.generator.CreateArgumentList(this.generator.applyToMetaType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty, OptionalStyle.WhenNotRequired)
                                     .AddArguments(this.generator.CreateArgumentList(derivedType.GetFieldsBeyond(this.generator.applyToMetaType), ArgSource.Argument).Arguments.ToArray())))));
+            }
+        }
+
+        protected class DefineWithMethodsPerPropertyGen : IFeatureGenerator
+        {
+            private const string WithPropertyMethodPrefix = "With";
+            private readonly CodeGen generator;
+
+            public DefineWithMethodsPerPropertyGen(CodeGen codeGen)
+            {
+                this.generator = codeGen;
+            }
+
+            public GenerationResult Generate()
+            {
+                var valueParameterName = SyntaxFactory.IdentifierName("value");
+                var insideMembers = new List<MemberDeclarationSyntax>();
+
+                foreach (var field in this.generator.applyToMetaType.LocalFields)
+                {
+                    var withPropertyMethod = SyntaxFactory.MethodDeclaration(
+                        GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                        WithPropertyMethodPrefix + field.Name.ToPascalCase())
+                        .WithAdditionalAnnotations()
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddParameterListParameters(
+                            SyntaxFactory.Parameter(valueParameterName.Identifier)
+                                .WithType(GetFullyQualifiedSymbolName(field.Type)))
+                        .WithBody(SyntaxFactory.Block(
+                            SyntaxFactory.IfStatement(
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.EqualsExpression,
+                                    valueParameterName,
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(field.Name))),
+                                SyntaxFactory.Block(
+                                    SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))),
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.ThisExpression(),
+                                        WithMethodName),
+                                    SyntaxFactory.ArgumentList(
+                                        SyntaxFactory.SingletonSeparatedList(
+                                            SyntaxFactory.Argument(
+                                                SyntaxFactory.NameColon(field.Name),
+                                                SyntaxFactory.Token(SyntaxKind.None),
+                                                Syntax.OptionalFor(valueParameterName))))))));
+
+                    insideMembers.Add(withPropertyMethod);
+                }
+
+                foreach (var field in this.generator.applyToMetaType.InheritedFields)
+                {
+                    string withMethodName = WithPropertyMethodPrefix + field.Name.ToPascalCase();
+                    var withPropertyMethod = SyntaxFactory.MethodDeclaration(
+                        GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                        withMethodName)
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.NewKeyword),
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddParameterListParameters(
+                            SyntaxFactory.Parameter(valueParameterName.Identifier)
+                                .WithType(GetFullyQualifiedSymbolName(field.Type)))
+                        .WithBody(SyntaxFactory.Block(
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.CastExpression(
+                                    GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            SyntaxFactory.BaseExpression(),
+                                            SyntaxFactory.IdentifierName(withMethodName)),
+                                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(valueParameterName))))))));
+
+                    insideMembers.Add(withPropertyMethod);
+                }
+
+                return new GenerationResult
+                {
+                    MembersOfGeneratedType = SyntaxFactory.List(insideMembers),
+                };
             }
         }
 
