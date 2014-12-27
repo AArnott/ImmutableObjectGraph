@@ -46,6 +46,8 @@
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.ParseName(typeof(DebuggerBrowsableState).FullName),
                     SyntaxFactory.IdentifierName(nameof(DebuggerBrowsableState.Never)))))));
+        private static readonly ThrowStatementSyntax ThrowNotImplementedException = SyntaxFactory.ThrowStatement(
+            SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeof(NotImplementedException).FullName), SyntaxFactory.ArgumentList(), null));
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
@@ -161,6 +163,11 @@
             if (this.options.DefineInterface)
             {
                 this.MergeFeature(new InterfacesGen(this));
+            }
+
+            if (this.options.DefineWithMethodsPerProperty)
+            {
+                this.MergeFeature(new DefineWithMethodsPerPropertyGen(this));
             }
 
             this.MergeFeature(new TypeConversionGen(this));
@@ -315,20 +322,20 @@
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword)))))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                 .WithLeadingTrivia(
-                    SyntaxFactory.LineFeed,
+                    SyntaxFactory.ElasticCarriageReturnLineFeed,
                     SyntaxFactory.Trivia(
                         SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.DisableKeyword), true)
                         .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649)
                                 .WithTrailingTrivia(SyntaxFactory.Space, SyntaxFactory.Comment("// field initialization is optional in user code")))))
-                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))))
+                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.ElasticCarriageReturnLineFeed)))))
                 .WithTrailingTrivia(
                     SyntaxFactory.Trivia(
                         SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.RestoreKeyword), true)
                         .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
-                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))),
-                    SyntaxFactory.LineFeed);
+                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.ElasticCarriageReturnLineFeed)))),
+                    SyntaxFactory.ElasticCarriageReturnLineFeed);
         }
 
         private MemberDeclarationSyntax CreateCtor()
@@ -744,6 +751,25 @@
                 : leafName;
         }
 
+        private static SyntaxToken[] GetModifiersForAccessibility(INamedTypeSymbol template)
+        {
+            switch (template.DeclaredAccessibility)
+            {
+                case Accessibility.Public:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.PublicKeyword) };
+                case Accessibility.Protected:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.ProtectedKeyword) };
+                case Accessibility.Internal:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.InternalKeyword) };
+                case Accessibility.ProtectedOrInternal:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword) };
+                case Accessibility.Private:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword) };
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
         public class Options
         {
             public Options() { }
@@ -755,6 +781,8 @@
             public bool DefineInterface { get; set; }
 
             public bool DefineRootedStruct { get; set; }
+
+            public bool DefineWithMethodsPerProperty { get; set; }
         }
 
         protected class DeltaGen : IFeatureGenerator
@@ -820,7 +848,7 @@
                         : SyntaxKind.UIntKeyword));
 
                 var result = SyntaxFactory.EnumDeclaration(this.enumTypeName)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddModifiers(GetModifiersForAccessibility(this.generator.applyToSymbol))
                     .WithBaseList(SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(SyntaxFactory.SimpleBaseType(enumBaseType))))
                     .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Attribute(
                         SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName("System"), SyntaxFactory.IdentifierName("Flags"))))))
@@ -849,7 +877,8 @@
                 var outerClassMembers = new List<MemberDeclarationSyntax>();
                 var innerClassMembers = new List<MemberDeclarationSyntax>();
 
-                return new GenerationResult {
+                return new GenerationResult
+                {
                     MembersOfGeneratedType = SyntaxFactory.List(innerClassMembers),
                     SiblingsOfGeneratedType = SyntaxFactory.List(outerClassMembers),
                 };
@@ -1105,7 +1134,8 @@
                             SyntaxFactory.IdentifierName("I" + this.generator.applyToMetaType.Ancestor.TypeSymbol.Name)))));
                 }
 
-                return new GenerationResult() {
+                return new GenerationResult()
+                {
                     SiblingsOfGeneratedType = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(iface)
                 };
             }
@@ -1356,6 +1386,89 @@
                                     GetToTypeMethodName(derivedType.TypeSymbol.Name)),
                                 this.generator.CreateArgumentList(this.generator.applyToMetaType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty, OptionalStyle.WhenNotRequired)
                                     .AddArguments(this.generator.CreateArgumentList(derivedType.GetFieldsBeyond(this.generator.applyToMetaType), ArgSource.Argument).Arguments.ToArray())))));
+            }
+        }
+
+        protected class DefineWithMethodsPerPropertyGen : IFeatureGenerator
+        {
+            private const string WithPropertyMethodPrefix = "With";
+            private readonly CodeGen generator;
+
+            public DefineWithMethodsPerPropertyGen(CodeGen codeGen)
+            {
+                this.generator = codeGen;
+            }
+
+            public GenerationResult Generate()
+            {
+                var valueParameterName = SyntaxFactory.IdentifierName("value");
+                var insideMembers = new List<MemberDeclarationSyntax>();
+
+                foreach (var field in this.generator.applyToMetaType.LocalFields)
+                {
+                    var withPropertyMethod = SyntaxFactory.MethodDeclaration(
+                        GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                        WithPropertyMethodPrefix + field.Name.ToPascalCase())
+                        .WithAdditionalAnnotations()
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddParameterListParameters(
+                            SyntaxFactory.Parameter(valueParameterName.Identifier)
+                                .WithType(GetFullyQualifiedSymbolName(field.Type)))
+                        .WithBody(SyntaxFactory.Block(
+                            SyntaxFactory.IfStatement(
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.EqualsExpression,
+                                    valueParameterName,
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(field.Name))),
+                                SyntaxFactory.Block(
+                                    SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))),
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.ThisExpression(),
+                                        WithMethodName),
+                                    SyntaxFactory.ArgumentList(
+                                        SyntaxFactory.SingletonSeparatedList(
+                                            SyntaxFactory.Argument(
+                                                SyntaxFactory.NameColon(field.Name),
+                                                SyntaxFactory.Token(SyntaxKind.None),
+                                                Syntax.OptionalFor(valueParameterName))))))));
+
+                    insideMembers.Add(withPropertyMethod);
+                }
+
+                foreach (var field in this.generator.applyToMetaType.InheritedFields)
+                {
+                    string withMethodName = WithPropertyMethodPrefix + field.Name.ToPascalCase();
+                    var withPropertyMethod = SyntaxFactory.MethodDeclaration(
+                        GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                        withMethodName)
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.NewKeyword),
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddParameterListParameters(
+                            SyntaxFactory.Parameter(valueParameterName.Identifier)
+                                .WithType(GetFullyQualifiedSymbolName(field.Type)))
+                        .WithBody(SyntaxFactory.Block(
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.CastExpression(
+                                    GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            SyntaxFactory.BaseExpression(),
+                                            SyntaxFactory.IdentifierName(withMethodName)),
+                                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(valueParameterName))))))));
+
+                    insideMembers.Add(withPropertyMethod);
+                }
+
+                return new GenerationResult
+                {
+                    MembersOfGeneratedType = SyntaxFactory.List(insideMembers),
+                };
             }
         }
 

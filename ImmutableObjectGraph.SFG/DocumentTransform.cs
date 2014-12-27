@@ -33,6 +33,8 @@
 
         public static async Task<Document> TransformAsync(Document inputDocument, IProgressAndErrors progress)
         {
+            Requires.NotNull(inputDocument, "inputDocument");
+
             var workspace = inputDocument.Project.Solution.Workspace;
             var inputSemanticModel = await inputDocument.GetSemanticModelAsync();
             var inputSyntaxTree = inputSemanticModel.SyntaxTree;
@@ -73,7 +75,8 @@
             var emittedTree = SyntaxFactory.CompilationUnit()
                 .WithUsings(SyntaxFactory.List(inputFileLevelUsingDirectives))
                 .WithMembers(SyntaxFactory.List(emittedMembers))
-                .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble));
+                .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble))
+                .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed);
 
             // Format the tree to get reasonably good whitespace.
             var formattedTree = Formatter.Format(emittedTree, workspace, workspace.Options);

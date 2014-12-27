@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30421.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22419.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
@@ -39,6 +39,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration", "ImmutableObjectGraph.CodeGeneration\ImmutableObjectGraph.CodeGeneration.csproj", "{90C68B38-ECF1-46E1-AECD-86A562C50AD0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tests", "ImmutableObjectGraph.CodeGeneration.Tests\ImmutableObjectGraph.CodeGeneration.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tasks", "ImmutableObjectGraph.CodeGeneration.Tasks\ImmutableObjectGraph.CodeGeneration.Tasks.csproj", "{64053579-3A50-4FFA-9499-172ABE58FD0B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roslyn", "Roslyn", "{6288222B-94FA-434F-89E7-A06D3A83417E}"
 EndProject
@@ -94,6 +96,10 @@ Global
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

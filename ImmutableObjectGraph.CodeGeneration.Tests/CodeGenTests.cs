@@ -41,13 +41,6 @@
         }
 
         [Fact]
-        public async Task NoFields_HasCreateMethod()
-        {
-            var result = await this.GenerateFromStreamAsync("NoFields");
-            Assert.True(result.DeclaredMethods.Any(m => m.Name == "Create" && m.Parameters.Length == 0 && m.IsStatic));
-        }
-
-        [Fact]
         public async Task NoFieldsAndNoFieldsDerived_HasCreateMethod()
         {
             var result = await this.GenerateFromStreamAsync("NoFieldsAndNoFieldsDerived");
@@ -216,22 +209,10 @@
         }
 
         [Fact]
-        public async Task AbstractClassFamilies_Compiles()
-        {
-            var result = await this.GenerateFromStreamAsync("AbstractClassFamilies");
-        }
-
-        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
 
-        }
-
-        [Fact]
-        public async Task FileSystem_Compiles()
-        {
-            var result = await this.GenerateFromStreamAsync("FileSystem");
         }
 
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
@@ -258,7 +239,8 @@
                            where diagnostic.Severity >= DiagnosticSeverity.Warning
                            select diagnostic;
 
-            Console.WriteLine(await outputDocument.GetTextAsync());
+            SourceText outputDocumentText = await outputDocument.GetTextAsync();
+            Console.WriteLine(outputDocumentText);
 
             foreach (var error in errors)
             {
@@ -272,6 +254,16 @@
 
             Assert.Empty(errors);
             Assert.Empty(warnings);
+
+            // Verify all line endings are consistent (otherwise VS can bug the heck out of the user if they have the generated file open).
+            foreach (var line in outputDocumentText.Lines)
+            {
+                string actualNewLine = line.Text.GetSubText(TextSpan.FromBounds(line.End, line.EndIncludingLineBreak)).ToString();
+                if (actualNewLine != Environment.NewLine && actualNewLine.Length > 0)
+                {
+                    Assert.True(false, string.Format("Line {0} has unexpected line ending characters. Content: {1}", line.LineNumber, line));
+                }
+            }
 
             var semanticModel = await outputDocument.GetSemanticModelAsync();
             return new GenerationResult(outputDocument, semanticModel);
