@@ -41,13 +41,6 @@
         }
 
         [Fact]
-        public async Task NoFields_HasCreateMethod()
-        {
-            var result = await this.GenerateFromStreamAsync("NoFields");
-            Assert.True(result.DeclaredMethods.Any(m => m.Name == "Create" && m.Parameters.Length == 0 && m.IsStatic));
-        }
-
-        [Fact]
         public async Task NoFieldsAndNoFieldsDerived_HasCreateMethod()
         {
             var result = await this.GenerateFromStreamAsync("NoFieldsAndNoFieldsDerived");
@@ -226,12 +219,6 @@
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
 
-        }
-
-        [Fact]
-        public async Task FileSystem_Compiles()
-        {
-            var result = await this.GenerateFromStreamAsync("FileSystem");
         }
 
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)

@@ -109,6 +109,7 @@
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
+    <Compile Include="TestSources\NoFields.Tests.cs" />
     <Compile Include="TestSources\FileSystem.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
@@ -123,12 +124,13 @@
     <EmbeddedResource Include="TestSources\OneScalarFieldWithBuilder.cs" />
     <EmbeddedResource Include="TestSources\OneScalarField.cs" />
     <EmbeddedResource Include="TestSources\FamilyPersonWatch.cs" />
-    <EmbeddedResource Include="TestSources\NoFields.cs">
+    <Compile Include="TestSources\NoFields.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </EmbeddedResource>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Compile Include="TestSources\FileSystem.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Tasks\ImmutableObjectGraph.CodeGeneration.Tasks.csproj">
