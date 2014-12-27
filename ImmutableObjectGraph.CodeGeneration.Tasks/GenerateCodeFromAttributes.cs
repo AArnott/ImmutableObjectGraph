@@ -112,6 +112,10 @@
                             using (var outputWriter = new StreamWriter(outputFileStream))
                             {
                                 outputText.Write(outputWriter);
+
+                                // Truncate any data that may be beyond this point if the file existed previously.
+                                outputWriter.Flush();
+                                outputFileStream.SetLength(outputFileStream.Position);
                             }
 
                             var outputItem = new TaskItem(outputFilePath);
