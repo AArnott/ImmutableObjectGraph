@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class NoFieldsTests
+    public class EmptyTests
     {
         [Fact]
         public void EmptyCreateBuilder()

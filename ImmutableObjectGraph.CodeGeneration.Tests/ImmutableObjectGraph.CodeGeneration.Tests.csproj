@@ -109,7 +109,7 @@
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
-    <Compile Include="TestSources\NoFields.Tests.cs" />
+    <Compile Include="TestSources\Empty.Tests.cs" />
     <Compile Include="TestSources\FileSystem.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
@@ -124,7 +124,7 @@
     <EmbeddedResource Include="TestSources\OneScalarFieldWithBuilder.cs" />
     <EmbeddedResource Include="TestSources\OneScalarField.cs" />
     <EmbeddedResource Include="TestSources\FamilyPersonWatch.cs" />
-    <Compile Include="TestSources\NoFields.cs">
+    <Compile Include="TestSources\Empty.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
   </ItemGroup>
