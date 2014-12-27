@@ -315,20 +315,20 @@
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword)))))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                 .WithLeadingTrivia(
-                    SyntaxFactory.LineFeed,
+                    SyntaxFactory.ElasticCarriageReturnLineFeed,
                     SyntaxFactory.Trivia(
                         SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.DisableKeyword), true)
                         .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649)
                                 .WithTrailingTrivia(SyntaxFactory.Space, SyntaxFactory.Comment("// field initialization is optional in user code")))))
-                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))))
+                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.ElasticCarriageReturnLineFeed)))))
                 .WithTrailingTrivia(
                     SyntaxFactory.Trivia(
                         SyntaxFactory.PragmaWarningDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.RestoreKeyword), true)
                         .WithErrorCodes(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0649))))
-                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed)))),
-                    SyntaxFactory.LineFeed);
+                        .WithEndOfDirectiveToken(SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EndOfDirectiveToken, SyntaxFactory.TriviaList(SyntaxFactory.ElasticCarriageReturnLineFeed)))),
+                    SyntaxFactory.ElasticCarriageReturnLineFeed);
         }
 
         private MemberDeclarationSyntax CreateCtor()
