@@ -265,7 +265,7 @@
             foreach (var line in outputDocumentText.Lines)
             {
                 string actualNewLine = line.Text.GetSubText(TextSpan.FromBounds(line.End, line.EndIncludingLineBreak)).ToString();
-                if (actualNewLine != Environment.NewLine)
+                if (actualNewLine != Environment.NewLine && actualNewLine.Length > 0)
                 {
                     Assert.True(false, string.Format("Line {0} has unexpected line ending characters. Content: {1}", line.LineNumber, line));
                 }
