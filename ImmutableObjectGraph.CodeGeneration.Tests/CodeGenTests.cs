@@ -209,12 +209,6 @@
         }
 
         [Fact]
-        public async Task AbstractClassFamilies_Compiles()
-        {
-            var result = await this.GenerateFromStreamAsync("AbstractClassFamilies");
-        }
-
-        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");

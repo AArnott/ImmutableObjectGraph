@@ -109,11 +109,14 @@
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
+    <Compile Include="TestSources\AbstractClassFamilies.Tests.cs" />
     <Compile Include="TestSources\Empty.Tests.cs" />
     <Compile Include="TestSources\FileSystem.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
-    <EmbeddedResource Include="TestSources\AbstractClassFamilies.cs" />
+    <Compile Include="TestSources\AbstractClassFamilies.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
     <EmbeddedResource Include="TestSources\DeepHierarchy.cs" />
     <EmbeddedResource Include="TestSources\OneScalarFieldAndEmptyDerived.cs" />
     <EmbeddedResource Include="TestSources\NoFieldsAndNoFieldsDerived.cs" />
