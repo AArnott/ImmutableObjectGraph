@@ -744,6 +744,25 @@
                 : leafName;
         }
 
+        private static SyntaxToken[] GetModifiersForAccessibility(INamedTypeSymbol template)
+        {
+            switch (template.DeclaredAccessibility)
+            {
+                case Accessibility.Public:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.PublicKeyword) };
+                case Accessibility.Protected:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.ProtectedKeyword) };
+                case Accessibility.Internal:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.InternalKeyword) };
+                case Accessibility.ProtectedOrInternal:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword) };
+                case Accessibility.Private:
+                    return new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword) };
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
         public class Options
         {
             public Options() { }
@@ -820,7 +839,7 @@
                         : SyntaxKind.UIntKeyword));
 
                 var result = SyntaxFactory.EnumDeclaration(this.enumTypeName)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddModifiers(GetModifiersForAccessibility(this.generator.applyToSymbol))
                     .WithBaseList(SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(SyntaxFactory.SimpleBaseType(enumBaseType))))
                     .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Attribute(
                         SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName("System"), SyntaxFactory.IdentifierName("Flags"))))))
@@ -849,7 +868,8 @@
                 var outerClassMembers = new List<MemberDeclarationSyntax>();
                 var innerClassMembers = new List<MemberDeclarationSyntax>();
 
-                return new GenerationResult {
+                return new GenerationResult
+                {
                     MembersOfGeneratedType = SyntaxFactory.List(innerClassMembers),
                     SiblingsOfGeneratedType = SyntaxFactory.List(outerClassMembers),
                 };
@@ -1105,7 +1125,8 @@
                             SyntaxFactory.IdentifierName("I" + this.generator.applyToMetaType.Ancestor.TypeSymbol.Name)))));
                 }
 
-                return new GenerationResult() {
+                return new GenerationResult()
+                {
                     SiblingsOfGeneratedType = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(iface)
                 };
             }
