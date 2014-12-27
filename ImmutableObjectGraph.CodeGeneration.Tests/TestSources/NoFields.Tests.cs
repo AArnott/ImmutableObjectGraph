@@ -10,17 +10,45 @@
     public class NoFieldsTests
     {
         [Fact]
-        public void Create()
+        public void EmptyCreateBuilder()
+        {
+            var emptyBuilder = Empty.CreateBuilder();
+            Assert.NotNull(emptyBuilder);
+        }
+
+        [Fact]
+        public void EmptyConstruction()
         {
             var empty = Empty.Create();
             Assert.NotNull(empty);
         }
 
         [Fact]
-        public void CreateBuilder()
+        public void EmptyDerivedConstruction()
         {
-            var emptyBuilder = Empty.CreateBuilder();
-            Assert.NotNull(emptyBuilder);
+            var derivedEmpty = EmptyDerived.Create();
+            Assert.NotNull(derivedEmpty);
+        }
+
+        [Fact]
+        public void EmptyWithRegeneratesType()
+        {
+            var empty = EmptyDerivedFromAbstract.Create();
+            AbstractNonEmpty emptyAsBase = empty;
+
+            EmptyDerivedFromAbstract newInstance = empty.With(oneField: true);
+            AbstractNonEmpty newInstanceAsBase = emptyAsBase.With(oneField: true);
+
+            Assert.Equal(empty.Identity, newInstance.Identity);
+            Assert.Equal(empty.Identity, newInstanceAsBase.Identity);
+        }
+
+        [Fact]
+        public void EmptyDerivedFromNonEmptyBaseReinstantiatesCorrectType()
+        {
+            EmptyDerivedFromNonEmptyBase value = EmptyDerivedFromNonEmptyBase.Create();
+            EmptyDerivedFromNonEmptyBase updatedValue = value.With(oneField: true); // TODO: Call value.WithOneField(true);
+            EmptyDerivedFromNonEmptyBase updatedValue2 = value.With(true);
         }
     }
 }
