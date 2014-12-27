@@ -24,6 +24,9 @@
         public ITaskItem[] Compile { get; set; }
 
         [Required]
+        public ITaskItem[] CompileToGenerateFromAttributes { get; set; }
+
+        [Required]
         public ITaskItem[] ReferencePath { get; set; }
 
         [Required]
@@ -42,6 +45,7 @@
             {
                 var helper = (Helper)appDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(Helper).FullName);
                 helper.Compile = this.Compile;
+                helper.CompileToGenerateFromAttributes = this.CompileToGenerateFromAttributes;
                 helper.ReferencePath = this.ReferencePath;
                 helper.IntermediateOutputDirectory = this.IntermediateOutputDirectory;
                 helper.Log = this.Log;
@@ -79,6 +83,8 @@
 
             public ITaskItem[] Compile { get; set; }
 
+            public ITaskItem[] CompileToGenerateFromAttributes { get; set; }
+
             public ITaskItem[] ReferencePath { get; set; }
 
             public string IntermediateOutputDirectory { get; set; }
@@ -97,6 +103,12 @@
                     foreach (var inputDocument in project.Documents)
                     {
                         this.CancellationToken.ThrowIfCancellationRequested();
+
+                        // Skip over documents that aren't on the prescribed list of files to scan.
+                        if (!this.CompileToGenerateFromAttributes.Any(i => i.ItemSpec == inputDocument.Name))
+                        {
+                            continue;
+                        }
 
                         string outputFilePath = Path.Combine(this.IntermediateOutputDirectory, Path.GetFileNameWithoutExtension(inputDocument.Name) + ".generated.cs");
                         this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputDocument.Name, outputFilePath);

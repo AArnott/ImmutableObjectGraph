@@ -3,8 +3,13 @@
   <UsingTask TaskName="GenerateCodeFromAttributes" AssemblyFile="bin\debug\ImmutableObjectGraph.CodeGeneration.Tasks.dll" />
 
   <Target Name="GenerateCodeFromAttributes" DependsOnTargets="ResolveReferences" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <CompileToGenerateFromAttributes Include="@(Compile)"
+                                           Condition=" '%(Compile.Generator)' == 'MSBuild:GenerateCodeFromAttributes' " />
+    </ItemGroup>
     <GenerateCodeFromAttributes
       Compile="@(Compile)"
+      CompileToGenerateFromAttributes="@(CompileToGenerateFromAttributes)"
       ReferencePath="@(ReferencePath)"
       IntermediateOutputDirectory="$(IntermediateOutputPath)">
       <Output TaskParameter="GeneratedCompile" ItemName="GeneratedCodeFromAttribute_Compile" />
