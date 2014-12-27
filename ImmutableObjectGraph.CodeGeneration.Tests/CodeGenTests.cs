@@ -184,31 +184,6 @@
         }
 
         [Fact]
-        public async Task DeepHierarchy_HasTypeConverters()
-        {
-            var result = await this.GenerateFromStreamAsync("DeepHierarchy");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "A" && m.Name == "ToB" && m.Parameters.Length == 1 && m.Parameters[0].Name == "field2"));
-        }
-
-        [Fact]
-        public async Task DeepHierarchy_DefinesInterfaces()
-        {
-            var result = await this.GenerateFromStreamAsync("DeepHierarchy");
-
-            // Verify interfaces are defined.
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "IA" && t.GetMembers().Any(f => f.Name == "Field1")));
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "IB" && t.GetMembers().Any(f => f.Name == "Field2")));
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "IC1" && t.GetMembers().Any(f => f.Name == "Field3")));
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "IC2" && t.GetMembers().Any(f => f.Name == "Field3")));
-
-            // Verify interfaces are implemented by their types.
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "A" && t.Interfaces.Any(i => i.Name == "IA")));
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "B" && t.Interfaces.Any(i => i.Name == "IB")));
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "C1" && t.Interfaces.Any(i => i.Name == "IC1")));
-            Assert.True(result.DeclaredTypes.Any(t => t.Name == "C2" && t.Interfaces.Any(i => i.Name == "IC2")));
-        }
-
-        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
