@@ -32,7 +32,7 @@
     [GenerateImmutable]
     abstract partial class ProjectElementContainer : ProjectElement
     {
-        ImmutableList<ProjectElement> children;
+        readonly ImmutableList<ProjectElement> children;
     }
 
     [GenerateImmutable]
