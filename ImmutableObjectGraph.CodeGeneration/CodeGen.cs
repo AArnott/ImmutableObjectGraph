@@ -299,7 +299,7 @@
                         SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                             SyntaxKind.CommaToken,
                             ImmutableArray.Create(SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax)))
-                                .AddRange(this.applyToMetaType.AllFields.Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Name)))))
+                                .AddRange(this.applyToMetaType.AllFields.Select(f => SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, templateVarName, SyntaxFactory.IdentifierName(f.Name.ToPascalCase())))))
                                 .Add(SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))))),
                         null)));
 
@@ -318,7 +318,7 @@
                         SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(
                             GetFullyQualifiedSymbolName(f.Type),
                             SyntaxFactory.SingletonSeparatedList(
-                                SyntaxFactory.VariableDeclarator(f.Name))))
+                                SyntaxFactory.VariableDeclarator(f.Name.ToPascalCase()))))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword)))))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                 .WithLeadingTrivia(
