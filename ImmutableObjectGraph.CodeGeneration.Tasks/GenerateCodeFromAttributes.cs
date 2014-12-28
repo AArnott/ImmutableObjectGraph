@@ -100,6 +100,9 @@
                     var project = this.CreateProject();
                     var outputFiles = new List<ITaskItem>();
 
+                    // For incremental build, we want to consider the input->output files as well as the assemblies involved in code generation.
+                    DateTime assembliesLastModified = GetLastModifiedAssemblyTime();
+
                     foreach (var inputDocument in project.Documents)
                     {
                         this.CancellationToken.ThrowIfCancellationRequested();
@@ -111,25 +114,43 @@
                         }
 
                         string outputFilePath = Path.Combine(this.IntermediateOutputDirectory, Path.GetFileNameWithoutExtension(inputDocument.Name) + ".generated.cs");
-                        this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputDocument.Name, outputFilePath);
 
-                        var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new ProgressLogger(this.Log, inputDocument.Name));
-
-                        // Only produce a new file if the generated document is not empty.
-                        var semanticModel = await outputDocument.GetSemanticModelAsync(this.CancellationToken);
-                        if (!semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), false, this.CancellationToken).IsEmpty)
+                        // Code generation is relatively fast, but it's not free.
+                        // And when we run the Simplifier.ReduceAsync it's dog slow.
+                        // So skip files that haven't changed since we last generated them.
+                        bool generated = false;
+                        DateTime outputLastModified = File.GetLastWriteTime(outputFilePath);
+                        if (File.GetLastWriteTime(inputDocument.Name) > outputLastModified || assembliesLastModified > outputLastModified)
                         {
-                            var outputText = await outputDocument.GetTextAsync(this.CancellationToken);
-                            using (var outputFileStream = File.OpenWrite(outputFilePath))
-                            using (var outputWriter = new StreamWriter(outputFileStream))
+                            this.Log.LogMessage(MessageImportance.Normal, "{0} -> {1}", inputDocument.Name, outputFilePath);
+
+                            var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new ProgressLogger(this.Log, inputDocument.Name));
+
+                            // Only produce a new file if the generated document is not empty.
+                            var semanticModel = await outputDocument.GetSemanticModelAsync(this.CancellationToken);
+                            if (!semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), false, this.CancellationToken).IsEmpty)
                             {
-                                outputText.Write(outputWriter);
+                                var outputText = await outputDocument.GetTextAsync(this.CancellationToken);
+                                using (var outputFileStream = File.OpenWrite(outputFilePath))
+                                using (var outputWriter = new StreamWriter(outputFileStream))
+                                {
+                                    outputText.Write(outputWriter);
 
-                                // Truncate any data that may be beyond this point if the file existed previously.
-                                outputWriter.Flush();
-                                outputFileStream.SetLength(outputFileStream.Position);
+                                    // Truncate any data that may be beyond this point if the file existed previously.
+                                    outputWriter.Flush();
+                                    outputFileStream.SetLength(outputFileStream.Position);
+                                }
+
+                                generated = true;
                             }
+                        }
+                        else
+                        {
+                            generated = true;
+                        }
 
+                        if (generated)
+                        {
                             var outputItem = new TaskItem(outputFilePath);
                             outputFiles.Add(outputItem);
                         }
@@ -137,6 +158,17 @@
 
                     this.GeneratedCompile = outputFiles.ToArray();
                 }).GetAwaiter().GetResult();
+            }
+
+            private static DateTime GetLastModifiedAssemblyTime()
+            {
+                // Ensure that certain assemblies are loaded.
+                Type t1 = typeof(DocumentTransform);
+                Type t2 = typeof(GenerateImmutableAttribute);
+
+                return AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => !a.IsDynamic)
+                    .Max(a => File.GetLastWriteTime(a.Location));
             }
 
             private Project CreateProject()
