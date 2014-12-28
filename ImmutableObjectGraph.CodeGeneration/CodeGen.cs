@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Data.Entity.Design.PluralizationServices;
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
@@ -80,7 +81,11 @@
             this.progress = progress;
             this.options = options ?? new Options();
             this.cancellationToken = cancellationToken;
+
+            this.PluralService = PluralizationService.CreateService(CultureInfo.CurrentCulture);
         }
+
+        public PluralizationService PluralService { get; set; }
 
         public static async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
         {
@@ -168,10 +173,10 @@
             if (this.options.DefineWithMethodsPerProperty)
             {
                 this.MergeFeature(new DefineWithMethodsPerPropertyGen(this));
+                this.MergeFeature(new CollectionHelpersGen(this));
             }
 
             this.MergeFeature(new TypeConversionGen(this));
-            this.MergeFeature(new CollectionHelpersGen(this));
 
             this.innerMembers.Sort(StyleCop.Sort);
 
@@ -1156,6 +1161,8 @@
 
         protected class CollectionHelpersGen : IFeatureGenerator
         {
+            private const string HelperMethodNamePrefix = "With";
+            private static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
             private readonly CodeGen generator;
 
             public CollectionHelpersGen(CodeGen generator)
@@ -1167,8 +1174,57 @@
             {
                 var members = new List<MemberDeclarationSyntax>();
 
-                foreach (var field in this.generator.applyToMetaType.LocalFields)
+                foreach (var field in this.generator.applyToMetaType.AllFields)
                 {
+                    if (field.IsCollection)
+                    {
+                        bool locallyDefined = field.Symbol.ContainingType == this.generator.applyToSymbol;
+                        var distinguisher = field.Distinguisher;
+                        string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
+                        string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
+                        string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
+                        var methodName = SyntaxFactory.IdentifierName(HelperMethodNamePrefix + plural);
+
+                        var returnExpression = locallyDefined
+                            ? (ExpressionSyntax)SyntaxFactory.InvocationExpression( // this.With(field: this.field.ResetContents(values))
+                                Syntax.ThisDot(WithMethodName),
+                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                                    SyntaxFactory.Argument(
+                                        SyntaxFactory.NameColon(field.Name),
+                                        SyntaxFactory.Token(SyntaxKind.None),
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)),
+                                              SyntaxFactory.IdentifierName(nameof(CollectionExtensions.ResetContents))),
+                                            SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                                                SyntaxFactory.Argument(ValuesParameterName))))))))
+                            : SyntaxFactory.CastExpression( // (TemplateType)base.WithProperty(values)
+                                GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                                SyntaxFactory.InvocationExpression(
+                                    Syntax.BaseDot(methodName),
+                                    SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                                        SyntaxFactory.Argument(ValuesParameterName)))));
+
+                        var method = SyntaxFactory.MethodDeclaration(
+                            GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                            methodName.Identifier)
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddParameterListParameters(
+                                SyntaxFactory.Parameter(ValuesParameterName.Identifier)
+                                    .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ParamsKeyword)))
+                                    .WithType(SyntaxFactory.ArrayType(GetFullyQualifiedSymbolName(field.ElementType))
+                                        .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(SyntaxFactory.OmittedArraySizeExpression())))))
+                            .WithBody(SyntaxFactory.Block(
+                                SyntaxFactory.ReturnStatement(returnExpression)));
+
+                        if (!locallyDefined)
+                        {
+                            method = Syntax.AddNewKeyword(method);
+                        }
+
+                        members.Add(method);
+                    }
                 }
 
                 return new GenerationResult()
@@ -1633,7 +1689,85 @@
                 get { return this.generator.IsFieldRequired(this.Symbol); }
             }
 
+            public bool IsCollection
+            {
+                get { return IsCollectionType(this.Symbol.Type); }
+            }
+
             public IFieldSymbol Symbol { get; private set; }
+
+            public DistinguisherAttribute Distinguisher
+            {
+                get { return null; /* TODO */ }
+            }
+
+            public INamespaceOrTypeSymbol ElementType
+            {
+                get { return GetTypeOrCollectionMemberType(this.Symbol.Type); }
+            }
+
+            private static ITypeSymbol GetTypeOrCollectionMemberType(ITypeSymbol collectionOrOtherType)
+            {
+                ITypeSymbol memberType;
+                if (TryGetCollectionElementType(collectionOrOtherType, out memberType))
+                {
+                    return memberType;
+                }
+
+                return collectionOrOtherType;
+            }
+
+            private static bool TryGetCollectionElementType(ITypeSymbol collectionType, out ITypeSymbol elementType)
+            {
+                collectionType = GetCollectionType(collectionType);
+                var arrayType = collectionType as IArrayTypeSymbol;
+                if (arrayType != null)
+                {
+                    elementType = arrayType.ElementType;
+                    return true;
+                }
+
+                var namedType = collectionType as INamedTypeSymbol;
+                if (namedType != null)
+                {
+                    if (namedType.IsGenericType && namedType.TypeArguments.Length == 1)
+                    {
+                        elementType = namedType.TypeArguments[0];
+                        return true;
+                    }
+                }
+
+                elementType = null;
+                return false;
+            }
+
+            private static ITypeSymbol GetCollectionType(ITypeSymbol type)
+            {
+                if (type is IArrayTypeSymbol)
+                {
+                    return type;
+                }
+
+                var namedType = type as INamedTypeSymbol;
+                if (namedType != null)
+                {
+                    if (namedType.IsGenericType && namedType.TypeArguments.Length == 1)
+                    {
+                        var collectionType = namedType.AllInterfaces.FirstOrDefault(i => i.Name == nameof(IReadOnlyCollection));
+                        if (collectionType != null)
+                        {
+                            return collectionType;
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            private static bool IsCollectionType(ITypeSymbol type)
+            {
+                return GetCollectionType(type) != null;
+            }
         }
 
         private enum ParameterStyle

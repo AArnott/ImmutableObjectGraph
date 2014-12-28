@@ -15,9 +15,8 @@
         public void XmlTreeConstruction()
         {
             XmlElement root = XmlElement.Create("Root").WithChildren(
-                ImmutableList.Create<XmlNode>( // TODO: remove this wrapper collection
-                    XmlElement.Create("Child1"),
-                    XmlElement.Create("Child2")));
+                XmlElement.Create("Child1"),
+                XmlElement.Create("Child2"));
 
             XmlElement xe = XmlElement.Create("l1", "n1");
             XmlElement xel2 = xe.With("l2");
