@@ -1753,7 +1753,7 @@
                 {
                     if (namedType.IsGenericType && namedType.TypeArguments.Length == 1)
                     {
-                        var collectionType = namedType.AllInterfaces.FirstOrDefault(i => i.Name == nameof(IReadOnlyCollection));
+                        var collectionType = namedType.AllInterfaces.FirstOrDefault(i => i.Name == nameof(IReadOnlyCollection<int>));
                         if (collectionType != null)
                         {
                             return collectionType;
