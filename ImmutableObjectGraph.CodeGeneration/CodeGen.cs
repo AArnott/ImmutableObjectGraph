@@ -171,6 +171,7 @@
             }
 
             this.MergeFeature(new TypeConversionGen(this));
+            this.MergeFeature(new CollectionHelpersGen(this));
 
             this.innerMembers.Sort(StyleCop.Sort);
 
@@ -1150,6 +1151,30 @@
 
                 this.generator.outerMembers.Remove(applyToPrimaryType);
                 this.generator.outerMembers.Add(updatedPrimaryType);
+            }
+        }
+
+        protected class CollectionHelpersGen : IFeatureGenerator
+        {
+            private readonly CodeGen generator;
+
+            public CollectionHelpersGen(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public GenerationResult Generate()
+            {
+                var members = new List<MemberDeclarationSyntax>();
+
+                foreach (var field in this.generator.applyToMetaType.LocalFields)
+                {
+                }
+
+                return new GenerationResult()
+                {
+                    MembersOfGeneratedType = SyntaxFactory.List(members)
+                };
             }
         }
 
