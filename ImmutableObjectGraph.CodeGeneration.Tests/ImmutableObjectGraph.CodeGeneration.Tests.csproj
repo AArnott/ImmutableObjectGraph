@@ -115,6 +115,9 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Include="TestSources\MSBuild.Tests.cs" />
+    <Compile Include="TestSources\NonRecursive.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
     <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
     <Compile Include="TestSources\AbstractClassFamilies.Tests.cs" />
     <Compile Include="TestSources\DeepHierarchy.Tests.cs" />
