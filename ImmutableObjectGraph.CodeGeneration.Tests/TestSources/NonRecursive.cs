@@ -22,7 +22,7 @@
     partial class ContainerOfNonRecursiveCollection : RootRecursive
     {
         [NotRecursive]
-        readonly ImmutableList<NonRecursiveElement> Metadata;
+        readonly ImmutableList<NonRecursiveElement> metadata;
     }
 
     [GenerateImmutable]

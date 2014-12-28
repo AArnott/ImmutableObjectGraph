@@ -244,15 +244,15 @@
     [GenerateImmutable]
     partial class ProjectUsingTaskParameterElement : ProjectElement
     {
-        string name;
+        readonly string name;
 
-        string output;
+        readonly string output;
         // readonly ElementLocation outputLocation;
 
-        string parameterType;
+        readonly string parameterType;
         // readonly ElementLocation parameterTypeLocation;
 
-        string required;
+        readonly string required;
         // readonly ElementLocation requiredLocation;
     }
 
