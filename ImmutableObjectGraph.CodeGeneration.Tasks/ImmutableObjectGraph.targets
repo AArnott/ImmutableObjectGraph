@@ -14,7 +14,6 @@
       IntermediateOutputDirectory="$(IntermediateOutputPath)">
       <Output TaskParameter="GeneratedCompile" ItemName="GeneratedCodeFromAttribute_Compile" />
     </GenerateCodeFromAttributes>
-    <Message Importance="high" Text="Generated: @(GeneratedCodeFromAttribute_Compile)" />
     <ItemGroup>
       <Compile Include="@(GeneratedCodeFromAttribute_Compile)" />
     </ItemGroup>
