@@ -473,7 +473,7 @@
         private MemberDeclarationSyntax CreateWithFactoryMethod()
         {
             // (field.IsDefined && field.Value != this.field)
-            Func<IFieldSymbol, ExpressionSyntax> isChanged = v =>
+            Func<MetaField, ExpressionSyntax> isChanged = v =>
                 SyntaxFactory.ParenthesizedExpression(
                     SyntaxFactory.BinaryExpression(
                         SyntaxKind.LogicalAndExpression,
@@ -636,15 +636,15 @@
             }
         }
 
-        private ParameterListSyntax CreateParameterList(IEnumerable<IFieldSymbol> fields, ParameterStyle style)
+        private ParameterListSyntax CreateParameterList(IEnumerable<MetaField> fields, ParameterStyle style)
         {
             if (style == ParameterStyle.OptionalOrRequired)
             {
                 ////fields = SortRequiredFieldsFirst(fields);
             }
 
-            Func<IFieldSymbol, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !IsFieldRequired(f));
-            Func<ParameterSyntax, IFieldSymbol, ParameterSyntax> setTypeAndDefault = (p, f) => isOptional(f)
+            Func<MetaField, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !f.IsRequired);
+            Func<ParameterSyntax, MetaField, ParameterSyntax> setTypeAndDefault = (p, f) => isOptional(f)
                 ? Syntax.Optional(p.WithType(GetFullyQualifiedSymbolName(f.Type)))
                 : p.WithType(GetFullyQualifiedSymbolName(f.Type));
             return SyntaxFactory.ParameterList(
@@ -653,11 +653,11 @@
                     fields.Select(f => setTypeAndDefault(SyntaxFactory.Parameter(SyntaxFactory.Identifier(f.Name)), f))));
         }
 
-        private ArgumentListSyntax CreateArgumentList(IEnumerable<IFieldSymbol> fields, ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
+        private ArgumentListSyntax CreateArgumentList(IEnumerable<MetaField> fields, ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
         {
-            Func<IFieldSymbol, ArgSource> fieldSource = f => (source == ArgSource.OptionalArgumentOrTemplate && IsFieldRequired(f)) ? ArgSource.Argument : source;
-            Func<IFieldSymbol, bool> optionalWrap = f => asOptional != OptionalStyle.None && (asOptional == OptionalStyle.Always || !IsFieldRequired(f));
-            Func<IFieldSymbol, ExpressionSyntax> dereference = f =>
+            Func<MetaField, ArgSource> fieldSource = f => (source == ArgSource.OptionalArgumentOrTemplate && f.IsRequired) ? ArgSource.Argument : source;
+            Func<MetaField, bool> optionalWrap = f => asOptional != OptionalStyle.None && (asOptional == OptionalStyle.Always || !f.IsRequired);
+            Func<MetaField, ExpressionSyntax> dereference = f =>
             {
                 var name = SyntaxFactory.IdentifierName(f.Name);
                 var propertyName = SyntaxFactory.IdentifierName(f.Name.ToPascalCase());
@@ -1329,9 +1329,9 @@
                 var fieldsBeyond = derivedType.GetFieldsBeyond(this.generator.applyToMetaType);
                 if (fieldsBeyond.Any())
                 {
-                    Func<IFieldSymbol, ExpressionSyntax> isUnchanged = v =>
+                    Func<MetaField, ExpressionSyntax> isUnchanged = v =>
                         SyntaxFactory.ParenthesizedExpression(
-                            this.generator.IsFieldRequired(v)
+                            v.IsRequired
                                 ? // ({0} == that.{1})
                                 SyntaxFactory.BinaryExpression(
                                     SyntaxKind.EqualsExpression,
@@ -1514,12 +1514,16 @@
                 get { return this.TypeSymbol == null; }
             }
 
-            public IEnumerable<IFieldSymbol> LocalFields
+            public IEnumerable<MetaField> LocalFields
             {
-                get { return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>() ?? ImmutableArray<IFieldSymbol>.Empty; }
+                get
+                {
+                    var generator = this.generator;
+                    return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>().Select(f => new MetaField(generator, f)) ?? ImmutableArray<MetaField>.Empty;
+                }
             }
 
-            public IEnumerable<IFieldSymbol> AllFields
+            public IEnumerable<MetaField> AllFields
             {
                 get
                 {
@@ -1535,7 +1539,7 @@
                 }
             }
 
-            public IEnumerable<IFieldSymbol> InheritedFields
+            public IEnumerable<MetaField> InheritedFields
             {
                 get
                 {
@@ -1592,16 +1596,44 @@
                 }
             }
 
-            public IEnumerable<IFieldSymbol> GetFieldsBeyond(MetaType ancestor)
+            public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor)
             {
                 if (ancestor.TypeSymbol == this.TypeSymbol)
                 {
-                    return ImmutableList.Create<IFieldSymbol>();
+                    return ImmutableList.Create<MetaField>();
                 }
 
                 return ImmutableList.CreateRange(this.LocalFields)
                     .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
             }
+        }
+
+        protected struct MetaField
+        {
+            private readonly CodeGen generator;
+
+            public MetaField(CodeGen generator, IFieldSymbol symbol)
+            {
+                this.generator = generator;
+                this.Symbol = symbol;
+            }
+
+            public string Name
+            {
+                get { return this.Symbol.Name; }
+            }
+
+            public INamespaceOrTypeSymbol Type
+            {
+                get { return this.Symbol.Type; }
+            }
+
+            public bool IsRequired
+            {
+                get { return this.generator.IsFieldRequired(this.Symbol); }
+            }
+
+            public IFieldSymbol Symbol { get; private set; }
         }
 
         private enum ParameterStyle
