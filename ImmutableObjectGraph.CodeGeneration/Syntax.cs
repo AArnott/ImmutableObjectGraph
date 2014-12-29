@@ -105,6 +105,19 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
+        internal static NameSyntax IEnumeratorOf(TypeSyntax typeSyntax)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName("System"),
+                        SyntaxFactory.IdentifierName("Collections")),
+                    SyntaxFactory.IdentifierName("Generic")),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier("IEnumerator"),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
+        }
+
         internal static MethodDeclarationSyntax AddNewKeyword(MethodDeclarationSyntax method)
         {
             return method.WithModifiers(method.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));

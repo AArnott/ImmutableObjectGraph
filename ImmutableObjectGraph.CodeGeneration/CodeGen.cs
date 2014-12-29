@@ -128,6 +128,14 @@
 
             ValidateInput();
 
+            this.MergeFeature(new EnumerableRecursiveParentGen(this));
+
+            if (this.applyToMetaType.IsRecursiveType)
+            {
+                // TODO
+                ////this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))));
+            }
+
             if (!this.applyToMetaType.HasAncestor)
             {
                 this.innerMembers.Add(CreateLastIdentityProducedField());
@@ -813,6 +821,85 @@
             public bool DefineRootedStruct { get; set; }
 
             public bool DefineWithMethodsPerProperty { get; set; }
+        }
+
+        protected class EnumerableRecursiveParentGen : IFeatureGenerator
+        {
+            private readonly CodeGen generator;
+
+            public EnumerableRecursiveParentGen(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public GenerationResult Generate()
+            {
+                var baseTypes = new List<BaseTypeSyntax>();
+
+                if (this.generator.applyToMetaType.IsRecursiveParent)
+                {
+                    baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol))));
+
+                    // TODO
+                    ////if (this.generator.applyToMetaType.ChildrenAreSorted)
+                    ////{
+                    ////    baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithSortedChildren))));
+                    ////}
+                    ////else if (this.generator.applyToMetaType.ChildrenAreOrdered)
+                    ////{
+                    ////    baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithOrderedChildren))));
+                    ////}
+
+                    ////baseTypes.Add(SyntaxFactory.SimpleBaseType(
+                    ////    SyntaxFactory.QualifiedName(
+                    ////        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                    ////        SyntaxFactory.GenericName(
+                    ////            SyntaxFactory.Identifier(nameof(IRecursiveParent)),
+                    ////            SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList<TypeSyntax>(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol)))))));
+                }
+
+                var innerMembers = new List<MemberDeclarationSyntax>();
+                if (this.generator.applyToMetaType.IsRecursive)
+                {
+                    // return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
+                    var body = SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name)),
+                                    SyntaxFactory.IdentifierName(nameof(IEnumerable<int>.GetEnumerator))),
+                                SyntaxFactory.ArgumentList())));
+
+                    // public System.Collections.Generic.IEnumerator<RecursiveType> GetEnumerator()
+                    innerMembers.Add(
+                        SyntaxFactory.MethodDeclaration(
+                            Syntax.IEnumeratorOf(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveField.ElementType)),
+                            nameof(IEnumerable<int>.GetEnumerator))
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .WithBody(body));
+
+                    // System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+                    innerMembers.Add(
+                        SyntaxFactory.MethodDeclaration(
+                            Syntax.GetTypeSyntax(typeof(System.Collections.IEnumerator)),
+                            nameof(IEnumerable<int>.GetEnumerator))
+                        .WithExplicitInterfaceSpecifier(
+                            SyntaxFactory.ExplicitInterfaceSpecifier(
+                                SyntaxFactory.QualifiedName(
+                                    SyntaxFactory.QualifiedName(
+                                        SyntaxFactory.IdentifierName(nameof(System)),
+                                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                                    SyntaxFactory.IdentifierName(nameof(System.Collections.IEnumerable)))))
+                        .WithBody(body));
+                }
+
+                return new GenerationResult
+                {
+                    BaseTypes = baseTypes.ToImmutableArray(),
+                    MembersOfGeneratedType = SyntaxFactory.List(innerMembers),
+                };
+            }
         }
 
         protected class DeltaGen : IFeatureGenerator
@@ -1830,6 +1917,15 @@
             public bool IsRecursiveParent
             {
                 get { return this.Equals(this.RecursiveParent); }
+            }
+
+            public bool IsRecursive
+            {
+                get
+                {
+                    var rootOrThisType = this.RootAncestorOrThisType;
+                    return this.LocalFields.Count(f => f.IsCollection && rootOrThisType.IsAssignableFrom(f.ElementType) && !f.IsDefinitelyNotRecursive) == 1;
+                }
             }
 
             public MetaType RootAncestorOrThisType
