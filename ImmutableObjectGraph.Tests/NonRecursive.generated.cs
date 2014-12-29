@@ -491,34 +491,7 @@ namespace ImmutableObjectGraph.Tests.NonRecursive {
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		internal ParentedRecursiveType<RecursiveContainer, RootRecursive> GetParentedNode(System.UInt32 identity) {
-			if (this.Identity == identity) {
-				return new ParentedRecursiveType<RecursiveContainer, RootRecursive>(this, null);
-			}
-		
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<RootRecursive, System.UInt32> lookupValue;
-				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					var parentIdentity = lookupValue.Value;
-					return new ParentedRecursiveType<RecursiveContainer, RootRecursive>(this.LookupTable[identity].Key, (RecursiveContainer)this.Find(parentIdentity));
-				}
-			} else {
-				// No lookup table means we have to aggressively search each child.
-				foreach (var child in this.Children) {
-					if (child.Identity.Equals(identity)) {
-						return new ParentedRecursiveType<RecursiveContainer, RootRecursive>(child, this);
-					}
-		
-					var recursiveChild = child as RecursiveContainer;
-					if (recursiveChild != null) {
-						var childResult = recursiveChild.GetParentedNode(identity);
-						if (childResult.Value != null) {
-							return childResult;
-						}
-					} 
-				}
-			}
-		
-			return default(ParentedRecursiveType<RecursiveContainer, RootRecursive>);
+			return this.GetParentedNode<RecursiveContainer, RootRecursive>(identity);
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>

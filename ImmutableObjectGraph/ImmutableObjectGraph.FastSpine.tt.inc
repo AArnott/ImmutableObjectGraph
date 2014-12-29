@@ -127,34 +127,7 @@ public <#= templateType.RecursiveType.TypeName #> Find(<#= templateType.Required
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 internal ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>> GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
-	if (this.Identity == identity) {
-		return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(this, null);
-	}
-
-	if (this.LookupTable != null) {
-		System.Collections.Generic.KeyValuePair<<#= templateType.RecursiveType.TypeName #>, <#= templateType.RequiredIdentityField.TypeName #>> lookupValue;
-		if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-			var parentIdentity = lookupValue.Value;
-			return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(this.LookupTable[identity].Key, (<#= templateType.RecursiveParent.TypeName #>)this.Find(parentIdentity));
-		}
-	} else {
-		// No lookup table means we have to aggressively search each child.
-		foreach (var child in this.Children) {
-			if (child.Identity.Equals(identity)) {
-				return new ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(child, this);
-			}
-
-			var recursiveChild = child as <#= templateType.RecursiveParent.TypeName #>;
-			if (recursiveChild != null) {
-				var childResult = recursiveChild.GetParentedNode(identity);
-				if (childResult.Value != null) {
-					return childResult;
-				}
-			} 
-		}
-	}
-
-	return default(ParentedRecursiveType<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>);
+	return this.GetParentedNode<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.RecursiveTypeFromFamily.TypeName #>>(identity);
 }
 
 /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>

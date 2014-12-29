@@ -669,34 +669,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		internal ParentedRecursiveType<XmlElement, XmlNode> GetParentedNode(System.UInt32 identity) {
-			if (this.Identity == identity) {
-				return new ParentedRecursiveType<XmlElement, XmlNode>(this, null);
-			}
-		
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<XmlNode, System.UInt32> lookupValue;
-				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					var parentIdentity = lookupValue.Value;
-					return new ParentedRecursiveType<XmlElement, XmlNode>(this.LookupTable[identity].Key, (XmlElement)this.Find(parentIdentity));
-				}
-			} else {
-				// No lookup table means we have to aggressively search each child.
-				foreach (var child in this.Children) {
-					if (child.Identity.Equals(identity)) {
-						return new ParentedRecursiveType<XmlElement, XmlNode>(child, this);
-					}
-		
-					var recursiveChild = child as XmlElement;
-					if (recursiveChild != null) {
-						var childResult = recursiveChild.GetParentedNode(identity);
-						if (childResult.Value != null) {
-							return childResult;
-						}
-					} 
-				}
-			}
-		
-			return default(ParentedRecursiveType<XmlElement, XmlNode>);
+			return this.GetParentedNode<XmlElement, XmlNode>(identity);
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>

@@ -1491,34 +1491,7 @@ namespace ImmutableObjectGraph.Tests {
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
 		internal ParentedRecursiveType<FileSystemDirectory, FileSystemEntry> GetParentedNode(System.UInt32 identity) {
-			if (this.Identity == identity) {
-				return new ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>(this, null);
-			}
-		
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<FileSystemEntry, System.UInt32> lookupValue;
-				if (this.LookupTable.TryGetValue(identity, out lookupValue)) {
-					var parentIdentity = lookupValue.Value;
-					return new ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>(this.LookupTable[identity].Key, (FileSystemDirectory)this.Find(parentIdentity));
-				}
-			} else {
-				// No lookup table means we have to aggressively search each child.
-				foreach (var child in this.Children) {
-					if (child.Identity.Equals(identity)) {
-						return new ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>(child, this);
-					}
-		
-					var recursiveChild = child as FileSystemDirectory;
-					if (recursiveChild != null) {
-						var childResult = recursiveChild.GetParentedNode(identity);
-						if (childResult.Value != null) {
-							return childResult;
-						}
-					} 
-				}
-			}
-		
-			return default(ParentedRecursiveType<FileSystemDirectory, FileSystemEntry>);
+			return this.GetParentedNode<FileSystemDirectory, FileSystemEntry>(identity);
 		}
 		
 		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>

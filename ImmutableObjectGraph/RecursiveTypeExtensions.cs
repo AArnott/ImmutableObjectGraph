@@ -132,6 +132,54 @@
             throw new KeyNotFoundException();
         }
 
+        /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
+        public static ParentedRecursiveType<TRecursiveParent, TRecursiveType> GetParentedNode<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, IdentityFieldType identity)
+            where TRecursiveParent : class, TRecursiveType, IRecursiveParent<TRecursiveType>
+            where TRecursiveType : class, IRecursiveType
+        {
+            Requires.NotNull(parent, "parent");
+
+            if (parent.Identity == identity)
+            {
+                return new ParentedRecursiveType<TRecursiveParent, TRecursiveType>(parent, null);
+            }
+
+            var fastLookup = parent as IRecursiveParentWithFastLookup;
+            KeyValuePair<IRecursiveType, uint> nodeLookupResult;
+            if (fastLookup != null && fastLookup.TryLookup(identity, out nodeLookupResult))
+            {
+                if (nodeLookupResult.Key != null)
+                {
+                    TRecursiveType parentReference;
+                    Assumes.True(TryFind(parent, nodeLookupResult.Value, out parentReference));
+                    return new ParentedRecursiveType<TRecursiveParent, TRecursiveType>((TRecursiveType)nodeLookupResult.Key, (TRecursiveParent)parentReference);
+                }
+            }
+            else
+            {
+                // No lookup table means we have to aggressively search each child.
+                foreach (var child in parent.Children)
+                {
+                    if (child.Identity.Equals(identity))
+                    {
+                        return new ParentedRecursiveType<TRecursiveParent, TRecursiveType>(child, parent);
+                    }
+
+                    var recursiveChild = child as TRecursiveParent;
+                    if (recursiveChild != null)
+                    {
+                        var childResult = recursiveChild.GetParentedNode(identity);
+                        if (childResult.Value != null)
+                        {
+                            return new ParentedRecursiveType<TRecursiveParent, TRecursiveType>((TRecursiveType)childResult.Value, (TRecursiveParent)childResult.Parent);
+                        }
+                    }
+                }
+            }
+
+            return default(ParentedRecursiveType<TRecursiveParent, TRecursiveType>);
+        }
+
         /// <summary>
         /// Returns a sequence starting with the given <paramref name="root"/>
         /// followed by its descendents in a depth-first search.
