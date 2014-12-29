@@ -1161,7 +1161,6 @@
 
         protected class CollectionHelpersGen : IFeatureGenerator
         {
-            private const string HelperMethodNamePrefix = "With";
             private static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
             private readonly CodeGen generator;
 
@@ -1183,54 +1182,20 @@
                         string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
                         string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
                         string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
-                        var methodName = SyntaxFactory.IdentifierName(HelperMethodNamePrefix + plural);
 
-                        var returnExpression = locallyDefined
-                            ? (ExpressionSyntax)SyntaxFactory.InvocationExpression( // this.With(field: this.field.ResetContents(values))
-                                Syntax.ThisDot(WithMethodName),
-                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
-                                    SyntaxFactory.Argument(
-                                        SyntaxFactory.NameColon(field.Name),
-                                        SyntaxFactory.Token(SyntaxKind.None),
-                                        SyntaxFactory.InvocationExpression(
-                                            SyntaxFactory.MemberAccessExpression(
-                                                SyntaxKind.SimpleMemberAccessExpression,
-                                                Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)),
-                                              SyntaxFactory.IdentifierName(nameof(CollectionExtensions.ResetContents))),
-                                            SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
-                                                SyntaxFactory.Argument(ValuesParameterName))))))))
-                            : SyntaxFactory.CastExpression( // (TemplateType)base.WithProperty(values)
-                                GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
-                                SyntaxFactory.InvocationExpression(
-                                    Syntax.BaseDot(methodName),
-                                    SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
-                                        SyntaxFactory.Argument(ValuesParameterName)))));
-
-                        var paramsArrayMethod = SyntaxFactory.MethodDeclaration(
-                            GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
-                            methodName.Identifier)
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                            .AddParameterListParameters(
-                                SyntaxFactory.Parameter(ValuesParameterName.Identifier)
-                                    .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ParamsKeyword)))
-                                    .WithType(SyntaxFactory.ArrayType(GetFullyQualifiedSymbolName(field.ElementType))
-                                        .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(SyntaxFactory.OmittedArraySizeExpression())))))
-                            .WithBody(SyntaxFactory.Block(
-                                SyntaxFactory.ReturnStatement(returnExpression)));
-
-                        if (!locallyDefined)
-                        {
-                            paramsArrayMethod = Syntax.AddNewKeyword(paramsArrayMethod);
-                        }
-
+                        MethodDeclarationSyntax paramsArrayMethod = this.CreateParamsElementArrayMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("With" + plural),
+                            SyntaxFactory.IdentifierName(nameof(CollectionExtensions.ResetContents)));
                         members.Add(paramsArrayMethod);
+                        members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
-                        var ienumerableMethod = paramsArrayMethod
-                            .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
-                                SyntaxFactory.Parameter(ValuesParameterName.Identifier)
-                                    .WithType(Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(field.ElementType))))));
-
-                        members.Add(ienumerableMethod);
+                        paramsArrayMethod = this.CreateParamsElementArrayMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Add" + plural),
+                            SyntaxFactory.IdentifierName(nameof(CollectionExtensions.AddRange)));
+                        members.Add(paramsArrayMethod);
+                        members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
                     }
                 }
 
@@ -1238,6 +1203,80 @@
                 {
                     MembersOfGeneratedType = SyntaxFactory.List(members)
                 };
+            }
+
+            private MethodDeclarationSyntax CreateMethodStarter(SyntaxToken name, MetaField field)
+            {
+                var method = SyntaxFactory.MethodDeclaration(
+                    GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                    name)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+                if (!field.IsLocallyDefined)
+                {
+                    method = Syntax.AddNewKeyword(method);
+                }
+
+                return method;
+            }
+
+            private MethodDeclarationSyntax AddMethodBody(MethodDeclarationSyntax containingMethod, MetaField field, Func<ExpressionSyntax, InvocationExpressionSyntax> mutatingInvocationFactory)
+            {
+                var returnExpression = field.IsLocallyDefined
+                    ? (ExpressionSyntax)SyntaxFactory.InvocationExpression( // this.With(field: this.field.SomeOperation(someArgs))
+                        Syntax.ThisDot(WithMethodName),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.Argument(
+                                SyntaxFactory.NameColon(field.Name),
+                                SyntaxFactory.Token(SyntaxKind.None),
+                                mutatingInvocationFactory(Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)))))))
+                    : SyntaxFactory.CastExpression( // (TemplateType)base.SameMethod(sameArgs)
+                        GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                        SyntaxFactory.InvocationExpression(
+                            Syntax.BaseDot(SyntaxFactory.IdentifierName(containingMethod.Identifier)),
+                            SyntaxFactory.ArgumentList(
+                                Syntax.JoinSyntaxNodes(
+                                    SyntaxKind.CommaToken,
+                                    containingMethod.ParameterList.Parameters.Select(p => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(p.Identifier)))))));
+
+                return containingMethod.WithBody(SyntaxFactory.Block(
+                    SyntaxFactory.ReturnStatement(returnExpression)));
+            }
+
+            private MethodDeclarationSyntax CreateParamsElementArrayMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName)
+            {
+                var paramsArrayMethod = CreateMethodStarter(methodName.Identifier, field)
+                    .WithParameterList(CreateParamsElementArrayParameters(field));
+
+                paramsArrayMethod = this.AddMethodBody(
+                    paramsArrayMethod,
+                    field,
+                    receiver => SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            receiver,
+                            collectionMutationMethodName),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.Argument(ValuesParameterName)))));
+
+                return paramsArrayMethod;
+            }
+
+            private static ParameterListSyntax CreateParamsElementArrayParameters(MetaField field)
+            {
+                return SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
+                     SyntaxFactory.Parameter(ValuesParameterName.Identifier)
+                            .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ParamsKeyword)))
+                            .WithType(SyntaxFactory.ArrayType(GetFullyQualifiedSymbolName(field.ElementType))
+                                .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(SyntaxFactory.OmittedArraySizeExpression()))))));
+            }
+
+            private static MethodDeclarationSyntax CreateIEnumerableFromParamsArrayMethod(MetaField field, MethodDeclarationSyntax paramsArrayMethod)
+            {
+                return paramsArrayMethod
+                    .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
+                        SyntaxFactory.Parameter(ValuesParameterName.Identifier)
+                            .WithType(Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(field.ElementType))))));
             }
         }
 
@@ -1699,6 +1738,15 @@
             public bool IsCollection
             {
                 get { return IsCollectionType(this.Symbol.Type); }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether this field is defined on the template type
+            /// (as opposed to a base type).
+            /// </summary>
+            public bool IsLocallyDefined
+            {
+                get { return this.Symbol.ContainingType == this.generator.applyToSymbol; }
             }
 
             public IFieldSymbol Symbol { get; private set; }
