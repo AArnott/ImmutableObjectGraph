@@ -1368,7 +1368,6 @@
                 {
                     if (field.IsCollection)
                     {
-                        bool locallyDefined = field.Symbol.ContainingType == this.generator.applyToSymbol;
                         var distinguisher = field.Distinguisher;
                         string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
                         string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
