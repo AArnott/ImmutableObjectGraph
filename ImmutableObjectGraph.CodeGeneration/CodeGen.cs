@@ -1206,7 +1206,7 @@
                                     SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
                                         SyntaxFactory.Argument(ValuesParameterName)))));
 
-                        var method = SyntaxFactory.MethodDeclaration(
+                        var paramsArrayMethod = SyntaxFactory.MethodDeclaration(
                             GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
                             methodName.Identifier)
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
@@ -1220,10 +1220,17 @@
 
                         if (!locallyDefined)
                         {
-                            method = Syntax.AddNewKeyword(method);
+                            paramsArrayMethod = Syntax.AddNewKeyword(paramsArrayMethod);
                         }
 
-                        members.Add(method);
+                        members.Add(paramsArrayMethod);
+
+                        var ienumerableMethod = paramsArrayMethod
+                            .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
+                                SyntaxFactory.Parameter(ValuesParameterName.Identifier)
+                                    .WithType(Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(field.ElementType))))));
+
+                        members.Add(ienumerableMethod);
                     }
                 }
 

@@ -63,6 +63,47 @@
             return isOptional ? OptionalFor(expression) : expression;
         }
 
+        internal static NameSyntax GetTypeSyntax(Type type)
+        {
+            Requires.NotNull(type, "type");
+
+            SimpleNameSyntax leafType = SyntaxFactory.IdentifierName(type.Name);
+            if (type.IsGenericType)
+            {
+                leafType = SyntaxFactory.GenericName(
+                    ((IdentifierNameSyntax)leafType).Identifier,
+                    SyntaxFactory.TypeArgumentList(Syntax.JoinSyntaxNodes<TypeSyntax>(SyntaxKind.CommaToken, type.GenericTypeArguments.Select(GetTypeSyntax))));
+            }
+
+            if (type.Namespace != null)
+            {
+                QualifiedNameSyntax qualifiedName = null;
+                foreach (string segment in type.Namespace.Split('.'))
+                {
+                    qualifiedName = SyntaxFactory.QualifiedName(
+                        (NameSyntax)qualifiedName ?? leafType,
+                        SyntaxFactory.IdentifierName(segment));
+                }
+
+                return qualifiedName;
+            }
+
+            return leafType;
+        }
+
+        internal static NameSyntax IEnumerableOf(TypeSyntax typeSyntax)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName("System"),
+                        SyntaxFactory.IdentifierName("Collections")),
+                    SyntaxFactory.IdentifierName("Generic")),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier("IEnumerable"),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
+        }
+
         internal static MethodDeclarationSyntax AddNewKeyword(MethodDeclarationSyntax method)
         {
             return method.WithModifiers(method.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));
