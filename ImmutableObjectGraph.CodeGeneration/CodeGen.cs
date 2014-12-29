@@ -830,6 +830,7 @@
             public GenerationResult Generate()
             {
                 var baseTypes = new List<BaseTypeSyntax>();
+                var innerMembers = new List<MemberDeclarationSyntax>();
 
                 if (this.generator.applyToMetaType.IsRecursiveParent)
                 {
@@ -845,15 +846,52 @@
                     ////    baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithOrderedChildren))));
                     ////}
 
-                    ////baseTypes.Add(SyntaxFactory.SimpleBaseType(
-                    ////    SyntaxFactory.QualifiedName(
-                    ////        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
-                    ////        SyntaxFactory.GenericName(
-                    ////            SyntaxFactory.Identifier(nameof(IRecursiveParent)),
-                    ////            SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList<TypeSyntax>(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol)))))));
+                    var irecursiveParentOfT = SyntaxFactory.QualifiedName(
+                            SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                            SyntaxFactory.GenericName(
+                                SyntaxFactory.Identifier(nameof(IRecursiveParent<IRecursiveType>)),
+                                SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList<TypeSyntax>(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol)))));
+                    baseTypes.Add(SyntaxFactory.SimpleBaseType(irecursiveParentOfT));
+
+                    // return this.Children;
+                    var returnThisDotChildren = SyntaxFactory.ReturnStatement(Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name.ToPascalCase())));
+
+                    // System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children
+                    innerMembers.Add(
+                        SyntaxFactory.PropertyDeclaration(
+                            Syntax.GetTypeSyntax(typeof(IEnumerable<IRecursiveType>)),
+                            nameof(IRecursiveParent.Children))
+                        .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
+                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration,
+                            SyntaxFactory.Block(returnThisDotChildren))));
+
+                    ////ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
+                    ////	var parented = this.GetParentedNode(identity);
+                    ////	return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(parented.Value, parented.Parent);
+                    ////}
+                    innerMembers.Add(
+                        SyntaxFactory.MethodDeclaration(
+                            Syntax.GetTypeSyntax(typeof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)),
+                            nameof(IRecursiveParent.GetParentedNode))
+                        .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
+                        .AddParameterListParameters(RequiredIdentityParameter)
+                        .WithBody(SyntaxFactory.Block(ThrowNotImplementedException)));
+
+
+                    ////System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children {
+                    ////	get { return this.Children; }
+                    ////}
+                    innerMembers.Add(
+                        SyntaxFactory.PropertyDeclaration(
+                            Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol)),
+                            nameof(IRecursiveParent<IRecursiveType>.Children))
+                        .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(irecursiveParentOfT))
+                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration,
+                            SyntaxFactory.Block(returnThisDotChildren))));
                 }
 
-                var innerMembers = new List<MemberDeclarationSyntax>();
                 if (this.generator.applyToMetaType.IsRecursive)
                 {
                     // return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();

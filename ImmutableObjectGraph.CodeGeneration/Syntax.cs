@@ -67,7 +67,7 @@
         {
             Requires.NotNull(type, "type");
 
-            SimpleNameSyntax leafType = SyntaxFactory.IdentifierName(type.Name);
+            SimpleNameSyntax leafType = SyntaxFactory.IdentifierName(type.IsGenericType ? type.Name.Substring(0, type.Name.IndexOf('`')) : type.Name);
             if (type.IsGenericType)
             {
                 leafType = SyntaxFactory.GenericName(
