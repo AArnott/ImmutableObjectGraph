@@ -1797,6 +1797,22 @@
                 }
             }
 
+            /// <summary>Gets the type that contains the collection of this (or a base) type.</summary>
+            public MetaType RecursiveParent
+            {
+                get
+                {
+                    var that = this;
+                    var result = this.GetTypeFamily().SingleOrDefault(t => !t.RecursiveType.IsDefault && t.RecursiveType.IsAssignableFrom(that.TypeSymbol));
+                    return result;
+                }
+            }
+
+            public bool IsRecursiveParent
+            {
+                get { return this.Equals(this.RecursiveParent); }
+            }
+
             public MetaType RootAncestorOrThisType
             {
                 get
