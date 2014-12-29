@@ -1184,6 +1184,7 @@
                         string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
                         string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
 
+                        // With[Plural] methods
                         MethodDeclarationSyntax paramsArrayMethod = this.CreateParamsElementArrayMethod(
                             field,
                             SyntaxFactory.IdentifierName("With" + plural),
@@ -1191,6 +1192,7 @@
                         members.Add(paramsArrayMethod);
                         members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
+                        // Add[Plural] methods
                         paramsArrayMethod = this.CreateParamsElementArrayMethod(
                             field,
                             SyntaxFactory.IdentifierName("Add" + plural),
@@ -1198,10 +1200,29 @@
                         members.Add(paramsArrayMethod);
                         members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
+                        // Add[Singular] method
                         MethodDeclarationSyntax singleMethod = this.CreateSingleElementMethod(
                             field,
                             SyntaxFactory.IdentifierName("Add" + singular),
                             SyntaxFactory.IdentifierName(nameof(ICollection<int>.Add)));
+                        members.Add(singleMethod);
+
+                        // Remove[Plural] methods
+                        // TODO: add IsRecursiveCollection handling found in T4.
+                        paramsArrayMethod = this.CreateParamsElementArrayMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Remove" + plural),
+                            SyntaxFactory.IdentifierName(nameof(CollectionExtensions.RemoveRange)));
+                        members.Add(paramsArrayMethod);
+                        members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+                        members.Add(CreateClearMethod(field, SyntaxFactory.IdentifierName("Remove" + plural)));
+
+                        // Remove[Singular] method
+                        // TODO: add IsRecursiveCollection handling found in T4.
+                        singleMethod = this.CreateSingleElementMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Remove" + singular),
+                            SyntaxFactory.IdentifierName(nameof(ICollection<int>.Remove)));
                         members.Add(singleMethod);
                     }
                 }
@@ -1287,6 +1308,24 @@
                             SyntaxFactory.Argument(ValueParameterName)))));
 
                 return paramsArrayMethod;
+            }
+
+            private MemberDeclarationSyntax CreateClearMethod(MetaField field, IdentifierNameSyntax methodName)
+            {
+                var method = CreateMethodStarter(methodName.Identifier, field)
+                    .WithParameterList(SyntaxFactory.ParameterList());
+
+                method = this.AddMethodBody(
+                    method,
+                    field,
+                    receiver => SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            receiver,
+                            SyntaxFactory.IdentifierName(nameof(ICollection<int>.Clear))),
+                        SyntaxFactory.ArgumentList()));
+
+                return method;
             }
 
             private static ParameterListSyntax CreateParamsElementArrayParameters(MetaField field)
