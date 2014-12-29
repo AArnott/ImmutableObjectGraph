@@ -1347,6 +1347,7 @@
         {
             private static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
             private static readonly IdentifierNameSyntax ValueParameterName = SyntaxFactory.IdentifierName("value");
+            private static readonly IdentifierNameSyntax SyncImmediateChildToCurrentVersionMethodName = SyntaxFactory.IdentifierName("SyncImmediateChildToCurrentVersion");
             private readonly CodeGen generator;
 
             public CollectionHelpersGen(CodeGen generator)
@@ -1357,6 +1358,11 @@
             public GenerationResult Generate()
             {
                 var members = new List<MemberDeclarationSyntax>();
+
+                if (this.generator.applyToMetaType.IsRecursiveParent)
+                {
+                    members.Add(this.CreateSyncImmediateChildToCurrentVersionMethod());
+                }
 
                 foreach (var field in this.generator.applyToMetaType.AllFields)
                 {
@@ -1392,21 +1398,21 @@
                         members.Add(singleMethod);
 
                         // Remove[Plural] methods
-                        // TODO: add IsRecursiveCollection handling found in T4.
                         paramsArrayMethod = this.CreateParamsElementArrayMethod(
                             field,
                             SyntaxFactory.IdentifierName("Remove" + plural),
-                            SyntaxFactory.IdentifierName(nameof(CollectionExtensions.RemoveRange)));
+                            SyntaxFactory.IdentifierName(nameof(CollectionExtensions.RemoveRange)),
+                            passThroughChildSync: field.IsRecursiveCollection);
                         members.Add(paramsArrayMethod);
                         members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
                         members.Add(CreateClearMethod(field, SyntaxFactory.IdentifierName("Remove" + plural)));
 
                         // Remove[Singular] method
-                        // TODO: add IsRecursiveCollection handling found in T4.
                         singleMethod = this.CreateSingleElementMethod(
                             field,
                             SyntaxFactory.IdentifierName("Remove" + singular),
-                            SyntaxFactory.IdentifierName(nameof(ICollection<int>.Remove)));
+                            SyntaxFactory.IdentifierName(nameof(ICollection<int>.Remove)),
+                            passThroughChildSync: field.IsRecursiveCollection);
                         members.Add(singleMethod);
                     }
                 }
@@ -1415,6 +1421,47 @@
                 {
                     MembersOfGeneratedType = SyntaxFactory.List(members)
                 };
+            }
+
+            private MethodDeclarationSyntax CreateSyncImmediateChildToCurrentVersionMethod()
+            {
+                var childParameterName = SyntaxFactory.IdentifierName("child");
+                var childType = GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveField.ElementType);
+                var currentValueVarName = SyntaxFactory.IdentifierName("currentValue");
+
+                return SyntaxFactory.MethodDeclaration(
+                    childType,
+                    SyncImmediateChildToCurrentVersionMethodName.Identifier)
+                    .AddParameterListParameters(SyntaxFactory.Parameter(childParameterName.Identifier).WithType(childType))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        // ElementTypeName currentValue;
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
+                            childType,
+                            SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(currentValueVarName.Identifier)))),
+                        // if (!this.TryFindImmediateChild(child.<#= templateType.RequiredIdentityField.NamePascalCase #>, out currentValue)) {
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.PrefixUnaryExpression(
+                                SyntaxKind.LogicalNotExpression,
+                                SyntaxFactory.InvocationExpression(
+                                    Syntax.ThisDot(SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.TryFindImmediateChild))),
+                                    SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
+                                        SyntaxKind.CommaToken,
+                                        SyntaxFactory.Argument(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                childParameterName,
+                                                IdentityPropertyName)),
+                                        SyntaxFactory.Argument(
+                                            null,
+                                            SyntaxFactory.Token(SyntaxKind.OutKeyword),
+                                            currentValueVarName))))),
+                            SyntaxFactory.Block(
+                                SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(
+                                    Syntax.GetTypeSyntax(typeof(ArgumentException)),
+                                    SyntaxFactory.ArgumentList(),
+                                    null)))),
+                        SyntaxFactory.ReturnStatement(currentValueVarName)));
             }
 
             private MethodDeclarationSyntax CreateMethodStarter(SyntaxToken name, MetaField field)
@@ -1455,10 +1502,21 @@
                     SyntaxFactory.ReturnStatement(returnExpression)));
             }
 
-            private MethodDeclarationSyntax CreateParamsElementArrayMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName)
+            private MethodDeclarationSyntax CreateParamsElementArrayMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName, bool passThroughChildSync = false)
             {
                 var paramsArrayMethod = CreateMethodStarter(methodName.Identifier, field)
                     .WithParameterList(CreateParamsElementArrayParameters(field));
+
+                var lambdaParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("v"));
+                var argument = passThroughChildSync
+                    ? (ExpressionSyntax)SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            ValuesParameterName,
+                            SyntaxFactory.IdentifierName(nameof(Enumerable.Select))),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.Argument(Syntax.ThisDot(SyncImmediateChildToCurrentVersionMethodName)))))
+                    : ValuesParameterName;
 
                 paramsArrayMethod = this.AddMethodBody(
                     paramsArrayMethod,
@@ -1469,17 +1527,23 @@
                             receiver,
                             collectionMutationMethodName),
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
-                            SyntaxFactory.Argument(ValuesParameterName)))));
+                            SyntaxFactory.Argument(argument)))));
 
                 return paramsArrayMethod;
             }
 
-            private MethodDeclarationSyntax CreateSingleElementMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName)
+            private MethodDeclarationSyntax CreateSingleElementMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName, bool passThroughChildSync = false)
             {
                 var paramsArrayMethod = CreateMethodStarter(methodName.Identifier, field)
                     .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
                         SyntaxFactory.Parameter(ValueParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementType)))));
 
+                var argument = passThroughChildSync
+                    ? (ExpressionSyntax)SyntaxFactory.InvocationExpression(
+                        Syntax.ThisDot(SyncImmediateChildToCurrentVersionMethodName),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(ValueParameterName))))
+                    : ValueParameterName;
+
                 paramsArrayMethod = this.AddMethodBody(
                     paramsArrayMethod,
                     field,
@@ -1489,7 +1553,7 @@
                             receiver,
                             collectionMutationMethodName),
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
-                            SyntaxFactory.Argument(ValueParameterName)))));
+                            SyntaxFactory.Argument(argument)))));
 
                 return paramsArrayMethod;
             }
