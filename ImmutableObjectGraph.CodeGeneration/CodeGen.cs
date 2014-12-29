@@ -129,12 +129,7 @@
             ValidateInput();
 
             this.MergeFeature(new EnumerableRecursiveParentGen(this));
-
-            if (this.applyToMetaType.IsRecursiveType)
-            {
-                // TODO
-                ////this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))));
-            }
+            this.MergeFeature(new RecursiveTypeGen(this));
 
             if (!this.applyToMetaType.HasAncestor)
             {
@@ -892,6 +887,46 @@
                                         SyntaxFactory.IdentifierName(nameof(System.Collections))),
                                     SyntaxFactory.IdentifierName(nameof(System.Collections.IEnumerable)))))
                         .WithBody(body));
+                }
+
+                return new GenerationResult
+                {
+                    BaseTypes = baseTypes.ToImmutableArray(),
+                    MembersOfGeneratedType = SyntaxFactory.List(innerMembers),
+                };
+            }
+        }
+
+        protected class RecursiveTypeGen : IFeatureGenerator
+        {
+            private readonly CodeGen generator;
+
+            public RecursiveTypeGen(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public GenerationResult Generate()
+            {
+                var baseTypes = new List<BaseTypeSyntax>();
+                var innerMembers = new List<MemberDeclarationSyntax>();
+
+                if (this.generator.applyToMetaType.IsRecursiveType)
+                {
+                    baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))));
+
+                    ////<#= templateType.RequiredIdentityField.TypeName #> IRecursiveType.Identity {
+                    ////	get { return this.Identity; }
+                    ////}
+                    innerMembers.Add(SyntaxFactory.PropertyDeclaration(
+                        IdentityFieldTypeSyntax,
+                        nameof(IRecursiveType.Identity))
+                        .WithExplicitInterfaceSpecifier(
+                            SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveType))))
+                        .AddAccessorListAccessors(
+                            SyntaxFactory.AccessorDeclaration(
+                                SyntaxKind.GetAccessorDeclaration,
+                                SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(IdentityPropertyName))))));
                 }
 
                 return new GenerationResult
