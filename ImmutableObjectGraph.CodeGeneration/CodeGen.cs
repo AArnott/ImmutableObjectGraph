@@ -1162,6 +1162,7 @@
         protected class CollectionHelpersGen : IFeatureGenerator
         {
             private static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
+            private static readonly IdentifierNameSyntax ValueParameterName = SyntaxFactory.IdentifierName("value");
             private readonly CodeGen generator;
 
             public CollectionHelpersGen(CodeGen generator)
@@ -1196,6 +1197,12 @@
                             SyntaxFactory.IdentifierName(nameof(CollectionExtensions.AddRange)));
                         members.Add(paramsArrayMethod);
                         members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+
+                        MethodDeclarationSyntax singleMethod = this.CreateSingleElementMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Add" + singular),
+                            SyntaxFactory.IdentifierName(nameof(ICollection<int>.Add)));
+                        members.Add(singleMethod);
                     }
                 }
 
@@ -1258,6 +1265,26 @@
                             collectionMutationMethodName),
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
                             SyntaxFactory.Argument(ValuesParameterName)))));
+
+                return paramsArrayMethod;
+            }
+
+            private MethodDeclarationSyntax CreateSingleElementMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName)
+            {
+                var paramsArrayMethod = CreateMethodStarter(methodName.Identifier, field)
+                    .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
+                        SyntaxFactory.Parameter(ValueParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementType)))));
+
+                paramsArrayMethod = this.AddMethodBody(
+                    paramsArrayMethod,
+                    field,
+                    receiver => SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            receiver,
+                            collectionMutationMethodName),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.Argument(ValueParameterName)))));
 
                 return paramsArrayMethod;
             }
