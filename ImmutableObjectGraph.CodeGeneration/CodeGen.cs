@@ -66,6 +66,11 @@
         /// </summary>
         private readonly List<MemberDeclarationSyntax> outerMembers = new List<MemberDeclarationSyntax>();
 
+        /// <summary>
+        /// The interfaces to include in the base types list of the generated partial class.
+        /// </summary>
+        private readonly List<BaseTypeSyntax> baseTypes = new List<BaseTypeSyntax>();
+
         private SemanticModel semanticModel;
         private INamedTypeSymbol applyToSymbol;
         private ImmutableArray<DeclarationInfo> inputDeclarations;
@@ -99,9 +104,15 @@
 
         private void MergeFeature(IFeatureGenerator featureGenerator)
         {
-            var typeConversionMembers = featureGenerator.Generate();
-            this.innerMembers.AddRange(typeConversionMembers.MembersOfGeneratedType);
-            this.outerMembers.AddRange(typeConversionMembers.SiblingsOfGeneratedType);
+            var featureResults = featureGenerator.Generate();
+            this.innerMembers.AddRange(featureResults.MembersOfGeneratedType);
+            this.outerMembers.AddRange(featureResults.SiblingsOfGeneratedType);
+
+            if (!featureResults.BaseTypes.IsDefault)
+            {
+                this.baseTypes.AddRange(featureResults.BaseTypes);
+            }
+
             this.mergedFeatures.Add(featureGenerator);
         }
 
@@ -180,9 +191,15 @@
 
             this.innerMembers.Sort(StyleCop.Sort);
 
-            this.outerMembers.Add(SyntaxFactory.ClassDeclaration(applyTo.Identifier)
+            var partialClass = SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                .WithMembers(SyntaxFactory.List(this.innerMembers)));
+                .WithMembers(SyntaxFactory.List(this.innerMembers));
+            if (this.baseTypes.Count > 0)
+            {
+                partialClass = partialClass.AddBaseListTypes(this.baseTypes.ToArray());
+            }
+
+            this.outerMembers.Add(partialClass);
 
             foreach (var mergedFeature in this.mergedFeatures.OfType<IFeatureGeneratorWithPostProcessing>())
             {
@@ -197,6 +214,8 @@
             public SyntaxList<MemberDeclarationSyntax> MembersOfGeneratedType { get; set; }
 
             public SyntaxList<MemberDeclarationSyntax> SiblingsOfGeneratedType { get; set; }
+
+            public ImmutableArray<BaseTypeSyntax> BaseTypes { get; set; }
         }
 
         private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)
