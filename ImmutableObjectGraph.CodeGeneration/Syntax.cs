@@ -77,15 +77,16 @@
 
             if (type.Namespace != null)
             {
-                QualifiedNameSyntax qualifiedName = null;
+                NameSyntax namespaceName = null;
                 foreach (string segment in type.Namespace.Split('.'))
                 {
-                    qualifiedName = SyntaxFactory.QualifiedName(
-                        (NameSyntax)qualifiedName ?? leafType,
-                        SyntaxFactory.IdentifierName(segment));
+                    var segmentName = SyntaxFactory.IdentifierName(segment);
+                    namespaceName = namespaceName == null
+                        ? (NameSyntax)segmentName
+                        : SyntaxFactory.QualifiedName(namespaceName, SyntaxFactory.IdentifierName(segment));
                 }
 
-                return qualifiedName;
+                return SyntaxFactory.QualifiedName(namespaceName, leafType);
             }
 
             return leafType;
