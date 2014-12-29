@@ -692,9 +692,14 @@
                         Syntax.OptionalForIf(dereference(f), optionalWrap(f))))));
         }
 
-        private bool IsFieldRequired(IFieldSymbol fieldSymbol)
+        private static bool IsFieldRequired(IFieldSymbol fieldSymbol)
         {
-            return fieldSymbol?.GetAttributes().Any(a => IsOrDerivesFrom<RequiredAttribute>(a.AttributeClass)) ?? false;
+            return IsAttributeApplied<RequiredAttribute>(fieldSymbol);
+        }
+
+        private static bool IsAttributeApplied<T>(IFieldSymbol fieldSymbol) where T : Attribute
+        {
+            return fieldSymbol?.GetAttributes().Any(a => IsOrDerivesFrom<T>(a.AttributeClass)) ?? false;
         }
 
         private static bool IsOrDerivesFrom<T>(INamedTypeSymbol type)
@@ -1675,6 +1680,11 @@
                 this.TypeSymbol = typeSymbol;
             }
 
+            public CodeGen Generator
+            {
+                get { return this.generator; }
+            }
+
             public INamedTypeSymbol TypeSymbol { get; private set; }
 
             public bool IsDefault
@@ -1686,8 +1696,8 @@
             {
                 get
                 {
-                    var generator = this.generator;
-                    return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>().Select(f => new MetaField(generator, f)) ?? ImmutableArray<MetaField>.Empty;
+                    var that = this;
+                    return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>().Select(f => new MetaField(that, f)) ?? ImmutableArray<MetaField>.Empty;
                 }
             }
 
@@ -1764,6 +1774,43 @@
                 }
             }
 
+            public MetaField RecursiveField
+            {
+                get
+                {
+                    var rootOrThisType = this.RootAncestorOrThisType;
+                    return this.LocalFields.SingleOrDefault(f => f.IsCollection && !f.IsDefinitelyNotRecursive && rootOrThisType.IsAssignableFrom(f.ElementType));
+                }
+            }
+
+            public MetaType RecursiveType
+            {
+                get { return !this.RecursiveField.IsDefault ? this.FindMetaType((INamedTypeSymbol)this.RecursiveField.ElementType) : default(MetaType); }
+            }
+
+            public bool IsRecursiveType
+            {
+                get
+                {
+                    var that = this;
+                    return this.GetTypeFamily().Any(t => that.Equals(t.RecursiveType));
+                }
+            }
+
+            public MetaType RootAncestorOrThisType
+            {
+                get
+                {
+                    MetaType current = this;
+                    while (!current.Ancestor.IsDefault)
+                    {
+                        current = current.Ancestor;
+                    }
+
+                    return current;
+                }
+            }
+
             public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor)
             {
                 if (ancestor.TypeSymbol == this.TypeSymbol)
@@ -1774,15 +1821,70 @@
                 return ImmutableList.CreateRange(this.LocalFields)
                     .InsertRange(0, this.Ancestor.GetFieldsBeyond(ancestor));
             }
+
+            public bool IsAssignableFrom(ITypeSymbol type)
+            {
+                if (type == null)
+                {
+                    return false;
+                }
+
+                return type == this.TypeSymbol
+                    || this.IsAssignableFrom(type.BaseType);
+            }
+
+            public HashSet<MetaType> GetTypeFamily()
+            {
+                var set = new HashSet<MetaType>();
+                var furthestAncestor = this.Ancestors.LastOrDefault();
+                if (furthestAncestor.IsDefault)
+                {
+                    furthestAncestor = this;
+                }
+
+                set.Add(furthestAncestor);
+                foreach (var relative in furthestAncestor.Descendents)
+                {
+                    set.Add(relative);
+                }
+
+                return set;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is MetaType)
+                {
+                    return this.Equals((MetaType)obj);
+                }
+
+                return false;
+            }
+
+            public bool Equals(MetaType other)
+            {
+                return this.generator == other.generator
+                    && this.TypeSymbol == other.TypeSymbol;
+            }
+
+            public override int GetHashCode()
+            {
+                return this.TypeSymbol?.GetHashCode() ?? 0;
+            }
+
+            private MetaType FindMetaType(INamedTypeSymbol type)
+            {
+                return new MetaType(this.generator, type);
+            }
         }
 
         protected struct MetaField
         {
-            private readonly CodeGen generator;
+            private readonly MetaType metaType;
 
-            public MetaField(CodeGen generator, IFieldSymbol symbol)
+            public MetaField(MetaType type, IFieldSymbol symbol)
             {
-                this.generator = generator;
+                this.metaType = type;
                 this.Symbol = symbol;
             }
 
@@ -1798,12 +1900,27 @@
 
             public bool IsRequired
             {
-                get { return this.generator.IsFieldRequired(this.Symbol); }
+                get { return IsFieldRequired(this.Symbol); }
             }
 
             public bool IsCollection
             {
                 get { return IsCollectionType(this.Symbol.Type); }
+            }
+
+            public MetaType DeclaringType
+            {
+                get { return new MetaType(this.metaType.Generator, this.Symbol.ContainingType); }
+            }
+
+            public bool IsRecursiveCollection
+            {
+                get { return this.IsCollection && !this.DeclaringType.RecursiveType.IsDefault && this.ElementType == this.DeclaringType.RecursiveType.TypeSymbol; }
+            }
+
+            public bool IsDefinitelyNotRecursive
+            {
+                get { return IsAttributeApplied<NotRecursiveAttribute>(this.Symbol); }
             }
 
             /// <summary>
@@ -1812,7 +1929,7 @@
             /// </summary>
             public bool IsLocallyDefined
             {
-                get { return this.Symbol.ContainingType == this.generator.applyToSymbol; }
+                get { return this.Symbol.ContainingType == this.metaType.Generator.applyToSymbol; }
             }
 
             public IFieldSymbol Symbol { get; private set; }
@@ -1822,9 +1939,14 @@
                 get { return null; /* TODO */ }
             }
 
-            public INamespaceOrTypeSymbol ElementType
+            public ITypeSymbol ElementType
             {
                 get { return GetTypeOrCollectionMemberType(this.Symbol.Type); }
+            }
+
+            public bool IsDefault
+            {
+                get { return this.Symbol == null; }
             }
 
             private static ITypeSymbol GetTypeOrCollectionMemberType(ITypeSymbol collectionOrOtherType)
