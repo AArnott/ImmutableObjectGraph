@@ -1846,6 +1846,25 @@
                 }
             }
 
+            public bool ChildrenAreSorted
+            {
+                get
+                {
+                    // Not very precise, but it does the job for now.
+                    return this.RecursiveField.Type.Name == nameof(ImmutableSortedSet<int>);
+                }
+            }
+
+            public bool ChildrenAreOrdered
+            {
+                get
+                {
+                    // Not very precise, but it does the job for now.
+                    var namedType = this.RecursiveField.Type as INamedTypeSymbol;
+                    return namedType != null && namedType.AllInterfaces.Any(iface => iface.Name == nameof(IReadOnlyList<int>));
+                }
+            }
+
             public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor)
             {
                 if (ancestor.TypeSymbol == this.TypeSymbol)
@@ -1982,6 +2001,19 @@
             public bool IsDefault
             {
                 get { return this.Symbol == null; }
+            }
+
+            public bool IsAssignableFrom(ITypeSymbol type)
+            {
+                if (type == null)
+                {
+                    return false;
+                }
+
+                var that = this;
+                return type == this.Symbol.Type
+                    || this.IsAssignableFrom(type.BaseType)
+                    || type.Interfaces.Any(i => that.IsAssignableFrom(i));
             }
 
             private static ITypeSymbol GetTypeOrCollectionMemberType(ITypeSymbol collectionOrOtherType)
