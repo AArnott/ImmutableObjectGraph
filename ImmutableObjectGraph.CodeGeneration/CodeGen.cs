@@ -191,6 +191,7 @@
             }
 
             this.MergeFeature(new TypeConversionGen(this));
+            this.MergeFeature(new DeepMutationGen(this));
 
             this.innerMembers.Sort(StyleCop.Sort);
 
@@ -1042,6 +1043,26 @@
                 return new GenerationResult
                 {
                     BaseTypes = baseTypes.ToImmutableArray(),
+                    MembersOfGeneratedType = SyntaxFactory.List(innerMembers),
+                };
+            }
+        }
+
+        protected class DeepMutationGen : IFeatureGenerator
+        {
+            private readonly CodeGen generator;
+
+            public DeepMutationGen(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public GenerationResult Generate()
+            {
+                var innerMembers = new List<MemberDeclarationSyntax>();
+
+                return new GenerationResult
+                {
                     MembersOfGeneratedType = SyntaxFactory.List(innerMembers),
                 };
             }
