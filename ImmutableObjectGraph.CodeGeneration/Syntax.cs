@@ -118,6 +118,17 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
+        internal static ExpressionSyntax CreateDictionary(TypeSyntax keyType, TypeSyntax valueType)
+        {
+            // System.Collections.Immutable.ImmutableDictionary.Create<TKey, TValue>()
+            return SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    GetTypeSyntax(typeof(ImmutableDictionary)),
+                    SyntaxFactory.GenericName(nameof(ImmutableDictionary.Create)).AddTypeArgumentListArguments(keyType, valueType)),
+                SyntaxFactory.ArgumentList());
+        }
+
         internal static MethodDeclarationSyntax AddNewKeyword(MethodDeclarationSyntax method)
         {
             return method.WithModifiers(method.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));

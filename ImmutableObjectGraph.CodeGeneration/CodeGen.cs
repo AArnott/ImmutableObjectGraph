@@ -71,6 +71,11 @@
         /// </summary>
         private readonly List<BaseTypeSyntax> baseTypes = new List<BaseTypeSyntax>();
 
+        /// <summary>
+        /// Statements to append to the instance constructor.
+        /// </summary>
+        private readonly List<StatementSyntax> additionalCtorStatements = new List<StatementSyntax>();
+
         private SemanticModel semanticModel;
         private INamedTypeSymbol applyToSymbol;
         private ImmutableArray<DeclarationInfo> inputDeclarations;
@@ -113,6 +118,11 @@
                 this.baseTypes.AddRange(featureResults.BaseTypes);
             }
 
+            if (!featureResults.AdditionalCtorStatements.IsDefault)
+            {
+                this.additionalCtorStatements.AddRange(featureResults.AdditionalCtorStatements);
+            }
+
             this.mergedFeatures.Add(featureGenerator);
         }
 
@@ -139,7 +149,6 @@
                 this.innerMembers.Add(CreateNewIdentityMethod());
             }
 
-            this.innerMembers.Add(CreateCtor());
             this.innerMembers.AddRange(CreateWithCoreMethods());
 
             if (!isAbstract)
@@ -194,6 +203,10 @@
             this.MergeFeature(new FastSpineGen(this));
             this.MergeFeature(new DeepMutationGen(this));
 
+            // Define the constructor after merging all features since they can add to it.
+            this.innerMembers.Add(CreateCtor());
+
+            // Sort the members now that they're all added.
             this.innerMembers.Sort(StyleCop.Sort);
 
             var partialClass = SyntaxFactory.ClassDeclaration(applyTo.Identifier)
@@ -221,6 +234,8 @@
             public SyntaxList<MemberDeclarationSyntax> SiblingsOfGeneratedType { get; set; }
 
             public ImmutableArray<BaseTypeSyntax> BaseTypes { get; set; }
+
+            public ImmutableArray<StatementSyntax> AdditionalCtorStatements { get; set; }
         }
 
         private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)
@@ -402,6 +417,8 @@
                                 Syntax.ThisDot(ValidateMethodName),
                                 SyntaxFactory.ArgumentList()))));
             }
+
+            body = body.AddStatements(this.additionalCtorStatements.ToArray());
 
             var ctor = SyntaxFactory.ConstructorDeclaration(
                 this.applyTo.Identifier)
@@ -831,10 +848,13 @@
             protected readonly List<MemberDeclarationSyntax> innerMembers = new List<MemberDeclarationSyntax>();
             protected readonly List<MemberDeclarationSyntax> siblingMembers = new List<MemberDeclarationSyntax>();
             protected readonly List<BaseTypeSyntax> baseTypes = new List<BaseTypeSyntax>();
+            protected readonly List<StatementSyntax> additionalCtorStatements = new List<StatementSyntax>();
+            protected readonly MetaType applyTo;
 
             protected FeatureGeneratorBase(CodeGen generator)
             {
                 this.generator = generator;
+                this.applyTo = generator.applyToMetaType;
             }
 
             public GenerationResult Generate()
@@ -846,6 +866,7 @@
                     MembersOfGeneratedType = SyntaxFactory.List(this.innerMembers),
                     SiblingsOfGeneratedType = SyntaxFactory.List(this.siblingMembers),
                     BaseTypes = this.baseTypes.ToImmutableArray(),
+                    AdditionalCtorStatements = this.additionalCtorStatements.ToImmutableArray(),
                 };
             }
 
@@ -1078,6 +1099,10 @@
 
         protected class FastSpineGen : FeatureGeneratorBase
         {
+            private static readonly IdentifierNameSyntax InitializeLookupMethodName = SyntaxFactory.IdentifierName("InitializeLookup");
+            private static readonly IdentifierNameSyntax LookupTableFieldName = SyntaxFactory.IdentifierName("lookupTable");
+            private static readonly IdentifierNameSyntax LookupTableLazySentinelFieldName = SyntaxFactory.IdentifierName("lookupTableLazySentinel");
+
             public FastSpineGen(CodeGen generator)
                 : base(generator)
             {
@@ -1085,6 +1110,68 @@
 
             protected override void GenerateCore()
             {
+                if (this.applyTo.IsRecursiveParent)
+                {
+                    // TODO: uncomment once we implement the interface.
+                    ////this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithFastLookup))));
+                }
+
+                if (this.applyTo.IsRecursive)
+                {
+                    // TODO: uncomment once we define the InitializeLookup method.
+                    ////this.additionalCtorStatements.Add(
+                    ////    SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(
+                    ////        Syntax.ThisDot(InitializeLookupMethodName),
+                    ////        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(LookupTableFieldName))))));
+
+                    var keyValuePairType = SyntaxFactory.ParseTypeName(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "System.Collections.Generic.KeyValuePair<{1}, {0}>",
+                            IdentityFieldTypeSyntax,
+                            this.applyTo.RecursiveType.TypeSyntax));
+                    var lookupTableType = SyntaxFactory.ParseTypeName(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "System.Collections.Immutable.ImmutableDictionary<{0}, {1}>",
+                            IdentityFieldTypeSyntax,
+                            keyValuePairType));
+
+                    // private static readonly System.Collections.Immutable.ImmutableDictionary<uint, KeyValuePair<RecursiveType, uint>> lookupTableLazySentinal 
+                    //    = System.Collections.Immutable.ImmutableDictionary.Create<uint, KeyValuePair<RecursiveType, uint>>().Add(default(uint), new KeyValuePair<RecursiveType, uint>());
+                    this.innerMembers.Add(SyntaxFactory.FieldDeclaration(
+                        SyntaxFactory.VariableDeclaration(lookupTableType)
+                            .AddVariables(
+                                SyntaxFactory.VariableDeclarator(LookupTableLazySentinelFieldName.Identifier)
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.CreateDictionary(IdentityFieldTypeSyntax, keyValuePairType),
+                                            SyntaxFactory.IdentifierName(nameof(ImmutableDictionary<int, int>.Add))),
+                                        SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
+                                            SyntaxKind.CommaToken,
+                                            SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax)),
+                                            SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(keyValuePairType, SyntaxFactory.ArgumentList(), null)))))))))
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)));
+
+                    // private System.Collections.Immutable.ImmutableDictionary<System.UInt32, KeyValuePair<FileSystemEntry, System.UInt32>> lookupTable;
+                    this.innerMembers.Add(SyntaxFactory.FieldDeclaration(
+                        SyntaxFactory.VariableDeclaration(lookupTableType)
+                            .AddVariables(SyntaxFactory.VariableDeclarator(LookupTableFieldName.Identifier)))
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword)));
+
+                    ////this.innerMembers.Add(this.CreateInitializeLookupMethod());
+                }
+            }
+
+            protected MethodDeclarationSyntax CreateInitializeLookupMethod()
+            {
+                throw new NotImplementedException();
             }
         }
 
