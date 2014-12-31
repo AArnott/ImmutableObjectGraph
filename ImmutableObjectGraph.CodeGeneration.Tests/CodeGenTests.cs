@@ -63,12 +63,6 @@
         }
 
         [Fact]
-        public async Task FamilyPersonWatch()
-        {
-            await this.GenerateFromStreamAsync("FamilyPersonWatch");
-        }
-
-        [Fact]
         public async Task OneScalarField_HasWithMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarField");

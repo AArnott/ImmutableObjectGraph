@@ -719,9 +719,9 @@
             return IsAttributeApplied<RequiredAttribute>(fieldSymbol);
         }
 
-        private static bool IsAttributeApplied<T>(IFieldSymbol fieldSymbol) where T : Attribute
+        private static bool IsAttributeApplied<T>(ISymbol symbol) where T : Attribute
         {
-            return fieldSymbol?.GetAttributes().Any(a => IsOrDerivesFrom<T>(a.AttributeClass)) ?? false;
+            return symbol?.GetAttributes().Any(a => IsOrDerivesFrom<T>(a.AttributeClass)) ?? false;
         }
 
         private static bool IsOrDerivesFrom<T>(INamedTypeSymbol type)
@@ -1252,9 +1252,11 @@
             {
                 var fields = new List<FieldDeclarationSyntax>();
 
-                foreach (var field in this.generator.GetFields())
+                foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
-                    fields.Add(field
+                    fields.Add(SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(
+                        this.GetFieldTypeForBuilder(field),
+                        SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(field.Name))))
                         .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
                         .WithAttributeLists(SyntaxFactory.SingletonList(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute)))));
                 }
@@ -1270,12 +1272,15 @@
                         SyntaxKind.SimpleAssignmentExpression,
                         Syntax.ThisDot(ImmutableFieldName),
                         immutableParameterName)));
-                foreach (var field in this.generator.GetFieldVariables())
+                foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
-                    body = body.AddStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                        SyntaxKind.SimpleAssignmentExpression,
-                        Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Value.Identifier)),
-                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, immutableParameterName, SyntaxFactory.IdentifierName(field.Value.Identifier)))));
+                    if (!field.IsGeneratedImmutableType)
+                    {
+                        body = body.AddStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)),
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, immutableParameterName, SyntaxFactory.IdentifierName(field.Name)))));
+                    }
                 }
 
                 var ctor = SyntaxFactory.ConstructorDeclaration(BuilderTypeName.Identifier)
@@ -1298,17 +1303,39 @@
             {
                 var properties = new List<PropertyDeclarationSyntax>();
 
-                foreach (var field in this.generator.GetFieldVariables())
+                foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
-                    var getterBlock = SyntaxFactory.Block(
-                        SyntaxFactory.ReturnStatement(Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Value.Identifier))));
+                    var thisField = Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name));
+                    var getterBlock = field.IsGeneratedImmutableType
+                        ? SyntaxFactory.Block(
+                            // if (!this.fieldName.IsDefined) {
+                            SyntaxFactory.IfStatement(
+                                SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(thisField)),
+                                SyntaxFactory.Block(
+                                    // this.fieldName = this.immutable.fieldName?.ToBuilder();
+                                    SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                                        SyntaxKind.SimpleAssignmentExpression,
+                                        thisField,
+                                        SyntaxFactory.ConditionalAccessExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.ThisDot(ImmutableFieldName),
+                                                SyntaxFactory.IdentifierName(field.Name)),
+                                            SyntaxFactory.InvocationExpression(
+                                                SyntaxFactory.MemberBindingExpression(ToBuilderMethodName),
+                                                SyntaxFactory.ArgumentList())))))),
+                            SyntaxFactory.ReturnStatement(Syntax.OptionalValue(thisField)))
+                        : SyntaxFactory.Block(SyntaxFactory.ReturnStatement(thisField));
                     var setterBlock = SyntaxFactory.Block(
                         SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression,
-                            Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Value.Identifier)),
+                            thisField,
                             SyntaxFactory.IdentifierName("value"))));
 
-                    var property = CreatePropertyForField(field.Key, field.Value)
+                    var property = SyntaxFactory.PropertyDeclaration(
+                        this.GetPropertyTypeForBuilder(field),
+                        field.Name.ToPascalCase())
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[]
                         {
                             SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, getterBlock),
@@ -1320,8 +1347,48 @@
                 return properties;
             }
 
+            protected NameSyntax GetPropertyTypeForBuilder(MetaField field)
+            {
+                var typeBasis = GetFullyQualifiedSymbolName(field.Type);
+                return field.IsGeneratedImmutableType
+                    ? SyntaxFactory.QualifiedName(typeBasis, BuilderTypeName)
+                    : typeBasis;
+            }
+
+            protected NameSyntax GetFieldTypeForBuilder(MetaField field)
+            {
+                var typeBasis = GetFullyQualifiedSymbolName(field.Type);
+                return field.IsGeneratedImmutableType
+                    ? Syntax.OptionalOf(SyntaxFactory.QualifiedName(typeBasis, BuilderTypeName))
+                    : typeBasis;
+            }
+
             protected MethodDeclarationSyntax CreateToImmutableMethod()
             {
+                // var fieldName = this.fieldName.IsDefined ? this.fieldName.Value?.ToImmutable() : this.immutable.FieldName;
+                var body = SyntaxFactory.Block(
+                    from field in this.generator.applyToMetaType.AllFields
+                    where field.IsGeneratedImmutableType
+                    let thisField = Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)) // this.fieldName
+                    let thisFieldValue = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thisField, SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional<int>.Value))) // this.fieldName.Value
+                    select SyntaxFactory.LocalDeclarationStatement(
+                        SyntaxFactory.VariableDeclaration(varType))
+                        .AddDeclarationVariables(
+                            SyntaxFactory.VariableDeclarator(field.Name).WithInitializer(
+                                SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.ConditionalExpression(
+                                        SyntaxFactory.MemberAccessExpression( // this.fieldName.IsDefined
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            thisField,
+                                            SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional<int>.IsDefined))),
+                                        SyntaxFactory.InvocationExpression( // this.fieldName.Value?.ToImmutable()
+                                            SyntaxFactory.ConditionalAccessExpression(thisFieldValue, SyntaxFactory.MemberBindingExpression(ToImmutableMethodName)),
+                                            SyntaxFactory.ArgumentList()),
+                                        SyntaxFactory.MemberAccessExpression( // this.immutable.FieldName
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.ThisDot(ImmutableFieldName),
+                                            SyntaxFactory.IdentifierName(field.Name.ToPascalCase())))))));
+
                 ExpressionSyntax returnExpression;
                 if (this.generator.applyToMetaType.AllFields.Any())
                 {
@@ -1334,7 +1401,11 @@
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 Syntax.ThisDot(ImmutableFieldName),
                                 WithMethodName),
-                            this.generator.CreateArgumentList(this.generator.applyToMetaType.AllFields, ArgSource.Property, OptionalStyle.Always)));
+                            SyntaxFactory.ArgumentList(
+                                Syntax.JoinSyntaxNodes(
+                                    SyntaxKind.CommaToken,
+                                    this.generator.applyToMetaType.AllFields.Select(
+                                        f => SyntaxFactory.Argument(Syntax.OptionalFor(f.IsGeneratedImmutableType ? SyntaxFactory.IdentifierName(f.Name) : Syntax.ThisDot(SyntaxFactory.IdentifierName(f.Name.ToPascalCase())))))))));
                 }
                 else
                 {
@@ -1342,7 +1413,7 @@
                     returnExpression = Syntax.ThisDot(ImmutableFieldName);
                 }
 
-                var body = SyntaxFactory.Block(
+                body = body.AddStatements(
                     SyntaxFactory.ReturnStatement(returnExpression));
 
                 // public TemplateType ToImmutable() { ... }
@@ -2249,6 +2320,21 @@
             public INamespaceOrTypeSymbol Type
             {
                 get { return this.Symbol.Type; }
+            }
+
+            public bool IsGeneratedImmutableType
+            {
+                get { return !this.TypeAsGeneratedImmutable.IsDefault; }
+            }
+
+            public MetaType TypeAsGeneratedImmutable
+            {
+                get
+                {
+                    return IsAttributeApplied<GenerateImmutableAttribute>(this.Type)
+                        ? new MetaType(this.metaType.Generator, (INamedTypeSymbol)this.Type)
+                        : default(MetaType);
+                }
             }
 
             public bool IsRequired

@@ -20,7 +20,7 @@
                 .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.DefaultExpression(OptionalOf(parameter.Type))));
         }
 
-        internal static TypeSyntax OptionalOf(TypeSyntax type)
+        internal static NameSyntax OptionalOf(TypeSyntax type)
         {
             return SyntaxFactory.QualifiedName(
                 SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
