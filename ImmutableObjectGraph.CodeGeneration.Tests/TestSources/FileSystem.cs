@@ -1,29 +1,32 @@
-﻿using System.Collections.Immutable;
-using ImmutableObjectGraph;
-
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineRootedStruct = true)]
-abstract partial class FileSystemEntry
+﻿namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
 {
-    [Required]
-    readonly string pathSegment;
+    using System.Collections.Immutable;
+    using ImmutableObjectGraph;
 
-    readonly RichData data;
-}
+    [ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineRootedStruct = true, DefineWithMethodsPerProperty = true)]
+    abstract partial class FileSystemEntry
+    {
+        [Required]
+        readonly string pathSegment;
 
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineRootedStruct = true)]
-partial class FileSystemFile : FileSystemEntry
-{
-    readonly ImmutableHashSet<string> attributes;
-}
+        readonly RichData data;
+    }
 
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineRootedStruct = true)]
-partial class FileSystemDirectory : FileSystemEntry
-{
-    readonly ImmutableSortedSet<FileSystemEntry> children;
-}
+    [ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineRootedStruct = true, DefineWithMethodsPerProperty = true)]
+    partial class FileSystemFile : FileSystemEntry
+    {
+        readonly ImmutableHashSet<string> attributes;
+    }
 
-[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true)]
-partial class RichData
-{
-    readonly int someCoolProperty;
+    [ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineRootedStruct = true, DefineWithMethodsPerProperty = true)]
+    partial class FileSystemDirectory : FileSystemEntry
+    {
+        readonly ImmutableSortedSet<FileSystemEntry> children;
+    }
+
+    [ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineWithMethodsPerProperty = true)]
+    partial class RichData
+    {
+        readonly int someCoolProperty;
+    }
 }

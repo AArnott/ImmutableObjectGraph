@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class FileSystem
+    public class FileSystemTests
     {
         [Fact]
         public void Create()
