@@ -118,6 +118,19 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
+        internal static NameSyntax IReadOnlyCollectionOf(TypeSyntax elementType)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Generic))),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(IReadOnlyCollection<int>)),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(elementType))));
+        }
+
         internal static ExpressionSyntax CreateDictionary(TypeSyntax keyType, TypeSyntax valueType)
         {
             // System.Collections.Immutable.ImmutableDictionary.Create<TKey, TValue>()

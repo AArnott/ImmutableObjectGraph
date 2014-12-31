@@ -47,6 +47,16 @@
 		bool TryLookup(IdentityFieldType identity, out KeyValuePair<IRecursiveType, IdentityFieldType> result);
 	}
 
+    public interface IRecursiveParentWithLookupTable<TRecursiveType> : IRecursiveParent<TRecursiveType>
+        where TRecursiveType : IRecursiveType
+    {
+        uint InefficiencyLoad { get; }
+
+        new IReadOnlyCollection<TRecursiveType> Children { get; }
+
+        ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>> LookupTable { get; }
+    }
+
 	public interface IRecursiveDiffingType<TPropertiesEnum, TDiffGram> : IRecursiveType {
 		TPropertiesEnum ParentProperty { get; }
 
