@@ -191,6 +191,7 @@
             }
 
             this.MergeFeature(new TypeConversionGen(this));
+            this.MergeFeature(new FastSpineGen(this));
             this.MergeFeature(new DeepMutationGen(this));
 
             this.innerMembers.Sort(StyleCop.Sort);
@@ -824,6 +825,33 @@
             public bool DefineWithMethodsPerProperty { get; set; }
         }
 
+        protected abstract class FeatureGeneratorBase : IFeatureGenerator
+        {
+            protected readonly CodeGen generator;
+            protected readonly List<MemberDeclarationSyntax> innerMembers = new List<MemberDeclarationSyntax>();
+            protected readonly List<MemberDeclarationSyntax> siblingMembers = new List<MemberDeclarationSyntax>();
+            protected readonly List<BaseTypeSyntax> baseTypes = new List<BaseTypeSyntax>();
+
+            protected FeatureGeneratorBase(CodeGen generator)
+            {
+                this.generator = generator;
+            }
+
+            public GenerationResult Generate()
+            {
+                this.GenerateCore();
+
+                return new GenerationResult
+                {
+                    MembersOfGeneratedType = SyntaxFactory.List(this.innerMembers),
+                    SiblingsOfGeneratedType = SyntaxFactory.List(this.siblingMembers),
+                    BaseTypes = this.baseTypes.ToImmutableArray(),
+                };
+            }
+
+            protected abstract void GenerateCore();
+        }
+
         protected class EnumerableRecursiveParentGen : IFeatureGenerator
         {
             private readonly CodeGen generator;
@@ -863,7 +891,7 @@
 
             private void ImplementIEnumerableInterfaces()
             {
-                this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol))));
+                this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.IEnumerableOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax)));
 
                 // return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
                 var body = SyntaxFactory.Block(
@@ -937,7 +965,7 @@
                 ////}
                 this.innerMembers.Add(
                     SyntaxFactory.PropertyDeclaration(
-                        Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol)),
+                        Syntax.IEnumerableOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
                         nameof(IRecursiveParent<IRecursiveType>.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(irecursiveParentOfT))
                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
@@ -972,7 +1000,7 @@
                                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
                                     SyntaxFactory.Argument(
                                         SyntaxFactory.CastExpression(
-                                            GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol),
+                                            this.generator.applyToMetaType.RecursiveType.TypeSyntax,
                                             valueParameterName)))))))));
 
             }
@@ -1003,8 +1031,8 @@
                                         SyntaxFactory.IdentifierName(nameof(ImmutableSortedSet<int>.KeyComparer))),
                                     SyntaxFactory.IdentifierName(nameof(IComparer<int>.Compare))),
                                 SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(SyntaxKind.CommaToken,
-                                    SyntaxFactory.Argument(SyntaxFactory.CastExpression(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol), firstParameterName)),
-                                    SyntaxFactory.Argument(SyntaxFactory.CastExpression(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol), secondParameterName)))))))));
+                                    SyntaxFactory.Argument(SyntaxFactory.CastExpression(this.generator.applyToMetaType.RecursiveType.TypeSyntax, firstParameterName)),
+                                    SyntaxFactory.Argument(SyntaxFactory.CastExpression(this.generator.applyToMetaType.RecursiveType.TypeSyntax, secondParameterName)))))))));
             }
         }
 
@@ -1048,23 +1076,50 @@
             }
         }
 
-        protected class DeepMutationGen : IFeatureGenerator
+        protected class FastSpineGen : FeatureGeneratorBase
         {
-            private readonly CodeGen generator;
-
-            public DeepMutationGen(CodeGen generator)
+            public FastSpineGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
             }
 
-            public GenerationResult Generate()
+            protected override void GenerateCore()
             {
-                var innerMembers = new List<MemberDeclarationSyntax>();
+            }
+        }
 
-                return new GenerationResult
+        protected class DeepMutationGen : FeatureGeneratorBase
+        {
+            private static readonly IdentifierNameSyntax AddDescendentMethodName = SyntaxFactory.IdentifierName("AddDescendent");
+            private static readonly IdentifierNameSyntax ReplaceDescendentMethodName = SyntaxFactory.IdentifierName("ReplaceDescendent");
+            private static readonly IdentifierNameSyntax RemoveDescendentMethodName = SyntaxFactory.IdentifierName("RemoveDescendent");
+
+            public DeepMutationGen(CodeGen generator)
+                  : base(generator)
+            {
+            }
+
+            protected override void GenerateCore()
+            {
+                if (this.generator.applyToMetaType.IsRecursive)
                 {
-                    MembersOfGeneratedType = SyntaxFactory.List(innerMembers),
-                };
+                    this.innerMembers.Add(this.CreateAddDescendentMethod());
+                }
+            }
+
+            private MethodDeclarationSyntax CreateAddDescendentMethod()
+            {
+                var valueParameterName = SyntaxFactory.IdentifierName("value");
+                var parentParameterName = SyntaxFactory.IdentifierName("parent");
+
+                return SyntaxFactory.MethodDeclaration(
+                    GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
+                    AddDescendentMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(valueParameterName.Identifier).WithType(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
+                        SyntaxFactory.Parameter(parentParameterName.Identifier).WithType(this.generator.applyToMetaType.RecursiveParent.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
             }
         }
 
@@ -1146,25 +1201,15 @@
             }
         }
 
-        protected class RootedStructGen : IFeatureGenerator
+        protected class RootedStructGen : FeatureGeneratorBase
         {
-            private readonly CodeGen codeGen;
-
-            public RootedStructGen(CodeGen codeGen)
+            public RootedStructGen(CodeGen generator)
+                : base(generator)
             {
-                this.codeGen = codeGen;
             }
 
-            public GenerationResult Generate()
+            protected override void GenerateCore()
             {
-                var outerClassMembers = new List<MemberDeclarationSyntax>();
-                var innerClassMembers = new List<MemberDeclarationSyntax>();
-
-                return new GenerationResult
-                {
-                    MembersOfGeneratedType = SyntaxFactory.List(innerClassMembers),
-                    SiblingsOfGeneratedType = SyntaxFactory.List(outerClassMembers),
-                };
             }
         }
 
@@ -2087,6 +2132,11 @@
             }
 
             public INamedTypeSymbol TypeSymbol { get; private set; }
+
+            public NameSyntax TypeSyntax
+            {
+                get { return GetFullyQualifiedSymbolName(this.TypeSymbol); }
+            }
 
             public bool IsDefault
             {
