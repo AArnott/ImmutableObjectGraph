@@ -198,5 +198,15 @@
         {
             return expressions.Aggregate((ExpressionSyntax)null, (agg, e) => agg != null ? SyntaxFactory.BinaryExpression(binaryOperator, agg, e) : e);
         }
+
+        internal static InvocationExpressionSyntax EnumerableExtension(IdentifierNameSyntax linqMethod, ExpressionSyntax receiver, ArgumentListSyntax arguments)
+        {
+            return SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    GetTypeSyntax(typeof(Enumerable)),
+                    linqMethod),
+                arguments.PrependArgument(SyntaxFactory.Argument(receiver)));
+        }
     }
 }

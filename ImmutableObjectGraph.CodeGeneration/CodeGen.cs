@@ -1643,11 +1643,9 @@
 
                 var lambdaParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("v"));
                 var argument = passThroughChildSync
-                    ? (ExpressionSyntax)SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            ValuesParameterName,
-                            SyntaxFactory.IdentifierName(nameof(Enumerable.Select))),
+                    ? (ExpressionSyntax)Syntax.EnumerableExtension(
+                        SyntaxFactory.IdentifierName(nameof(Enumerable.Select)),
+                        ValuesParameterName,
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
                             SyntaxFactory.Argument(Syntax.ThisDot(SyncImmediateChildToCurrentVersionMethodName)))))
                     : ValuesParameterName;
