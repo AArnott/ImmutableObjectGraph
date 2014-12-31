@@ -118,6 +118,10 @@
     <Compile Include="TestSources\NonRecursive.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
+    <Compile Include="TestSources\RequiresAndHierarchy.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\RequiresAndHierarchy.Tests.cs" />
     <Compile Include="TestSources\TreeNode.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>

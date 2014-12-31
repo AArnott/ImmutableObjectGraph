@@ -504,10 +504,10 @@
                 SyntaxFactory.ParenthesizedExpression(
                     SyntaxFactory.BinaryExpression(
                         SyntaxKind.LogicalAndExpression,
-                        Syntax.OptionalIsDefined(SyntaxFactory.IdentifierName(v.Name)),
+                        Syntax.OptionalIsDefined(v.NameAsField),
                         SyntaxFactory.BinaryExpression(
                             SyntaxKind.NotEqualsExpression,
-                            Syntax.OptionalValue(SyntaxFactory.IdentifierName(v.Name)),
+                            Syntax.OptionalValue(v.NameAsField),
                             Syntax.ThisDot(SyntaxFactory.IdentifierName(v.Name.ToPascalCase())))));
             var anyChangesExpression = this.applyToMetaType.AllFields.Select(isChanged).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
 
@@ -647,6 +647,11 @@
                                     LastIdentityProducedFieldName))))))));
         }
 
+        private static IEnumerable<MetaField> SortRequiredFieldsFirst(IEnumerable<MetaField> fields)
+        {
+            return fields.Where(f => f.IsRequired).Concat(fields.Where(f => !f.IsRequired));
+        }
+
         private IEnumerable<FieldDeclarationSyntax> GetFields()
         {
             return this.applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
@@ -667,7 +672,7 @@
         {
             if (style == ParameterStyle.OptionalOrRequired)
             {
-                ////fields = SortRequiredFieldsFirst(fields);
+                fields = SortRequiredFieldsFirst(fields);
             }
 
             Func<MetaField, bool> isOptional = f => style == ParameterStyle.Optional || (style == ParameterStyle.OptionalOrRequired && !f.IsRequired);
@@ -1869,7 +1874,7 @@
                         SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             thisDotGetType,
-                            SyntaxFactory.IdentifierName("IsEquivalentTo")),
+                            SyntaxFactory.IdentifierName(nameof(Type.IsEquivalentTo))),
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(
                             SyntaxFactory.TypeOfExpression(derivedTypeName)))));
 
@@ -1883,22 +1888,22 @@
                                 ? // ({0} == that.{1})
                                 SyntaxFactory.BinaryExpression(
                                     SyntaxKind.EqualsExpression,
-                                    SyntaxFactory.IdentifierName(v.Name),
+                                    v.NameAsField,
                                     SyntaxFactory.MemberAccessExpression(
                                         SyntaxKind.SimpleMemberAccessExpression,
                                         thatLocal,
-                                        SyntaxFactory.IdentifierName(v.Name)))
+                                        v.NameAsProperty))
                                 : // (!{0}.IsDefined || {0}.Value == that.{1})
                                 SyntaxFactory.BinaryExpression(
                                     SyntaxKind.LogicalOrExpression,
-                                    SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(SyntaxFactory.IdentifierName(v.Name))),
+                                    SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(v.NameAsField)),
                                     SyntaxFactory.BinaryExpression(
                                         SyntaxKind.EqualsExpression,
-                                        Syntax.OptionalValue(SyntaxFactory.IdentifierName(v.Name)),
+                                        Syntax.OptionalValue(v.NameAsField),
                                         SyntaxFactory.MemberAccessExpression(
                                             SyntaxKind.SimpleMemberAccessExpression,
                                             thatLocal,
-                                            SyntaxFactory.IdentifierName(v.Name.ToPascalCase())))));
+                                            v.NameAsProperty))));
                     var noChangesExpression = fieldsBeyond.Select(isUnchanged).ChainBinaryExpressions(SyntaxKind.LogicalAndExpression);
 
                     ifEquivalentTypeBlock.Add(SyntaxFactory.IfStatement(
