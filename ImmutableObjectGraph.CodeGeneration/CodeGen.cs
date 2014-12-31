@@ -1377,10 +1377,7 @@
                             SyntaxFactory.VariableDeclarator(field.Name).WithInitializer(
                                 SyntaxFactory.EqualsValueClause(
                                     SyntaxFactory.ConditionalExpression(
-                                        SyntaxFactory.MemberAccessExpression( // this.fieldName.IsDefined
-                                            SyntaxKind.SimpleMemberAccessExpression,
-                                            thisField,
-                                            SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional<int>.IsDefined))),
+                                        Syntax.OptionalIsDefined(thisField), // this.fieldName.IsDefined
                                         SyntaxFactory.InvocationExpression( // this.fieldName.Value?.ToImmutable()
                                             SyntaxFactory.ConditionalAccessExpression(thisFieldValue, SyntaxFactory.MemberBindingExpression(ToImmutableMethodName)),
                                             SyntaxFactory.ArgumentList()),

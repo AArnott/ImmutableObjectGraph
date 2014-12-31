@@ -31,19 +31,19 @@
 
         internal static MemberAccessExpressionSyntax OptionalIsDefined(ExpressionSyntax optionalOfTExpression)
         {
-            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("IsDefined"));
+            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional<int>.IsDefined)));
         }
 
         internal static InvocationExpressionSyntax OptionalGetValueOrDefault(ExpressionSyntax optionalOfTExpression, ExpressionSyntax defaultValue)
         {
             return SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("GetValueOrDefault")),
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional<int>.GetValueOrDefault))),
                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(defaultValue))));
         }
 
         internal static MemberAccessExpressionSyntax OptionalValue(ExpressionSyntax optionalOfTExpression)
         {
-            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName("Value"));
+            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, optionalOfTExpression, SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional<int>.Value)));
         }
 
         internal static ExpressionSyntax OptionalFor(ExpressionSyntax expression)
@@ -65,7 +65,7 @@
 
         internal static NameSyntax GetTypeSyntax(Type type)
         {
-            Requires.NotNull(type, "type");
+            Requires.NotNull(type, nameof(type));
 
             SimpleNameSyntax leafType = SyntaxFactory.IdentifierName(type.IsGenericType ? type.Name.Substring(0, type.Name.IndexOf('`')) : type.Name);
             if (type.IsGenericType)
@@ -97,11 +97,11 @@
             return SyntaxFactory.QualifiedName(
                 SyntaxFactory.QualifiedName(
                     SyntaxFactory.QualifiedName(
-                        SyntaxFactory.IdentifierName("System"),
-                        SyntaxFactory.IdentifierName("Collections")),
-                    SyntaxFactory.IdentifierName("Generic")),
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Generic))),
                 SyntaxFactory.GenericName(
-                    SyntaxFactory.Identifier("IEnumerable"),
+                    SyntaxFactory.Identifier(nameof(IEnumerable<int>)),
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
@@ -110,11 +110,11 @@
             return SyntaxFactory.QualifiedName(
                 SyntaxFactory.QualifiedName(
                     SyntaxFactory.QualifiedName(
-                        SyntaxFactory.IdentifierName("System"),
-                        SyntaxFactory.IdentifierName("Collections")),
-                    SyntaxFactory.IdentifierName("Generic")),
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Generic))),
                 SyntaxFactory.GenericName(
-                    SyntaxFactory.Identifier("IEnumerator"),
+                    SyntaxFactory.Identifier(nameof(IEnumerator<int>)),
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
@@ -144,7 +144,7 @@
         internal static SyntaxNodeOrTokenList JoinSyntaxNodes<T>(SyntaxToken separatingToken, IReadOnlyList<T> nodes)
             where T : SyntaxNode
         {
-            Requires.NotNull(nodes, "nodes");
+            Requires.NotNull(nodes, nameof(nodes));
 
             switch (nodes.Count)
             {
