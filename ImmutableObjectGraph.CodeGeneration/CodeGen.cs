@@ -1447,7 +1447,7 @@
             {
                 var iface = SyntaxFactory.InterfaceDeclaration(
                     "I" + this.generator.applyTo.Identifier.Text)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddModifiers(GetModifiersForAccessibility(this.generator.applyToSymbol))
                     .WithMembers(
                         SyntaxFactory.List<MemberDeclarationSyntax>(
                             from field in this.generator.applyToMetaType.LocalFields
