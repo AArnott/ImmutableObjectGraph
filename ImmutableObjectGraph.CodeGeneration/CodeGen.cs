@@ -1278,8 +1278,8 @@
                     {
                         body = body.AddStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression,
-                            Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)),
-                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, immutableParameterName, SyntaxFactory.IdentifierName(field.Name)))));
+                            Syntax.ThisDot(field.NameAsField),
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, immutableParameterName, field.NameAsField))));
                     }
                 }
 
@@ -1305,7 +1305,7 @@
 
                 foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
-                    var thisField = Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name));
+                    var thisField = Syntax.ThisDot(field.NameAsField);
                     var getterBlock = field.IsGeneratedImmutableType
                         ? SyntaxFactory.Block(
                             // if (!this.fieldName.IsDefined) {
@@ -1320,7 +1320,7 @@
                                             SyntaxFactory.MemberAccessExpression(
                                                 SyntaxKind.SimpleMemberAccessExpression,
                                                 Syntax.ThisDot(ImmutableFieldName),
-                                                SyntaxFactory.IdentifierName(field.Name)),
+                                                field.NameAsField),
                                             SyntaxFactory.InvocationExpression(
                                                 SyntaxFactory.MemberBindingExpression(ToBuilderMethodName),
                                                 SyntaxFactory.ArgumentList())))))),
@@ -1369,7 +1369,7 @@
                 var body = SyntaxFactory.Block(
                     from field in this.generator.applyToMetaType.AllFields
                     where field.IsGeneratedImmutableType
-                    let thisField = Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)) // this.fieldName
+                    let thisField = Syntax.ThisDot(field.NameAsField) // this.fieldName
                     let thisFieldValue = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thisField, SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Optional<int>.Value))) // this.fieldName.Value
                     select SyntaxFactory.LocalDeclarationStatement(
                         SyntaxFactory.VariableDeclaration(varType))
@@ -1387,7 +1387,7 @@
                                         SyntaxFactory.MemberAccessExpression( // this.immutable.FieldName
                                             SyntaxKind.SimpleMemberAccessExpression,
                                             Syntax.ThisDot(ImmutableFieldName),
-                                            SyntaxFactory.IdentifierName(field.Name.ToPascalCase())))))));
+                                            field.NameAsProperty))))));
 
                 ExpressionSyntax returnExpression;
                 if (this.generator.applyToMetaType.AllFields.Any())
@@ -1625,7 +1625,7 @@
                             SyntaxFactory.Argument(
                                 SyntaxFactory.NameColon(field.Name),
                                 SyntaxFactory.Token(SyntaxKind.None),
-                                mutatingInvocationFactory(Syntax.ThisDot(SyntaxFactory.IdentifierName(field.Name)))))))
+                                mutatingInvocationFactory(Syntax.ThisDot(field.NameAsField))))))
                     : SyntaxFactory.CastExpression( // (TemplateType)base.SameMethod(sameArgs)
                         GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
                         SyntaxFactory.InvocationExpression(
@@ -1998,7 +1998,7 @@
                                 SyntaxFactory.BinaryExpression(
                                     SyntaxKind.EqualsExpression,
                                     valueParameterName,
-                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(field.Name))),
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), field.NameAsField)),
                                 SyntaxFactory.Block(
                                     SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))),
                             SyntaxFactory.ReturnStatement(
@@ -2315,6 +2315,16 @@
             public string Name
             {
                 get { return this.Symbol.Name; }
+            }
+
+            public IdentifierNameSyntax NameAsProperty
+            {
+                get { return SyntaxFactory.IdentifierName(this.Symbol.Name.ToPascalCase()); }
+            }
+
+            public IdentifierNameSyntax NameAsField
+            {
+                get { return SyntaxFactory.IdentifierName(this.Symbol.Name); }
             }
 
             public INamespaceOrTypeSymbol Type
