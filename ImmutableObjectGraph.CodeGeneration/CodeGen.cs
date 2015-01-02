@@ -50,6 +50,7 @@
                     SyntaxFactory.IdentifierName(nameof(DebuggerBrowsableState.Never)))))));
         private static readonly ThrowStatementSyntax ThrowNotImplementedException = SyntaxFactory.ThrowStatement(
             SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeof(NotImplementedException).FullName), SyntaxFactory.ArgumentList(), null));
+        private static readonly ArgumentSyntax DoNotSkipValidationArgument = SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression));
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
@@ -409,14 +410,15 @@
             if (!this.isAbstract)
             {
                 body = body.AddStatements(
-                    // if (!skipValidation.Value)
+                    // if (!skipValidation)
                     SyntaxFactory.IfStatement(
-                        SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalValue(SkipValidationParameterName)),
+                        SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, SkipValidationParameterName),
                         // this.Validate();
-                        SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(ValidateMethodName),
-                                SyntaxFactory.ArgumentList()))));
+                        SyntaxFactory.Block(
+                            SyntaxFactory.ExpressionStatement(
+                                SyntaxFactory.InvocationExpression(
+                                    Syntax.ThisDot(ValidateMethodName),
+                                    SyntaxFactory.ArgumentList())))));
             }
 
             body = body.AddStatements(this.additionalCtorStatements.ToArray());
@@ -427,7 +429,7 @@
                 .WithParameterList(
                     CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Required)
                     .PrependParameter(RequiredIdentityParameter)
-                    .AddParameters(Syntax.Optional(SyntaxFactory.Parameter(SkipValidationParameterName.Identifier).WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword))))))
+                    .AddParameters(SyntaxFactory.Parameter(SkipValidationParameterName.Identifier).WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)))))
                 .WithBody(body);
 
             if (this.applyToMetaType.HasAncestor)
@@ -542,11 +544,13 @@
                     SyntaxFactory.IfStatement(
                         anyChangesExpression,
                         SyntaxFactory.Block(
+                            // return new TemplateType(...)
                             SyntaxFactory.ReturnStatement(
                                 SyntaxFactory.ObjectCreationExpression(
                                     SyntaxFactory.IdentifierName(applyTo.Identifier),
                                     CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrProperty)
-                                        .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalGetValueOrDefault(SyntaxFactory.IdentifierName(IdentityParameterName.Identifier), Syntax.ThisDot(IdentityPropertyName)))),
+                                        .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), SyntaxFactory.Token(SyntaxKind.None), Syntax.OptionalGetValueOrDefault(SyntaxFactory.IdentifierName(IdentityParameterName.Identifier), Syntax.ThisDot(IdentityPropertyName))))
+                                        .AddArguments(DoNotSkipValidationArgument),
                                     null))),
                         SyntaxFactory.ElseClause(SyntaxFactory.Block(
                             SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))))));
