@@ -29,7 +29,7 @@
             {
             }
 
-            protected override bool IsApplicable
+            public override bool IsApplicable
             {
                 get { return this.generator.options.DefineWithMethodsPerProperty; }
             }

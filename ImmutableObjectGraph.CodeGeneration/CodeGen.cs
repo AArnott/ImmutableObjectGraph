@@ -69,11 +69,6 @@
         private readonly List<MemberDeclarationSyntax> outerMembers = new List<MemberDeclarationSyntax>();
 
         /// <summary>
-        /// The interfaces to include in the base types list of the generated partial class.
-        /// </summary>
-        private readonly List<BaseTypeSyntax> baseTypes = new List<BaseTypeSyntax>();
-
-        /// <summary>
         /// Statements to append to the instance constructor.
         /// </summary>
         private readonly List<StatementSyntax> additionalCtorStatements = new List<StatementSyntax>();
@@ -111,21 +106,19 @@
 
         private void MergeFeature(FeatureGenerator featureGenerator)
         {
-            var featureResults = featureGenerator.Generate();
-            this.innerMembers.AddRange(featureResults.MembersOfGeneratedType);
-            this.outerMembers.AddRange(featureResults.SiblingsOfGeneratedType);
-
-            if (!featureResults.BaseTypes.IsDefault)
+            if (featureGenerator.IsApplicable)
             {
-                this.baseTypes.AddRange(featureResults.BaseTypes);
-            }
+                var featureResults = featureGenerator.Generate();
+                this.innerMembers.AddRange(featureResults.MembersOfGeneratedType);
+                this.outerMembers.AddRange(featureResults.SiblingsOfGeneratedType);
 
-            if (!featureResults.AdditionalCtorStatements.IsDefault)
-            {
-                this.additionalCtorStatements.AddRange(featureResults.AdditionalCtorStatements);
-            }
+                if (!featureResults.AdditionalCtorStatements.IsDefault)
+                {
+                    this.additionalCtorStatements.AddRange(featureResults.AdditionalCtorStatements);
+                }
 
-            this.mergedFeatures.Add(featureGenerator);
+                this.mergedFeatures.Add(featureGenerator);
+            }
         }
 
         private async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
@@ -194,17 +187,9 @@
             var partialClass = SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                 .WithMembers(SyntaxFactory.List(this.innerMembers));
-            if (this.baseTypes.Count > 0)
-            {
-                partialClass = partialClass.AddBaseListTypes(this.baseTypes.ToArray());
-            }
 
+            partialClass = this.mergedFeatures.Aggregate(partialClass, (acc, feature) => feature.ProcessApplyToClassDeclaration(acc));
             this.outerMembers.Add(partialClass);
-
-            foreach (var mergedFeature in this.mergedFeatures)
-            {
-                mergedFeature.PostProcess();
-            }
 
             return this.outerMembers;
         }
@@ -214,8 +199,6 @@
             public SyntaxList<MemberDeclarationSyntax> MembersOfGeneratedType { get; set; }
 
             public SyntaxList<MemberDeclarationSyntax> SiblingsOfGeneratedType { get; set; }
-
-            public ImmutableArray<BaseTypeSyntax> BaseTypes { get; set; }
 
             public ImmutableArray<StatementSyntax> AdditionalCtorStatements { get; set; }
         }
@@ -842,7 +825,12 @@
                 this.applyTo = generator.applyToMetaType;
             }
 
-            protected abstract bool IsApplicable { get; }
+            public abstract bool IsApplicable { get; }
+
+            protected virtual BaseTypeSyntax[] AdditionalApplyToBaseTypes
+            {
+                get { return this.baseTypes.ToArray(); }
+            }
 
             public GenerationResult Generate()
             {
@@ -855,22 +843,23 @@
                 {
                     MembersOfGeneratedType = SyntaxFactory.List(this.innerMembers),
                     SiblingsOfGeneratedType = SyntaxFactory.List(this.siblingMembers),
-                    BaseTypes = this.baseTypes.ToImmutableArray(),
                     AdditionalCtorStatements = this.additionalCtorStatements.ToImmutableArray(),
                 };
             }
 
-            public void PostProcess()
+            public virtual ClassDeclarationSyntax ProcessApplyToClassDeclaration(ClassDeclarationSyntax applyTo)
             {
-                if (this.IsApplicable)
+                var additionalApplyToBaseTypes = this.AdditionalApplyToBaseTypes;
+                if (additionalApplyToBaseTypes != null && additionalApplyToBaseTypes.Length > 0)
                 {
-                    this.PostProcessCore();
+                    applyTo = applyTo.WithBaseList(
+                        (applyTo.BaseList ?? SyntaxFactory.BaseList()).AddTypes(additionalApplyToBaseTypes));
                 }
+
+                return applyTo;
             }
 
             protected abstract void GenerateCore();
-
-            protected virtual void PostProcessCore() { }
         }
 
         protected struct MetaType

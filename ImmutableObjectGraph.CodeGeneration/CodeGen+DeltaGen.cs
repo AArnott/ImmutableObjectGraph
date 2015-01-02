@@ -36,7 +36,7 @@
                 this.enumTypeName = generator.applyToMetaType.TypeSymbol.Name + "ChangedProperties";
             }
 
-            protected override bool IsApplicable
+            public override bool IsApplicable
             {
                 get { return this.generator.options.Delta; }
             }

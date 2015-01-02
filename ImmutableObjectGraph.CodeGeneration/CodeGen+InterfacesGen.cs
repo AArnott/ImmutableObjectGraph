@@ -27,9 +27,18 @@
             {
             }
 
-            protected override bool IsApplicable
+            public override bool IsApplicable
             {
                 get { return this.generator.options.DefineInterface; }
+            }
+
+            protected override BaseTypeSyntax[] AdditionalApplyToBaseTypes
+            {
+                get
+                {
+                    return new BaseTypeSyntax[] { SyntaxFactory.SimpleBaseType(
+                        SyntaxFactory.IdentifierName("I" + this.generator.applyTo.Identifier.Text)) };
+                }
             }
 
             protected override void GenerateCore()
@@ -54,18 +63,6 @@
                 }
 
                 this.siblingMembers.Add(iface);
-            }
-
-            protected override void PostProcessCore()
-            {
-                var applyToPrimaryType = this.generator.outerMembers.OfType<ClassDeclarationSyntax>()
-                    .First(c => c.Identifier.Text == this.generator.applyTo.Identifier.Text);
-                var updatedPrimaryType = applyToPrimaryType.WithBaseList(
-                    (applyToPrimaryType.BaseList ?? SyntaxFactory.BaseList()).AddTypes(SyntaxFactory.SimpleBaseType(
-                        SyntaxFactory.IdentifierName("I" + this.generator.applyTo.Identifier.Text))));
-
-                this.generator.outerMembers.Remove(applyToPrimaryType);
-                this.generator.outerMembers.Add(updatedPrimaryType);
             }
         }
     }
