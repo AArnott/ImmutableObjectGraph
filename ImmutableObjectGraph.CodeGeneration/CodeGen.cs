@@ -827,7 +827,7 @@
             public bool DefineWithMethodsPerProperty { get; set; }
         }
 
-        protected abstract class FeatureGeneratorBase : IFeatureGenerator
+        protected abstract class FeatureGeneratorBase : IFeatureGeneratorWithPostProcessing
         {
             protected readonly CodeGen generator;
             protected readonly List<MemberDeclarationSyntax> innerMembers = new List<MemberDeclarationSyntax>();
@@ -842,9 +842,14 @@
                 this.applyTo = generator.applyToMetaType;
             }
 
+            protected abstract bool IsApplicable { get; }
+
             public GenerationResult Generate()
             {
-                this.GenerateCore();
+                if (this.IsApplicable)
+                {
+                    this.GenerateCore();
+                }
 
                 return new GenerationResult
                 {
@@ -855,7 +860,17 @@
                 };
             }
 
+            public void PostProcess()
+            {
+                if (this.IsApplicable)
+                {
+                    this.PostProcessCore();
+                }
+            }
+
             protected abstract void GenerateCore();
+
+            protected virtual void PostProcessCore() { }
         }
 
         protected class EnumerableRecursiveParentGen : IFeatureGenerator
@@ -1093,6 +1108,11 @@
             {
             }
 
+            protected override bool IsApplicable
+            {
+                get { return true; }
+            }
+
             protected override void GenerateCore()
             {
                 var keyValuePairType = SyntaxFactory.ParseTypeName(
@@ -1255,12 +1275,14 @@
             {
             }
 
+            protected override bool IsApplicable
+            {
+                get { return this.generator.applyToMetaType.IsRecursive; }
+            }
+
             protected override void GenerateCore()
             {
-                if (this.generator.applyToMetaType.IsRecursive)
-                {
-                    this.innerMembers.Add(this.CreateAddDescendentMethod());
-                }
+                this.innerMembers.Add(this.CreateAddDescendentMethod());
             }
 
             private MethodDeclarationSyntax CreateAddDescendentMethod()
@@ -1295,13 +1317,13 @@
                 this.enumTypeName = generator.applyToMetaType.TypeSymbol.Name + "ChangedProperties";
             }
 
+            protected override bool IsApplicable
+            {
+                get { return this.generator.options.Delta; }
+            }
+
             protected override void GenerateCore()
             {
-                if (!this.generator.options.Delta)
-                {
-                    return;
-                }
-
                 this.siblingMembers.Add(this.CreateChangedPropertiesEnum());
             }
 
@@ -1364,13 +1386,13 @@
             {
             }
 
+            protected override bool IsApplicable
+            {
+                get { return this.generator.options.DefineRootedStruct; }
+            }
+
             protected override void GenerateCore()
             {
-                if (!this.generator.options.DefineRootedStruct)
-                {
-                    return;
-                }
-
                 // TODO: code here
             }
         }
@@ -1388,13 +1410,13 @@
             {
             }
 
+            protected override bool IsApplicable
+            {
+                get { return this.generator.options.GenerateBuilder; }
+            }
+
             protected override void GenerateCore()
             {
-                if (!this.generator.options.GenerateBuilder)
-                {
-                    return;
-                }
-
                 this.innerMembers.Add(this.CreateToBuilderMethod());
 
                 if (!this.generator.isAbstract)
@@ -1668,13 +1690,13 @@
             {
             }
 
+            protected override bool IsApplicable
+            {
+                get { return this.generator.options.DefineInterface; }
+            }
+
             protected override void GenerateCore()
             {
-                if (!this.generator.options.DefineInterface)
-                {
-                    return;
-                }
-
                 var iface = SyntaxFactory.InterfaceDeclaration(
                     "I" + this.generator.applyTo.Identifier.Text)
                     .AddModifiers(GetModifiersForAccessibility(this.generator.applyToSymbol))
@@ -1697,13 +1719,8 @@
                 this.siblingMembers.Add(iface);
             }
 
-            public void PostProcess()
+            protected override void PostProcessCore()
             {
-                if (!this.generator.options.DefineInterface)
-                {
-                    return;
-                }
-
                 var applyToPrimaryType = this.generator.outerMembers.OfType<ClassDeclarationSyntax>()
                     .First(c => c.Identifier.Text == this.generator.applyTo.Identifier.Text);
                 var updatedPrimaryType = applyToPrimaryType.WithBaseList(
@@ -1726,13 +1743,13 @@
             {
             }
 
+            protected override bool IsApplicable
+            {
+                get { return this.generator.options.DefineWithMethodsPerProperty; }
+            }
+
             protected override void GenerateCore()
             {
-                if (!this.generator.options.DefineWithMethodsPerProperty)
-                {
-                    return;
-                }
-
                 if (this.generator.applyToMetaType.IsRecursiveParent)
                 {
                     this.innerMembers.Add(this.CreateSyncImmediateChildToCurrentVersionMethod());
@@ -1970,40 +1987,41 @@
             void PostProcess();
         }
 
-        protected class TypeConversionGen : IFeatureGenerator
+        protected class TypeConversionGen : FeatureGeneratorBase
         {
             private static readonly IdentifierNameSyntax CreateWithIdentityMethodName = SyntaxFactory.IdentifierName("CreateWithIdentity");
-            private readonly CodeGen generator;
 
             public TypeConversionGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
             }
 
-            public GenerationResult Generate()
+            protected override bool IsApplicable
             {
-                var members = new List<MemberDeclarationSyntax>();
+                get { return true; }
+            }
+
+            protected override void GenerateCore()
+            {
                 if (!this.generator.applyToSymbol.IsAbstract && (this.generator.applyToMetaType.HasAncestor || this.generator.applyToMetaType.Descendents.Any()))
                 {
-                    members.Add(this.CreateCreateWithIdentityMethod());
+                    this.innerMembers.Add(this.CreateCreateWithIdentityMethod());
                 }
 
                 if (this.generator.applyToMetaType.HasAncestor && !this.generator.applyToMetaType.Ancestor.TypeSymbol.IsAbstract)
                 {
-                    members.Add(this.CreateToAncestorTypeMethod());
+                    this.innerMembers.Add(this.CreateToAncestorTypeMethod());
                 }
 
                 foreach (MetaType derivedType in this.generator.applyToMetaType.Descendents.Where(d => !d.TypeSymbol.IsAbstract))
                 {
-                    members.Add(this.CreateToDerivedTypeMethod(derivedType));
+                    this.innerMembers.Add(this.CreateToDerivedTypeMethod(derivedType));
 
                     foreach (MetaType ancestor in this.generator.applyToMetaType.Ancestors)
                     {
-                        members.Add(this.CreateToDerivedTypeOverrideMethod(derivedType, ancestor));
+                        this.innerMembers.Add(this.CreateToDerivedTypeOverrideMethod(derivedType, ancestor));
                     }
                 }
-
-                return new GenerationResult { MembersOfGeneratedType = SyntaxFactory.List(members) };
             }
 
             internal static IdentifierNameSyntax GetToTypeMethodName(string typeName)
@@ -2205,13 +2223,13 @@
             {
             }
 
+            protected override bool IsApplicable
+            {
+                get { return this.generator.options.DefineWithMethodsPerProperty; }
+            }
+
             protected override void GenerateCore()
             {
-                if (!this.generator.options.DefineWithMethodsPerProperty)
-                {
-                    return;
-                }
-
                 var valueParameterName = SyntaxFactory.IdentifierName("value");
 
                 foreach (var field in this.generator.applyToMetaType.LocalFields)
