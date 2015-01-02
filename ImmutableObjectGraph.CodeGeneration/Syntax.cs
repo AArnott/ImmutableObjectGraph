@@ -131,6 +131,19 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(elementType))));
         }
 
+        internal static NameSyntax KeyValuePairOf(TypeSyntax keyType, TypeSyntax valueType)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Generic))),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(KeyValuePair<int, int>)),
+                    SyntaxFactory.TypeArgumentList(JoinSyntaxNodes(SyntaxKind.CommaToken, keyType, valueType))));
+        }
+
         internal static ExpressionSyntax CreateDictionary(TypeSyntax keyType, TypeSyntax valueType)
         {
             // System.Collections.Immutable.ImmutableDictionary.Create<TKey, TValue>()

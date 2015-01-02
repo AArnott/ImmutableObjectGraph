@@ -1101,7 +1101,7 @@
         protected class FastSpineGen : FeatureGeneratorBase
         {
             private static readonly IdentifierNameSyntax LookupTableFieldName = SyntaxFactory.IdentifierName("lookupTable");
-            private static readonly IdentifierNameSyntax LookupTableLazySentinelFieldName = SyntaxFactory.IdentifierName("lookupTableLazySentinel");
+            private static readonly IdentifierNameSyntax LookupTablePropertyName = SyntaxFactory.IdentifierName("LookupTable");
             private static readonly IdentifierNameSyntax InefficiencyLoadFieldName = SyntaxFactory.IdentifierName("inefficiencyLoad");
 
             public FastSpineGen(CodeGen generator)
@@ -1126,9 +1126,6 @@
 
                 if (this.applyTo.IsRecursiveParent)
                 {
-                    // TODO: uncomment once we implement the interface.
-                    ////this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithFastLookup))));
-
                     // private readonly uint inefficiencyLoad;
                     var inefficiencyLoadType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UIntKeyword));
                     this.innerMembers.Add(SyntaxFactory.FieldDeclaration(
@@ -1172,7 +1169,7 @@
                         .WithExplicitInterfaceSpecifier(explicitImplementation)
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                             SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(LookupTableFieldName))))));
+                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(LookupTablePropertyName))))));
                 }
 
                 if (this.applyTo.IsRecursive)
@@ -1185,10 +1182,7 @@
                             SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(lookupInitResultVarName.Identifier)
                                 .WithInitializer(SyntaxFactory.EqualsValueClause(
                                     SyntaxFactory.InvocationExpression(
-                                        SyntaxFactory.MemberAccessExpression(
-                                            SyntaxKind.SimpleMemberAccessExpression,
-                                            GetLookupTableHelperType(),
-                                            SyntaxFactory.IdentifierName(nameof(LookupTableHelper.Initialize))),
+                                        GetLookupTableHelperMember(nameof(LookupTableHelper.Initialize)),
                                         SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
                                             SyntaxKind.CommaToken,
                                             SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
@@ -1205,26 +1199,28 @@
                             SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, lookupInitResultVarName, SyntaxFactory.IdentifierName(nameof(LookupTableHelper.InitializeLookupResult.LookupTable)))))
                     });
 
-                    // private static readonly System.Collections.Immutable.ImmutableDictionary<uint, KeyValuePair<RecursiveType, uint>> lookupTableLazySentinal 
-                    //    = System.Collections.Immutable.ImmutableDictionary.Create<uint, KeyValuePair<RecursiveType, uint>>().Add(default(uint), new KeyValuePair<RecursiveType, uint>());
-                    this.innerMembers.Add(SyntaxFactory.FieldDeclaration(
-                        SyntaxFactory.VariableDeclaration(lookupTableType)
-                            .AddVariables(
-                                SyntaxFactory.VariableDeclarator(LookupTableLazySentinelFieldName.Identifier)
-                                .WithInitializer(SyntaxFactory.EqualsValueClause(
-                                    SyntaxFactory.InvocationExpression(
-                                        SyntaxFactory.MemberAccessExpression(
-                                            SyntaxKind.SimpleMemberAccessExpression,
-                                            Syntax.CreateDictionary(IdentityFieldTypeSyntax, keyValuePairType),
-                                            SyntaxFactory.IdentifierName(nameof(ImmutableDictionary<int, int>.Add))),
-                                        SyntaxFactory.ArgumentList(Syntax.JoinSyntaxNodes(
-                                            SyntaxKind.CommaToken,
-                                            SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(IdentityFieldTypeSyntax)),
-                                            SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(keyValuePairType, SyntaxFactory.ArgumentList(), null)))))))))
-                        .AddModifiers(
-                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)));
+                    this.innerMembers.Add(SyntaxFactory.PropertyDeclaration(
+                        lookupTableType,
+                        LookupTablePropertyName.Identifier)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration,
+                            SyntaxFactory.Block(
+                                SyntaxFactory.IfStatement(
+                                    SyntaxFactory.BinaryExpression(
+                                        SyntaxKind.EqualsExpression,
+                                        Syntax.ThisDot(LookupTableFieldName),
+                                        GetLookupTableHelperMember(nameof(LookupTableHelper.LazySentinel))),
+                                    SyntaxFactory.Block(
+                                        SyntaxFactory.ExpressionStatement(
+                                            SyntaxFactory.AssignmentExpression(
+                                                SyntaxKind.SimpleAssignmentExpression,
+                                                Syntax.ThisDot(LookupTableFieldName),
+                                                SyntaxFactory.InvocationExpression(
+                                                    GetLookupTableHelperMember(nameof(LookupTableHelper.CreateLookupTable)),
+                                                    SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                                                        SyntaxFactory.Argument(SyntaxFactory.ThisExpression())))))))),
+                                SyntaxFactory.ReturnStatement(Syntax.ThisDot(LookupTableFieldName))))));
 
                     // private System.Collections.Immutable.ImmutableDictionary<System.UInt32, KeyValuePair<FileSystemEntry, System.UInt32>> lookupTable;
                     this.innerMembers.Add(SyntaxFactory.FieldDeclaration(
@@ -1232,14 +1228,20 @@
                             .AddVariables(SyntaxFactory.VariableDeclarator(LookupTableFieldName.Identifier)))
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PrivateKeyword)));
-
-                    ////this.innerMembers.Add(this.CreateInitializeLookupMethod());
                 }
             }
 
             protected MethodDeclarationSyntax CreateInitializeLookupMethod()
             {
                 throw new NotImplementedException();
+            }
+
+            protected MemberAccessExpressionSyntax GetLookupTableHelperMember(string memberName)
+            {
+                return SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    GetLookupTableHelperType(),
+                    SyntaxFactory.IdentifierName(memberName));
             }
 
             protected TypeSyntax GetLookupTableHelperType()

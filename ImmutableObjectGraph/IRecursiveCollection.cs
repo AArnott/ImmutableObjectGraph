@@ -23,28 +23,18 @@
 		new IEnumerable<TRecursiveType> Children { get; }
 	}
 
+    public interface IRecursiveParentWithChildReplacement<TRecursiveType> : IRecursiveParent
+        where TRecursiveType : IRecursiveType
+    {
+        IRecursiveParent<TRecursiveType> ReplaceChild(ImmutableStack<TRecursiveType> oldSpine, ImmutableStack<TRecursiveType> newSpine);
+    }
+
 	public interface IRecursiveParentWithOrderedChildren : IRecursiveParent {
 		int IndexOf(IRecursiveType value);
 	}
 
 	public interface IRecursiveParentWithSortedChildren : IRecursiveParentWithOrderedChildren {
 		int Compare(IRecursiveType first, IRecursiveType second);
-	}
-
-	public interface IRecursiveParentWithFastLookup : IRecursiveParent {
-		/// <summary>
-		/// Tries to lookup a descendent node by its identity in a fast lookup table.
-		/// </summary>
-		/// <param name="identity">The identity of the descendent node to find.</param>
-		/// <param name="result">Receives a reference to the sought object and the identity of its immediate parent, if the lookup table exists and the entry is found.</param>
-		/// <returns><c>true</c> if the lookup table exists; <c>false</c> otherwise.</returns>
-		/// <remarks>
-		/// Note that a return value of <c>false</c> does not mean a matching descendent does not exist.
-		/// It merely means that no fast lookup table has been initialized.
-		/// If the return value is <c>true</c>, then the lookup table exists and the <paramref name="result"/>
-		/// will either be empty or non-empty based on the presence of the descendent.
-		/// </remarks>
-		bool TryLookup(IdentityFieldType identity, out KeyValuePair<IRecursiveType, IdentityFieldType> result);
 	}
 
     public interface IRecursiveParentWithLookupTable<TRecursiveType> : IRecursiveParent<TRecursiveType>

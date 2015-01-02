@@ -22,7 +22,7 @@ namespace ImmutableObjectGraph.Tests {
 		}
 
 		protected override void Cleanup() {
-			this.node.ValidateInternalIntegrity();
+			RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.ValidateInternalIntegrity(this.node);
 			base.Cleanup();
 		}
 
@@ -153,7 +153,7 @@ namespace ImmutableObjectGraph.Tests {
 			this.node = this.node.AddChildren(child);
 
 			// Ensure we exercise our lookup table update code by filling the tree with enough nodes.
-			for (int i = 0; i < ProjectTree.InefficiencyLoadThreshold; i++) {
+			for (int i = 0; i < RecursiveTypeExtensions.InefficiencyLoadThreshold; i++) {
 				this.node = this.node.AddChildren(this.NewTree("child " + i));
 			}
 
@@ -182,7 +182,7 @@ namespace ImmutableObjectGraph.Tests {
 			var expectedChain = new List<ProjectTree>();
 			var head = leaf;
 			expectedChain.Add(head);
-			for (int i = 0; i < ProjectTree.InefficiencyLoadThreshold * 3; i++) {
+			for (int i = 0; i < RecursiveTypeExtensions.InefficiencyLoadThreshold * 3; i++) {
 				head = (ProjectTree)this.NewTree("step " + (i + 1), children: new[] { head });
 				expectedChain.Insert(0, head);
 			}
@@ -197,11 +197,11 @@ namespace ImmutableObjectGraph.Tests {
 		public void Validate() {
 			var node1 = this.NewNode();
 			var node2 = this.NewNode(node1);
-			node1.ValidateInternalIntegrity();
-			node2.ValidateInternalIntegrity();
+			RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.ValidateInternalIntegrity(node1);
+			RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.ValidateInternalIntegrity(node2);
 			Assert.Throws<RecursiveChildNotUniqueException>(() => {
 				var cycle = node1.AddChildren(node2);
-				cycle.ValidateInternalIntegrity();
+				RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.ValidateInternalIntegrity(cycle);
 			});
 		}
 
@@ -219,7 +219,7 @@ namespace ImmutableObjectGraph.Tests {
 			Assert.Same(child, path[1]);
 
 			var leaf = this.NewTree("leaf");
-			for (int steps = 0; steps < ProjectTree.InefficiencyLoadThreshold * 3; steps++) {
+			for (int steps = 0; steps < RecursiveTypeExtensions.InefficiencyLoadThreshold * 3; steps++) {
 				var expectedChain = new List<ProjectTree>(steps + 1);
 				var head = leaf;
 				expectedChain.Add(head);

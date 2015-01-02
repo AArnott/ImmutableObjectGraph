@@ -25,7 +25,7 @@ namespace ImmutableObjectGraph.Tests {
 		System.Collections.Immutable.ImmutableSortedSet<ProjectTree> Children { get; }
 	}
 	
-	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveParent<ProjectTree>, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>, IRecursiveParentWithFastLookup {
+	public partial class ProjectTree : IProjectTree, System.Collections.Generic.IEnumerable<ProjectTree>, IRecursiveParentWithSortedChildren, IRecursiveParent<ProjectTree>, IRecursiveType, IRecursiveDiffingType<ProjectTreeChangedProperties, ProjectTree.DiffGram>, IRecursiveParentWithLookupTable<ProjectTree>, IRecursiveParentWithChildReplacement<ProjectTree> {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly ProjectTree DefaultInstance = GetDefaultTemplate();
 		
@@ -84,7 +84,9 @@ namespace ImmutableObjectGraph.Tests {
 			if (!skipValidation.Value) {
 				this.Validate();
 			}
-			this.InitializeLookup(lookupTable);
+			var lookupTableInitResult = RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.Initialize(this, lookupTable);
+			this.lookupTable = lookupTableInitResult.LookupTable;
+			this.inefficiencyLoad = lookupTableInitResult.InefficiencyLoad;
 		}
 	
 		public static ProjectTree Create(
@@ -710,339 +712,69 @@ namespace ImmutableObjectGraph.Tests {
 			return (ProjectTree)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
 		}
 		
-		private System.Collections.Immutable.ImmutableStack<ProjectTree> ReplaceDescendent(System.Collections.Immutable.ImmutableStack<ProjectTree> spine, System.Collections.Immutable.ImmutableStack<ProjectTree> replacementStackTip, bool spineIncludesDeletedElement) {
-			Debug.Assert(this == spine.Peek());
-			var remainingSpine = spine.Pop();
-			if (remainingSpine.IsEmpty || (spineIncludesDeletedElement && remainingSpine.Pop().IsEmpty)) {
-				// This is the instance to be changed.
-				return replacementStackTip;
-			}
-		
-			System.Collections.Immutable.ImmutableStack<ProjectTree> newChildSpine;
-			var child = remainingSpine.Peek();
-			var recursiveChild = child as ProjectTree;
-			if (recursiveChild != null) {
-				newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacementStackTip, spineIncludesDeletedElement);
-			} else {
-				Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
-				Debug.Assert(this.Children.Contains(child));
-				newChildSpine = replacementStackTip;
-			}
-		
-			var newChildren = this.Children.Replace(child, newChildSpine.Peek());
-			var newSelf = this.WithChildren(newChildren);
-			if (newSelf.lookupTable == lookupTableLazySentinal && this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
-				// Our newly mutated self wants a lookup table. If we already have one we can use it,
-				// but it needs to be fixed up given the newly rewritten spine through our descendents.
-				newSelf.lookupTable = this.FixupLookupTable(ImmutableDeque.Create(newChildSpine), ImmutableDeque.Create(remainingSpine));
-				newSelf.ValidateInternalIntegrityDebugOnly();
-			}
-		
-			return newChildSpine.Push(newSelf);
-		}
-		
-		/// <summary>
-		/// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
-		/// </summary>
-		/// <param name="updatedSpine">
-		/// The spine of this node's new descendents' instances that are created for this change.
-		/// The head is an immediate child of the new instance for this node.
-		/// The tail is the node that was added or replaced.
-		/// </param>
-		/// <param name="oldSpine">
-		/// The spine of this node's descendents that have been changed in this delta.
-		/// The head is an immediate child of this instance.
-		/// The tail is the node that was removed or replaced.
-		/// </param>
-		/// <returns>An updated lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> FixupLookupTable(ImmutableObjectGraph.ImmutableDeque<ProjectTree> updatedSpine, ImmutableObjectGraph.ImmutableDeque<ProjectTree> oldSpine) {
-			if (this.lookupTable == null || this.lookupTable == lookupTableLazySentinal) {
-				// We don't already have a lookup table to base this on, so leave it to the new instance to lazily construct.
-				return lookupTableLazySentinal;
-			}
-		
-			if ((updatedSpine.IsEmpty && oldSpine.IsEmpty) ||
-				(updatedSpine.Count > 1 && oldSpine.Count > 1 && System.Object.ReferenceEquals(updatedSpine.PeekHead(), oldSpine.PeekHead()))) {
-				// No changes were actually made.
-				return this.lookupTable;
-			}
-		
-			var lookupTable = this.lookupTable.ToBuilder();
-		
-			// Classify the kind of change that has just occurred.
-			var oldSpineTail = oldSpine.PeekTail();
-			var newSpineTail = updatedSpine.PeekTail();
-			ChangeKind changeKind;
-			bool childrenChanged = false;
-			if (updatedSpine.Count == oldSpine.Count) {
-				changeKind = ChangeKind.Replaced;
-				var oldSpineTailRecursive = oldSpineTail as ProjectTree;
-				var newSpineTailRecursive = newSpineTail as ProjectTree;
-				if (oldSpineTailRecursive != null || newSpineTailRecursive != null) {
-					// Children have changed if either before or after type didn't have a children property,
-					// or if both did, but the children actually changed.
-					childrenChanged = oldSpineTailRecursive == null || newSpineTailRecursive == null
-						|| !System.Object.ReferenceEquals(oldSpineTailRecursive.Children, newSpineTailRecursive.Children);
-				}
-			} else if (updatedSpine.Count > oldSpine.Count) {
-				changeKind = ChangeKind.Added;
-			} else // updatedSpine.Count < oldSpine.Count
-			{
-				changeKind = ChangeKind.Removed;
-			}
-		
-			// Trim the lookup table of any entries for nodes that have been removed from the tree.
-			if (childrenChanged || changeKind == ChangeKind.Removed) {
-				// We need to remove all descendents of the old tail node.
-				lookupTable.RemoveRange(oldSpineTail.GetSelfAndDescendents().Select(n => n.Identity));
-			} else if (changeKind == ChangeKind.Replaced && oldSpineTail.Identity != newSpineTail.Identity) {
-				// The identity of the node was changed during the replacement.  We must explicitly remove the old entry
-				// from our lookup table in this case.
-				lookupTable.Remove(oldSpineTail.Identity);
-		
-				// We also need to update any immediate children of the old spine tail
-				// because the identity of their parent has changed.
-				var oldSpineTailRecursive = oldSpineTail as ProjectTree;
-				if (oldSpineTailRecursive != null) {
-					foreach (var child in oldSpineTailRecursive) {
-						lookupTable[child.Identity] = new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>(child, newSpineTail.Identity);
-					}
-				}
-			}
-		
-			// Update our lookup table so that it includes (updated) entries for every member of the spine itself.
-			ProjectTree parent = this;
-			foreach (var node in updatedSpine) {
-				// Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
-				// assume no change is relevant and not apply the change.
-				lookupTable.Remove(node.Identity);
-				lookupTable.Add(node.Identity, new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>(node, parent.Identity));
-				parent = node;
-			}
-		
-			// There may be children on the added node that we should include.
-			if (childrenChanged || changeKind == ChangeKind.Added) {
-				var recursiveParent = parent as ProjectTree;
-				if (recursiveParent != null) {
-					recursiveParent.ContributeDescendentsToLookupTable(lookupTable);
-				}
-			}
-		
-			return lookupTable.ToImmutable();
-		}
-		
-		/// <summary>
-		/// Validates this node and all its descendents <em>only in DEBUG builds</em>.
-		/// </summary>
-		[Conditional("DEBUG")]
-		private void ValidateInternalIntegrityDebugOnly() {
-			this.ValidateInternalIntegrity();
-		}
-		
-		/// <summary>
-		/// Validates this node and all its descendents.
-		/// </summary>
-		protected internal void ValidateInternalIntegrity() {
-			// Each node id appears at most once.
-			var observedIdentities = new System.Collections.Generic.HashSet<System.UInt32>();
-			foreach (var node in this.GetSelfAndDescendents()) {
-				if (!observedIdentities.Add(node.Identity)) {
-					throw new RecursiveChildNotUniqueException(node.Identity);
-				}
-			}
-		
-			// The lookup table (if any) accurately describes the contents of this tree.
-			if (this.lookupTable != null && this.lookupTable != lookupTableLazySentinal) {
-				// The table should have one entry for every *descendent* of this node (not this node itself).
-				int expectedCount = this.GetSelfAndDescendents().Count() - 1;
-				int actualCount = this.lookupTable.Count;
-				if (actualCount != expectedCount) {
-					throw new System.ApplicationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Expected {0} entries in lookup table but found {1}.", expectedCount, actualCount));
-				}
-		
-				this.ValidateLookupTable(this.lookupTable);
-			}
-		}
-		
-		/// <summary>
-		/// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
-		/// </summary>
-		/// <param name="lookupTable">The lookup table being validated.</param>
-		private void ValidateLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> lookupTable) {
-			const string ErrorString = "Lookup table integrity failure.";
-		
-			foreach (var child in this.Children) {
-				var entry = lookupTable[child.Identity];
-				if (!object.ReferenceEquals(entry.Key, child)) {
-					throw new System.ApplicationException(ErrorString);
-				}
-		
-				if (entry.Value != this.Identity) {
-					throw new System.ApplicationException(ErrorString);
-				}
-		
-				var recursiveChild = child as ProjectTree;
-				if (recursiveChild != null) {
-					recursiveChild.ValidateLookupTable(lookupTable);
-				}
-			}
-		}
-		
-		private static readonly System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> lookupTableLazySentinal = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>().Add(default(System.UInt32), new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>());
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> lookupTable;
 		
-		private int inefficiencyLoad;
-		
-		/// <summary>
-		/// The maximum number of steps allowable for a search to be done among this node's children
-		/// before a faster lookup table will be built.
-		/// </summary>
-		internal const int InefficiencyLoadThreshold = 16;
+		private uint inefficiencyLoad;
 		
 		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> LookupTable {
 			get {
-				if (this.lookupTable == lookupTableLazySentinal) {
-					this.lookupTable = this.CreateLookupTable();
-					this.inefficiencyLoad = 1;
+				if (this.lookupTable == RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.LazySentinel) {
+					this.lookupTable = RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.CreateLookupTable(this);
 				}
 		
 				return this.lookupTable;
 			}
 		}
 		
-		bool IRecursiveParentWithFastLookup.TryLookup(System.UInt32 identity, out System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32> result) {
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32> typedResult;
-				this.LookupTable.TryGetValue(identity, out typedResult);
-				result = new System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>(typedResult.Key, typedResult.Value);
-				return true;
-			}
-		
-			result = default(System.Collections.Generic.KeyValuePair<IRecursiveType, System.UInt32>);
-			return false;
+		uint IRecursiveParentWithLookupTable<ProjectTree>.InefficiencyLoad {
+			get { return this.inefficiencyLoad; }
 		}
 		
-		private void InitializeLookup(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>> priorLookupTable = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>>)) {
-			int inefficiencyLoad = 1; // use local until we know final value since that's faster than field access.
-			if (priorLookupTable.IsDefined && priorLookupTable.Value != null) {
-				this.lookupTable = priorLookupTable.Value;
-			} else {
-				if (this.children != null) {
-					if (this.children.Count >= InefficiencyLoadThreshold) {
-						// The number of children alone are enough to put us over the threshold, skip enumeration.
-						inefficiencyLoad = InefficiencyLoadThreshold + 1;
-					} else if (this.children.Count > 0) {
-						foreach (var child in this.children) {
-							var recursiveChild = child as ProjectTree;
-							inefficiencyLoad += recursiveChild != null ? recursiveChild.inefficiencyLoad : 1;
-							if (inefficiencyLoad > InefficiencyLoadThreshold) {
-								break; // It's ok to under-estimate once we're above the threshold since any further would be a waste of time.
-							}
-						}
-					}
-				}
-		
-				if (inefficiencyLoad > InefficiencyLoadThreshold) {
-					inefficiencyLoad = 1;
-					this.lookupTable = lookupTableLazySentinal;
-				}
-			}
-		
-			this.inefficiencyLoad = inefficiencyLoad;
-			this.ValidateInternalIntegrityDebugOnly();
+		System.Collections.Generic.IReadOnlyCollection<ProjectTree> IRecursiveParentWithLookupTable<ProjectTree>.Children {
+			get { return this.Children; }
 		}
 		
-		/// <summary>
-		/// Creates the lookup table that will contain all this node's children.
-		/// </summary>
-		/// <returns>The lookup table.</returns>
-		private System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> CreateLookupTable() {
-			var table = System.Collections.Immutable.ImmutableDictionary.Create<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>().ToBuilder();
-			this.ContributeDescendentsToLookupTable(table);
-			return table.ToImmutable();
-		}
-		
-		/// <summary>
-		/// Adds this node's children (recursively) to the lookup table.
-		/// </summary>
-		/// <param name="seedLookupTable">The lookup table to add entries to.</param>
-		/// <returns>The new lookup table.</returns>
-		private void ContributeDescendentsToLookupTable(System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>>.Builder seedLookupTable)
-		{
-			foreach (var child in this.Children)
-			{
-				seedLookupTable.Add(child.Identity, new System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>(child, this.Identity));
-				var recursiveChild = child as ProjectTree;
-				if (recursiveChild != null) {
-					recursiveChild.ContributeDescendentsToLookupTable(seedLookupTable);
-				}
-			}
-		}
-		
-		public ProjectTree Find(System.UInt32 identity) {
-			ProjectTree result;
-			if (this.TryFind(identity, out result)) {
-				return result;
-			}
-		
-			throw new System.Collections.Generic.KeyNotFoundException();
-		}
-		
-		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ParentedRecursiveType<ProjectTree, ProjectTree> GetParentedNode(System.UInt32 identity) {
-			return this.GetParentedNode<ProjectTree, ProjectTree>(identity);
-		}
-		
-		/// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
-		internal ProjectTree GetParent(ProjectTree descendent) {
-			return this.GetParentedNode(descendent.Identity).Parent;
-		}
-		
-		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.UInt32 descendent) {
-			var emptySpine = System.Collections.Immutable.ImmutableStack.Create<ProjectTree>();
-			if (this.Identity.Equals(descendent)) {
-				return emptySpine.Push(this);
-			}
-		
-			if (this.LookupTable != null) {
-				System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32> lookupValue;
-				if (this.LookupTable.TryGetValue(descendent, out lookupValue))
-				{
-					// Awesome.  We know the node the caller is looking for is a descendent of this node.
-					// Now just string together all the nodes that connect this one with the sought one.
-					var spine = emptySpine;
-					do
-					{
-						spine = spine.Push(lookupValue.Key);
-					}
-					while (this.lookupTable.TryGetValue(lookupValue.Value, out lookupValue));
-					return spine.Push(this);
-				}
-			} else {
-				// We don't have an efficient lookup table for this node.  Aggressively search every child.
-				var spine = emptySpine;
-				foreach (var child in this.Children) {
-					var recursiveChild = child as ProjectTree;
-					if (recursiveChild != null) {
-						spine = recursiveChild.GetSpine(descendent);
-					} else if (child.Identity.Equals(descendent)) {
-						spine = spine.Push(child);
-					}
-		
-					if (!spine.IsEmpty) {
-						return spine.Push(this);
-					}
-				}
-			}
-		
-			// The descendent is not in this sub-tree.
-			return emptySpine;
+		System.Collections.Immutable.ImmutableDictionary<System.UInt32, System.Collections.Generic.KeyValuePair<ProjectTree, System.UInt32>> IRecursiveParentWithLookupTable<ProjectTree>.LookupTable {
+			get { return this.LookupTable; }
 		}
 		
 		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(ProjectTree descendent) {
-			return this.GetSpine(descendent.Identity);
+			return this.GetSpine<ProjectTree, ProjectTree>(descendent);
 		}
+		
+		public System.Collections.Immutable.ImmutableStack<ProjectTree> GetSpine(System.UInt32 identity) {
+			return this.GetSpine<ProjectTree, ProjectTree>(identity);
+		}
+		
+		public ProjectTree Find(System.UInt32 identity)
+		{
+			return this.Find<ProjectTree, ProjectTree>(identity);
+		}
+		
+		public ProjectTree GetParent(ProjectTree descendent) {
+			return this.GetParent<ProjectTree, ProjectTree>(descendent);
+		}
+		
+		public ParentedRecursiveType<ProjectTree, ProjectTree> GetParentedNode(System.UInt32 identity) {
+			return this.GetParentedNode<ProjectTree, ProjectTree>(identity);
+		}
+		
+		IRecursiveParent<ProjectTree> IRecursiveParentWithChildReplacement<ProjectTree>.ReplaceChild(System.Collections.Immutable.ImmutableStack<ProjectTree> oldSpine, System.Collections.Immutable.ImmutableStack<ProjectTree> newSpine) {
+			var newChildren = this.Children.Replace(oldSpine.Peek(), newSpine.Peek());
+			var newSelf = this.WithChildren(newChildren);
+		
+			var lookupTableLazySentinel = RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.LazySentinel;
+			if (newSelf.LookupTable == lookupTableLazySentinel && this.LookupTable != null && this.LookupTable != lookupTableLazySentinel) {
+				// Our newly mutated self wants a lookup table. If we already have one we can use it,
+				// but it needs to be fixed up given the newly rewritten spine through our descendents.
+				newSelf.lookupTable = RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.Fixup(this, ImmutableDeque.Create(newSpine), ImmutableDeque.Create(oldSpine));
+				RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.ValidateInternalIntegrityDebugOnly(newSelf);
+			}
+		
+			return newSelf;
+		}
+		
 		
 		internal static ProjectTree CreateWithIdentity(
 				System.String caption,

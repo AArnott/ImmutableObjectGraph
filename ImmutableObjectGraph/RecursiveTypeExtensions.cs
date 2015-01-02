@@ -17,7 +17,7 @@
         /// The maximum number of steps allowable for a search to be done among this node's children
         /// before a faster lookup table will be built.
         /// </summary>
-        internal const int InefficiencyLoadThreshold = 16;
+        public const int InefficiencyLoadThreshold = 16;
 
         /// <summary>Checks whether an object with the specified identity is among this object's descendents.</summary>
         public static bool HasDescendent(this IRecursiveParent parent, IdentityFieldType identity)
@@ -49,7 +49,7 @@
                 return true;
             }
 
-            var parentWithLookup = parent as IRecursiveParentWithFastLookup;
+            var parentWithLookup = parent as IRecursiveParentWithLookupTable<TRecursiveType>;
             if (parentWithLookup != null)
             {
                 KeyValuePair<IRecursiveType, IdentityFieldType> lookupValue;
@@ -91,7 +91,7 @@
         {
             Requires.NotNullAllowStructs(parent, "parent");
 
-            var parentWithLookup = parent as IRecursiveParentWithFastLookup;
+            var parentWithLookup = parent as IRecursiveParentWithLookupTable<TRecursiveType>;
             if (parentWithLookup != null)
             {
                 KeyValuePair<IRecursiveType, IdentityFieldType> lookupValue;
@@ -125,6 +125,34 @@
             return false;
         }
 
+        /// <summary>
+        /// Tries to lookup a descendent node by its identity in a fast lookup table.
+        /// </summary>
+        /// <param name="parent">The parent to search.</param>
+        /// <param name="identity">The identity of the descendent node to find.</param>
+        /// <param name="result">Receives a reference to the sought object and the identity of its immediate parent, if the lookup table exists and the entry is found.</param>
+        /// <returns><c>true</c> if the lookup table exists; <c>false</c> otherwise.</returns>
+        /// <remarks>
+        /// Note that a return value of <c>false</c> does not mean a matching descendent does not exist.
+        /// It merely means that no fast lookup table has been initialized.
+        /// If the return value is <c>true</c>, then the lookup table exists and the <paramref name="result"/>
+        /// will either be empty or non-empty based on the presence of the descendent.
+        /// </remarks>
+        public static bool TryLookup<TRecursiveType>(this IRecursiveParentWithLookupTable<TRecursiveType> parent, IdentityFieldType identity, out KeyValuePair<IRecursiveType, IdentityFieldType> result)
+            where TRecursiveType : IRecursiveType
+        {
+            if (parent.LookupTable != null)
+            {
+                KeyValuePair<TRecursiveType, IdentityFieldType> typedResult;
+                parent.LookupTable.TryGetValue(identity, out typedResult);
+                result = new KeyValuePair<IRecursiveType, IdentityFieldType>(typedResult.Key, typedResult.Value);
+                return true;
+            }
+
+            result = default(KeyValuePair<IRecursiveType, IdentityFieldType>);
+            return false;
+        }
+
         public static TRecursiveType Find<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, IdentityFieldType identity)
             where TRecursiveParent : class, IRecursiveParent, TRecursiveType
             where TRecursiveType : class, IRecursiveType
@@ -152,7 +180,7 @@
                 return new ParentedRecursiveType<TRecursiveParent, TRecursiveType>(parent, null);
             }
 
-            var fastLookup = parent as IRecursiveParentWithFastLookup;
+            var fastLookup = parent as IRecursiveParentWithLookupTable<TRecursiveType>;
             KeyValuePair<IRecursiveType, uint> nodeLookupResult;
             if (fastLookup != null && fastLookup.TryLookup(identity, out nodeLookupResult))
             {
@@ -186,6 +214,14 @@
             }
 
             return default(ParentedRecursiveType<TRecursiveParent, TRecursiveType>);
+        }
+
+        /// <summary>Gets the recursive parent of the specified value, or <c>null</c> if none could be found.</summary>
+        public static TRecursiveParent GetParent<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, TRecursiveType descendent)
+            where TRecursiveParent : class, TRecursiveType, IRecursiveParent<TRecursiveType>
+            where TRecursiveType : class, IRecursiveType
+        {
+            return GetParentedNode<TRecursiveParent, TRecursiveType>(parent, descendent.Identity).Parent;
         }
 
         /// <summary>
@@ -295,6 +331,96 @@
                     }
                 }
             }
+        }
+
+        public static ImmutableStack<TRecursiveType> GetSpine<TRecursiveParent, TRecursiveType>(this TRecursiveParent self, IdentityFieldType descendent)
+            where TRecursiveParent : class, TRecursiveType, IRecursiveParentWithLookupTable<TRecursiveType>
+            where TRecursiveType : class, IRecursiveType
+        {
+            var emptySpine = ImmutableStack.Create<TRecursiveType>();
+            if (self.Identity.Equals(descendent))
+            {
+                return emptySpine.Push(self);
+            }
+
+            if (self.LookupTable != null)
+            {
+                KeyValuePair<TRecursiveType, IdentityFieldType> lookupValue;
+                if (self.LookupTable.TryGetValue(descendent, out lookupValue))
+                {
+                    // Awesome.  We know the node the caller is looking for is a descendent of this node.
+                    // Now just string together all the nodes that connect this one with the sought one.
+                    var spine = emptySpine;
+                    do
+                    {
+                        spine = spine.Push(lookupValue.Key);
+                    }
+                    while (self.LookupTable.TryGetValue(lookupValue.Value, out lookupValue));
+                    return spine.Push(self);
+                }
+            }
+            else
+            {
+                // We don't have an efficient lookup table for this node.  Aggressively search every child.
+                var spine = emptySpine;
+                foreach (var child in self.Children)
+                {
+                    var recursiveChild = child as TRecursiveParent;
+                    if (recursiveChild != null)
+                    {
+                        spine = recursiveChild.GetSpine<TRecursiveParent, TRecursiveType>(descendent);
+                    }
+                    else if (child.Identity.Equals(descendent))
+                    {
+                        spine = spine.Push(child);
+                    }
+
+                    if (!spine.IsEmpty)
+                    {
+                        return spine.Push(self);
+                    }
+                }
+            }
+
+            // The descendent is not in this sub-tree.
+            return emptySpine;
+        }
+
+        public static ImmutableStack<TRecursiveType> GetSpine<TRecursiveParent, TRecursiveType>(this TRecursiveParent parent, TRecursiveType descendent)
+            where TRecursiveParent : class, TRecursiveType, IRecursiveParentWithLookupTable<TRecursiveType>
+            where TRecursiveType : class, IRecursiveType
+        {
+            return GetSpine<TRecursiveParent, TRecursiveType>(parent, descendent.Identity);
+        }
+
+        public static System.Collections.Immutable.ImmutableStack<TRecursiveType> ReplaceDescendent<TRecursiveParent, TRecursiveType>(this TRecursiveParent self, System.Collections.Immutable.ImmutableStack<TRecursiveType> spine, System.Collections.Immutable.ImmutableStack<TRecursiveType> replacementStackTip, bool spineIncludesDeletedElement)
+            where TRecursiveParent : class, TRecursiveType, IRecursiveParentWithLookupTable<TRecursiveType>, IRecursiveParentWithChildReplacement<TRecursiveType>
+            where TRecursiveType : class, IRecursiveType
+        {
+            Debug.Assert(self == spine.Peek());
+            var remainingSpine = spine.Pop();
+            if (remainingSpine.IsEmpty || (spineIncludesDeletedElement && remainingSpine.Pop().IsEmpty))
+            {
+                // self is the instance to be changed.
+                return replacementStackTip;
+            }
+
+            System.Collections.Immutable.ImmutableStack<TRecursiveType> newChildSpine;
+            var child = remainingSpine.Peek();
+            var recursiveChild = child as TRecursiveParent;
+            if (recursiveChild != null)
+            {
+                newChildSpine = recursiveChild.ReplaceDescendent(remainingSpine, replacementStackTip, spineIncludesDeletedElement);
+            }
+            else
+            {
+                Debug.Assert(remainingSpine.Pop().IsEmpty); // we should be at the tail of the stack, since we're at a leaf.
+                Debug.Assert(self.Children.Contains(child));
+                newChildSpine = replacementStackTip;
+            }
+
+            var newSelf = (TRecursiveParent)self.ReplaceChild(remainingSpine, newChildSpine);
+            return newChildSpine.Push(newSelf);
         }
 
         public static IReadOnlyList<TDiffGram> ChangesSince<TPropertiesEnum, TDiffGram>(this IRecursiveDiffingType<TPropertiesEnum, TDiffGram> current, IRecursiveDiffingType<TPropertiesEnum, TDiffGram> priorVersion)
@@ -467,7 +593,7 @@
             /// <summary>
             /// The value assigned to the lookup table when we have established we need one, but have not yet initialized it.
             /// </summary>
-            private static readonly ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>> LazySentinel =
+            public static readonly ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>> LazySentinel =
                 ImmutableDictionary.Create<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>>()
                     .Add(default(IdentityFieldType), new KeyValuePair<TRecursiveType, IdentityFieldType>());
 
@@ -523,6 +649,17 @@
             }
 
             /// <summary>
+            /// Creates the lookup table that will contain all this node's children.
+            /// </summary>
+            /// <returns>The lookup table.</returns>
+            public static ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>> CreateLookupTable(TRecursiveParent parent)
+            {
+                var table = System.Collections.Immutable.ImmutableDictionary.Create<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>>().ToBuilder();
+                ContributeDescendentsToLookupTable(parent, table);
+                return table.ToImmutable();
+            }
+
+            /// <summary>
             /// Produces a fast lookup table based on an existing one, if this node has one, to account for an updated spine among its descendents.
             /// </summary>
             /// <param name="updatedSpine">
@@ -551,7 +688,7 @@
                     return self.LookupTable;
                 }
 
-                var lookupTable = self.LookupTable.ToBuilder();
+                var LookupTable = self.LookupTable.ToBuilder();
 
                 // Classify the kind of change that has just occurred.
                 var oldSpineTail = oldSpine.PeekTail();
@@ -584,13 +721,13 @@
                 if (childrenChanged || changeKind == ChangeKind.Removed)
                 {
                     // We need to remove all descendents of the old tail node.
-                    lookupTable.RemoveRange(oldSpineTail.GetSelfAndDescendents().Select(n => n.Identity));
+                    LookupTable.RemoveRange(oldSpineTail.GetSelfAndDescendents().Select(n => n.Identity));
                 }
                 else if (changeKind == ChangeKind.Replaced && oldSpineTail.Identity != newSpineTail.Identity)
                 {
                     // The identity of the node was changed during the replacement.  We must explicitly remove the old entry
                     // from our lookup table in this case.
-                    lookupTable.Remove(oldSpineTail.Identity);
+                    LookupTable.Remove(oldSpineTail.Identity);
 
                     // We also need to update any immediate children of the old spine tail
                     // because the identity of their parent has changed.
@@ -599,7 +736,7 @@
                     {
                         foreach (var child in oldSpineTailRecursive.Children)
                         {
-                            lookupTable[child.Identity] = new KeyValuePair<TRecursiveType, IdentityFieldType>(child, newSpineTail.Identity);
+                            LookupTable[child.Identity] = new KeyValuePair<TRecursiveType, IdentityFieldType>(child, newSpineTail.Identity);
                         }
                     }
                 }
@@ -610,8 +747,8 @@
                 {
                     // Remove and add rather than use the Set method, since the old and new node are equal (in identity) therefore the map class will
                     // assume no change is relevant and not apply the change.
-                    lookupTable.Remove(node.Identity);
-                    lookupTable.Add(node.Identity, new KeyValuePair<TRecursiveType, IdentityFieldType>(node, parent.Identity));
+                    LookupTable.Remove(node.Identity);
+                    LookupTable.Add(node.Identity, new KeyValuePair<TRecursiveType, IdentityFieldType>(node, parent.Identity));
                     parent = node;
                 }
 
@@ -621,36 +758,18 @@
                     var recursiveParent = parent as TRecursiveParent;
                     if (recursiveParent != null)
                     {
-                        ContributeDescendentsToLookupTable(recursiveParent, lookupTable);
+                        ContributeDescendentsToLookupTable(recursiveParent, LookupTable);
                     }
                 }
 
-                return lookupTable.ToImmutable();
-            }
-
-            /// <summary>
-            /// Adds this node's children (recursively) to the lookup table.
-            /// </summary>
-            /// <param name="seedLookupTable">The lookup table to add entries to.</param>
-            /// <returns>The new lookup table.</returns>
-            private static void ContributeDescendentsToLookupTable(TRecursiveParent parent, ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>>.Builder seedLookupTable)
-            {
-                foreach (var child in parent.Children)
-                {
-                    seedLookupTable.Add(child.Identity, new KeyValuePair<TRecursiveType, IdentityFieldType>(child, parent.Identity));
-                    var recursiveChild = child as TRecursiveParent;
-                    if (recursiveChild != null)
-                    {
-                        ContributeDescendentsToLookupTable(recursiveChild, seedLookupTable);
-                    }
-                }
+                return LookupTable.ToImmutable();
             }
 
             /// <summary>
             /// Validates this node and all its descendents <em>only in DEBUG builds</em>.
             /// </summary>
             [Conditional("DEBUG")]
-            private static void ValidateInternalIntegrityDebugOnly(TRecursiveParent parent)
+            public static void ValidateInternalIntegrityDebugOnly(TRecursiveParent parent)
             {
                 ValidateInternalIntegrity(parent);
             }
@@ -658,7 +777,7 @@
             /// <summary>
             /// Validates this node and all its descendents.
             /// </summary>
-            private static void ValidateInternalIntegrity(TRecursiveParent parent)
+            public static void ValidateInternalIntegrity(TRecursiveParent parent)
             {
                 // Each node id appears at most once.
                 var observedIdentities = new System.Collections.Generic.HashSet<IdentityFieldType>();
@@ -683,6 +802,24 @@
             }
 
             /// <summary>
+            /// Adds this node's children (recursively) to the lookup table.
+            /// </summary>
+            /// <param name="seedLookupTable">The lookup table to add entries to.</param>
+            /// <returns>The new lookup table.</returns>
+            private static void ContributeDescendentsToLookupTable(TRecursiveParent parent, ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>>.Builder seedLookupTable)
+            {
+                foreach (var child in parent.Children)
+                {
+                    seedLookupTable.Add(child.Identity, new KeyValuePair<TRecursiveType, IdentityFieldType>(child, parent.Identity));
+                    var recursiveChild = child as TRecursiveParent;
+                    if (recursiveChild != null)
+                    {
+                        ContributeDescendentsToLookupTable(recursiveChild, seedLookupTable);
+                    }
+                }
+            }
+
+            /// <summary>
             /// Validates that the contents of a lookup table are valid for all descendent nodes of this node.
             /// </summary>
             /// <param name="lookupTable">The lookup table being validated.</param>
@@ -692,7 +829,7 @@
 
                 foreach (var child in parent.Children)
                 {
-                    var entry = parent.LookupTable[child.Identity];
+                    var entry = lookupTable[child.Identity];
                     Assumes.True(object.ReferenceEquals(entry.Key, child), ErrorString);
                     Assumes.True(entry.Value == parent.Identity, ErrorString);
 
