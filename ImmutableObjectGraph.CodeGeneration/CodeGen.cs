@@ -84,7 +84,7 @@
         private MetaType applyToMetaType;
         private bool isAbstract;
         private TypeSyntax applyToTypeName;
-        private List<IFeatureGenerator> mergedFeatures = new List<IFeatureGenerator>();
+        private List<FeatureGenerator> mergedFeatures = new List<FeatureGenerator>();
 
         private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
         {
@@ -109,7 +109,7 @@
             return await instance.GenerateAsync();
         }
 
-        private void MergeFeature(IFeatureGenerator featureGenerator)
+        private void MergeFeature(FeatureGenerator featureGenerator)
         {
             var featureResults = featureGenerator.Generate();
             this.innerMembers.AddRange(featureResults.MembersOfGeneratedType);
@@ -201,7 +201,7 @@
 
             this.outerMembers.Add(partialClass);
 
-            foreach (var mergedFeature in this.mergedFeatures.OfType<IFeatureGeneratorWithPostProcessing>())
+            foreach (var mergedFeature in this.mergedFeatures)
             {
                 mergedFeature.PostProcess();
             }
@@ -827,7 +827,7 @@
             public bool DefineWithMethodsPerProperty { get; set; }
         }
 
-        protected abstract class FeatureGeneratorBase : IFeatureGeneratorWithPostProcessing
+        protected abstract class FeatureGenerator
         {
             protected readonly CodeGen generator;
             protected readonly List<MemberDeclarationSyntax> innerMembers = new List<MemberDeclarationSyntax>();
@@ -836,7 +836,7 @@
             protected readonly List<StatementSyntax> additionalCtorStatements = new List<StatementSyntax>();
             protected readonly MetaType applyTo;
 
-            protected FeatureGeneratorBase(CodeGen generator)
+            protected FeatureGenerator(CodeGen generator)
             {
                 this.generator = generator;
                 this.applyTo = generator.applyToMetaType;
@@ -873,41 +873,33 @@
             protected virtual void PostProcessCore() { }
         }
 
-        protected class EnumerableRecursiveParentGen : IFeatureGenerator
+        protected class EnumerableRecursiveParentGen : FeatureGenerator
         {
-            private readonly CodeGen generator;
-            private readonly List<BaseTypeSyntax> baseTypes = new List<BaseTypeSyntax>();
-            private readonly List<MemberDeclarationSyntax> innerMembers = new List<MemberDeclarationSyntax>();
-
             public EnumerableRecursiveParentGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
             }
 
-            public GenerationResult Generate()
+            protected override bool IsApplicable
             {
-                if (this.generator.applyToMetaType.IsRecursiveParent)
+                get { return this.generator.applyToMetaType.IsRecursiveParent; }
+            }
+
+            protected override void GenerateCore()
+            {
+                this.ImplementIEnumerableInterfaces();
+
+                if (this.generator.applyToMetaType.ChildrenAreOrdered)
                 {
-                    this.ImplementIEnumerableInterfaces();
-
-                    if (this.generator.applyToMetaType.ChildrenAreOrdered)
-                    {
-                        this.ImplementOrderedChildrenInterface();
-                    }
-
-                    if (this.generator.applyToMetaType.ChildrenAreSorted)
-                    {
-                        this.ImplementSortedChildrenInterface();
-                    }
-
-                    this.ImplementRecursiveParentInterface();
+                    this.ImplementOrderedChildrenInterface();
                 }
 
-                return new GenerationResult
+                if (this.generator.applyToMetaType.ChildrenAreSorted)
                 {
-                    BaseTypes = this.baseTypes.ToImmutableArray(),
-                    MembersOfGeneratedType = SyntaxFactory.List(this.innerMembers),
-                };
+                    this.ImplementSortedChildrenInterface();
+                }
+
+                this.ImplementRecursiveParentInterface();
             }
 
             private void ImplementIEnumerableInterfaces()
@@ -1057,47 +1049,38 @@
             }
         }
 
-        protected class RecursiveTypeGen : IFeatureGenerator
+        protected class RecursiveTypeGen : FeatureGenerator
         {
-            private readonly CodeGen generator;
-
             public RecursiveTypeGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
             }
 
-            public GenerationResult Generate()
+            protected override bool IsApplicable
             {
-                var baseTypes = new List<BaseTypeSyntax>();
-                var innerMembers = new List<MemberDeclarationSyntax>();
+                get { return this.generator.applyToMetaType.IsRecursiveType; }
+            }
 
-                if (this.generator.applyToMetaType.IsRecursiveType)
-                {
-                    baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))));
+            protected override void GenerateCore()
+            {
+                this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))));
 
-                    ////<#= templateType.RequiredIdentityField.TypeName #> IRecursiveType.Identity {
-                    ////	get { return this.Identity; }
-                    ////}
-                    innerMembers.Add(SyntaxFactory.PropertyDeclaration(
-                        IdentityFieldTypeSyntax,
-                        nameof(IRecursiveType.Identity))
-                        .WithExplicitInterfaceSpecifier(
-                            SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveType))))
-                        .AddAccessorListAccessors(
-                            SyntaxFactory.AccessorDeclaration(
-                                SyntaxKind.GetAccessorDeclaration,
-                                SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(IdentityPropertyName))))));
-                }
-
-                return new GenerationResult
-                {
-                    BaseTypes = baseTypes.ToImmutableArray(),
-                    MembersOfGeneratedType = SyntaxFactory.List(innerMembers),
-                };
+                ////<#= templateType.RequiredIdentityField.TypeName #> IRecursiveType.Identity {
+                ////	get { return this.Identity; }
+                ////}
+                this.innerMembers.Add(SyntaxFactory.PropertyDeclaration(
+                    IdentityFieldTypeSyntax,
+                    nameof(IRecursiveType.Identity))
+                    .WithExplicitInterfaceSpecifier(
+                        SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveType))))
+                    .AddAccessorListAccessors(
+                        SyntaxFactory.AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration,
+                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(IdentityPropertyName))))));
             }
         }
 
-        protected class FastSpineGen : FeatureGeneratorBase
+        protected class FastSpineGen : FeatureGenerator
         {
             private static readonly IdentifierNameSyntax LookupTableFieldName = SyntaxFactory.IdentifierName("lookupTable");
             private static readonly IdentifierNameSyntax LookupTablePropertyName = SyntaxFactory.IdentifierName("LookupTable");
@@ -1264,7 +1247,7 @@
             }
         }
 
-        protected class DeepMutationGen : FeatureGeneratorBase
+        protected class DeepMutationGen : FeatureGenerator
         {
             private static readonly IdentifierNameSyntax AddDescendentMethodName = SyntaxFactory.IdentifierName("AddDescendent");
             private static readonly IdentifierNameSyntax ReplaceDescendentMethodName = SyntaxFactory.IdentifierName("ReplaceDescendent");
@@ -1301,7 +1284,7 @@
             }
         }
 
-        protected class DeltaGen : FeatureGeneratorBase
+        protected class DeltaGen : FeatureGenerator
         {
             private static readonly IdentifierNameSyntax EnumValueNone = SyntaxFactory.IdentifierName("None");
             private static readonly IdentifierNameSyntax EnumValueType = SyntaxFactory.IdentifierName("Type");
@@ -1379,7 +1362,7 @@
             }
         }
 
-        protected class RootedStructGen : FeatureGeneratorBase
+        protected class RootedStructGen : FeatureGenerator
         {
             public RootedStructGen(CodeGen generator)
                 : base(generator)
@@ -1397,7 +1380,7 @@
             }
         }
 
-        protected class BuilderGen : FeatureGeneratorBase
+        protected class BuilderGen : FeatureGenerator
         {
             private static readonly IdentifierNameSyntax BuilderTypeName = SyntaxFactory.IdentifierName("Builder");
             private static readonly IdentifierNameSyntax ToBuilderMethodName = SyntaxFactory.IdentifierName("ToBuilder");
@@ -1683,7 +1666,7 @@
             }
         }
 
-        protected class InterfacesGen : FeatureGeneratorBase, IFeatureGeneratorWithPostProcessing
+        protected class InterfacesGen : FeatureGenerator
         {
             public InterfacesGen(CodeGen generator)
                 : base(generator)
@@ -1732,7 +1715,7 @@
             }
         }
 
-        protected class CollectionHelpersGen : FeatureGeneratorBase
+        protected class CollectionHelpersGen : FeatureGenerator
         {
             private static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
             private static readonly IdentifierNameSyntax ValueParameterName = SyntaxFactory.IdentifierName("value");
@@ -1977,17 +1960,7 @@
             }
         }
 
-        protected interface IFeatureGenerator
-        {
-            GenerationResult Generate();
-        }
-
-        protected interface IFeatureGeneratorWithPostProcessing : IFeatureGenerator
-        {
-            void PostProcess();
-        }
-
-        protected class TypeConversionGen : FeatureGeneratorBase
+        protected class TypeConversionGen : FeatureGenerator
         {
             private static readonly IdentifierNameSyntax CreateWithIdentityMethodName = SyntaxFactory.IdentifierName("CreateWithIdentity");
 
@@ -2214,7 +2187,7 @@
             }
         }
 
-        protected class DefineWithMethodsPerPropertyGen : FeatureGeneratorBase
+        protected class DefineWithMethodsPerPropertyGen : FeatureGenerator
         {
             private const string WithPropertyMethodPrefix = "With";
 
