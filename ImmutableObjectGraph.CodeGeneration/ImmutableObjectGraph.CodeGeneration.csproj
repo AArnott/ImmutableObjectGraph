@@ -102,6 +102,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGen+BuilderGen.cs" />
+    <Compile Include="CodeGen+CollectionHelpersGen.cs" />
+    <Compile Include="CodeGen+DeepMutationGen.cs" />
+    <Compile Include="CodeGen+DefineWithMethodsPerPropertyGen.cs" />
+    <Compile Include="CodeGen+DeltaGen.cs" />
+    <Compile Include="CodeGen+EnumerableRecursiveParentGen.cs" />
+    <Compile Include="CodeGen+FastSpineGen.cs" />
+    <Compile Include="CodeGen+InterfacesGen.cs" />
+    <Compile Include="CodeGen+RecursiveTypeGen.cs" />
+    <Compile Include="CodeGen+RootedStructGen.cs" />
+    <Compile Include="CodeGen+TypeConversionGen.cs" />
     <Compile Include="CodeGen.cs" />
     <Compile Include="StyleCop.cs" />
     <Compile Include="Syntax.cs" />
