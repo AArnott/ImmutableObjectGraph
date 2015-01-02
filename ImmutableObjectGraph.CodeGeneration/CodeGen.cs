@@ -913,7 +913,7 @@
             {
                 get
                 {
-                    return HasAttribute<GenerateImmutableAttribute>(this.TypeSymbol.BaseType)
+                    return HasAttribute<GenerateImmutableAttribute>(this.TypeSymbol?.BaseType)
                         ? new MetaType(this.generator, this.TypeSymbol.BaseType)
                         : default(MetaType);
                 }
@@ -941,6 +941,11 @@
             {
                 get
                 {
+                    if (this.generator == null)
+                    {
+                        return Enumerable.Empty<MetaType>();
+                    }
+
                     var that = this;
                     return from type in this.generator.TypesInInputDocument
                            where type != that.TypeSymbol
@@ -962,6 +967,11 @@
             public MetaType RecursiveType
             {
                 get { return !this.RecursiveField.IsDefault ? this.FindMetaType((INamedTypeSymbol)this.RecursiveField.ElementType) : default(MetaType); }
+            }
+
+            public MetaType RecursiveTypeFromFamily
+            {
+                get { return this.GetTypeFamily().SingleOrDefault(t => t.IsRecursiveType); }
             }
 
             public bool IsRecursiveType
@@ -987,6 +997,11 @@
             public bool IsRecursiveParent
             {
                 get { return this.Equals(this.RecursiveParent); }
+            }
+
+            public bool IsRecursiveParentOrDerivative
+            {
+                get { return this.IsRecursiveParent || this.Ancestors.Any(a => a.IsRecursiveParent); }
             }
 
             public bool IsRecursive
