@@ -175,32 +175,12 @@
 
             this.innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
 
-            if (this.options.GenerateBuilder)
-            {
-                this.MergeFeature(new BuilderGen(this));
-            }
-
-            if (this.options.DefineRootedStruct)
-            {
-                this.MergeFeature(new RootedStructGen(this));
-            }
-
-            if (this.options.Delta)
-            {
-                this.MergeFeature(new DeltaGen(this));
-            }
-
-            if (this.options.DefineInterface)
-            {
-                this.MergeFeature(new InterfacesGen(this));
-            }
-
-            if (this.options.DefineWithMethodsPerProperty)
-            {
-                this.MergeFeature(new DefineWithMethodsPerPropertyGen(this));
-                this.MergeFeature(new CollectionHelpersGen(this));
-            }
-
+            this.MergeFeature(new BuilderGen(this));
+            this.MergeFeature(new RootedStructGen(this));
+            this.MergeFeature(new DeltaGen(this));
+            this.MergeFeature(new InterfacesGen(this));
+            this.MergeFeature(new DefineWithMethodsPerPropertyGen(this));
+            this.MergeFeature(new CollectionHelpersGen(this));
             this.MergeFeature(new TypeConversionGen(this));
             this.MergeFeature(new FastSpineGen(this));
             this.MergeFeature(new DeepMutationGen(this));
@@ -1299,7 +1279,7 @@
             }
         }
 
-        protected class DeltaGen : IFeatureGenerator
+        protected class DeltaGen : FeatureGeneratorBase
         {
             private static readonly IdentifierNameSyntax EnumValueNone = SyntaxFactory.IdentifierName("None");
             private static readonly IdentifierNameSyntax EnumValueType = SyntaxFactory.IdentifierName("Type");
@@ -1307,22 +1287,22 @@
             private static readonly IdentifierNameSyntax EnumValueParent = SyntaxFactory.IdentifierName("Parent");
             private static readonly IdentifierNameSyntax EnumValueAll = SyntaxFactory.IdentifierName("All");
 
-            private readonly CodeGen generator;
             private readonly string enumTypeName;
 
             public DeltaGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
                 this.enumTypeName = generator.applyToMetaType.TypeSymbol.Name + "ChangedProperties";
             }
 
-            public GenerationResult Generate()
+            protected override void GenerateCore()
             {
-                var outerMembers = new List<MemberDeclarationSyntax>();
+                if (!this.generator.options.Delta)
+                {
+                    return;
+                }
 
-                outerMembers.Add(this.CreateChangedPropertiesEnum());
-
-                return new GenerationResult { SiblingsOfGeneratedType = SyntaxFactory.List(outerMembers) };
+                this.siblingMembers.Add(this.CreateChangedPropertiesEnum());
             }
 
             private EnumDeclarationSyntax CreateChangedPropertiesEnum()
@@ -1386,10 +1366,16 @@
 
             protected override void GenerateCore()
             {
+                if (!this.generator.options.DefineRootedStruct)
+                {
+                    return;
+                }
+
+                // TODO: code here
             }
         }
 
-        protected class BuilderGen : IFeatureGenerator
+        protected class BuilderGen : FeatureGeneratorBase
         {
             private static readonly IdentifierNameSyntax BuilderTypeName = SyntaxFactory.IdentifierName("Builder");
             private static readonly IdentifierNameSyntax ToBuilderMethodName = SyntaxFactory.IdentifierName("ToBuilder");
@@ -1397,36 +1383,36 @@
             private static readonly IdentifierNameSyntax CreateBuilderMethodName = SyntaxFactory.IdentifierName("CreateBuilder");
             private static readonly IdentifierNameSyntax ImmutableFieldName = SyntaxFactory.IdentifierName("immutable");
 
-            private readonly CodeGen generator;
-
             public BuilderGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
             }
 
-            public GenerationResult Generate()
+            protected override void GenerateCore()
             {
-                var outerClassMembers = new List<MemberDeclarationSyntax>
+                if (!this.generator.options.GenerateBuilder)
                 {
-                    this.CreateToBuilderMethod(),
-                };
+                    return;
+                }
+
+                this.innerMembers.Add(this.CreateToBuilderMethod());
 
                 if (!this.generator.isAbstract)
                 {
-                    outerClassMembers.Add(this.CreateCreateBuilderMethod());
+                    this.innerMembers.Add(this.CreateCreateBuilderMethod());
                 }
 
-                var innerClassMembers = new List<MemberDeclarationSyntax>();
-                innerClassMembers.Add(this.CreateImmutableField());
-                innerClassMembers.AddRange(this.CreateMutableFields());
-                innerClassMembers.Add(this.CreateConstructor());
-                innerClassMembers.AddRange(this.CreateMutableProperties());
-                innerClassMembers.Add(this.CreateToImmutableMethod());
+                var builderMembers = new List<MemberDeclarationSyntax>();
+                builderMembers.Add(this.CreateImmutableField());
+                builderMembers.AddRange(this.CreateMutableFields());
+                builderMembers.Add(this.CreateConstructor());
+                builderMembers.AddRange(this.CreateMutableProperties());
+                builderMembers.Add(this.CreateToImmutableMethod());
                 var builderType = SyntaxFactory.ClassDeclaration(BuilderTypeName.Identifier)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                    .WithMembers(SyntaxFactory.List(innerClassMembers));
+                    .WithMembers(SyntaxFactory.List(builderMembers));
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
                     builderType = builderType
@@ -1437,8 +1423,7 @@
                         .WithModifiers(builderType.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));
                 }
 
-                outerClassMembers.Add(builderType);
-                return new GenerationResult { MembersOfGeneratedType = SyntaxFactory.List(outerClassMembers) };
+                this.innerMembers.Add(builderType);
             }
 
             protected MethodDeclarationSyntax CreateToBuilderMethod()
@@ -1676,17 +1661,20 @@
             }
         }
 
-        protected class InterfacesGen : IFeatureGeneratorWithPostProcessing
+        protected class InterfacesGen : FeatureGeneratorBase, IFeatureGeneratorWithPostProcessing
         {
-            private readonly CodeGen generator;
-
             public InterfacesGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
             }
 
-            public GenerationResult Generate()
+            protected override void GenerateCore()
             {
+                if (!this.generator.options.DefineInterface)
+                {
+                    return;
+                }
+
                 var iface = SyntaxFactory.InterfaceDeclaration(
                     "I" + this.generator.applyTo.Identifier.Text)
                     .AddModifiers(GetModifiersForAccessibility(this.generator.applyToSymbol))
@@ -1706,14 +1694,16 @@
                             SyntaxFactory.IdentifierName("I" + this.generator.applyToMetaType.Ancestor.TypeSymbol.Name)))));
                 }
 
-                return new GenerationResult()
-                {
-                    SiblingsOfGeneratedType = SyntaxFactory.SingletonList<MemberDeclarationSyntax>(iface)
-                };
+                this.siblingMembers.Add(iface);
             }
 
             public void PostProcess()
             {
+                if (!this.generator.options.DefineInterface)
+                {
+                    return;
+                }
+
                 var applyToPrimaryType = this.generator.outerMembers.OfType<ClassDeclarationSyntax>()
                     .First(c => c.Identifier.Text == this.generator.applyTo.Identifier.Text);
                 var updatedPrimaryType = applyToPrimaryType.WithBaseList(
@@ -1725,25 +1715,27 @@
             }
         }
 
-        protected class CollectionHelpersGen : IFeatureGenerator
+        protected class CollectionHelpersGen : FeatureGeneratorBase
         {
             private static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
             private static readonly IdentifierNameSyntax ValueParameterName = SyntaxFactory.IdentifierName("value");
             private static readonly IdentifierNameSyntax SyncImmediateChildToCurrentVersionMethodName = SyntaxFactory.IdentifierName("SyncImmediateChildToCurrentVersion");
-            private readonly CodeGen generator;
 
             public CollectionHelpersGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = generator;
             }
 
-            public GenerationResult Generate()
+            protected override void GenerateCore()
             {
-                var members = new List<MemberDeclarationSyntax>();
+                if (!this.generator.options.DefineWithMethodsPerProperty)
+                {
+                    return;
+                }
 
                 if (this.generator.applyToMetaType.IsRecursiveParent)
                 {
-                    members.Add(this.CreateSyncImmediateChildToCurrentVersionMethod());
+                    this.innerMembers.Add(this.CreateSyncImmediateChildToCurrentVersionMethod());
                 }
 
                 foreach (var field in this.generator.applyToMetaType.AllFields)
@@ -1760,23 +1752,23 @@
                             field,
                             SyntaxFactory.IdentifierName("With" + plural),
                             SyntaxFactory.IdentifierName(nameof(CollectionExtensions.ResetContents)));
-                        members.Add(paramsArrayMethod);
-                        members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+                        this.innerMembers.Add(paramsArrayMethod);
+                        this.innerMembers.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
                         // Add[Plural] methods
                         paramsArrayMethod = this.CreateParamsElementArrayMethod(
                             field,
                             SyntaxFactory.IdentifierName("Add" + plural),
                             SyntaxFactory.IdentifierName(nameof(CollectionExtensions.AddRange)));
-                        members.Add(paramsArrayMethod);
-                        members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+                        this.innerMembers.Add(paramsArrayMethod);
+                        this.innerMembers.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
                         // Add[Singular] method
                         MethodDeclarationSyntax singleMethod = this.CreateSingleElementMethod(
                             field,
                             SyntaxFactory.IdentifierName("Add" + singular),
                             SyntaxFactory.IdentifierName(nameof(ICollection<int>.Add)));
-                        members.Add(singleMethod);
+                        this.innerMembers.Add(singleMethod);
 
                         // Remove[Plural] methods
                         paramsArrayMethod = this.CreateParamsElementArrayMethod(
@@ -1784,9 +1776,9 @@
                             SyntaxFactory.IdentifierName("Remove" + plural),
                             SyntaxFactory.IdentifierName(nameof(CollectionExtensions.RemoveRange)),
                             passThroughChildSync: field.IsRecursiveCollection);
-                        members.Add(paramsArrayMethod);
-                        members.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
-                        members.Add(CreateClearMethod(field, SyntaxFactory.IdentifierName("Remove" + plural)));
+                        this.innerMembers.Add(paramsArrayMethod);
+                        this.innerMembers.Add(CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+                        this.innerMembers.Add(CreateClearMethod(field, SyntaxFactory.IdentifierName("Remove" + plural)));
 
                         // Remove[Singular] method
                         singleMethod = this.CreateSingleElementMethod(
@@ -1794,14 +1786,9 @@
                             SyntaxFactory.IdentifierName("Remove" + singular),
                             SyntaxFactory.IdentifierName(nameof(ICollection<int>.Remove)),
                             passThroughChildSync: field.IsRecursiveCollection);
-                        members.Add(singleMethod);
+                        this.innerMembers.Add(singleMethod);
                     }
                 }
-
-                return new GenerationResult()
-                {
-                    MembersOfGeneratedType = SyntaxFactory.List(members)
-                };
             }
 
             private MethodDeclarationSyntax CreateSyncImmediateChildToCurrentVersionMethod()
@@ -2209,20 +2196,23 @@
             }
         }
 
-        protected class DefineWithMethodsPerPropertyGen : IFeatureGenerator
+        protected class DefineWithMethodsPerPropertyGen : FeatureGeneratorBase
         {
             private const string WithPropertyMethodPrefix = "With";
-            private readonly CodeGen generator;
 
-            public DefineWithMethodsPerPropertyGen(CodeGen codeGen)
+            public DefineWithMethodsPerPropertyGen(CodeGen generator)
+                : base(generator)
             {
-                this.generator = codeGen;
             }
 
-            public GenerationResult Generate()
+            protected override void GenerateCore()
             {
+                if (!this.generator.options.DefineWithMethodsPerProperty)
+                {
+                    return;
+                }
+
                 var valueParameterName = SyntaxFactory.IdentifierName("value");
-                var insideMembers = new List<MemberDeclarationSyntax>();
 
                 foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
@@ -2256,7 +2246,7 @@
                                                 SyntaxFactory.Token(SyntaxKind.None),
                                                 Syntax.OptionalFor(valueParameterName))))))));
 
-                    insideMembers.Add(withPropertyMethod);
+                    this.innerMembers.Add(withPropertyMethod);
                 }
 
                 foreach (var field in this.generator.applyToMetaType.InheritedFields)
@@ -2282,13 +2272,8 @@
                                             SyntaxFactory.IdentifierName(withMethodName)),
                                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(valueParameterName))))))));
 
-                    insideMembers.Add(withPropertyMethod);
+                    this.innerMembers.Add(withPropertyMethod);
                 }
-
-                return new GenerationResult
-                {
-                    MembersOfGeneratedType = SyntaxFactory.List(insideMembers),
-                };
             }
         }
 
