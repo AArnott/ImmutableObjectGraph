@@ -63,11 +63,6 @@
         /// </summary>
         private readonly List<MemberDeclarationSyntax> outerMembers = new List<MemberDeclarationSyntax>();
 
-        /// <summary>
-        /// Statements to append to the instance constructor.
-        /// </summary>
-        private readonly List<StatementSyntax> additionalCtorStatements = new List<StatementSyntax>();
-
         private SemanticModel semanticModel;
         private INamedTypeSymbol applyToSymbol;
         private ImmutableArray<DeclarationInfo> inputDeclarations;
@@ -105,11 +100,6 @@
             {
                 var featureResults = featureGenerator.Generate();
                 this.outerMembers.AddRange(featureResults.SiblingsOfGeneratedType);
-
-                if (!featureResults.AdditionalCtorStatements.IsDefault)
-                {
-                    this.additionalCtorStatements.AddRange(featureResults.AdditionalCtorStatements);
-                }
 
                 this.mergedFeatures.Add(featureGenerator);
             }
@@ -190,8 +180,6 @@
         protected struct GenerationResult
         {
             public SyntaxList<MemberDeclarationSyntax> SiblingsOfGeneratedType { get; set; }
-
-            public ImmutableArray<StatementSyntax> AdditionalCtorStatements { get; set; }
         }
 
         private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)
@@ -374,8 +362,6 @@
                                     Syntax.ThisDot(ValidateMethodName),
                                     SyntaxFactory.ArgumentList())))));
             }
-
-            body = body.AddStatements(this.additionalCtorStatements.ToArray());
 
             var ctor = SyntaxFactory.ConstructorDeclaration(
                 this.applyTo.Identifier)
@@ -833,7 +819,6 @@
                 return new GenerationResult
                 {
                     SiblingsOfGeneratedType = SyntaxFactory.List(this.siblingMembers),
-                    AdditionalCtorStatements = this.additionalCtorStatements.ToImmutableArray(),
                 };
             }
 
@@ -849,6 +834,13 @@
                 if (this.innerMembers.Count > 0)
                 {
                     applyTo = applyTo.AddMembers(this.innerMembers.ToArray());
+                }
+
+                if (this.additionalCtorStatements.Count > 0)
+                {
+                    var origCtor = applyTo.Members.OfType<ConstructorDeclarationSyntax>().Single();
+                    var updatedCtor = origCtor.AddBodyStatements(this.additionalCtorStatements.ToArray());
+                    applyTo = applyTo.ReplaceNode(origCtor, updatedCtor);
                 }
 
                 return applyTo;
