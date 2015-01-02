@@ -57,11 +57,6 @@
         private readonly IProgressAndErrors progress;
         private readonly Options options;
         private readonly CancellationToken cancellationToken;
-        
-        /// <summary>
-        /// The members injected into the generated document, including the primary generated type.
-        /// </summary>
-        private readonly List<MemberDeclarationSyntax> outerMembers = new List<MemberDeclarationSyntax>();
 
         private SemanticModel semanticModel;
         private INamedTypeSymbol applyToSymbol;
@@ -98,9 +93,7 @@
         {
             if (featureGenerator.IsApplicable)
             {
-                var featureResults = featureGenerator.Generate();
-                this.outerMembers.AddRange(featureResults.SiblingsOfGeneratedType);
-
+                featureGenerator.Generate();
                 this.mergedFeatures.Add(featureGenerator);
             }
         }
@@ -172,14 +165,11 @@
                 .WithMembers(SyntaxFactory.List(innerMembers));
 
             partialClass = this.mergedFeatures.Aggregate(partialClass, (acc, feature) => feature.ProcessApplyToClassDeclaration(acc));
-            this.outerMembers.Add(partialClass);
+            var outerMembers = SyntaxFactory.List<MemberDeclarationSyntax>();
+            outerMembers = outerMembers.Add(partialClass);
+            outerMembers = this.mergedFeatures.Aggregate(outerMembers, (acc, feature) => feature.ProcessFinalGeneratedResult(acc));
 
-            return this.outerMembers;
-        }
-
-        protected struct GenerationResult
-        {
-            public SyntaxList<MemberDeclarationSyntax> SiblingsOfGeneratedType { get; set; }
+            return outerMembers;
         }
 
         private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)
@@ -809,17 +799,9 @@
                 get { return this.baseTypes.ToArray(); }
             }
 
-            public GenerationResult Generate()
+            public void Generate()
             {
-                if (this.IsApplicable)
-                {
-                    this.GenerateCore();
-                }
-
-                return new GenerationResult
-                {
-                    SiblingsOfGeneratedType = SyntaxFactory.List(this.siblingMembers),
-                };
+                this.GenerateCore();
             }
 
             public virtual ClassDeclarationSyntax ProcessApplyToClassDeclaration(ClassDeclarationSyntax applyTo)
@@ -844,6 +826,16 @@
                 }
 
                 return applyTo;
+            }
+
+            public virtual SyntaxList<MemberDeclarationSyntax> ProcessFinalGeneratedResult(SyntaxList<MemberDeclarationSyntax> applyToAndOtherTypes)
+            {
+                if (this.siblingMembers.Count > 0)
+                {
+                    applyToAndOtherTypes = applyToAndOtherTypes.AddRange(this.siblingMembers);
+                }
+
+                return applyToAndOtherTypes;
             }
 
             protected abstract void GenerateCore();
