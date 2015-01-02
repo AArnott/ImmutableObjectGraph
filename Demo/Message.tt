@@ -2,6 +2,8 @@
 <#@ Output Extension=".generated.cs" #>
 <#
 	this.Namespace = "Demo";
+	this.DefineWithMethodsPerProperty = true;
+	this.DefineBuilders = true;
 #>
 <#@ Include File="..\ImmutableObjectGraph\ImmutableObjectGraph.tt.inc" #>
 <#+

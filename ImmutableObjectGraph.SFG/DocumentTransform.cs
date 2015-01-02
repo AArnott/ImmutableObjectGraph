@@ -73,7 +73,8 @@
             }
 
             var emittedTree = SyntaxFactory.CompilationUnit()
-                .WithUsings(SyntaxFactory.List(inputFileLevelUsingDirectives))
+                .WithUsings(SyntaxFactory.List(inputFileLevelUsingDirectives).Add(
+                    SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("ImmutableObjectGraph"))))
                 .WithMembers(SyntaxFactory.List(emittedMembers))
                 .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble))
                 .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed);

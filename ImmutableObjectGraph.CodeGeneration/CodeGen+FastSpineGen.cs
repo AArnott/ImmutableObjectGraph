@@ -22,11 +22,13 @@
     {
         protected class FastSpineGen : FeatureGenerator
         {
+            internal static readonly IdentifierNameSyntax GetSpineMethodName = SyntaxFactory.IdentifierName("GetSpine");
             private static readonly IdentifierNameSyntax LookupTableFieldName = SyntaxFactory.IdentifierName("lookupTable");
             private static readonly IdentifierNameSyntax LookupTablePropertyName = SyntaxFactory.IdentifierName("LookupTable");
             private static readonly IdentifierNameSyntax InefficiencyLoadFieldName = SyntaxFactory.IdentifierName("inefficiencyLoad");
 
             private readonly TypeSyntax lookupTableType;
+            private readonly NameSyntax IRecursiveParentWithChildReplacementType;
 
             public FastSpineGen(CodeGen generator)
                 : base(generator)
@@ -45,6 +47,10 @@
                             "System.Collections.Immutable.ImmutableDictionary<{0}, {1}>",
                             IdentityFieldTypeSyntax,
                             keyValuePairType));
+                    this.IRecursiveParentWithChildReplacementType = SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                        SyntaxFactory.GenericName(nameof(IRecursiveParentWithChildReplacement<IRecursiveType>))
+                            .AddTypeArgumentListArguments(this.applyTo.RecursiveType.TypeSyntax));
                 }
             }
 
@@ -128,6 +134,9 @@
             {
                 if (this.applyTo.IsRecursiveParent)
                 {
+                    this.baseTypes.Add(SyntaxFactory.SimpleBaseType(this.IRecursiveParentWithChildReplacementType));
+                    this.innerMembers.Add(this.CreateReplaceChildMethod());
+
                     // private readonly uint inefficiencyLoad;
                     var inefficiencyLoadType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UIntKeyword));
                     this.innerMembers.Add(SyntaxFactory.FieldDeclaration(
@@ -230,7 +239,121 @@
                             .AddVariables(SyntaxFactory.VariableDeclarator(LookupTableFieldName.Identifier)))
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)));
+
+                    // public System.Collections.Immutable.ImmutableStack<TRecursiveType> GetSpine(TRecursiveType descendent) {
+                    // 	return this.GetSpine<TRecursiveParent, TRecursiveType>(descendent);
+                    // }
+                    var descendentParameter = SyntaxFactory.IdentifierName("descendent");
+                    this.innerMembers.Add(
+                        SyntaxFactory.MethodDeclaration(Syntax.ImmutableStackOf(this.applyTo.RecursiveType.TypeSyntax), GetSpineMethodName.Identifier)
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddParameterListParameters(SyntaxFactory.Parameter(descendentParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
+                            .WithBody(SyntaxFactory.Block(
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.InvocationExpression(
+                                        Syntax.ThisDot(
+                                            SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetSpine))
+                                                .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)),
+                                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(descendentParameter))))))));
                 }
+            }
+
+            protected MemberDeclarationSyntax CreateReplaceChildMethod()
+            {
+                var irecursiveParentType = SyntaxFactory.QualifiedName(
+                    SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                    SyntaxFactory.GenericName(nameof(IRecursiveParent<IRecursiveType>))
+                        .AddTypeArgumentListArguments(this.applyTo.RecursiveType.TypeSyntax));
+                var oldSpineParameter = SyntaxFactory.IdentifierName("oldSpine");
+                var newSpineParameter = SyntaxFactory.IdentifierName("newSpine");
+                var newChildrenVar = SyntaxFactory.IdentifierName("newChildren");
+                var newSelfVar = SyntaxFactory.IdentifierName("newSelf");
+                var lookupTableLazySentinelVar = SyntaxFactory.IdentifierName("lookupTableLazySentinel");
+                Func<ExpressionSyntax, InvocationExpressionSyntax> callPeek = receiver =>
+                   SyntaxFactory.InvocationExpression(
+                       SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, receiver, SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.Peek))),
+                       SyntaxFactory.ArgumentList());
+                Func<ExpressionSyntax, InvocationExpressionSyntax> createDeque = stack =>
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.QualifiedName(
+                                SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                                SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.ImmutableDeque))),
+                            SyntaxFactory.IdentifierName(nameof(ImmutableDeque.Create))),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(stack))));
+
+                return SyntaxFactory.MethodDeclaration(
+                    irecursiveParentType,
+                    nameof(IRecursiveParentWithChildReplacement<IRecursiveType>.ReplaceChild))
+                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(IRecursiveParentWithChildReplacementType))
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(oldSpineParameter.Identifier).WithType(Syntax.ImmutableStackOf(this.applyTo.RecursiveType.TypeSyntax)),
+                        SyntaxFactory.Parameter(newSpineParameter.Identifier).WithType(Syntax.ImmutableStackOf(this.applyTo.RecursiveType.TypeSyntax)))
+                    .WithBody(SyntaxFactory.Block(
+                        // var newChildren = this.Children.Replace(oldSpine.Peek(), newSpine.Peek());
+                        SyntaxFactory.LocalDeclarationStatement(
+                            SyntaxFactory.VariableDeclaration(varType)
+                                .AddVariables(SyntaxFactory.VariableDeclarator(newChildrenVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty),
+                                            SyntaxFactory.IdentifierName(nameof(CollectionExtensions.Replace))))
+                                        .AddArgumentListArguments(
+                                            SyntaxFactory.Argument(callPeek(oldSpineParameter)), // oldSpine.Peek()
+                                            SyntaxFactory.Argument(callPeek(newSpineParameter)) // newSpine.Peek()
+                                        ))))),
+                        // var newSelf = this.With(children: newChildren);
+                        SyntaxFactory.LocalDeclarationStatement(
+                            SyntaxFactory.VariableDeclaration(varType)
+                                .AddVariables(SyntaxFactory.VariableDeclarator(newSelfVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(WithMethodName))
+                                        .AddArgumentListArguments(
+                                            SyntaxFactory.Argument(SyntaxFactory.NameColon(this.applyTo.RecursiveField.NameAsField), SyntaxFactory.Token(SyntaxKind.None), newChildrenVar)))))),
+                        // var lookupTableLazySentinel = RecursiveTypeExtensions.LookupTable<TRecursiveType, TRecursiveParent>.LazySentinel;
+                        SyntaxFactory.LocalDeclarationStatement(
+                            SyntaxFactory.VariableDeclaration(varType)
+                                .AddVariables(SyntaxFactory.VariableDeclarator(lookupTableLazySentinelVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    GetLookupTableHelperMember(nameof(LookupTableHelper.LazySentinel)))))),
+                        // if (newSelf.lookupTable == lookupTableLazySentinel && this.lookupTable != null && this.lookupTable != lookupTableLazySentinel) {
+                        SyntaxFactory.IfStatement(
+                            new ExpressionSyntax[] {
+                                // newSelf.lookupTable == lookupTableLazySentinel
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.EqualsExpression,
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, newSelfVar, LookupTableFieldName),
+                                    lookupTableLazySentinelVar),
+                                // this.lookupTable != null
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.NotEqualsExpression,
+                                    Syntax.ThisDot(LookupTableFieldName),
+                                    SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                // this.lookupTable != lookupTableLazySentinel
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.NotEqualsExpression,
+                                    Syntax.ThisDot(LookupTableFieldName),
+                                    lookupTableLazySentinelVar)
+                            }.ChainBinaryExpressions(SyntaxKind.LogicalAndExpression),
+                            SyntaxFactory.Block(
+                                // // Our newly mutated self wants a lookup table. If we already have one we can use it,
+                                // // but it needs to be fixed up given the newly rewritten spine through our descendents.
+                                // newSelf.lookupTable = RecursiveTypeExtensions.LookupTable<TRecursiveType, TRecursiveParent>.Fixup(this, ImmutableDeque.Create(newSpine), ImmutableDeque.Create(oldSpine));
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression,
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, newSelfVar, LookupTableFieldName),
+                                    SyntaxFactory.InvocationExpression(
+                                        GetLookupTableHelperMember(nameof(LookupTableHelper.Fixup)))
+                                        .AddArgumentListArguments(
+                                            SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                                            SyntaxFactory.Argument(createDeque(newSpineParameter)),
+                                            SyntaxFactory.Argument(createDeque(oldSpineParameter))))),
+                                // RecursiveTypeExtensions.LookupTable<TRecursiveType, TRecursiveParent>.ValidateInternalIntegrityDebugOnly(newSelf);
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(
+                                    GetLookupTableHelperMember(nameof(LookupTableHelper.ValidateInternalIntegrityDebugOnly)))
+                                    .AddArgumentListArguments(SyntaxFactory.Argument(newSelfVar))))),
+                        // return newSelf;
+                        SyntaxFactory.ReturnStatement(newSelfVar)));
             }
 
             protected MemberAccessExpressionSyntax GetLookupTableHelperMember(string memberName)

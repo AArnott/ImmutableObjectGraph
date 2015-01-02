@@ -38,17 +38,18 @@ namespace Demo {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String body;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Message class.</summary>
 		protected Message(
-			System.Int32 identity,
+			System.UInt32 identity,
 			Contact author,
 			System.Collections.Immutable.ImmutableList<Contact> to,
 			System.Collections.Immutable.ImmutableList<Contact> cc,
 			System.Collections.Immutable.ImmutableList<Contact> bcc,
 			System.String subject,
-			System.String body)
+			System.String body,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.author = author;
@@ -57,7 +58,9 @@ namespace Demo {
 			this.bcc = bcc;
 			this.subject = subject;
 			this.body = body;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static Message Create(
@@ -319,7 +322,7 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
 			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				author: Optional.For(author.GetValueOrDefault(this.Author)),
 				to: Optional.For(to.GetValueOrDefault(this.To)),
@@ -338,7 +341,7 @@ namespace Demo {
 			ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>> bcc = default(ImmutableObjectGraph.Optional<System.Collections.Immutable.ImmutableList<Contact>>),
 			ImmutableObjectGraph.Optional<System.String> subject = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> body = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(author.IsDefined && author.Value != this.Author) || 
@@ -360,13 +363,13 @@ namespace Demo {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -382,13 +385,14 @@ namespace Demo {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Message(
-				default(System.Int32), 
-				template.Author, 
-				template.To, 
-				template.Cc, 
-				template.Bcc, 
-				template.Subject, 
-				template.Body);
+				default(System.UInt32),
+				template.Author,
+				template.To,
+				template.Cc,
+				template.Bcc,
+				template.Subject,
+				template.Body,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -408,6 +412,10 @@ namespace Demo {
 		
 		public Builder ToBuilder() {
 			return new Builder(this);
+		}
+		
+		public static Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
 		}
 		
 		public partial class Builder {
@@ -544,18 +552,21 @@ namespace Demo {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.String email;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Contact class.</summary>
 		protected Contact(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String name,
-			System.String email)
+			System.String email,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.name = name;
 			this.email = email;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static Contact Create(
@@ -607,7 +618,7 @@ namespace Demo {
 		protected virtual Contact WithCore(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				name: Optional.For(name.GetValueOrDefault(this.Name)),
 				email: Optional.For(email.GetValueOrDefault(this.Email)),
@@ -618,7 +629,7 @@ namespace Demo {
 		private Contact WithFactory(
 			ImmutableObjectGraph.Optional<System.String> name = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.String> email = default(ImmutableObjectGraph.Optional<System.String>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(name.IsDefined && name.Value != this.Name) || 
@@ -632,13 +643,13 @@ namespace Demo {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -654,9 +665,10 @@ namespace Demo {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Contact(
-				default(System.Int32), 
-				template.Name, 
-				template.Email);
+				default(System.UInt32),
+				template.Name,
+				template.Email,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -668,6 +680,10 @@ namespace Demo {
 		
 		public Builder ToBuilder() {
 			return new Builder(this);
+		}
+		
+		public static Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
 		}
 		
 		public partial class Builder {

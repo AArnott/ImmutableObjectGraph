@@ -118,6 +118,19 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
+        internal static NameSyntax ImmutableStackOf(TypeSyntax typeSyntax)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Immutable))),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(ImmutableStack<int>)),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
+        }
+
         internal static NameSyntax IReadOnlyCollectionOf(TypeSyntax elementType)
         {
             return SyntaxFactory.QualifiedName(
@@ -153,6 +166,24 @@
                     GetTypeSyntax(typeof(ImmutableDictionary)),
                     SyntaxFactory.GenericName(nameof(ImmutableDictionary.Create)).AddTypeArgumentListArguments(keyType, valueType)),
                 SyntaxFactory.ArgumentList());
+        }
+
+        internal static ExpressionSyntax CreateImmutableStack(TypeSyntax elementType = null)
+        {
+            var typeSyntax = SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Immutable))),
+                SyntaxFactory.IdentifierName(nameof(ImmutableStack)));
+
+            return SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                typeSyntax,
+                elementType == null
+                    ? (SimpleNameSyntax)SyntaxFactory.IdentifierName(nameof(ImmutableStack.Create))
+                    : SyntaxFactory.GenericName(nameof(ImmutableStack.Create)).AddTypeArgumentListArguments(elementType));
         }
 
         internal static MethodDeclarationSyntax AddNewKeyword(MethodDeclarationSyntax method)

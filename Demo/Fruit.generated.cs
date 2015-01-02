@@ -26,18 +26,21 @@ namespace Demo {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly System.Int32 skinThickness;
 	
-		private readonly System.Int32 identity;
+		private readonly System.UInt32 identity;
 	
 		/// <summary>Initializes a new instance of the Fruit class.</summary>
 		protected Fruit(
-			System.Int32 identity,
+			System.UInt32 identity,
 			System.String color,
-			System.Int32 skinThickness)
+			System.Int32 skinThickness,
+			ImmutableObjectGraph.Optional<bool> skipValidation = default(ImmutableObjectGraph.Optional<bool>))
 		{
 			this.identity = identity;
 			this.color = color;
 			this.skinThickness = skinThickness;
-			this.Validate();
+			if (!skipValidation.Value) {
+				this.Validate();
+			}
 		}
 	
 		public static Fruit Create(
@@ -89,7 +92,7 @@ namespace Demo {
 		protected virtual Fruit WithCore(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>)) {
-			var identity = default(ImmutableObjectGraph.Optional<System.Int32>);
+			var identity = default(ImmutableObjectGraph.Optional<System.UInt32>);
 			return this.WithFactory(
 				color: Optional.For(color.GetValueOrDefault(this.Color)),
 				skinThickness: Optional.For(skinThickness.GetValueOrDefault(this.SkinThickness)),
@@ -100,7 +103,7 @@ namespace Demo {
 		private Fruit WithFactory(
 			ImmutableObjectGraph.Optional<System.String> color = default(ImmutableObjectGraph.Optional<System.String>),
 			ImmutableObjectGraph.Optional<System.Int32> skinThickness = default(ImmutableObjectGraph.Optional<System.Int32>),
-			ImmutableObjectGraph.Optional<System.Int32> identity = default(ImmutableObjectGraph.Optional<System.Int32>)) {
+			ImmutableObjectGraph.Optional<System.UInt32> identity = default(ImmutableObjectGraph.Optional<System.UInt32>)) {
 			if (
 				(identity.IsDefined && identity.Value != this.Identity) || 
 				(color.IsDefined && color.Value != this.Color) || 
@@ -114,13 +117,13 @@ namespace Demo {
 			}
 		}
 	
-		protected internal System.Int32 Identity {
-			get { return this.identity; }
+		protected internal uint Identity {
+			get { return (uint)this.identity; }
 		}
 	
 		/// <summary>Returns a unique identity that may be assigned to a newly created instance.</summary>
-		protected static System.Int32 NewIdentity() {
-			return System.Threading.Interlocked.Increment(ref lastIdentityProduced);
+		protected static System.UInt32 NewIdentity() {
+			return (System.UInt32)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
 		}
 	
 		/// <summary>Normalizes and/or validates all properties on this object.</summary>
@@ -136,9 +139,10 @@ namespace Demo {
 			var template = new Template();
 			CreateDefaultTemplate(ref template);
 			return new Fruit(
-				default(System.Int32), 
-				template.Color, 
-				template.SkinThickness);
+				default(System.UInt32),
+				template.Color,
+				template.SkinThickness,
+				skipValidation: true);
 		}
 	
 		/// <summary>A struct with all the same fields as the containing type for use in describing default values for new instances of the class.</summary>
@@ -150,6 +154,10 @@ namespace Demo {
 		
 		public Builder ToBuilder() {
 			return new Builder(this);
+		}
+		
+		public static Builder CreateBuilder() {
+			return new Builder(DefaultInstance);
 		}
 		
 		public partial class Builder {

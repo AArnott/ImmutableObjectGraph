@@ -765,7 +765,7 @@ namespace ImmutableObjectGraph.Tests {
 			var newSelf = this.WithChildren(newChildren);
 		
 			var lookupTableLazySentinel = RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.LazySentinel;
-			if (newSelf.LookupTable == lookupTableLazySentinel && this.LookupTable != null && this.LookupTable != lookupTableLazySentinel) {
+			if (newSelf.lookupTable == lookupTableLazySentinel && this.lookupTable != null && this.lookupTable != lookupTableLazySentinel) {
 				// Our newly mutated self wants a lookup table. If we already have one we can use it,
 				// but it needs to be fixed up given the newly rewritten spine through our descendents.
 				newSelf.lookupTable = RecursiveTypeExtensions.LookupTable<ProjectTree, ProjectTree>.Fixup(this, ImmutableDeque.Create(newSpine), ImmutableDeque.Create(oldSpine));
