@@ -57,12 +57,7 @@
         private readonly IProgressAndErrors progress;
         private readonly Options options;
         private readonly CancellationToken cancellationToken;
-
-        /// <summary>
-        /// The members injected into the primary generated type.
-        /// </summary>
-        private readonly List<MemberDeclarationSyntax> innerMembers = new List<MemberDeclarationSyntax>();
-
+        
         /// <summary>
         /// The members injected into the generated document, including the primary generated type.
         /// </summary>
@@ -109,7 +104,6 @@
             if (featureGenerator.IsApplicable)
             {
                 var featureResults = featureGenerator.Generate();
-                this.innerMembers.AddRange(featureResults.MembersOfGeneratedType);
                 this.outerMembers.AddRange(featureResults.SiblingsOfGeneratedType);
 
                 if (!featureResults.AdditionalCtorStatements.IsDefault)
@@ -136,37 +130,38 @@
             this.MergeFeature(new EnumerableRecursiveParentGen(this));
             this.MergeFeature(new RecursiveTypeGen(this));
 
+            var innerMembers = new List<MemberDeclarationSyntax>();
             if (!this.applyToMetaType.HasAncestor)
             {
-                this.innerMembers.Add(CreateLastIdentityProducedField());
-                this.innerMembers.Add(CreateIdentityField());
-                this.innerMembers.Add(CreateIdentityProperty());
-                this.innerMembers.Add(CreateNewIdentityMethod());
+                innerMembers.Add(CreateLastIdentityProducedField());
+                innerMembers.Add(CreateIdentityField());
+                innerMembers.Add(CreateIdentityProperty());
+                innerMembers.Add(CreateNewIdentityMethod());
             }
 
-            this.innerMembers.AddRange(CreateWithCoreMethods());
+            innerMembers.AddRange(CreateWithCoreMethods());
 
             if (!isAbstract)
             {
-                this.innerMembers.Add(CreateCreateMethod());
+                innerMembers.Add(CreateCreateMethod());
                 if (this.applyToMetaType.AllFields.Any())
                 {
-                    this.innerMembers.Add(CreateWithFactoryMethod());
+                    innerMembers.Add(CreateWithFactoryMethod());
                 }
 
-                this.innerMembers.Add(CreateDefaultInstanceField());
-                this.innerMembers.Add(CreateGetDefaultTemplateMethod());
-                this.innerMembers.Add(CreateCreateDefaultTemplatePartialMethod());
-                this.innerMembers.Add(CreateTemplateStruct());
-                this.innerMembers.Add(CreateValidateMethod());
+                innerMembers.Add(CreateDefaultInstanceField());
+                innerMembers.Add(CreateGetDefaultTemplateMethod());
+                innerMembers.Add(CreateCreateDefaultTemplatePartialMethod());
+                innerMembers.Add(CreateTemplateStruct());
+                innerMembers.Add(CreateValidateMethod());
             }
 
             if (this.applyToMetaType.AllFields.Any())
             {
-                this.innerMembers.Add(CreateWithMethod());
+                innerMembers.Add(CreateWithMethod());
             }
 
-            this.innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
+            innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
 
             this.MergeFeature(new BuilderGen(this));
             this.MergeFeature(new RootedStructGen(this));
@@ -177,16 +172,14 @@
             this.MergeFeature(new TypeConversionGen(this));
             this.MergeFeature(new FastSpineGen(this));
             this.MergeFeature(new DeepMutationGen(this));
+            this.MergeFeature(new StyleCopCompliance(this));
 
             // Define the constructor after merging all features since they can add to it.
-            this.innerMembers.Add(CreateCtor());
-
-            // Sort the members now that they're all added.
-            this.innerMembers.Sort(StyleCop.Sort);
+            innerMembers.Add(CreateCtor());
 
             var partialClass = SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                .WithMembers(SyntaxFactory.List(this.innerMembers));
+                .WithMembers(SyntaxFactory.List(innerMembers));
 
             partialClass = this.mergedFeatures.Aggregate(partialClass, (acc, feature) => feature.ProcessApplyToClassDeclaration(acc));
             this.outerMembers.Add(partialClass);
@@ -196,8 +189,6 @@
 
         protected struct GenerationResult
         {
-            public SyntaxList<MemberDeclarationSyntax> MembersOfGeneratedType { get; set; }
-
             public SyntaxList<MemberDeclarationSyntax> SiblingsOfGeneratedType { get; set; }
 
             public ImmutableArray<StatementSyntax> AdditionalCtorStatements { get; set; }
@@ -841,7 +832,6 @@
 
                 return new GenerationResult
                 {
-                    MembersOfGeneratedType = SyntaxFactory.List(this.innerMembers),
                     SiblingsOfGeneratedType = SyntaxFactory.List(this.siblingMembers),
                     AdditionalCtorStatements = this.additionalCtorStatements.ToImmutableArray(),
                 };
@@ -854,6 +844,11 @@
                 {
                     applyTo = applyTo.WithBaseList(
                         (applyTo.BaseList ?? SyntaxFactory.BaseList()).AddTypes(additionalApplyToBaseTypes));
+                }
+
+                if (this.innerMembers.Count > 0)
+                {
+                    applyTo = applyTo.AddMembers(this.innerMembers.ToArray());
                 }
 
                 return applyTo;

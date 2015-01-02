@@ -112,6 +112,7 @@
     <Compile Include="CodeGen+InterfacesGen.cs" />
     <Compile Include="CodeGen+RecursiveTypeGen.cs" />
     <Compile Include="CodeGen+RootedStructGen.cs" />
+    <Compile Include="CodeGen+StyleCopCompliance.cs" />
     <Compile Include="CodeGen+TypeConversionGen.cs" />
     <Compile Include="CodeGen.cs" />
     <Compile Include="StyleCop.cs" />
