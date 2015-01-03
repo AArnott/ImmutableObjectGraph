@@ -88,11 +88,7 @@
 
             private void ImplementRecursiveParentInterface()
             {
-                var irecursiveParentOfT = SyntaxFactory.QualifiedName(
-                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
-                        SyntaxFactory.GenericName(
-                            SyntaxFactory.Identifier(nameof(IRecursiveParent<IRecursiveType>)),
-                            SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList<TypeSyntax>(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol)))));
+                var irecursiveParentOfT = CreateIRecursiveParentOfTSyntax(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol));
                 this.baseTypes.Add(SyntaxFactory.SimpleBaseType(irecursiveParentOfT));
 
                 // return this.Children;

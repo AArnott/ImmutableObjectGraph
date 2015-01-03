@@ -767,6 +767,15 @@
             }
         }
 
+        private static QualifiedNameSyntax CreateIRecursiveParentOfTSyntax(TypeSyntax recursiveType)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(IRecursiveParent<IRecursiveType>)),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList<TypeSyntax>(recursiveType))));
+        }
+
         public class Options
         {
             public Options() { }

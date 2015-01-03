@@ -29,12 +29,17 @@
             private static readonly IdentifierNameSyntax RootPropertyName = SyntaxFactory.IdentifierName("Root");
             private static readonly IdentifierNameSyntax IsRootPropertyName = SyntaxFactory.IdentifierName("IsRoot");
             private static readonly IdentifierNameSyntax IsDefaultPropertyName = SyntaxFactory.IdentifierName("IsDefault");
-            private readonly IdentifierNameSyntax name;
+            private readonly IdentifierNameSyntax typeName;
+            private readonly IdentifierNameSyntax rootedRecursiveType;
 
             public RootedStructGen(CodeGen generator)
                 : base(generator)
             {
-                this.name = SyntaxFactory.IdentifierName("Rooted" + this.applyTo.TypeSymbol.Name);
+                this.typeName = SyntaxFactory.IdentifierName("Rooted" + this.applyTo.TypeSymbol.Name);
+                if (!this.applyTo.RecursiveType.IsDefault)
+                {
+                    this.rootedRecursiveType = SyntaxFactory.IdentifierName("Rooted" + this.applyTo.RecursiveType.TypeSymbol.Name);
+                }
             }
 
             public override bool IsApplicable
@@ -49,9 +54,12 @@
 
             protected StructDeclarationSyntax CreateRootedStruct()
             {
-                var rootedStruct = SyntaxFactory.StructDeclaration(this.name.Identifier)
+                var rootedStruct = SyntaxFactory.StructDeclaration(this.typeName.Identifier)
                     .AddModifiers(GetModifiersForAccessibility(this.applyTo.TypeSymbol))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+                    .AddBaseListTypes(
+                        SyntaxFactory.SimpleBaseType(Syntax.IEquatableOf(this.typeName)),
+                        SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))))
                     .AddMembers(
                         this.CreateRootedConstructor(),
                         this.CreateParentProperty(),
@@ -79,10 +87,17 @@
                                 this.CreateCreateMethod());
                     }
 
-                    rootedStruct = rootedStruct.AddMembers(
-                        this.CreateFindMethod(),
-                        this.CreateTryFindMethod(),
-                        this.CreateGetEnumeratorMethod());
+                    if (this.applyTo.IsRecursiveParentOrDerivative)
+                    {
+                        rootedStruct = rootedStruct
+                            .AddBaseListTypes(SyntaxFactory.SimpleBaseType(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
+                            .AddMembers(
+                                this.CreateFindMethod(),
+                                this.CreateTryFindMethod(),
+                                this.CreateGetEnumeratorMethod(),
+                                this.CreateParentedNodeMethod())
+                            .AddMembers(this.CreateChildrenProperties());
+                    }
                 }
 
                 return rootedStruct;
@@ -93,7 +108,7 @@
                 // internal RootedTemplateType(TemplateType templateType, TRecursiveParent root) {
                 var templateTypeParam = SyntaxFactory.IdentifierName(this.applyTo.TypeSymbol.Name.ToCamelCase());
                 var rootParam = SyntaxFactory.IdentifierName("root");
-                var ctor = SyntaxFactory.ConstructorDeclaration(this.name.Identifier)
+                var ctor = SyntaxFactory.ConstructorDeclaration(this.typeName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword))
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(templateTypeParam.Identifier).WithType(this.applyTo.TypeSyntax),
@@ -114,21 +129,21 @@
                     // public static implicit operator TemplateType(RootedTemplateType rooted)
                     SyntaxFactory.ConversionOperatorDeclaration(SyntaxFactory.Token(SyntaxKind.ImplicitKeyword), this.applyTo.TypeSyntax)
                         .AddModifiers(publicStaticModifiers)
-                        .AddParameterListParameters(SyntaxFactory.Parameter(rootedParameter.Identifier).WithType(this.name))
+                        .AddParameterListParameters(SyntaxFactory.Parameter(rootedParameter.Identifier).WithType(this.typeName))
                         .WithBody(SyntaxFactory.Block(ThrowNotImplementedException)),
                     // public static bool operator ==(RootedTemplateType that, RootedTemplateType other)
                     SyntaxFactory.OperatorDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), SyntaxFactory.Token(SyntaxKind.EqualsEqualsToken))
                         .AddModifiers(publicStaticModifiers)
                         .AddParameterListParameters(
-                            SyntaxFactory.Parameter(thatParameter.Identifier).WithType(this.name),
-                            SyntaxFactory.Parameter(otherParameter.Identifier).WithType(this.name))
+                            SyntaxFactory.Parameter(thatParameter.Identifier).WithType(this.typeName),
+                            SyntaxFactory.Parameter(otherParameter.Identifier).WithType(this.typeName))
                         .WithBody(SyntaxFactory.Block(ThrowNotImplementedException)),
                     // public static bool operator !=(RootedTemplateType that, RootedTemplateType other)
                     SyntaxFactory.OperatorDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), SyntaxFactory.Token(SyntaxKind.ExclamationEqualsToken))
                         .AddModifiers(publicStaticModifiers)
                         .AddParameterListParameters(
-                            SyntaxFactory.Parameter(thatParameter.Identifier).WithType(this.name),
-                            SyntaxFactory.Parameter(otherParameter.Identifier).WithType(this.name))
+                            SyntaxFactory.Parameter(thatParameter.Identifier).WithType(this.typeName),
+                            SyntaxFactory.Parameter(otherParameter.Identifier).WithType(this.typeName))
                         .WithBody(SyntaxFactory.Block(ThrowNotImplementedException)),
                 };
             }
@@ -189,7 +204,7 @@
 
             protected MethodDeclarationSyntax CreateWithMethod()
             {
-                return SyntaxFactory.MethodDeclaration(this.name, WithMethodName.Identifier)
+                return SyntaxFactory.MethodDeclaration(this.typeName, WithMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.Optional))
                     .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
@@ -223,13 +238,13 @@
                 var otherParam = SyntaxFactory.IdentifierName("other");
                 return SyntaxFactory.MethodDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), nameof(IEquatable<object>.Equals))
                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                   .AddParameterListParameters(SyntaxFactory.Parameter(otherParam.Identifier).WithType(this.name))
+                   .AddParameterListParameters(SyntaxFactory.Parameter(otherParam.Identifier).WithType(this.typeName))
                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
             }
 
             protected MethodDeclarationSyntax CreateCreateMethod()
             {
-                return SyntaxFactory.MethodDeclaration(this.name, CreateMethodName.Identifier)
+                return SyntaxFactory.MethodDeclaration(this.typeName, CreateMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.OptionalOrRequired))
                     .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
@@ -263,6 +278,35 @@
                 return SyntaxFactory.MethodDeclaration(Syntax.IEnumeratorOf(this.applyTo.RecursiveType.TypeSyntax), nameof(IEnumerable<int>.GetEnumerator))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+            }
+
+            protected MethodDeclarationSyntax CreateParentedNodeMethod()
+            {
+                // ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(uint identity)
+                return SyntaxFactory.MethodDeclaration(
+                    Syntax.GetTypeSyntax(typeof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)),
+                    nameof(IRecursiveParent.GetParentedNode))
+                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
+                    .AddParameterListParameters(RequiredIdentityParameter)
+                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+            }
+
+            protected PropertyDeclarationSyntax[] CreateChildrenProperties()
+            {
+                return new PropertyDeclarationSyntax[] {
+                    // IEnumerable<IRecursiveType> IRecursiveParent.Children { get; }
+                    SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))), nameof(IRecursiveParent.Children))
+                        .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
+                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration,
+                            SyntaxFactory.Block(ThrowNotImplementedException))),
+                    // IEnumerable<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
+                    SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
+                        .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
+                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration,
+                            SyntaxFactory.Block(ThrowNotImplementedException))),
+                };
             }
 
             protected PropertyDeclarationSyntax[] CreateIsDerivedProperties()
