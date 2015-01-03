@@ -160,7 +160,7 @@
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
                             SyntaxFactory.Argument(
                                 SyntaxFactory.NameColon(field.Name),
-                                SyntaxFactory.Token(SyntaxKind.None),
+                                NoneToken,
                                 mutatingInvocationFactory(Syntax.ThisDot(field.NameAsField))))))
                     : SyntaxFactory.CastExpression( // (TemplateType)base.SameMethod(sameArgs)
                         GetFullyQualifiedSymbolName(this.generator.applyToSymbol),

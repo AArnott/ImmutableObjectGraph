@@ -67,7 +67,7 @@
                                         SyntaxFactory.SingletonSeparatedList(
                                             SyntaxFactory.Argument(
                                                 SyntaxFactory.NameColon(field.Name),
-                                                SyntaxFactory.Token(SyntaxKind.None),
+                                                NoneToken,
                                                 Syntax.OptionalFor(valueParameterName))))))));
 
                     this.innerMembers.Add(withPropertyMethod);

@@ -75,7 +75,7 @@
                         Assumes.NotNull(alteredCtor.Initializer); // we expect a chained call to the base constructor.
                         alteredCtor = alteredCtor.WithInitializer(
                             alteredCtor.Initializer.AddArgumentListArguments(
-                                SyntaxFactory.Argument(SyntaxFactory.NameColon(LookupTableFieldName), SyntaxFactory.Token(SyntaxKind.None), LookupTableFieldName)));
+                                SyntaxFactory.Argument(SyntaxFactory.NameColon(LookupTableFieldName), NoneToken, LookupTableFieldName)));
                     }
 
                     // Apply the updated constructor back to the generated type.
@@ -119,7 +119,7 @@
                         }
 
                         var alteredInvocation = currentInvocation.AddArgumentListArguments(
-                            SyntaxFactory.Argument(SyntaxFactory.NameColon(LookupTableFieldName), SyntaxFactory.Token(SyntaxKind.None), lookupTableValue));
+                            SyntaxFactory.Argument(SyntaxFactory.NameColon(LookupTableFieldName), NoneToken, lookupTableValue));
 
                         trackedTree = trackedTree.ReplaceNode(currentInvocation, alteredInvocation);
                     }
@@ -310,7 +310,7 @@
                                 .AddVariables(SyntaxFactory.VariableDeclarator(newSelfVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
                                     SyntaxFactory.InvocationExpression(Syntax.ThisDot(WithMethodName))
                                         .AddArgumentListArguments(
-                                            SyntaxFactory.Argument(SyntaxFactory.NameColon(this.applyTo.RecursiveField.NameAsField), SyntaxFactory.Token(SyntaxKind.None), newChildrenVar)))))),
+                                            SyntaxFactory.Argument(SyntaxFactory.NameColon(this.applyTo.RecursiveField.NameAsField), NoneToken, newChildrenVar)))))),
                         // var lookupTableLazySentinel = RecursiveTypeExtensions.LookupTable<TRecursiveType, TRecursiveParent>.LazySentinel;
                         SyntaxFactory.LocalDeclarationStatement(
                             SyntaxFactory.VariableDeclaration(varType)

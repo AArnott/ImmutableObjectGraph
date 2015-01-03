@@ -75,7 +75,7 @@
                                         WithMethodName))
                                     .AddArgumentListArguments(SyntaxFactory.Argument(
                                         SyntaxFactory.NameColon(this.applyTo.RecursiveField.NameAsField),
-                                        SyntaxFactory.Token(SyntaxKind.None),
+                                        NoneToken,
                                         SyntaxFactory.InvocationExpression(
                                             SyntaxFactory.MemberAccessExpression(
                                                 SyntaxKind.SimpleMemberAccessExpression,
@@ -110,7 +110,7 @@
                                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
                                                 SyntaxFactory.Argument(spineVar),
                                                 SyntaxFactory.Argument(newSpineVar),
-                                                SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))),
+                                                SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))),
                                         SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.Peek))),
                                     SyntaxFactory.ArgumentList())))
                         ));
@@ -162,7 +162,7 @@
                                 .AddArgumentListArguments(
                                 SyntaxFactory.Argument(
                                     SyntaxFactory.NameColon(this.applyTo.RecursiveField.NameAsField),
-                                    SyntaxFactory.Token(SyntaxKind.None),
+                                    NoneToken,
                                     SyntaxFactory.InvocationExpression( // parent.Children.Remove(...)
                                         SyntaxFactory.MemberAccessExpression( // parent.Children.Remove
                                             SyntaxKind.SimpleMemberAccessExpression,
@@ -193,7 +193,7 @@
                                             .AddArgumentListArguments(
                                                 SyntaxFactory.Argument(spineVar),
                                                 SyntaxFactory.Argument(newSpineVar),
-                                                SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))
+                                                SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))
                                             ),
                                         SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.Peek))),
                                     SyntaxFactory.ArgumentList())))));
