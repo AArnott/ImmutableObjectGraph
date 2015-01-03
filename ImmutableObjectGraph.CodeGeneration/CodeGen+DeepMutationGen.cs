@@ -202,6 +202,7 @@
             private MethodDeclarationSyntax CreateReplaceDescendentSameIdentityMethod()
             {
                 var updatedNodeParameter = SyntaxFactory.IdentifierName("updatedNode");
+                var spineVar = SyntaxFactory.IdentifierName("spine");
 
                 // public TemplateType ReplaceDescendent(TRecursiveType value) {
                 return SyntaxFactory.MethodDeclaration(
@@ -212,20 +213,43 @@
                         SyntaxFactory.Parameter(updatedNodeParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(
                         // var spine = this.GetSpine(updatedNode.Identity);
-
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(spineVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(Syntax.ThisDot(FastSpineGen.GetSpineMethodName))
+                                    .AddArgumentListArguments(
+                                    SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, updatedNodeParameter, SyntaxFactory.IdentifierName(nameof(IRecursiveType.Identity))))))))),
                         // if (spine.IsEmpty) {
-                        // 	// The descendent was not found.
-                        // 	throw new System.ArgumentException("Old value not found");
-                        // }
-
-                        // return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
-                        ThrowNotImplementedException));
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, spineVar, SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.IsEmpty))),
+                            // 	// The descendent was not found.
+                            // 	throw new System.ArgumentException("Old value not found");
+                            SyntaxFactory.Block(
+                                SyntaxFactory.ThrowStatement(
+                                    SyntaxFactory.ObjectCreationExpression(Syntax.GetTypeSyntax(typeof(ArgumentException))).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("Old value not found."))))))),
+                        // return (TemplateType)this.ReplaceDescendent(spine, ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.CastExpression(
+                                this.applyTo.TypeSyntax,
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.InvocationExpression(Syntax.ThisDot(ReplaceDescendentMethodName))
+                                            .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(spineVar),
+                                                SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(Syntax.CreateImmutableStack()).AddArgumentListArguments(
+                                                    SyntaxFactory.Argument(updatedNodeParameter))),
+                                                SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))
+                                            ),
+                                        SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.Peek))),
+                                    SyntaxFactory.ArgumentList())))));
             }
 
             private MethodDeclarationSyntax CreateReplaceDescendentDifferentIdentityMethod()
             {
                 var currentParameter = SyntaxFactory.IdentifierName("current");
                 var replacementParameter = SyntaxFactory.IdentifierName("replacement");
+                var spineVar = SyntaxFactory.IdentifierName("spine");
 
                 // public TemplateType ReplaceDescendent(TRecursiveType current, TRecursiveType replacement) {
                 return SyntaxFactory.MethodDeclaration(
@@ -237,14 +261,36 @@
                         SyntaxFactory.Parameter(replacementParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(
                         // var spine = this.GetSpine(current);
-
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(spineVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(Syntax.ThisDot(FastSpineGen.GetSpineMethodName))
+                                    .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(currentParameter)))))),
                         // if (spine.IsEmpty) {
-                        // 	// The descendent was not found.
-                        // 	throw new System.ArgumentException("Old value not found");
-                        // }
-
-                        // return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
-                        ThrowNotImplementedException));
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, spineVar, SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.IsEmpty))),
+                            // 	// The descendent was not found.
+                            // 	throw new System.ArgumentException("Old value not found");
+                            SyntaxFactory.Block(
+                                SyntaxFactory.ThrowStatement(
+                                    SyntaxFactory.ObjectCreationExpression(Syntax.GetTypeSyntax(typeof(ArgumentException))).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("Old value not found."))))))),
+                        // return (TemplateType)this.ReplaceDescendent(spine, ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.CastExpression(
+                                this.applyTo.TypeSyntax,
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.InvocationExpression(Syntax.ThisDot(ReplaceDescendentMethodName))
+                                            .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(spineVar),
+                                                SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(Syntax.CreateImmutableStack()).AddArgumentListArguments(
+                                                    SyntaxFactory.Argument(replacementParameter))),
+                                                SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))
+                                            ),
+                                        SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.Peek))),
+                                    SyntaxFactory.ArgumentList())))));
             }
         }
     }

@@ -255,6 +255,23 @@
                                             SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetSpine))
                                                 .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)),
                                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(descendentParameter))))))));
+
+                    // public System.Collections.Immutable.ImmutableStack<TRecursiveType> GetSpine(uint identity) {
+                    // 	return this.GetSpine<TRecursiveParent, TRecursiveType>(identity);
+                    // }
+                    var identityParameter = SyntaxFactory.IdentifierName("identity");
+                    this.innerMembers.Add(
+                        SyntaxFactory.MethodDeclaration(Syntax.ImmutableStackOf(this.applyTo.RecursiveType.TypeSyntax), GetSpineMethodName.Identifier)
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddParameterListParameters(SyntaxFactory.Parameter(identityParameter.Identifier).WithType(IdentityFieldTypeSyntax))
+                            .WithBody(SyntaxFactory.Block(
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.InvocationExpression(
+                                        Syntax.ThisDot(
+                                            SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetSpine))
+                                                .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)),
+                                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(identityParameter))))))));
+
                 }
             }
 
