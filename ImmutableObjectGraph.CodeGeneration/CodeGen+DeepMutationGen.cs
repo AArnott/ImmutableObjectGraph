@@ -39,6 +39,9 @@
             protected override void GenerateCore()
             {
                 this.innerMembers.Add(this.CreateAddDescendentMethod());
+                this.innerMembers.Add(this.CreateRemoveDescendentMethod());
+                this.innerMembers.Add(this.CreateReplaceDescendentSameIdentityMethod());
+                this.innerMembers.Add(this.CreateReplaceDescendentDifferentIdentityMethod());
             }
 
             private MethodDeclarationSyntax CreateAddDescendentMethod()
@@ -111,6 +114,137 @@
                                         SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.Peek))),
                                     SyntaxFactory.ArgumentList())))
                         ));
+            }
+
+            private MethodDeclarationSyntax CreateRemoveDescendentMethod()
+            {
+                var valueParameter = SyntaxFactory.IdentifierName("value");
+                var spineVar = SyntaxFactory.IdentifierName("spine");
+                var spineListVar = SyntaxFactory.IdentifierName("spineList");
+                var parentVar = SyntaxFactory.IdentifierName("parent");
+                var newParentVar = SyntaxFactory.IdentifierName("newParent");
+                var newSpineVar = SyntaxFactory.IdentifierName("newSpine");
+
+                // public TemplateType RemoveDescendent(TRecursiveType value) {
+                return SyntaxFactory.MethodDeclaration(
+                    this.applyTo.TypeSyntax,
+                    RemoveDescendentMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(valueParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(
+                        // var spine = this.GetSpine(value);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType)
+                            .AddVariables(SyntaxFactory.VariableDeclarator(spineVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(Syntax.ThisDot(FastSpineGen.GetSpineMethodName)).AddArgumentListArguments(
+                                    SyntaxFactory.Argument(valueParameter)))))),
+                        // var spineList = spine.ToList();
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType)
+                            .AddVariables(SyntaxFactory.VariableDeclarator(spineListVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                Syntax.ToList(spineVar))))),
+                        // var parent = (TRecursiveParent)spineList[spineList.Count - 2];
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType)
+                            .AddVariables(SyntaxFactory.VariableDeclarator(parentVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.CastExpression(
+                                    this.applyTo.RecursiveParent.TypeSyntax,
+                                    SyntaxFactory.ElementAccessExpression(
+                                        spineListVar,
+                                        SyntaxFactory.BracketedArgumentList(
+                                            SyntaxFactory.SingletonSeparatedList(
+                                                SyntaxFactory.Argument(SyntaxFactory.BinaryExpression(
+                                                    SyntaxKind.SubtractExpression,
+                                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, spineListVar, SyntaxFactory.IdentifierName(nameof(List<int>.Count))),
+                                                    SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(2)))))))))))),
+                        // var newParent = parent.With(children: parent.Children.Remove(spineList[spineList.Count - 1]));
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType)
+                            .AddVariables(SyntaxFactory.VariableDeclarator(newParentVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                            SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentVar, WithMethodName))
+                                .AddArgumentListArguments(
+                                SyntaxFactory.Argument(
+                                    SyntaxFactory.NameColon(this.applyTo.RecursiveField.NameAsField),
+                                    SyntaxFactory.Token(SyntaxKind.None),
+                                    SyntaxFactory.InvocationExpression( // parent.Children.Remove(...)
+                                        SyntaxFactory.MemberAccessExpression( // parent.Children.Remove
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentVar, this.applyTo.RecursiveField.NameAsProperty),
+                                            SyntaxFactory.IdentifierName(nameof(List<int>.Remove))))
+                                        .AddArgumentListArguments(
+                                            SyntaxFactory.Argument(SyntaxFactory.ElementAccessExpression( // spineList[spineList.Count - 1]
+                                                spineListVar,
+                                                SyntaxFactory.BracketedArgumentList(SyntaxFactory.SingletonSeparatedList(
+                                                    SyntaxFactory.Argument( // spineList.Count - 1
+                                                        SyntaxFactory.BinaryExpression(
+                                                            SyntaxKind.SubtractExpression,
+                                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, spineListVar, SyntaxFactory.IdentifierName(nameof(List<int>.Count))),
+                                                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(1))))))))))))))),
+                        // var newSpine = System.Collections.Immutable.ImmutableStack.Create<TRecursiveType>(newParent);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType)
+                            .AddVariables(SyntaxFactory.VariableDeclarator(newSpineVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(Syntax.CreateImmutableStack(this.applyTo.RecursiveType.TypeSyntax))
+                                    .AddArgumentListArguments(SyntaxFactory.Argument(newParentVar)))))),
+                        // return (TRecursiveParent)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.CastExpression(
+                                this.applyTo.RecursiveParent.TypeSyntax,
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.InvocationExpression(Syntax.ThisDot(ReplaceDescendentMethodName))
+                                            .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(spineVar),
+                                                SyntaxFactory.Argument(newSpineVar),
+                                                SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))
+                                            ),
+                                        SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.Peek))),
+                                    SyntaxFactory.ArgumentList())))));
+            }
+
+            private MethodDeclarationSyntax CreateReplaceDescendentSameIdentityMethod()
+            {
+                var updatedNodeParameter = SyntaxFactory.IdentifierName("updatedNode");
+
+                // public TemplateType ReplaceDescendent(TRecursiveType value) {
+                return SyntaxFactory.MethodDeclaration(
+                    this.applyTo.TypeSyntax,
+                    ReplaceDescendentMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(updatedNodeParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(
+                        // var spine = this.GetSpine(updatedNode.Identity);
+
+                        // if (spine.IsEmpty) {
+                        // 	// The descendent was not found.
+                        // 	throw new System.ArgumentException("Old value not found");
+                        // }
+
+                        // return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
+                        ThrowNotImplementedException));
+            }
+
+            private MethodDeclarationSyntax CreateReplaceDescendentDifferentIdentityMethod()
+            {
+                var currentParameter = SyntaxFactory.IdentifierName("current");
+                var replacementParameter = SyntaxFactory.IdentifierName("replacement");
+
+                // public TemplateType ReplaceDescendent(TRecursiveType current, TRecursiveType replacement) {
+                return SyntaxFactory.MethodDeclaration(
+                    this.applyTo.TypeSyntax,
+                    ReplaceDescendentMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(currentParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax),
+                        SyntaxFactory.Parameter(replacementParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(
+                        // var spine = this.GetSpine(current);
+
+                        // if (spine.IsEmpty) {
+                        // 	// The descendent was not found.
+                        // 	throw new System.ArgumentException("Old value not found");
+                        // }
+
+                        // return (<#= templateType.TypeName #>)this.ReplaceDescendent(spine, System.Collections.Immutable.ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
+                        ThrowNotImplementedException));
             }
         }
     }

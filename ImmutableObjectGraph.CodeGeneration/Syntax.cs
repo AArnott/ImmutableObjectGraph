@@ -131,6 +131,21 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
+        internal static InvocationExpressionSyntax ToList(ExpressionSyntax expression)
+        {
+            return SyntaxFactory.InvocationExpression(
+                // System.Linq.Enumerable.ToList
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.QualifiedName(
+                            SyntaxFactory.IdentifierName(nameof(System)),
+                            SyntaxFactory.IdentifierName(nameof(System.Linq))),
+                        SyntaxFactory.IdentifierName(nameof(Enumerable))),
+                    SyntaxFactory.IdentifierName(nameof(Enumerable.ToList))),
+                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(expression))));
+        }
+
         internal static NameSyntax IReadOnlyCollectionOf(TypeSyntax elementType)
         {
             return SyntaxFactory.QualifiedName(
