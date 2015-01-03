@@ -453,16 +453,20 @@
         private MemberDeclarationSyntax CreateWithFactoryMethod()
         {
             // (field.IsDefined && field.Value != this.field)
-            Func<MetaField, ExpressionSyntax> isChanged = v =>
+            Func<IdentifierNameSyntax, IdentifierNameSyntax, ExpressionSyntax> isChangedByNames = (propertyName, fieldName) =>
                 SyntaxFactory.ParenthesizedExpression(
                     SyntaxFactory.BinaryExpression(
                         SyntaxKind.LogicalAndExpression,
-                        Syntax.OptionalIsDefined(v.NameAsField),
+                        Syntax.OptionalIsDefined(fieldName),
                         SyntaxFactory.BinaryExpression(
                             SyntaxKind.NotEqualsExpression,
-                            Syntax.OptionalValue(v.NameAsField),
-                            Syntax.ThisDot(SyntaxFactory.IdentifierName(v.Name.ToPascalCase())))));
-            var anyChangesExpression = this.applyToMetaType.AllFields.Select(isChanged).ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
+                            Syntax.OptionalValue(fieldName),
+                            Syntax.ThisDot(propertyName))));
+            Func<MetaField, ExpressionSyntax> isChanged = v => isChangedByNames(v.NameAsProperty, v.NameAsField);
+            var anyChangesExpression =
+                new ExpressionSyntax[] { isChangedByNames(IdentityPropertyName, IdentityParameterName) }.Concat(
+                    this.applyToMetaType.AllFields.Select(isChanged))
+                    .ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
 
             // /// <summary>Returns a new instance of this object with any number of properties changed.</summary>
             // private TemplateType WithFactory(...)
