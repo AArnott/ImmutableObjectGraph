@@ -1148,6 +1148,11 @@
                 get { return this.Symbol.Type; }
             }
 
+            public NameSyntax TypeSyntax
+            {
+                get { return GetFullyQualifiedSymbolName(this.Type); }
+            }
+
             public bool IsGeneratedImmutableType
             {
                 get { return !this.TypeAsGeneratedImmutable.IsDefault; }

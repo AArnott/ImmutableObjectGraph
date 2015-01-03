@@ -152,6 +152,8 @@
         private static readonly Type[] MemberDeclarationOrder = new Type[] {
             typeof(FieldDeclarationSyntax),
             typeof(ConstructorDeclarationSyntax),
+            typeof(ConversionOperatorDeclarationSyntax),
+            typeof(OperatorDeclarationSyntax),
             typeof(EnumDeclarationSyntax),
             typeof(PropertyDeclarationSyntax),
             typeof(MethodDeclarationSyntax),
