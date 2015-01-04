@@ -140,6 +140,13 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
+        internal static NameSyntax FuncOf(params TypeSyntax[] typeArguments)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.IdentifierName(nameof(System)),
+                SyntaxFactory.GenericName(nameof(Func<int>)).AddTypeArgumentListArguments(typeArguments));
+        }
+
         internal static InvocationExpressionSyntax ToList(ExpressionSyntax expression)
         {
             return SyntaxFactory.InvocationExpression(
