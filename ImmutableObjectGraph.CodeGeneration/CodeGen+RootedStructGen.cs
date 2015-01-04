@@ -306,7 +306,9 @@
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                         SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(ThrowNotImplementedException)));
+                        SyntaxFactory.Block(
+                            // return this.greenNode;
+                            SyntaxFactory.ReturnStatement(Syntax.ThisDot(GreenNodeFieldName)))));
             }
 
             protected MethodDeclarationSyntax CreateWithMethod()
