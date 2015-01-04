@@ -76,7 +76,6 @@
                         this.CreateParentProperty(),
                         this.CreateRootProperty(),
                         this.CreateIdentityProperty(),
-                        this.CreateIsRootProperty(),
                         this.CreateIsDefaultProperty(),
                         this.CreateTemplateTypeProperty(),
                         this.CreateWithMethod(),
@@ -105,6 +104,7 @@
                         rootedStruct = rootedStruct
                             .AddBaseListTypes(SyntaxFactory.SimpleBaseType(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
                             .AddMembers(
+                                this.CreateIsRootProperty(),
                                 this.CreateFindMethod(),
                                 this.CreateTryFindMethod(),
                                 this.CreateGetEnumeratorMethod(),
@@ -209,7 +209,13 @@
                     SyntaxFactory.ConversionOperatorDeclaration(SyntaxFactory.Token(SyntaxKind.ImplicitKeyword), this.applyTo.TypeSyntax)
                         .AddModifiers(publicStaticModifiers)
                         .AddParameterListParameters(SyntaxFactory.Parameter(rootedParameter.Identifier).WithType(this.typeName))
-                        .WithBody(SyntaxFactory.Block(ThrowNotImplementedException)),
+                        .WithBody(SyntaxFactory.Block(
+                            // return rooted.FileSystemDirectory;
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    rootedParameter,
+                                    SyntaxFactory.IdentifierName(this.applyTo.TypeSymbol.Name))))),
                     // public static bool operator ==(RootedTemplateType that, RootedTemplateType other)
                     SyntaxFactory.OperatorDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), SyntaxFactory.Token(SyntaxKind.EqualsEqualsToken))
                         .AddModifiers(publicStaticModifiers)
@@ -223,7 +229,16 @@
                         .AddParameterListParameters(
                             SyntaxFactory.Parameter(thatParameter.Identifier).WithType(this.typeName),
                             SyntaxFactory.Parameter(otherParameter.Identifier).WithType(this.typeName))
-                        .WithBody(SyntaxFactory.Block(ThrowNotImplementedException)),
+                        .WithBody(SyntaxFactory.Block(
+                            // return !(that == other);
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.PrefixUnaryExpression(
+                                    SyntaxKind.LogicalNotExpression,
+                                    SyntaxFactory.ParenthesizedExpression(
+                                        SyntaxFactory.BinaryExpression(
+                                            SyntaxKind.EqualsExpression,
+                                            thatParameter,
+                                            otherParameter)))))),
                 };
             }
 
