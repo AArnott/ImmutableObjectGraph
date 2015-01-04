@@ -34,16 +34,57 @@
             {
             }
 
-            public override ClassDeclarationSyntax ProcessApplyToClassDeclaration(ClassDeclarationSyntax applyTo)
+            public override SyntaxList<MemberDeclarationSyntax> ProcessFinalGeneratedResult(SyntaxList<MemberDeclarationSyntax> applyToAndOtherTypes)
             {
-                applyTo = base.ProcessApplyToClassDeclaration(applyTo);
+                var result = base.ProcessFinalGeneratedResult(applyToAndOtherTypes);
 
-                // Sort the members now per StyleCop rules.
-                var innerMembers = applyTo.Members.ToList();
+                for (int i = 0; i < result.Count; i++)
+                {
+                    var member = result[i];
+                    var types = member.DescendantNodesAndSelf(n => n is ClassDeclarationSyntax || n is StructDeclarationSyntax)
+                        .OfType<TypeDeclarationSyntax>()
+                        .ToArray();
+                    var trackingMember = member.TrackNodes(types);
+
+                    foreach (var type in types)
+                    {
+                        var currentMember = trackingMember.GetCurrentNode(type);
+                        var updatedMember = currentMember;
+                        var cl = currentMember as ClassDeclarationSyntax;
+                        if (cl != null)
+                        {
+                            updatedMember = SortMembers(cl);
+                        }
+
+                        var str = currentMember as StructDeclarationSyntax;
+                        if (str != null)
+                        {
+                            updatedMember = SortMembers(str);
+                        }
+
+                        trackingMember = trackingMember.ReplaceNode(currentMember, updatedMember);
+                    }
+
+                    result = result.Replace(member, trackingMember);
+                }
+
+                return result;
+            }
+
+            private static ClassDeclarationSyntax SortMembers(ClassDeclarationSyntax type)
+            {
+                var innerMembers = type.Members.ToList();
                 innerMembers.Sort(StyleCop.Sort);
-                applyTo = applyTo.WithMembers(SyntaxFactory.List(innerMembers));
+                type = type.WithMembers(SyntaxFactory.List(innerMembers));
+                return type;
+            }
 
-                return applyTo;
+            private static StructDeclarationSyntax SortMembers(StructDeclarationSyntax type)
+            {
+                var innerMembers = type.Members.ToList();
+                innerMembers.Sort(StyleCop.Sort);
+                type = type.WithMembers(SyntaxFactory.List(innerMembers));
+                return type;
             }
         }
     }
