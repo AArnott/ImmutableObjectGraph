@@ -298,7 +298,7 @@
             return expressions.Aggregate((ExpressionSyntax)null, (agg, e) => agg != null ? SyntaxFactory.BinaryExpression(binaryOperator, agg, e) : e);
         }
 
-        internal static InvocationExpressionSyntax EnumerableExtension(IdentifierNameSyntax linqMethod, ExpressionSyntax receiver, ArgumentListSyntax arguments)
+        internal static InvocationExpressionSyntax EnumerableExtension(SimpleNameSyntax linqMethod, ExpressionSyntax receiver, ArgumentListSyntax arguments)
         {
             return SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(

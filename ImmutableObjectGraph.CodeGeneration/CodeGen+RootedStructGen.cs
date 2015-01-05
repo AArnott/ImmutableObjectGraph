@@ -17,6 +17,7 @@
     using Microsoft.ImmutableObjectGraph_SFG;
     using Validation;
     using LookupTableHelper = RecursiveTypeExtensions.LookupTable<IRecursiveType, IRecursiveParentWithLookupTable<IRecursiveType>>;
+    using ParentedRecursiveTypeNonGeneric = ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>;
 
     public partial class CodeGen
     {
@@ -432,10 +433,34 @@
 
             protected MethodDeclarationSyntax CreateWithMethod()
             {
+                var newGreenNodeVar = SyntaxFactory.IdentifierName("newGreenNode");
+                var newRootVar = SyntaxFactory.IdentifierName("newRoot");
+
                 return SyntaxFactory.MethodDeclaration(this.typeName, WithMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.Optional))
-                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+                    .WithBody(SyntaxFactory.Block(
+                        // this.ThrowIfDefault();
+                        CallThrowIfDefaultMethod,
+                        // var newGreenNode = this.greenNode.With(<# WriteArguments(redType.AllFields, ArgSource.Argument); #>);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(newGreenNodeVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), WithMethodName))
+                                    .WithArgumentList(this.generator.CreateArgumentList(this.applyTo.AllFields, ArgSource.Argument)))))), // TODO: fix field types for recursive collections
+                        // var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(newRootVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(RootFieldName), SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.ReplaceDescendent))))
+                                    .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(GreenNodeFieldName),
+                                        SyntaxFactory.Argument(newGreenNodeVar)))))),
+                        // return new <#= redType.TypeName #>(newGreenNode, newRoot);
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
+                            SyntaxFactory.Argument(newGreenNodeVar),
+                            SyntaxFactory.Argument(newRootVar)))
+                    ));
             }
 
             protected MethodDeclarationSyntax CreateEqualsObjectMethod()
@@ -571,13 +596,28 @@
 
             protected MethodDeclarationSyntax CreateParentedNodeMethod()
             {
+                var returnType = Syntax.GetTypeSyntax(typeof(ParentedRecursiveTypeNonGeneric));
+                var resultVar = SyntaxFactory.IdentifierName("result");
+
                 // ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(uint identity)
                 return SyntaxFactory.MethodDeclaration(
-                    Syntax.GetTypeSyntax(typeof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)),
+                    returnType,
                     nameof(IRecursiveParent.GetParentedNode))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                     .AddParameterListParameters(RequiredIdentityParameter)
-                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+                    .WithBody(SyntaxFactory.Block(
+                        // this.ThrowIfDefault();
+                        CallThrowIfDefaultMethod,
+                        // var result = this.greenNode.GetParentedNode(identity);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(resultVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), SyntaxFactory.IdentifierName(nameof(IRecursiveParent.GetParentedNode))))
+                                        .AddArgumentListArguments(SyntaxFactory.Argument(IdentityParameterName)))))),
+                        // return new ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>(result.Value, result.Parent);
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(returnType).AddArgumentListArguments(
+                            SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, resultVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Value)))),
+                            SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, resultVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Parent))))))));
             }
 
             protected PropertyDeclarationSyntax[] CreateChildrenProperties()
@@ -588,18 +628,28 @@
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                             SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(ThrowNotImplementedException))),
+                            SyntaxFactory.Block(
+                                // return System.Linq.Enumerable.Cast<IRecursiveType>(this.Children);
+                                SyntaxFactory.ReturnStatement(
+                                    Syntax.EnumerableExtension(
+                                        SyntaxFactory.GenericName(nameof(Enumerable.Cast))
+                                            .AddTypeArgumentListArguments(Syntax.GetTypeSyntax(typeof(IRecursiveType))),
+                                        Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty),
+                                        SyntaxFactory.ArgumentList()))))),
                     // IEnumerable<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
                     SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                             SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(ThrowNotImplementedException))),
+                            SyntaxFactory.Block(
+                                // return this.Children;
+                                SyntaxFactory.ReturnStatement(Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty))))),
                 };
             }
 
             protected PropertyDeclarationSyntax[] CreateIsDerivedProperties()
             {
+                // public bool IsDerivedType { get; }
                 return this.applyTo.Descendents.Select(descendent =>
                     SyntaxFactory.PropertyDeclaration(
                         SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)),
@@ -607,7 +657,12 @@
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                             SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(ThrowNotImplementedException)))
+                            SyntaxFactory.Block(
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.BinaryExpression(
+                                        SyntaxKind.IsExpression,
+                                        Syntax.ThisDot(GreenNodeFieldName),
+                                        descendent.TypeSyntax)))))
                     ).ToArray();
             }
 
@@ -640,14 +695,21 @@
 
             protected PropertyDeclarationSyntax[] CreateAsAncestorProperties()
             {
-                return this.applyTo.Ancestors.Select(descendent =>
+                return this.applyTo.Ancestors.Select(ancestor =>
                     SyntaxFactory.PropertyDeclaration(
-                        descendent.TypeSyntax,
-                        string.Format(CultureInfo.InvariantCulture, AsAncestorPropertyNameFormat, descendent.TypeSymbol.Name))
+                        ancestor.TypeSyntax,
+                        string.Format(CultureInfo.InvariantCulture, AsAncestorPropertyNameFormat, ancestor.TypeSymbol.Name))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                             SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(ThrowNotImplementedException)))
+                            SyntaxFactory.Block(
+                                // return this.greenNode != null ? new RootedAncestor(this.greenNode, this.root) : default(RootedAncestor);
+                                SyntaxFactory.ReturnStatement(SyntaxFactory.ConditionalExpression(
+                                    SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, Syntax.ThisDot(GreenNodeFieldName), SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                    SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(ancestor)).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(Syntax.ThisDot(GreenNodeFieldName)),
+                                        SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName))),
+                                    SyntaxFactory.DefaultExpression(GetRootedTypeSyntax(ancestor)))))))
                     ).ToArray();
             }
 
