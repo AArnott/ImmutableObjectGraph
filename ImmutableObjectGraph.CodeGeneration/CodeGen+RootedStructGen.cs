@@ -26,6 +26,7 @@
             private const string AsDerivedPropertyNameFormat = "As{0}";
             private const string AsAncestorPropertyNameFormat = "As{0}";
             private static readonly IdentifierNameSyntax ParentPropertyName = SyntaxFactory.IdentifierName("Parent");
+            private static readonly IdentifierNameSyntax AsRootPropertyName = SyntaxFactory.IdentifierName("AsRoot");
             private static readonly IdentifierNameSyntax RootPropertyName = SyntaxFactory.IdentifierName("Root");
             private static readonly IdentifierNameSyntax IsRootPropertyName = SyntaxFactory.IdentifierName("IsRoot");
             private static readonly IdentifierNameSyntax IsDefaultPropertyName = SyntaxFactory.IdentifierName("IsDefault");
@@ -98,6 +99,25 @@
             protected override void GenerateCore()
             {
                 this.siblingMembers.Add(this.CreateRootedStruct());
+
+                if (this.applyTo.IsRecursiveParentOrDerivative)
+                {
+                    this.innerMembers.Add(this.CreateAsRootProperty());
+                }
+            }
+
+            protected MemberDeclarationSyntax CreateAsRootProperty()
+            {
+                // public RootedRecursiveParent Root { get; }
+                return SyntaxFactory.PropertyDeclaration(GetRootedTypeSyntax(this.applyTo), AsRootPropertyName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                        SyntaxKind.GetAccessorDeclaration,
+                        SyntaxFactory.Block(
+                            // return new RootedRecursiveParent(this, this);
+                            SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))))));
             }
 
             protected StructDeclarationSyntax CreateRootedStruct()
@@ -338,11 +358,20 @@
 
             protected PropertyDeclarationSyntax CreateRootProperty()
             {
-                return SyntaxFactory.PropertyDeclaration(this.applyTo.RecursiveParent.TypeSyntax, RootPropertyName.Identifier)
+                // public RootedRecursiveParent Root { get; }
+                return SyntaxFactory.PropertyDeclaration(GetRootedTypeSyntax(this.applyTo.RecursiveParent), RootPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                         SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(ThrowNotImplementedException)));
+                        SyntaxFactory.Block(
+                            // return this.root != null ? this.root.AsRoot : default(RootedRecursiveParent);
+                            SyntaxFactory.ReturnStatement(SyntaxFactory.ConditionalExpression(
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.NotEqualsExpression,
+                                    Syntax.ThisDot(RootFieldName),
+                                    SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(RootFieldName), AsRootPropertyName),
+                                SyntaxFactory.DefaultExpression(GetRootedTypeSyntax(this.applyTo.RecursiveParent)))))));
             }
 
             protected PropertyDeclarationSyntax CreateIdentityProperty()
