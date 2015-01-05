@@ -42,20 +42,57 @@
                     SyntaxFactory.ArgumentList()));
             private readonly IdentifierNameSyntax typeName;
             private readonly IdentifierNameSyntax rootedRecursiveType;
+            private readonly IdentifierNameSyntax rootedRecursiveParent;
 
             public RootedStructGen(CodeGen generator)
                 : base(generator)
             {
-                this.typeName = SyntaxFactory.IdentifierName("Rooted" + this.applyTo.TypeSymbol.Name);
+                this.typeName = GetRootedTypeSyntax(this.applyTo);
                 if (!this.applyTo.RecursiveType.IsDefault)
                 {
-                    this.rootedRecursiveType = SyntaxFactory.IdentifierName("Rooted" + this.applyTo.RecursiveType.TypeSymbol.Name);
+                    this.rootedRecursiveType = GetRootedTypeSyntax(this.applyTo.RecursiveType);
+                    this.rootedRecursiveParent = GetRootedTypeSyntax(this.applyTo.RecursiveParent);
                 }
             }
 
             public override bool IsApplicable
             {
                 get { return this.generator.options.DefineRootedStruct; }
+            }
+
+            protected static IdentifierNameSyntax GetRootedTypeSyntax(MetaType metaType)
+            {
+                return SyntaxFactory.IdentifierName("Rooted" + metaType.TypeSymbol.Name);
+            }
+
+            protected NameSyntax GetRootedCollectionTypeAdapterName()
+            {
+                string collectionType = string.Format(CultureInfo.InvariantCulture, "Immutable{0}RootAdapter", this.SetOrList);
+                return SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Adapters))),
+                    SyntaxFactory.GenericName(collectionType).AddTypeArgumentListArguments(
+                        this.applyTo.RecursiveType.TypeSyntax,
+                        GetRootedTypeSyntax(this.applyTo.RecursiveType),
+                        this.applyTo.RecursiveParent.TypeSyntax));
+            }
+
+            protected NameSyntax GetRootedCollectionTypePropertyType()
+            {
+                return SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.QualifiedName(
+                            SyntaxFactory.IdentifierName(nameof(System)),
+                            SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections.Immutable))),
+                    SyntaxFactory.GenericName("IImmutable" + this.SetOrList)
+                        .AddTypeArgumentListArguments(GetRootedTypeSyntax(this.applyTo.RecursiveType)));
+            }
+
+            protected string SetOrList
+            {
+                get { return (this.applyTo.ChildrenAreOrdered && !this.applyTo.ChildrenAreSorted) ? "List" : "Set"; }
             }
 
             protected override void GenerateCore()
@@ -73,7 +110,6 @@
                         SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))))
                     .AddMembers(
                         this.CreateRootedConstructor(),
-                        this.CreateParentProperty(),
                         this.CreateRootProperty(),
                         this.CreateIdentityProperty(),
                         this.CreateIsDefaultProperty(),
@@ -92,6 +128,10 @@
 
                 if (this.applyTo.IsRecursive)
                 {
+                    rootedStruct = rootedStruct
+                        .AddMembers(
+                            this.CreateParentProperty());
+
                     if (!this.applyTo.TypeSymbol.IsAbstract)
                     {
                         rootedStruct = rootedStruct
@@ -138,6 +178,14 @@
                             Syntax.ThisDot(RootFieldName),
                             rootParam))));
 
+                if (this.applyTo.IsRecursiveParent)
+                {
+                    ctor = ctor.AddBodyStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        Syntax.ThisDot(this.applyTo.RecursiveField.NameAsField),
+                        SyntaxFactory.DefaultExpression(Syntax.OptionalOf(this.GetRootedCollectionTypeAdapterName())))));
+                }
+
                 return ctor;
             }
 
@@ -176,7 +224,12 @@
                                 SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                                 SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)),
-                        });
+                        // private Optional<Adapters.ImmutableSetRootAdapter<TRecursiveType, RootedRecursiveType, TRecursiveParent>> children;
+                        SyntaxFactory.FieldDeclaration(
+                            SyntaxFactory.VariableDeclaration(Syntax.OptionalOf(this.GetRootedCollectionTypeAdapterName())).AddVariables(
+                                SyntaxFactory.VariableDeclarator(this.applyTo.RecursiveField.NameAsField.Identifier)))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword)),
+                    });
                 }
 
                 fields.AddRange(new MemberDeclarationSyntax[] {
@@ -222,7 +275,19 @@
                         .AddParameterListParameters(
                             SyntaxFactory.Parameter(thatParameter.Identifier).WithType(this.typeName),
                             SyntaxFactory.Parameter(otherParameter.Identifier).WithType(this.typeName))
-                        .WithBody(SyntaxFactory.Block(ThrowNotImplementedException)),
+                        .WithBody(SyntaxFactory.Block(
+                            // return that.greenNode == other.greenNode && that.root == other.root;
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.BinaryExpression(
+                                    SyntaxKind.LogicalAndExpression,
+                                    SyntaxFactory.BinaryExpression(
+                                        SyntaxKind.EqualsExpression,
+                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thatParameter, GreenNodeFieldName),
+                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, otherParameter, GreenNodeFieldName)),
+                                    SyntaxFactory.BinaryExpression(
+                                        SyntaxKind.EqualsExpression,
+                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thatParameter, RootFieldName),
+                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, otherParameter, RootFieldName)))))),
                     // public static bool operator !=(RootedTemplateType that, RootedTemplateType other)
                     SyntaxFactory.OperatorDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), SyntaxFactory.Token(SyntaxKind.ExclamationEqualsToken))
                         .AddModifiers(publicStaticModifiers)
@@ -244,11 +309,31 @@
 
             protected PropertyDeclarationSyntax CreateParentProperty()
             {
+                var greenParentVar = SyntaxFactory.IdentifierName("greenParent");
                 return SyntaxFactory.PropertyDeclaration(this.applyTo.RecursiveParent.TypeSyntax, ParentPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                         SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(ThrowNotImplementedException)));
+                        SyntaxFactory.Block(
+                            // this.ThrowIfDefault();
+                            CallThrowIfDefaultMethod,
+                            // var greenParent = this.root.GetParent(this.greenNode);
+                            SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                SyntaxFactory.VariableDeclarator(greenParentVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.ThisDot(RootFieldName),
+                                            EnumerableRecursiveParentGen.GetParentMethodName)).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(Syntax.ThisDot(GreenNodeFieldName))))))),
+                            // return greenParent != null ? new RootedRecursiveParent(greenParent, this.root) : default(RootedRecursiveParent);
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.ConditionalExpression(
+                                    SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, greenParentVar, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                    SyntaxFactory.ObjectCreationExpression(this.rootedRecursiveParent).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(greenParentVar),
+                                        SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName))),
+                                    SyntaxFactory.DefaultExpression(this.rootedRecursiveParent))))));
             }
 
             protected PropertyDeclarationSyntax CreateRootProperty()
@@ -266,7 +351,12 @@
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                         SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(ThrowNotImplementedException)));
+                        SyntaxFactory.Block(
+                            // this.ThrowIfDefault();
+                            CallThrowIfDefaultMethod,
+                            // return this.greenNode.Identity;
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), IdentityPropertyName)))));
             }
 
             protected PropertyDeclarationSyntax CreateIsRootProperty()
@@ -494,14 +584,28 @@
 
             protected PropertyDeclarationSyntax[] CreateAsDerivedProperties()
             {
+                var downcastVar = SyntaxFactory.IdentifierName("downcast");
                 return this.applyTo.Descendents.Select(descendent =>
+                    // public RootedDerivedType AsDerivedType { get; }
                     SyntaxFactory.PropertyDeclaration(
-                        descendent.TypeSyntax,
+                        GetRootedTypeSyntax(descendent),
                         string.Format(CultureInfo.InvariantCulture, AsDerivedPropertyNameFormat, descendent.TypeSymbol.Name))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                             SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(ThrowNotImplementedException)))
+                            SyntaxFactory.Block(
+                                // var downcast = this.greenNode as <#=greenDescendent.TypeName#>;
+                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                    SyntaxFactory.VariableDeclarator(downcastVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                        SyntaxFactory.BinaryExpression(SyntaxKind.AsExpression, Syntax.ThisDot(GreenNodeFieldName), descendent.TypeSyntax))))),
+                                // return downcast != null ? new RootedDerivedType(downcast, this.root) : default(RootedDerivedType);
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.ConditionalExpression(
+                                        SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, downcastVar, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                        SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(descendent)).AddArgumentListArguments(
+                                            SyntaxFactory.Argument(downcastVar),
+                                            SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName))),
+                                        SyntaxFactory.DefaultExpression(GetRootedTypeSyntax(descendent)))))))
                     ).ToArray();
             }
 
@@ -522,12 +626,41 @@
             {
                 return this.applyTo.AllFields.Select(field =>
                     SyntaxFactory.PropertyDeclaration(
-                        field.TypeSyntax,
+                        field.IsRecursiveCollection ? this.GetRootedCollectionTypePropertyType() : field.TypeSyntax,
                         field.NameAsProperty.Identifier)
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                             SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(ThrowNotImplementedException)))
+                            field.IsRecursiveCollection
+                                ? SyntaxFactory.Block(
+                                    SyntaxFactory.IfStatement(
+                                        SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(Syntax.ThisDot(field.NameAsField))),
+                                        SyntaxFactory.Block(
+                                            // this.ThrowIfDefault();
+                                            CallThrowIfDefaultMethod,
+                                            // this.<#= field.NameCamelCase #> = Optional.For(Adapter.Create(this.greenNode.<#= field.NamePascalCase #>, toRooted, toUnrooted, this.root));
+                                            SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                                                SyntaxKind.SimpleAssignmentExpression,
+                                                Syntax.ThisDot(field.NameAsField),
+                                                Syntax.OptionalFor(
+                                                    SyntaxFactory.InvocationExpression(
+                                                        SyntaxFactory.MemberAccessExpression(
+                                                            SyntaxKind.SimpleMemberAccessExpression,
+                                                            SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)), SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Adapter))),
+                                                            SyntaxFactory.IdentifierName(nameof(Adapter.Create))))
+                                                        .AddArgumentListArguments(
+                                                            SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), field.NameAsProperty)),
+                                                            SyntaxFactory.Argument(ToRootedFieldName),
+                                                            SyntaxFactory.Argument(ToUnrootedFieldName),
+                                                            SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName)))))))),
+                                    SyntaxFactory.ReturnStatement(
+                                        Syntax.OptionalValue(Syntax.ThisDot(field.NameAsField))))
+                                : SyntaxFactory.Block(
+                                    // this.ThrowIfDefault();
+                                    CallThrowIfDefaultMethod,
+                                    // return this.greenNode.SomeProperty;
+                                    SyntaxFactory.ReturnStatement(
+                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), field.NameAsProperty)))))
                     ).ToArray();
             }
         }

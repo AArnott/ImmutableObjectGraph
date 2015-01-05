@@ -22,6 +22,8 @@
     {
         protected class EnumerableRecursiveParentGen : FeatureGenerator
         {
+            internal static readonly IdentifierNameSyntax GetParentMethodName = SyntaxFactory.IdentifierName("GetParent");
+
             public EnumerableRecursiveParentGen(CodeGen generator)
                 : base(generator)
             {
@@ -47,6 +49,25 @@
                 }
 
                 this.ImplementRecursiveParentInterface();
+
+                this.innerMembers.Add(this.CreateGetParentMethod());
+            }
+
+            private MethodDeclarationSyntax CreateGetParentMethod()
+            {
+                // public TRecursiveParent GetParent(TRecursiveType descendent)
+                var descendentParam = SyntaxFactory.IdentifierName("descendent");
+                return SyntaxFactory.MethodDeclaration(this.applyTo.RecursiveParent.TypeSyntax, GetParentMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(SyntaxFactory.Parameter(descendentParam.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(
+                        // return this.GetParent<TRecursiveParent, TRecursiveType>(descendent);
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                Syntax.ThisDot(
+                                    SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetParent))
+                                        .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)))
+                                .AddArgumentListArguments(SyntaxFactory.Argument(descendentParam)))));
             }
 
             private void ImplementIEnumerableInterfaces()
