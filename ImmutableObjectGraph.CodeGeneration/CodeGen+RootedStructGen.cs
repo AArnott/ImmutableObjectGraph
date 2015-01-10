@@ -34,6 +34,7 @@
             private static readonly IdentifierNameSyntax IsDefaultPropertyName = SyntaxFactory.IdentifierName("IsDefault");
             private static readonly IdentifierNameSyntax ThrowIfDefaultMethodName = SyntaxFactory.IdentifierName("ThrowIfDefault");
             private static readonly IdentifierNameSyntax TryFindMethodName = SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.TryFind));
+            private static readonly IdentifierNameSyntax NewSpineMethodName = SyntaxFactory.IdentifierName("NewSpine");
 
             private static readonly IdentifierNameSyntax GreenNodeFieldName = SyntaxFactory.IdentifierName("greenNode");
             private static readonly IdentifierNameSyntax RootFieldName = SyntaxFactory.IdentifierName("root");
@@ -150,6 +151,7 @@
                         this.CreateIsDefaultProperty(),
                         this.CreateTemplateTypeProperty(),
                         this.CreateWithMethod(),
+                        this.CreateNewSpineMethod(),
                         this.CreateEqualsObjectMethod(),
                         this.CreateGetHashCodeMethod(),
                         this.CreateEqualsRootedStructMethod(),
@@ -462,19 +464,10 @@
                                 SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), WithMethodName))
                                     .WithArgumentList(this.generator.CreateArgumentList(this.applyTo.AllFields, ArgSource.Argument)))))),
-                        // var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
-                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
-                            SyntaxFactory.VariableDeclarator(newRootVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
-                                SyntaxFactory.InvocationExpression(
-                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(RootFieldName), SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.ReplaceDescendent))))
-                                    .AddArgumentListArguments(
-                                        SyntaxFactory.Argument(GreenNodeFieldName),
-                                        SyntaxFactory.Argument(newGreenNodeVar)))))),
-                        // return new <#= redType.TypeName #>(newGreenNode, newRoot);
-                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
-                            SyntaxFactory.Argument(newGreenNodeVar),
-                            SyntaxFactory.Argument(newRootVar)))
-                    ));
+                        // return this.NewSpine(newGreenNode);
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
+                            SyntaxFactory.Argument(newGreenNodeVar)))));
             }
 
             protected MethodDeclarationSyntax CreateEqualsObjectMethod()
@@ -630,7 +623,7 @@
                                 // value = new <#= redType.RecursiveType.TypeName #>(greenValue, this.root);
                                 SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
-                                    valueParameter, 
+                                    valueParameter,
                                     SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddArgumentListArguments(
                                         SyntaxFactory.Argument(greenValueVar),
                                         SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName))))),
@@ -820,6 +813,31 @@
                                     SyntaxFactory.ReturnStatement(
                                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), field.NameAsProperty)))))
                     ).ToArray();
+            }
+
+            protected MethodDeclarationSyntax CreateNewSpineMethod()
+            {
+                var leafParam = SyntaxFactory.IdentifierName("leaf");
+                var newRootVar = SyntaxFactory.IdentifierName("newRoot");
+
+                // private RootedFileSystemFile NewSpine(FileSystemFile leaf)
+                return SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), NewSpineMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                    .AddParameterListParameters(SyntaxFactory.Parameter(leafParam.Identifier).WithType(this.applyTo.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(
+                        // var newRoot = this.root.ReplaceDescendent(this.greenNode, leaf);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(newRootVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(RootFieldName), SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.ReplaceDescendent))))
+                                    .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(GreenNodeFieldName),
+                                        SyntaxFactory.Argument(leafParam)))))),
+                        // return new RootedTemplateType(newGreenNode, newRoot);
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
+                            SyntaxFactory.Argument(leafParam),
+                            SyntaxFactory.Argument(newRootVar)))
+                    ));
             }
         }
     }
