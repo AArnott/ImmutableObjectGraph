@@ -32,6 +32,7 @@
             private static readonly IdentifierNameSyntax IsRootPropertyName = SyntaxFactory.IdentifierName("IsRoot");
             private static readonly IdentifierNameSyntax IsDefaultPropertyName = SyntaxFactory.IdentifierName("IsDefault");
             private static readonly IdentifierNameSyntax ThrowIfDefaultMethodName = SyntaxFactory.IdentifierName("ThrowIfDefault");
+            private static readonly IdentifierNameSyntax TryFindMethodName = SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.TryFind));
 
             private static readonly IdentifierNameSyntax GreenNodeFieldName = SyntaxFactory.IdentifierName("greenNode");
             private static readonly IdentifierNameSyntax RootFieldName = SyntaxFactory.IdentifierName("root");
@@ -592,6 +593,8 @@
 
             protected MethodDeclarationSyntax CreateTryFindMethod()
             {
+                var greenValueVar = SyntaxFactory.IdentifierName("greenValue");
+
                 // public bool TryFind(uint identity, out TRecursiveType value)
                 var valueParameter = SyntaxFactory.IdentifierName("value");
                 return SyntaxFactory.MethodDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.TryFind)))
@@ -599,7 +602,35 @@
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax),
                         SyntaxFactory.Parameter(valueParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax).AddModifiers(SyntaxFactory.Token(SyntaxKind.OutKeyword)))
-                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+                    .WithBody(SyntaxFactory.Block(
+                        CallThrowIfDefaultMethod,
+                        // TRecursiveType greenValue;
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(this.applyTo.RecursiveType.TypeSyntax).AddVariables(
+                            SyntaxFactory.VariableDeclarator(greenValueVar.Identifier))),
+                        // if (this.greenNode.TryFind(identity, out greenValue)) {
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), TryFindMethodName))
+                                .AddArgumentListArguments(
+                                    SyntaxFactory.Argument(IdentityParameterName),
+                                    SyntaxFactory.Argument(null, SyntaxFactory.Token(SyntaxKind.OutKeyword), greenValueVar)),
+                            SyntaxFactory.Block(
+                                // value = new <#= redType.RecursiveType.TypeName #>(greenValue, this.root);
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression,
+                                    valueParameter, 
+                                    SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(greenValueVar),
+                                        SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName))))),
+                                // return true;
+                                SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression)))),
+                        // value = default(<#= redType.RecursiveType.TypeName #>);
+                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            valueParameter,
+                            SyntaxFactory.DefaultExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)))),
+                        // return false;
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))));
             }
 
             protected MethodDeclarationSyntax CreateGetEnumeratorMethod()
