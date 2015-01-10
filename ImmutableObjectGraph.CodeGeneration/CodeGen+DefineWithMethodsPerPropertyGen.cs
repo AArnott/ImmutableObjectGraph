@@ -22,7 +22,7 @@
     {
         protected class DefineWithMethodsPerPropertyGen : FeatureGenerator
         {
-            private const string WithPropertyMethodPrefix = "With";
+            internal const string WithPropertyMethodPrefix = "With";
 
             public DefineWithMethodsPerPropertyGen(CodeGen generator)
                 : base(generator)

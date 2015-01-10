@@ -104,10 +104,11 @@
             {
                 this.siblingMembers.Add(this.CreateRootedStruct());
 
+                this.innerMembers.Add(this.CreateWithRootMethod());
+
                 if (this.applyTo.IsRecursiveParentOrDerivative)
                 {
                     this.innerMembers.Add(this.CreateAsRootProperty());
-                    this.innerMembers.Add(this.CreateWithRootMethod());
                 }
             }
 
@@ -130,10 +131,17 @@
                 var rootParam = SyntaxFactory.IdentifierName("root");
 
                 // public RootedTemplateType WithRoot(TRecursiveParent root)
-                return SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), WithRootMethodName.Identifier)
+                var method = SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), WithRootMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddParameterListParameters(SyntaxFactory.Parameter(rootParam.Identifier).WithType(this.applyTo.RecursiveParent.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+
+                if (this.applyTo.Ancestors.Any())
+                {
+                    method = Syntax.AddNewKeyword(method);
+                }
+
+                return method;
             }
 
             protected StructDeclarationSyntax CreateRootedStruct()
@@ -188,6 +196,11 @@
                                 this.CreateParentedNodeMethod())
                             .AddMembers(this.CreateChildrenProperties());
                     }
+                }
+
+                if (this.generator.options.DefineWithMethodsPerProperty)
+                {
+                    rootedStruct = rootedStruct.AddMembers(this.CreateWithPropertyMethods());
                 }
 
                 return rootedStruct;
@@ -838,6 +851,18 @@
                             SyntaxFactory.Argument(leafParam),
                             SyntaxFactory.Argument(newRootVar)))
                     ));
+            }
+
+            protected MemberDeclarationSyntax[] CreateWithPropertyMethods()
+            {
+                var valueParam = SyntaxFactory.IdentifierName("value");
+
+                return this.applyTo.AllFields.Select(field =>
+                    SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), DefineWithMethodsPerPropertyGen.WithPropertyMethodPrefix + field.NameAsProperty)
+                    .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(field.TypeSyntax))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        ThrowNotImplementedException))).ToArray();
             }
         }
     }
