@@ -28,6 +28,7 @@
             private const string AsAncestorPropertyNameFormat = "As{0}";
             private static readonly IdentifierNameSyntax ParentPropertyName = SyntaxFactory.IdentifierName("Parent");
             private static readonly IdentifierNameSyntax AsRootPropertyName = SyntaxFactory.IdentifierName("AsRoot");
+            private static readonly IdentifierNameSyntax WithRootMethodName = SyntaxFactory.IdentifierName("WithRoot");
             private static readonly IdentifierNameSyntax RootPropertyName = SyntaxFactory.IdentifierName("Root");
             private static readonly IdentifierNameSyntax IsRootPropertyName = SyntaxFactory.IdentifierName("IsRoot");
             private static readonly IdentifierNameSyntax IsDefaultPropertyName = SyntaxFactory.IdentifierName("IsDefault");
@@ -105,6 +106,7 @@
                 if (this.applyTo.IsRecursiveParentOrDerivative)
                 {
                     this.innerMembers.Add(this.CreateAsRootProperty());
+                    this.innerMembers.Add(this.CreateWithRootMethod());
                 }
             }
 
@@ -120,6 +122,17 @@
                             SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))))));
+            }
+
+            protected MemberDeclarationSyntax CreateWithRootMethod()
+            {
+                var rootParam = SyntaxFactory.IdentifierName("root");
+
+                // public RootedTemplateType WithRoot(TRecursiveParent root)
+                return SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), WithRootMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(SyntaxFactory.Parameter(rootParam.Identifier).WithType(this.applyTo.RecursiveParent.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
             }
 
             protected StructDeclarationSyntax CreateRootedStruct()
