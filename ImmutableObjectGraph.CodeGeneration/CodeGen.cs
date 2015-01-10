@@ -951,6 +951,14 @@
                 get { return !this.Ancestor.IsDefault; }
             }
 
+            public IEnumerable<MetaType> SelfAndAncestors
+            {
+                get
+                {
+                    return new[] { this }.Concat(this.Ancestors);
+                }
+            }
+
             public IEnumerable<MetaType> Descendents
             {
                 get
@@ -1098,6 +1106,19 @@
                 }
 
                 return set;
+            }
+
+            public MetaType GetFirstCommonAncestor(MetaType cousin)
+            {
+                foreach (var ancestor in this.SelfAndAncestors)
+                {
+                    if (cousin.SelfAndAncestors.Contains(ancestor))
+                    {
+                        return ancestor;
+                    }
+                }
+
+                throw new ArgumentException("No common ancestor found.");
             }
 
             public override bool Equals(object obj)

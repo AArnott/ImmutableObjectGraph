@@ -169,7 +169,8 @@
                     .AddMembers(this.CreateIsDerivedProperties())
                     .AddMembers(this.CreateAsDerivedProperties())
                     .AddMembers(this.CreateAsAncestorProperties())
-                    .AddMembers(this.CreateFieldAccessorProperties());
+                    .AddMembers(this.CreateFieldAccessorProperties())
+                    .AddMembers(this.CreateToTypeMethods());
 
                 if (this.applyTo.IsRecursive)
                 {
@@ -863,6 +864,22 @@
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithBody(SyntaxFactory.Block(
                         ThrowNotImplementedException))).ToArray();
+            }
+
+            protected MethodDeclarationSyntax[] CreateToTypeMethods()
+            {
+                var targetTypes = from type in this.applyTo.GetTypeFamily()
+                                  where !type.TypeSymbol.IsAbstract && !type.Equals(this.applyTo)
+                                  select new { type, CommonAncestor = type.GetFirstCommonAncestor(this.applyTo) };
+
+                return targetTypes.Select(targetType =>
+                    SyntaxFactory.MethodDeclaration(
+                        GetRootedTypeSyntax(targetType.type),
+                        TypeConversionGen.GetToTypeMethodName(targetType.type.TypeSymbol.Name).Identifier)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .WithParameterList(this.generator.CreateParameterList(targetType.type.GetFieldsBeyond(targetType.CommonAncestor), ParameterStyle.OptionalOrRequired))
+                        .WithBody(SyntaxFactory.Block(
+                            ThrowNotImplementedException))).ToArray();
             }
         }
     }
