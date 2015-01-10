@@ -26,6 +26,7 @@
             private static readonly IdentifierNameSyntax LookupTableFieldName = SyntaxFactory.IdentifierName("lookupTable");
             private static readonly IdentifierNameSyntax LookupTablePropertyName = SyntaxFactory.IdentifierName("LookupTable");
             private static readonly IdentifierNameSyntax InefficiencyLoadFieldName = SyntaxFactory.IdentifierName("inefficiencyLoad");
+            private static readonly IdentifierNameSyntax FindMethodName = SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.Find));
 
             private readonly TypeSyntax lookupTableType;
             private readonly NameSyntax IRecursiveParentWithChildReplacementType;
@@ -272,6 +273,7 @@
                                                 .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)),
                                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(identityParameter))))))));
 
+                    this.innerMembers.Add(this.CreateFindMethod());
                 }
             }
 
@@ -371,6 +373,23 @@
                                     .AddArgumentListArguments(SyntaxFactory.Argument(newSelfVar))))),
                         // return newSelf;
                         SyntaxFactory.ReturnStatement(newSelfVar)));
+            }
+
+            protected MethodDeclarationSyntax CreateFindMethod()
+            {
+                // public TRecursiveType Find(uint identity)
+                return SyntaxFactory.MethodDeclaration(this.applyTo.RecursiveType.TypeSyntax, FindMethodName.Identifier)
+                    .AddParameterListParameters(RequiredIdentityParameter)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        // return this.Find<TRecursiveParent, TRecursiveType>(identity);
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                Syntax.ThisDot(
+                                    SyntaxFactory.GenericName(FindMethodName.Identifier).AddTypeArgumentListArguments(
+                                        this.applyTo.RecursiveParent.TypeSyntax,
+                                        this.applyTo.RecursiveType.TypeSyntax)))
+                                .AddArgumentListArguments(SyntaxFactory.Argument(IdentityParameterName)))));
             }
 
             protected MemberAccessExpressionSyntax GetLookupTableHelperMember(string memberName)

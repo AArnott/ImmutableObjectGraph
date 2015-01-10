@@ -448,7 +448,7 @@
                                 SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), WithMethodName))
                                     .WithArgumentList(this.generator.CreateArgumentList(this.applyTo.AllFields, ArgSource.Argument)))))), // TODO: fix field types for recursive collections
-                        // var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+                                                                                                                                          // var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
                         SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
                             SyntaxFactory.VariableDeclarator(newRootVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
                                 SyntaxFactory.InvocationExpression(
@@ -558,10 +558,20 @@
 
             protected MethodDeclarationSyntax CreateCreateMethod()
             {
+                var greenNodeVar = SyntaxFactory.IdentifierName("greenNode");
+
+                // TODO: Use *red* fields for different children collection type.
                 return SyntaxFactory.MethodDeclaration(this.typeName, CreateMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.OptionalOrRequired))
-                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(greenNodeVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, this.applyTo.TypeSyntax, CreateMethodName))
+                                    .WithArgumentList(this.generator.CreateArgumentList(this.applyTo.AllFields, ArgSource.Argument)))))),
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, greenNodeVar, AsRootPropertyName))));
             }
 
             protected MethodDeclarationSyntax CreateFindMethod()
@@ -571,7 +581,13 @@
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax))
-                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+                    .WithBody(SyntaxFactory.Block(
+                        CallThrowIfDefaultMethod,
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddArgumentListArguments(
+                            SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.Find))))
+                                .AddArgumentListArguments(SyntaxFactory.Argument(IdentityParameterName))),
+                            SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName))))));
             }
 
             protected MethodDeclarationSyntax CreateTryFindMethod()
