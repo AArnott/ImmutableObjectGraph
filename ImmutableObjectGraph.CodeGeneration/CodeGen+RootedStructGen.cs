@@ -589,8 +589,8 @@
 
             protected MethodDeclarationSyntax CreateFindMethod()
             {
-                // public TRecursiveType Find(uint identity)
-                return SyntaxFactory.MethodDeclaration(this.applyTo.RecursiveType.TypeSyntax, SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.Find)))
+                // public RootedRecursiveType Find(uint identity)
+                return SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo.RecursiveType), SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.Find)))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax))
