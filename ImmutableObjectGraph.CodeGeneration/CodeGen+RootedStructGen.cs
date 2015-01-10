@@ -582,7 +582,7 @@
                 var greenNodeVar = SyntaxFactory.IdentifierName("greenNode");
 
                 return SyntaxFactory.MethodDeclaration(this.typeName, CreateMethodName.Identifier)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.OptionalOrRequired))
                     .WithBody(SyntaxFactory.Block(
                         SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
