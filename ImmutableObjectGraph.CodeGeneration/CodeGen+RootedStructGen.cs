@@ -607,13 +607,13 @@
             {
                 var greenValueVar = SyntaxFactory.IdentifierName("greenValue");
 
-                // public bool TryFind(uint identity, out TRecursiveType value)
+                // public bool TryFind(uint identity, out RootedRecursiveType value)
                 var valueParameter = SyntaxFactory.IdentifierName("value");
                 return SyntaxFactory.MethodDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.TryFind)))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax),
-                        SyntaxFactory.Parameter(valueParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax).AddModifiers(SyntaxFactory.Token(SyntaxKind.OutKeyword)))
+                        SyntaxFactory.Parameter(valueParameter.Identifier).WithType(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddModifiers(SyntaxFactory.Token(SyntaxKind.OutKeyword)))
                     .WithBody(SyntaxFactory.Block(
                         CallThrowIfDefaultMethod,
                         // TRecursiveType greenValue;
