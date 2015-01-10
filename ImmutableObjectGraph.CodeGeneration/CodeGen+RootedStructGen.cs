@@ -604,10 +604,18 @@
 
             protected MethodDeclarationSyntax CreateGetEnumeratorMethod()
             {
-                // public IEnumerator<TRecursiveType> GetEnumerator()
-                return SyntaxFactory.MethodDeclaration(Syntax.IEnumeratorOf(this.applyTo.RecursiveType.TypeSyntax), nameof(IEnumerable<int>.GetEnumerator))
+                // public IEnumerator<TRootedRecursiveType> GetEnumerator()
+                return SyntaxFactory.MethodDeclaration(Syntax.IEnumeratorOf(GetRootedTypeSyntax(this.applyTo.RecursiveType)), nameof(IEnumerable<int>.GetEnumerator))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+                    .WithBody(SyntaxFactory.Block(
+                        // return this.Children.GetEnumerator();
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty),
+                                    SyntaxFactory.IdentifierName(nameof(IEnumerable<int>.GetEnumerator))),
+                                SyntaxFactory.ArgumentList()))));
             }
 
             protected MethodDeclarationSyntax CreateParentedNodeMethod()
