@@ -53,9 +53,9 @@
                 : base(generator)
             {
                 this.typeName = GetRootedTypeSyntax(this.applyTo);
-                if (!this.applyTo.RecursiveType.IsDefault)
+                if (!this.applyTo.RecursiveTypeFromFamily.IsDefault)
                 {
-                    this.rootedRecursiveType = GetRootedTypeSyntax(this.applyTo.RecursiveType);
+                    this.rootedRecursiveType = GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily);
                     this.rootedRecursiveParent = GetRootedTypeSyntax(this.applyTo.RecursiveParent);
                 }
             }
@@ -172,12 +172,13 @@
                     .AddMembers(this.CreateFieldAccessorProperties())
                     .AddMembers(this.CreateToTypeMethods());
 
+                if (this.rootedRecursiveParent != null)
+                {
+                    rootedStruct = rootedStruct.AddMembers(this.CreateParentProperty());
+                }
+
                 if (this.applyTo.IsRecursive)
                 {
-                    rootedStruct = rootedStruct
-                        .AddMembers(
-                            this.CreateParentProperty());
-
                     if (!this.applyTo.TypeSymbol.IsAbstract)
                     {
                         rootedStruct = rootedStruct
@@ -361,7 +362,9 @@
             protected PropertyDeclarationSyntax CreateParentProperty()
             {
                 var greenParentVar = SyntaxFactory.IdentifierName("greenParent");
-                return SyntaxFactory.PropertyDeclaration(this.applyTo.RecursiveParent.TypeSyntax, ParentPropertyName.Identifier)
+
+                // public RootedRecursiveParent Parent
+                return SyntaxFactory.PropertyDeclaration(GetRootedTypeSyntax(this.applyTo.RecursiveParent), ParentPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                         SyntaxKind.GetAccessorDeclaration,
@@ -771,7 +774,7 @@
             {
                 return this.applyTo.Ancestors.Select(ancestor =>
                     SyntaxFactory.PropertyDeclaration(
-                        ancestor.TypeSyntax,
+                        GetRootedTypeSyntax(ancestor),
                         string.Format(CultureInfo.InvariantCulture, AsAncestorPropertyNameFormat, ancestor.TypeSymbol.Name))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
