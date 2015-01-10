@@ -448,8 +448,8 @@
                             SyntaxFactory.VariableDeclarator(newGreenNodeVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
                                 SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), WithMethodName))
-                                    .WithArgumentList(this.generator.CreateArgumentList(this.applyTo.AllFields, ArgSource.Argument)))))), // TODO: fix field types for recursive collections
-                                                                                                                                          // var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+                                    .WithArgumentList(this.generator.CreateArgumentList(this.applyTo.AllFields, ArgSource.Argument)))))),
+                        // var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
                         SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
                             SyntaxFactory.VariableDeclarator(newRootVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
                                 SyntaxFactory.InvocationExpression(
@@ -561,7 +561,6 @@
             {
                 var greenNodeVar = SyntaxFactory.IdentifierName("greenNode");
 
-                // TODO: Use *red* fields for different children collection type.
                 return SyntaxFactory.MethodDeclaration(this.typeName, CreateMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.OptionalOrRequired))
