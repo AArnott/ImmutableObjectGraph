@@ -1,15 +1,4 @@
 ﻿<#
-// TODO: Rather than declare these WithProperty() methods on every type (base and derived)
-//       we should instead declare them ONCE on a static class as extension methods:
-//       public static class SomeTypeWith {
-//           public static T WithProperty(this T self, string value) where T : TBase {
-//               return (T)self.With(property: value);
-//           }
-//       }
-//       That retains the ability for folks to find these methods on base and derived types,
-//       And for the return type to be the same as the original type, but without having to
-//       define the method on so many types. Reduction in code gen size is usually a good thing.
-
 this.HandleField += (templateType, field) => { 
 	if (field.DeclaringType.Equals(templateType)) { // field is declared locally
 #>
