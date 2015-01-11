@@ -1070,7 +1070,20 @@
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                             .WithParameterList(SyntaxFactory.ParameterList())
                             .WithBody(SyntaxFactory.Block(
-                                ThrowNotImplementedException)));
+                                CallThrowIfDefaultMethod,
+                                // var mutatedLeaf = this.greenNode.RemoveAttributes();
+                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                    SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.ThisDot(GreenNodeFieldName),
+                                                SyntaxFactory.IdentifierName("Remove" + plural)),
+                                            SyntaxFactory.ArgumentList()))))),
+                                // return this.NewSpine(mutatedLeaf);
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(mutatedLeafVar))))));
 
                         // Remove[Singular] method
                         methods.Add(this.CreateCollectionHelperMethodStarter(field, false, "Remove"));
