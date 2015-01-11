@@ -129,12 +129,30 @@
             protected MemberDeclarationSyntax CreateWithRootMethod()
             {
                 var rootParam = SyntaxFactory.IdentifierName("root");
+                var spineVar = SyntaxFactory.IdentifierName("spine");
 
                 // public RootedTemplateType WithRoot(TRecursiveParent root)
                 var method = SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), WithRootMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddParameterListParameters(SyntaxFactory.Parameter(rootParam.Identifier).WithType(this.applyTo.RecursiveParent.TypeSyntax))
-                    .WithBody(SyntaxFactory.Block(ThrowNotImplementedException));
+                    .WithBody(SyntaxFactory.Block(
+                        // var spine = root.GetSpine(this);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(spineVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, rootParam, FastSpineGen.GetSpineMethodName))
+                                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.ThisExpression())))))),
+                        // if (spine.IsEmpty)
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, spineVar, SyntaxFactory.IdentifierName(nameof(ImmutableStack<int>.IsEmpty))),
+                            SyntaxFactory.Block(
+                                // throw new System.ArgumentException("Root does not belong to the same tree.");
+                                SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(Syntax.GetTypeSyntax(typeof(ArgumentException))).AddArgumentListArguments(
+                                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("Root does not belong to the same tree."))))))),
+                        // return new <#= redType.TypeName #>(this, root);
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
+                            SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                            SyntaxFactory.Argument(rootParam)))));
 
                 if (this.applyTo.Ancestors.Any())
                 {
