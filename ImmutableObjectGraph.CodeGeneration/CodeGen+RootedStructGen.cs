@@ -927,6 +927,43 @@
                                     SyntaxFactory.Argument(newRootVar)))))).ToArray();
             }
 
+            protected MethodDeclarationSyntax CreateCollectionHelperMethodStarter(MetaField field, bool isPlural, string verb)
+            {
+                var distinguisher = field.Distinguisher;
+                string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
+                string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
+                string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
+                string term = isPlural ? plural : singular;
+                var mutatedLeafVar = SyntaxFactory.IdentifierName("mutatedLeaf");
+                var parameterName = isPlural ? CollectionHelpersGen.ValuesParameterName : CollectionHelpersGen.ValueParameterName;
+
+                var method = SyntaxFactory.MethodDeclaration(
+                    GetRootedTypeSyntax(this.applyTo),
+                    SyntaxFactory.Identifier(verb + term))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithBody(SyntaxFactory.Block(
+                        CallThrowIfDefaultMethod,
+                        // var mutatedLeaf = this.greenNode.Verb<#= plural #>(values);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        Syntax.ThisDot(GreenNodeFieldName),
+                                        SyntaxFactory.IdentifierName(verb + term))).AddArgumentListArguments(
+                                            SyntaxFactory.Argument(parameterName)))))),
+                        // return this.NewSpine(mutatedLeaf);
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
+                                SyntaxFactory.Argument(mutatedLeafVar)))));
+
+                method = isPlural
+                    ? method.WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
+                    : method.AddParameterListParameters(SyntaxFactory.Parameter(parameterName.Identifier).WithType(field.ElementTypeSyntax));
+
+                return method;
+            }
+
             protected MemberDeclarationSyntax[] CreateCollectionHelperMethods()
             {
                 var valueParam = CollectionHelpersGen.ValueParameterName;
@@ -945,50 +982,12 @@
                         string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
 
                         // With[Plural] methods
-                        var paramsArrayMethod = SyntaxFactory.MethodDeclaration(
-                            GetRootedTypeSyntax(this.applyTo),
-                            SyntaxFactory.Identifier("With" + plural))
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                            .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
-                            .WithBody(SyntaxFactory.Block(
-                                CallThrowIfDefaultMethod,
-                                // var mutatedLeaf = this.greenNode.With<#= plural #>(values);
-                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
-                                    SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
-                                        SyntaxFactory.InvocationExpression(
-                                            SyntaxFactory.MemberAccessExpression(
-                                                SyntaxKind.SimpleMemberAccessExpression,
-                                                Syntax.ThisDot(GreenNodeFieldName),
-                                                SyntaxFactory.IdentifierName("With" + plural))).AddArgumentListArguments(
-                                                    SyntaxFactory.Argument(valuesParam)))))),
-                                // return this.NewSpine(mutatedLeaf);
-                                SyntaxFactory.ReturnStatement(
-                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
-                                        SyntaxFactory.Argument(mutatedLeafVar)))));
+                        var paramsArrayMethod = this.CreateCollectionHelperMethodStarter(field, true, "With");
                         methods.Add(paramsArrayMethod);
                         methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
                         // Add[Plural] methods
-                        paramsArrayMethod = SyntaxFactory.MethodDeclaration(
-                            GetRootedTypeSyntax(this.applyTo),
-                            SyntaxFactory.Identifier("Add" + plural))
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                            .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
-                            .WithBody(SyntaxFactory.Block(
-                                CallThrowIfDefaultMethod,
-                                // var mutatedLeaf = this.greenNode.Add<#= plural #>(values);
-                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
-                                    SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
-                                        SyntaxFactory.InvocationExpression(
-                                            SyntaxFactory.MemberAccessExpression(
-                                                SyntaxKind.SimpleMemberAccessExpression,
-                                                Syntax.ThisDot(GreenNodeFieldName),
-                                                SyntaxFactory.IdentifierName("Add" + plural))).AddArgumentListArguments(
-                                                    SyntaxFactory.Argument(valuesParam)))))),
-                                // return this.NewSpine(mutatedLeaf);
-                                SyntaxFactory.ReturnStatement(
-                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
-                                        SyntaxFactory.Argument(mutatedLeafVar)))));
+                        paramsArrayMethod = this.CreateCollectionHelperMethodStarter(field, true, "Add");
                         methods.Add(paramsArrayMethod);
                         methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
@@ -1009,36 +1008,11 @@
                         else
                         {
                             // public RootedTemplateType AddChild(<#= field.ElementTypeName #> value)
-                            methods.Add(SyntaxFactory.MethodDeclaration(
-                                GetRootedTypeSyntax(this.applyTo),
-                                SyntaxFactory.Identifier("Add" + singular))
-                                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(field.ElementTypeSyntax))
-                                .WithBody(SyntaxFactory.Block(
-                                    ThrowNotImplementedException)));
+                            methods.Add(this.CreateCollectionHelperMethodStarter(field, false, "Add"));
                         }
 
                         // Remove[Plural] methods
-                        paramsArrayMethod = SyntaxFactory.MethodDeclaration(
-                            GetRootedTypeSyntax(this.applyTo),
-                            SyntaxFactory.Identifier("Remove" + plural))
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                            .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
-                            .WithBody(SyntaxFactory.Block(
-                                CallThrowIfDefaultMethod,
-                                // var mutatedLeaf = this.greenNode.Add<#= plural #>(values);
-                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
-                                    SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
-                                        SyntaxFactory.InvocationExpression(
-                                            SyntaxFactory.MemberAccessExpression(
-                                                SyntaxKind.SimpleMemberAccessExpression,
-                                                Syntax.ThisDot(GreenNodeFieldName),
-                                                SyntaxFactory.IdentifierName("Remove" + plural))).AddArgumentListArguments(
-                                                    SyntaxFactory.Argument(valuesParam)))))),
-                                // return this.NewSpine(mutatedLeaf);
-                                SyntaxFactory.ReturnStatement(
-                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
-                                        SyntaxFactory.Argument(mutatedLeafVar)))));
+                        paramsArrayMethod = this.CreateCollectionHelperMethodStarter(field, true, "Remove");
                         methods.Add(paramsArrayMethod);
                         methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
@@ -1051,13 +1025,7 @@
                                 ThrowNotImplementedException)));
 
                         // Remove[Singular] method
-                        methods.Add(SyntaxFactory.MethodDeclaration(
-                            GetRootedTypeSyntax(this.applyTo),
-                            SyntaxFactory.Identifier("Remove" + singular))
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                            .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(field.ElementTypeSyntax))
-                            .WithBody(SyntaxFactory.Block(
-                                ThrowNotImplementedException)));
+                        methods.Add(this.CreateCollectionHelperMethodStarter(field, false, "Remove"));
                     }
                 }
 
