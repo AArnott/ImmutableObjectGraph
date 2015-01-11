@@ -931,6 +931,7 @@
             {
                 var valueParam = CollectionHelpersGen.ValueParameterName;
                 var valuesParam = CollectionHelpersGen.ValuesParameterName;
+                var mutatedLeafVar = SyntaxFactory.IdentifierName("mutatedLeaf");
                 var methods = new List<MemberDeclarationSyntax>();
 
                 // Compare to the CollectionHelpersGen.GenerateCore method.
@@ -950,7 +951,20 @@
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                             .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
                             .WithBody(SyntaxFactory.Block(
-                                ThrowNotImplementedException));
+                                CallThrowIfDefaultMethod,
+                                // var mutatedLeaf = this.greenNode.With<#= plural #>(values);
+                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                    SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.ThisDot(GreenNodeFieldName),
+                                                SyntaxFactory.IdentifierName("With" + plural))).AddArgumentListArguments(
+                                                    SyntaxFactory.Argument(valuesParam)))))),
+                                // return this.NewSpine(mutatedLeaf);
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(mutatedLeafVar)))));
                         methods.Add(paramsArrayMethod);
                         methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
@@ -961,7 +975,20 @@
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                             .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
                             .WithBody(SyntaxFactory.Block(
-                                ThrowNotImplementedException));
+                                CallThrowIfDefaultMethod,
+                                // var mutatedLeaf = this.greenNode.Add<#= plural #>(values);
+                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                    SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.ThisDot(GreenNodeFieldName),
+                                                SyntaxFactory.IdentifierName("Add" + plural))).AddArgumentListArguments(
+                                                    SyntaxFactory.Argument(valuesParam)))))),
+                                // return this.NewSpine(mutatedLeaf);
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(mutatedLeafVar)))));
                         methods.Add(paramsArrayMethod);
                         methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
@@ -998,7 +1025,20 @@
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                             .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
                             .WithBody(SyntaxFactory.Block(
-                                ThrowNotImplementedException));
+                                CallThrowIfDefaultMethod,
+                                // var mutatedLeaf = this.greenNode.Add<#= plural #>(values);
+                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                    SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.ThisDot(GreenNodeFieldName),
+                                                SyntaxFactory.IdentifierName("Remove" + plural))).AddArgumentListArguments(
+                                                    SyntaxFactory.Argument(valuesParam)))))),
+                                // return this.NewSpine(mutatedLeaf);
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(mutatedLeafVar)))));
                         methods.Add(paramsArrayMethod);
                         methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
 
