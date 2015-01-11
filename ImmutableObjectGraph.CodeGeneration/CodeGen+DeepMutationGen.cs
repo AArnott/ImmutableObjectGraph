@@ -23,7 +23,7 @@
         protected class DeepMutationGen : FeatureGenerator
         {
             private static readonly IdentifierNameSyntax AddDescendentMethodName = SyntaxFactory.IdentifierName("AddDescendent");
-            private static readonly IdentifierNameSyntax ReplaceDescendentMethodName = SyntaxFactory.IdentifierName("ReplaceDescendent");
+            internal static readonly IdentifierNameSyntax ReplaceDescendentMethodName = SyntaxFactory.IdentifierName("ReplaceDescendent");
             private static readonly IdentifierNameSyntax RemoveDescendentMethodName = SyntaxFactory.IdentifierName("RemoveDescendent");
 
             public DeepMutationGen(CodeGen generator)

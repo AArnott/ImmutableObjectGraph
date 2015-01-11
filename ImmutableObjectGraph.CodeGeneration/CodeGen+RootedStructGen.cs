@@ -876,6 +876,9 @@
                                   where !type.TypeSymbol.IsAbstract && !type.Equals(this.applyTo)
                                   select new { type, CommonAncestor = type.GetFirstCommonAncestor(this.applyTo) };
 
+                var newGreenNodeVar = SyntaxFactory.IdentifierName("newGreenNode");
+                var newRootVar = SyntaxFactory.IdentifierName("newRoot");
+
                 return targetTypes.Select(targetType =>
                     SyntaxFactory.MethodDeclaration(
                         GetRootedTypeSyntax(targetType.type),
@@ -883,7 +886,31 @@
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .WithParameterList(this.generator.CreateParameterList(targetType.type.GetFieldsBeyond(targetType.CommonAncestor), ParameterStyle.OptionalOrRequired))
                         .WithBody(SyntaxFactory.Block(
-                            ThrowNotImplementedException))).ToArray();
+                            // var newGreenNode = this.greenNode.To<#= targetType.TypeName #>(<# WriteArguments(familyType.GetFieldsBeyond(commonAncestor), ArgSource.Argument); #>);
+                            SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                SyntaxFactory.VariableDeclarator(newGreenNodeVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.ThisDot(GreenNodeFieldName),
+                                            TypeConversionGen.GetToTypeMethodName(targetType.type.TypeSymbol.Name)))
+                                        .WithArgumentList(this.generator.CreateArgumentList(targetType.type.GetFieldsBeyond(targetType.CommonAncestor), ArgSource.Argument)))))),
+                            // var newRoot = this.root.ReplaceDescendent(this.greenNode, newGreenNode);
+                            SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                SyntaxFactory.VariableDeclarator(newRootVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.ThisDot(RootFieldName),
+                                            DeepMutationGen.ReplaceDescendentMethodName))
+                                        .AddArgumentListArguments(
+                                            SyntaxFactory.Argument(Syntax.ThisDot(GreenNodeFieldName)),
+                                            SyntaxFactory.Argument(newGreenNodeVar)))))),
+                            // return new <#= familyType.TypeName #>(newGreenNode, newRoot);
+                            SyntaxFactory.ReturnStatement(
+                                SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(targetType.type)).AddArgumentListArguments(
+                                    SyntaxFactory.Argument(newGreenNodeVar),
+                                    SyntaxFactory.Argument(newRootVar)))))).ToArray();
             }
 
             protected MemberDeclarationSyntax[] CreateCollectionHelperMethods()
