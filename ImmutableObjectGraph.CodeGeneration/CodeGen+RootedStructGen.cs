@@ -1012,16 +1012,46 @@
                         // Add[Singular] method
                         if (field.IsRecursiveCollection)
                         {
+                            var newParentVar = SyntaxFactory.IdentifierName("newParent");
+                            var newChildVar = SyntaxFactory.IdentifierName("newChild");
+                            var returnType = SyntaxFactory.GenericName(nameof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)).AddTypeArgumentListArguments(
+                                GetRootedTypeSyntax(this.applyTo.RecursiveParent),
+                                GetRootedTypeSyntax(this.applyTo.RecursiveType));
+
                             // public ParentedRecursiveType<RootedRecursiveParent, RootedRecursiveType> AddChild(FileSystemEntry value)
                             methods.Add(SyntaxFactory.MethodDeclaration(
-                                SyntaxFactory.GenericName(nameof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)).AddTypeArgumentListArguments(
-                                    GetRootedTypeSyntax(this.applyTo.RecursiveParent),
-                                    GetRootedTypeSyntax(this.applyTo.RecursiveType)),
+                                returnType,
                                 SyntaxFactory.Identifier("Add" + singular))
                                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                                 .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                                 .WithBody(SyntaxFactory.Block(
-                                    ThrowNotImplementedException)));
+                                    CallThrowIfDefaultMethod,
+                                    // var mutatedLeaf = this.greenNode.AddChild(value);
+                                    SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                        SyntaxFactory.VariableDeclarator(mutatedLeafVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                            SyntaxFactory.InvocationExpression(
+                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), SyntaxFactory.IdentifierName("Add" + singular)))
+                                                .AddArgumentListArguments(SyntaxFactory.Argument(valueParam)))))),
+                                     // var newParent = this.NewSpine(mutatedLeaf);
+                                     SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                         SyntaxFactory.VariableDeclarator(newParentVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                             SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName)).AddArgumentListArguments(
+                                                 SyntaxFactory.Argument(mutatedLeafVar)))))),
+                                     // var newChild = new RootedRecursiveType(value, newParent.root);
+                                     SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                                         SyntaxFactory.VariableDeclarator(newChildVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                             SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddArgumentListArguments(
+                                                 SyntaxFactory.Argument(valueParam),
+                                                 SyntaxFactory.Argument(
+                                                     SyntaxFactory.MemberAccessExpression(
+                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                        newParentVar,
+                                                        RootFieldName))))))),
+                                     // return new ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry>(newChild, newParent);
+                                     SyntaxFactory.ReturnStatement(
+                                         SyntaxFactory.ObjectCreationExpression(returnType).AddArgumentListArguments(
+                                             SyntaxFactory.Argument(newChildVar),
+                                             SyntaxFactory.Argument(newParentVar))))));
                         }
                         else
                         {
