@@ -861,13 +861,27 @@
             protected MemberDeclarationSyntax[] CreateWithPropertyMethods()
             {
                 var valueParam = SyntaxFactory.IdentifierName("value");
+                var mutatedLeaf = SyntaxFactory.IdentifierName("mutatedLeaf");
 
                 return this.applyTo.AllFields.Select(field =>
                     SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), DefineWithMethodsPerPropertyGen.WithPropertyMethodPrefix + field.NameAsProperty)
                     .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(field.TypeSyntax))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithBody(SyntaxFactory.Block(
-                        ThrowNotImplementedException))).ToArray();
+                        CallThrowIfDefaultMethod,
+                        // var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(value);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(mutatedLeaf.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        Syntax.ThisDot(GreenNodeFieldName),
+                                        SyntaxFactory.IdentifierName(DefineWithMethodsPerPropertyGen.WithPropertyMethodPrefix + field.NameAsProperty)))
+                                    .AddArgumentListArguments(SyntaxFactory.Argument(valueParam)))))),
+                        // return this.NewSpine(mutatedLeaf);
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(Syntax.ThisDot(NewSpineMethodName))
+                                .AddArgumentListArguments(SyntaxFactory.Argument(mutatedLeaf)))))).ToArray();
             }
 
             protected MethodDeclarationSyntax[] CreateToTypeMethods()
