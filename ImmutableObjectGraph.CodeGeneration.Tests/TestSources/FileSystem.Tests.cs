@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -135,6 +136,289 @@
             Assert.False(updatedSubdir.Contains(fileUnderSubdir));
         }
 
+        [Fact]
+        public void RedNodeStuff()
+        {
+            var redRoot = this.root.AsRoot;
+            Assert.Equal(this.root.PathSegment, redRoot.PathSegment);
+            Assert.Equal(this.root.Children.Count, redRoot.Children.Count);
+            Assert.True(redRoot.Children.Any(c => c.PathSegment == "a.cs" && c.IsFileSystemFile));
+            Assert.True(redRoot.Children.Any(c => c.PathSegment == "b.cs" && c.IsFileSystemFile));
+
+            RootedFileSystemDirectory subdir = redRoot.Children.Last().AsFileSystemDirectory;
+            Assert.Equal("d.cs", subdir.Children.Single().PathSegment);
+        }
+
+        [Fact]
+        public void AllRedDescendentsShareRoot()
+        {
+            VerifyDescendentsShareRoot(this.root.AsRoot);
+        }
+
+        [Fact]
+        public void RedNodeEquality()
+        {
+            var greenLeaf = (FileSystemDirectory)this.root.Children.Last();
+            var redLeaf = greenLeaf.WithRoot(this.root);
+            var redLeafAsRoot = greenLeaf.AsRoot;
+
+            Assert.Equal(redLeafAsRoot, redLeafAsRoot);
+            Assert.Equal(redLeaf, redLeaf);
+            Assert.NotEqual(redLeaf, redLeafAsRoot);
+
+            IEquatable<RootedFileSystemDirectory> redLeafAsEquatable = redLeaf;
+            Assert.True(redLeafAsEquatable.Equals(redLeaf));
+        }
+
+        [Fact]
+        public void GetHashCodeMatchesGreenNode()
+        {
+            var greenLeaf = (FileSystemDirectory)this.root.Children.Last();
+            var redLeaf = greenLeaf.WithRoot(this.root);
+            var redLeafAsRoot = greenLeaf.AsRoot;
+
+            Assert.Equal(greenLeaf.GetHashCode(), redLeaf.GetHashCode());
+            Assert.Equal(greenLeaf.GetHashCode(), redLeafAsRoot.GetHashCode());
+        }
+
+        [Fact]
+        public void FindWithLookupTable()
+        {
+            var root = this.GetRootWithLookupTable();
+            Assert.Same(root, root.Find(root.Identity));
+            var immediateChild = root.Children.First();
+            Assert.Same(immediateChild, root.Find(immediateChild.Identity));
+            var grandchild = root.Children.OfType<FileSystemDirectory>().First().Children.First();
+            Assert.Same(grandchild, root.Find(grandchild.Identity));
+        }
+
+        [Fact]
+        public void Find()
+        {
+            var root = this.root;
+            Assert.Same(root, root.Find(root.Identity));
+            var immediateChild = root.Children.First();
+            Assert.Same(immediateChild, root.Find(immediateChild.Identity));
+            var grandchild = root.Children.OfType<FileSystemDirectory>().First().Children.First();
+            Assert.Same(grandchild, root.Find(grandchild.Identity));
+        }
+
+        [Fact]
+        public void FindFailure()
+        {
+            Assert.Throws<KeyNotFoundException>(() => this.root.Find(1025890195));
+        }
+
+        [Fact]
+        public void RedNodeFind()
+        {
+            var root = this.root.AsRoot;
+            Assert.Equal(root, root.Find(root.Identity).AsFileSystemDirectory);
+            var immediateChild = root.Children.First();
+            Assert.Equal(immediateChild, root.Find(immediateChild.Identity));
+            var grandchild = root.Children.First(c => c.IsFileSystemDirectory).AsFileSystemDirectory.Children.First();
+            Assert.Equal(grandchild, root.Find(grandchild.Identity));
+
+            RootedFileSystemEntry found;
+            Assert.True(root.TryFind(grandchild.Identity, out found));
+            Assert.Equal(grandchild, found);
+        }
+
+        [Fact]
+        public void RedNodeFindFailure()
+        {
+            var root = this.root.AsRoot;
+            Assert.Throws<KeyNotFoundException>(() => root.Find(1082591875));
+
+            RootedFileSystemEntry found;
+            Assert.False(root.TryFind(1082591875, out found));
+            Assert.Null(found.FileSystemEntry);
+        }
+
+        [Fact]
+        public void DefaultRootedFileSystemEntry()
+        {
+            var missing = default(RootedFileSystemEntry);
+            Assert.False(missing.IsFileSystemFile);
+            Assert.False(missing.IsFileSystemDirectory);
+            Assert.Null(missing.FileSystemEntry);
+            Assert.Null(missing.Root.FileSystemDirectory);
+            Assert.Null(missing.AsFileSystemFile.FileSystemFile);
+            Assert.Null(missing.AsFileSystemDirectory.FileSystemDirectory);
+
+            Assert.Throws<InvalidOperationException>(() => missing.Identity);
+            Assert.Throws<InvalidOperationException>(() => missing.PathSegment);
+            Assert.Throws<InvalidOperationException>(() => missing.With());
+            Assert.Throws<InvalidOperationException>(() => missing.WithPathSegment("q"));
+
+            Assert.True(missing.Equals(missing));
+            missing.GetHashCode();   // we don't care what the result is, so long as it doesn't throw.
+        }
+
+        [Fact]
+        public void DefaultRootedFileSystemFile()
+        {
+            var missing = default(RootedFileSystemFile);
+            Assert.Throws<InvalidOperationException>(() => missing.WithAttributes(Enumerable.Empty<string>()));
+            Assert.Throws<InvalidOperationException>(() => missing.AddAttributes(Enumerable.Empty<string>()));
+            Assert.Throws<InvalidOperationException>(() => missing.RemoveAttributes(Enumerable.Empty<string>()));
+            Assert.Throws<InvalidOperationException>(() => missing.Attributes);
+        }
+
+        [Fact]
+        public void ModifyPropertyInLeafRewritesSpine()
+        {
+            var redRoot = this.root.AsRoot;
+            var leaf = redRoot.Children.Last().AsFileSystemDirectory.Children.First().AsFileSystemFile;
+            var newLeaf = leaf.WithPathSegment("changed");
+            var leafFromNewRoot = newLeaf.Root.Children.Last().AsFileSystemDirectory.Children.First().AsFileSystemFile;
+            Assert.Equal(newLeaf, leafFromNewRoot);
+        }
+
+        [Fact]
+        public void ModifyPropertyInLeafRewritesSpineWithLookupTable()
+        {
+            var root = this.GetRootWithLookupTable();
+            var redRoot = root.AsRoot;
+            var leaf = redRoot.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
+            var newLeaf = leaf.WithPathSegment("changed");
+            var leafFromNewRoot = newLeaf.Root.Children.Single(l => l.IsFileSystemDirectory).AsFileSystemDirectory.Children.First().AsFileSystemFile;
+            Assert.Equal(newLeaf, leafFromNewRoot);
+        }
+
+        [Fact]
+        public void ModifyPropertyInRootWithLookupTablePreservesLookupTable()
+        {
+            var root = this.GetRootWithLookupTable();
+            var redRoot = root.AsRoot;
+            root.Children.First().WithRoot(root);  // force lazy construction of lookup table
+            var newRoot = redRoot.WithPathSegment("changed");
+        }
+
+        [Fact]
+        public void WithRootInUnrelatedTreeThrows()
+        {
+            var leaf = FileSystemDirectory.Create("z");
+            Assert.Throws<ArgumentException>(() => leaf.WithRoot(this.root));
+        }
+
+        [Fact]
+        public void RedNodeWithBulkMethodOnChild()
+        {
+            var redRoot = this.root.AsRoot;
+            var firstChild = redRoot.Children.First();
+            RootedFileSystemEntry modifiedChild = firstChild.With(pathSegment: "g");
+            Assert.Equal("g", modifiedChild.PathSegment);
+        }
+
+        [Fact]
+        public void RedNodeWithBulkMethodOnRoot()
+        {
+            var redRoot = this.root.AsRoot;
+            RootedFileSystemDirectory modifiedRoot = redRoot.With(pathSegment: "g");
+            Assert.Equal("g", modifiedRoot.PathSegment);
+        }
+
+        [Fact]
+        public void ConvertRootedFileToDirectory()
+        {
+            RootedFileSystemFile redFile = this.root.AsRoot.Children.First().AsFileSystemFile;
+            RootedFileSystemDirectory redDirectory = redFile.ToFileSystemDirectory();
+            Assert.True(redDirectory.Root.Children.Contains(redDirectory.AsFileSystemEntry));
+        }
+
+        [Fact]
+        public void ConvertRootedDirectoryToFile()
+        {
+            RootedFileSystemDirectory redDirectory = this.root.AsRoot.Children.Last().AsFileSystemDirectory;
+            var redFile = redDirectory.ToFileSystemFile();
+            Assert.True(redFile.Root.Children.Contains(redFile.AsFileSystemEntry));
+        }
+
+        [Fact]
+        public void ConvertFileAsEntryToFileRetainsIdentity()
+        {
+            RootedFileSystemEntry redEntry = this.root.AsRoot.Children.First();
+            var redFile = redEntry.ToFileSystemFile();
+            Assert.True(redFile.Root.Children.Contains(redFile.AsFileSystemEntry));
+            Assert.Same(redEntry.FileSystemEntry, redFile.FileSystemFile);
+        }
+
+        [Fact]
+        public void LookupTableIntactAfterMutatingNonRecursiveField()
+        {
+            var root = this.GetRootWithLookupTable();
+            var modifiedRoot = root.WithPathSegment("d:");
+        }
+
+        [Fact]
+        public void RedNodeRecursiveParentCreate()
+        {
+            var drive = RootedFileSystemDirectory.Create("c:");
+            Assert.Equal("c:", drive.PathSegment);
+            Assert.True(drive.IsRoot);
+            Assert.Equal(drive, drive.Root);
+        }
+
+        [Fact]
+        public void RedNodeNonRecursiveCollectionHelpers()
+        {
+            var redRoot = this.root.AsRoot;
+            var redFile = redRoot.Children.First(c => c.IsFileSystemFile).AsFileSystemFile;
+            var modifiedFile = redFile.AddAttributes("three", "new", "attributes");
+            Assert.Equal(3, modifiedFile.Attributes.Count);
+            Assert.Equal(redRoot.Identity, modifiedFile.Root.Identity);
+
+            // Verify that the root of the new file points to the modified file.
+            Assert.Equal(3, modifiedFile.Root.Find(modifiedFile.Identity).AsFileSystemFile.Attributes.Count);
+        }
+
+        [Fact]
+        public void RedNodeConstructionAPI()
+        {
+            var redRoot = RootedFileSystemDirectory.Create("c:").AddChildren(
+                FileSystemFile.Create("a.cs"),
+                FileSystemFile.Create("b.cs"),
+                FileSystemDirectory.Create("c")
+                    .AddChildren(FileSystemFile.Create("d.cs")));
+            Assert.Equal("c:", redRoot.PathSegment);
+            Assert.Equal(3, redRoot.Children.Count);
+            Assert.Equal("d.cs", redRoot.Children.Single(c => c.IsFileSystemDirectory).AsFileSystemDirectory.Children.Single().PathSegment);
+        }
+
+        [Fact]
+        public void ParentOfRootIsDefault()
+        {
+            var redRoot = this.root.AsRoot;
+            Assert.Null(redRoot.Parent.FileSystemDirectory);
+        }
+
+        [Fact]
+        public void ParentOfChildIsCorrect()
+        {
+            var redRoot = this.root.AsRoot;
+            foreach (var child in redRoot)
+            {
+                Assert.Equal(redRoot, child.Parent);
+                if (child.IsFileSystemDirectory)
+                {
+                    var recursiveChild = child.AsFileSystemDirectory;
+                    foreach (var grandchild in recursiveChild)
+                    {
+                        Assert.Equal(recursiveChild, grandchild.Parent);
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void FullPath()
+        {
+            Assert.Equal(@"c:\", this.root.AsRoot.FullPath);
+            Assert.Equal(@"c:\a.cs", this.root.AsRoot.Children.First().FullPath);
+            Assert.Equal(@"c:\c\d.cs", this.root.AsRoot.Children.Last().AsFileSystemDirectory.Children.Single().FullPath);
+        }
+
         [Fact(Skip = "Only works in debug")] // TODO: We need validation to be able to run in release too!
         public void ChildAddedTwiceThrowsWithMutation()
         {
@@ -150,7 +434,7 @@
             Assert.Equal("a.cs", this.root["a.cs"].PathSegment);
             Assert.Equal("d.cs", ((FileSystemDirectory)this.root["c"])["d.cs"].PathSegment);
         }
-        
+
         [Fact]
         public void EmptyPathSegment()
         {
@@ -172,6 +456,61 @@
             Assert.False(root.HasDescendent(root));
         }
 
+        [Fact]
+        public void RootedStruct_IsDefault()
+        {
+            var file = new RootedFileSystemDirectory();
+            Assert.True(file.IsDefault);
+            file = FileSystemDirectory.Create("c:").AsRoot;
+            Assert.False(file.IsDefault);
+        }
+
+        [Fact]
+        public void RootedStruct_ImplicitConversionToGreenNode()
+        {
+            RootedFileSystemDirectory rootedDrive = RootedFileSystemDirectory.Create("c:");
+            FileSystemDirectory unrootedDrive = rootedDrive;
+            Assert.Same(rootedDrive.FileSystemDirectory, unrootedDrive);
+            FileSystemEntry unrootedEntry = rootedDrive;
+            Assert.Same(rootedDrive.FileSystemDirectory, unrootedEntry);
+        }
+
+        [Fact]
+        public void RootedStruct_EqualityOperators()
+        {
+            var r1a = RootedFileSystemDirectory.Create("foo");
+            var r1b = r1a; // struct copy
+            var r2 = RootedFileSystemDirectory.Create("foo");
+
+            // Compare two structs with the same underlying green node reference.
+            Assert.True(r1a == r1b);
+            Assert.False(r1a != r1b);
+
+            // Compare two structs with different underlying green node references.
+            Assert.False(r1a == r2);
+            Assert.True(r1a != r2);
+
+            // Now verify the root node reference aspect to it.
+            var newRoot = RootedFileSystemDirectory.Create("c:")
+                .AddChild(r1a.FileSystemDirectory).Parent;
+            var r1Rerooted = r1a.FileSystemDirectory.WithRoot(newRoot);
+            Assert.False(r1a == r1Rerooted);
+            Assert.True(r1a != r1Rerooted);
+        }
+
+        private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory)
+        {
+            foreach (var child in directory)
+            {
+                Assert.Same(directory.Root.FileSystemDirectory, child.Root.FileSystemDirectory);
+
+                if (child.IsFileSystemDirectory)
+                {
+                    VerifyDescendentsShareRoot(child.AsFileSystemDirectory);
+                }
+            }
+        }
+
         private FileSystemDirectory GetRootWithLookupTable()
         {
             // Fill in a bunch of children to force the creation of a lookup table.
@@ -186,6 +525,86 @@
         static partial void CreateDefaultTemplate(ref FileSystemFile.Template template)
         {
             template.Attributes = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
+    partial struct RootedFileSystemFile
+    {
+        public string FullPath
+        {
+            get
+            {
+                var path = new StringBuilder(this.PathSegment);
+                var parent = this.Parent;
+                while (parent.FileSystemDirectory != null)
+                {
+                    path.Insert(0, Path.DirectorySeparatorChar);
+                    path.Insert(0, parent.PathSegment);
+                    parent = parent.Parent;
+                }
+
+                return path.ToString();
+            }
+        }
+
+        public override string ToString()
+        {
+            return this.FullPath;
+        }
+    }
+
+    partial struct RootedFileSystemDirectory
+    {
+        public RootedFileSystemEntry this[string pathSegment]
+        {
+            get
+            {
+                int index = this.greenNode.Children.IndexOf(FileSystemFile.Create(pathSegment));
+                if (index < 0)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+
+                return this.greenNode.Children[index].WithRoot(this.root);
+            }
+        }
+
+        public string FullPath
+        {
+            get
+            {
+                var path = new StringBuilder(this.PathSegment);
+                path.Append(Path.DirectorySeparatorChar);
+                var parent = this.Parent;
+                while (parent.FileSystemDirectory != null)
+                {
+                    path.Insert(0, Path.DirectorySeparatorChar);
+                    path.Insert(0, parent.PathSegment);
+                }
+
+                return path.ToString();
+            }
+        }
+
+        public override string ToString()
+        {
+            return this.FullPath;
+        }
+    }
+
+    partial struct RootedFileSystemEntry
+    {
+        public string FullPath
+        {
+            get
+            {
+                return this.IsFileSystemDirectory ? this.AsFileSystemDirectory.FullPath : this.AsFileSystemFile.FullPath;
+            }
+        }
+
+        public override string ToString()
+        {
+            return this.FullPath;
         }
     }
 
