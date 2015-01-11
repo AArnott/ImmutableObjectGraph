@@ -22,8 +22,8 @@
     {
         protected class CollectionHelpersGen : FeatureGenerator
         {
-            private static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
-            private static readonly IdentifierNameSyntax ValueParameterName = SyntaxFactory.IdentifierName("value");
+            internal static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
+            internal static readonly IdentifierNameSyntax ValueParameterName = SyntaxFactory.IdentifierName("value");
             private static readonly IdentifierNameSyntax SyncImmediateChildToCurrentVersionMethodName = SyntaxFactory.IdentifierName("SyncImmediateChildToCurrentVersion");
 
             public CollectionHelpersGen(CodeGen generator)
@@ -247,7 +247,7 @@
                 return method;
             }
 
-            private static ParameterListSyntax CreateParamsElementArrayParameters(MetaField field)
+            internal static ParameterListSyntax CreateParamsElementArrayParameters(MetaField field)
             {
                 return SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
                      SyntaxFactory.Parameter(ValuesParameterName.Identifier)
@@ -256,7 +256,7 @@
                                 .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(SyntaxFactory.OmittedArraySizeExpression()))))));
             }
 
-            private static MethodDeclarationSyntax CreateIEnumerableFromParamsArrayMethod(MetaField field, MethodDeclarationSyntax paramsArrayMethod)
+            internal static MethodDeclarationSyntax CreateIEnumerableFromParamsArrayMethod(MetaField field, MethodDeclarationSyntax paramsArrayMethod)
             {
                 return paramsArrayMethod
                     .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(

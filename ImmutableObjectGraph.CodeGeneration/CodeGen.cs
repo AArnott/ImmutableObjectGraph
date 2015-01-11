@@ -1244,6 +1244,14 @@
                 get { return GetTypeOrCollectionMemberType(this.Symbol.Type); }
             }
 
+            public TypeSyntax ElementTypeSyntax
+            {
+                get
+                {
+                    return GetFullyQualifiedSymbolName(this.ElementType);
+                }
+            }
+
             public bool IsDefault
             {
                 get { return this.Symbol == null; }

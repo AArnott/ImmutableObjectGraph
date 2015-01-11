@@ -170,7 +170,8 @@
                     .AddMembers(this.CreateAsDerivedProperties())
                     .AddMembers(this.CreateAsAncestorProperties())
                     .AddMembers(this.CreateFieldAccessorProperties())
-                    .AddMembers(this.CreateToTypeMethods());
+                    .AddMembers(this.CreateToTypeMethods())
+                    .AddMembers(this.CreateCollectionHelperMethods());
 
                 if (this.rootedRecursiveParent != null)
                 {
@@ -883,6 +884,103 @@
                         .WithParameterList(this.generator.CreateParameterList(targetType.type.GetFieldsBeyond(targetType.CommonAncestor), ParameterStyle.OptionalOrRequired))
                         .WithBody(SyntaxFactory.Block(
                             ThrowNotImplementedException))).ToArray();
+            }
+
+            protected MemberDeclarationSyntax[] CreateCollectionHelperMethods()
+            {
+                var valueParam = CollectionHelpersGen.ValueParameterName;
+                var valuesParam = CollectionHelpersGen.ValuesParameterName;
+                var methods = new List<MemberDeclarationSyntax>();
+
+                // Compare to the CollectionHelpersGen.GenerateCore method.
+                foreach (var field in this.applyTo.AllFields)
+                {
+                    if (field.IsCollection)
+                    {
+                        var distinguisher = field.Distinguisher;
+                        string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
+                        string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
+                        string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
+
+                        // With[Plural] methods
+                        var paramsArrayMethod = SyntaxFactory.MethodDeclaration(
+                            GetRootedTypeSyntax(this.applyTo),
+                            SyntaxFactory.Identifier("With" + plural))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
+                            .WithBody(SyntaxFactory.Block(
+                                ThrowNotImplementedException));
+                        methods.Add(paramsArrayMethod);
+                        methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+
+                        // Add[Plural] methods
+                        paramsArrayMethod = SyntaxFactory.MethodDeclaration(
+                            GetRootedTypeSyntax(this.applyTo),
+                            SyntaxFactory.Identifier("Add" + plural))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
+                            .WithBody(SyntaxFactory.Block(
+                                ThrowNotImplementedException));
+                        methods.Add(paramsArrayMethod);
+                        methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+
+                        // Add[Singular] method
+                        if (field.IsRecursiveCollection)
+                        {
+                            // public ParentedRecursiveType<RootedRecursiveParent, RootedRecursiveType> AddChild(FileSystemEntry value)
+                            methods.Add(SyntaxFactory.MethodDeclaration(
+                                SyntaxFactory.GenericName(nameof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)).AddTypeArgumentListArguments(
+                                    GetRootedTypeSyntax(this.applyTo.RecursiveParent),
+                                    GetRootedTypeSyntax(this.applyTo.RecursiveType)),
+                                SyntaxFactory.Identifier("Add" + singular))
+                                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                                .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
+                                .WithBody(SyntaxFactory.Block(
+                                    ThrowNotImplementedException)));
+                        }
+                        else
+                        {
+                            // public RootedTemplateType AddChild(<#= field.ElementTypeName #> value)
+                            methods.Add(SyntaxFactory.MethodDeclaration(
+                                GetRootedTypeSyntax(this.applyTo),
+                                SyntaxFactory.Identifier("Add" + singular))
+                                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                                .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(field.ElementTypeSyntax))
+                                .WithBody(SyntaxFactory.Block(
+                                    ThrowNotImplementedException)));
+                        }
+
+                        // Remove[Plural] methods
+                        paramsArrayMethod = SyntaxFactory.MethodDeclaration(
+                            GetRootedTypeSyntax(this.applyTo),
+                            SyntaxFactory.Identifier("Remove" + plural))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .WithParameterList(CollectionHelpersGen.CreateParamsElementArrayParameters(field))
+                            .WithBody(SyntaxFactory.Block(
+                                ThrowNotImplementedException));
+                        methods.Add(paramsArrayMethod);
+                        methods.Add(CollectionHelpersGen.CreateIEnumerableFromParamsArrayMethod(field, paramsArrayMethod));
+
+                        methods.Add(SyntaxFactory.MethodDeclaration(
+                            GetRootedTypeSyntax(this.applyTo),
+                            SyntaxFactory.Identifier("Remove" + plural))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .WithParameterList(SyntaxFactory.ParameterList())
+                            .WithBody(SyntaxFactory.Block(
+                                ThrowNotImplementedException)));
+
+                        // Remove[Singular] method
+                        methods.Add(SyntaxFactory.MethodDeclaration(
+                            GetRootedTypeSyntax(this.applyTo),
+                            SyntaxFactory.Identifier("Remove" + singular))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(field.ElementTypeSyntax))
+                            .WithBody(SyntaxFactory.Block(
+                                ThrowNotImplementedException)));
+                    }
+                }
+
+                return methods.ToArray();
             }
         }
     }
