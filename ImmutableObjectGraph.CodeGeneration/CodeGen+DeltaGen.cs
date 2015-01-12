@@ -27,13 +27,14 @@
             private static readonly IdentifierNameSyntax EnumValuePositionUnderParent = SyntaxFactory.IdentifierName("PositionUnderParent");
             private static readonly IdentifierNameSyntax EnumValueParent = SyntaxFactory.IdentifierName("Parent");
             private static readonly IdentifierNameSyntax EnumValueAll = SyntaxFactory.IdentifierName("All");
+            private static readonly IdentifierNameSyntax DiffGramTypeName = SyntaxFactory.IdentifierName("DiffGram");
 
-            private readonly string enumTypeName;
+            private IdentifierNameSyntax enumTypeName;
+            private NameSyntax diffGramTypeSyntax;
 
             public DeltaGen(CodeGen generator)
                 : base(generator)
             {
-                this.enumTypeName = generator.applyToMetaType.TypeSymbol.Name + "ChangedProperties";
             }
 
             public override bool IsApplicable
@@ -45,11 +46,24 @@
             {
                 if (this.applyTo.IsRecursiveType)
                 {
+                    this.enumTypeName = SyntaxFactory.IdentifierName(this.applyTo.TypeSymbol.Name + "ChangedProperties");
+                    this.diffGramTypeSyntax = SyntaxFactory.QualifiedName(this.applyTo.TypeSyntax, DiffGramTypeName);
+
+                    // Implement IRecursiveDiffingType<RecursiveTypeChangedProperties, RecursiveType.DiffGram>
+                    this.baseTypes.Add(SyntaxFactory.SimpleBaseType(
+                        SyntaxFactory.QualifiedName(
+                            SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                            SyntaxFactory.GenericName(nameof(ImmutableObjectGraph.IRecursiveDiffingType<uint, uint>))
+                                .AddTypeArgumentListArguments(
+                                    this.enumTypeName,
+                                    this.diffGramTypeSyntax))));
+
                     this.siblingMembers.Add(this.CreateChangedPropertiesEnum());
+                    this.innerMembers.Add(this.CreateDiffGramStruct());
                 }
             }
 
-            private EnumDeclarationSyntax CreateChangedPropertiesEnum()
+            protected EnumDeclarationSyntax CreateChangedPropertiesEnum()
             {
                 var fields = this.generator.applyToMetaType.Concat(this.generator.applyToMetaType.Descendents)
                     .SelectMany(t => t.LocalFields)
@@ -85,7 +99,7 @@
                         ? SyntaxKind.ULongKeyword
                         : SyntaxKind.UIntKeyword));
 
-                var result = SyntaxFactory.EnumDeclaration(this.enumTypeName)
+                var result = SyntaxFactory.EnumDeclaration(this.enumTypeName.Identifier)
                     .AddModifiers(GetModifiersForAccessibility(this.generator.applyToSymbol))
                     .WithBaseList(SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(SyntaxFactory.SimpleBaseType(enumBaseType))))
                     .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Attribute(
@@ -98,6 +112,12 @@
                     .AddMembers(fieldEnumValues.ToArray())
                     .AddMembers(allEnumValue);
                 return result;
+            }
+
+            protected StructDeclarationSyntax CreateDiffGramStruct()
+            {
+                return SyntaxFactory.StructDeclaration(DiffGramTypeName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
             }
         }
     }
