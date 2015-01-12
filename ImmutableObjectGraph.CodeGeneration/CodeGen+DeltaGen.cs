@@ -43,7 +43,10 @@
 
             protected override void GenerateCore()
             {
-                this.siblingMembers.Add(this.CreateChangedPropertiesEnum());
+                if (this.applyTo.IsRecursiveType)
+                {
+                    this.siblingMembers.Add(this.CreateChangedPropertiesEnum());
+                }
             }
 
             private EnumDeclarationSyntax CreateChangedPropertiesEnum()
