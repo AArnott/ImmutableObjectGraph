@@ -50,18 +50,24 @@
 
             protected override void GenerateCore()
             {
+                var recursiveType = this.applyTo.RecursiveTypeFromFamily;
+                if (recursiveType.IsDefault)
+                {
+                    return;
+                }
+
+                this.changedPropertiesEnumTypeName = SyntaxFactory.IdentifierName(recursiveType.TypeSymbol.Name + "ChangedProperties");
+                this.diffGramTypeSyntax = SyntaxFactory.QualifiedName(recursiveType.TypeSyntax, DiffGramTypeName);
+                this.recursiveDiffingType = SyntaxFactory.QualifiedName(
+                    SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                    SyntaxFactory.GenericName(nameof(ImmutableObjectGraph.IRecursiveDiffingType<uint, uint>))
+                        .AddTypeArgumentListArguments(
+                            this.changedPropertiesEnumTypeName,
+                            this.diffGramTypeSyntax));
+
                 if (this.applyTo.IsRecursiveType)
                 {
-                    this.changedPropertiesEnumTypeName = SyntaxFactory.IdentifierName(this.applyTo.TypeSymbol.Name + "ChangedProperties");
-                    this.diffGramTypeSyntax = SyntaxFactory.QualifiedName(this.applyTo.TypeSyntax, DiffGramTypeName);
-
                     // Implement IRecursiveDiffingType<RecursiveTypeChangedProperties, RecursiveType.DiffGram>
-                    this.recursiveDiffingType = SyntaxFactory.QualifiedName(
-                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
-                        SyntaxFactory.GenericName(nameof(ImmutableObjectGraph.IRecursiveDiffingType<uint, uint>))
-                            .AddTypeArgumentListArguments(
-                                this.changedPropertiesEnumTypeName,
-                                this.diffGramTypeSyntax));
                     this.baseTypes.Add(SyntaxFactory.SimpleBaseType(this.recursiveDiffingType));
 
                     this.siblingMembers.Add(this.CreateChangedPropertiesEnum());
@@ -74,6 +80,14 @@
                     this.innerMembers.Add(this.CreateEqualsMethod());
                     this.innerMembers.Add(this.CreateUnionMethod());
                     this.innerMembers.Add(this.CreateDiffPropertiesMethod());
+                }
+                else if (this.applyTo.IsDerivedFromRecursiveType)
+                {
+                    var additionalFields = this.applyTo.LocalFields.Where(f => !f.IsRecursiveCollection);
+                    if (additionalFields.Any())
+                    {
+                        this.innerMembers.Add(this.CreateDiffPropertiesOverrideMethod());
+                    }
                 }
             }
 
@@ -315,18 +329,61 @@
                                         propertiesChangedVar,
                                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, this.changedPropertiesEnumTypeName, EnumValueType)))))
                                 .AddStatements(this.applyTo.LocalFields.Where(f => !f.IsRecursiveCollection).Select(field =>
-                                    // if (this.Property != other.Property) {
-                                    SyntaxFactory.IfStatement(
-                                        SyntaxFactory.BinaryExpression(
-                                            SyntaxKind.NotEqualsExpression,
-                                            Syntax.ThisDot(field.NameAsProperty),
-                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, otherParam, field.NameAsProperty)),
-                                        // propertiesChanged |= <#= enumTypeName #>.<#= field.NamePascalCase #>;
-                                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                                            SyntaxKind.OrAssignmentExpression,
-                                            propertiesChangedVar,
-                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, this.changedPropertiesEnumTypeName, field.NameAsProperty))))).ToArray<StatementSyntax>())),
+                                    this.CreateIfPropertyChangedBlock(field, otherParam, propertiesChangedVar)).ToArray<StatementSyntax>())),
 
+                        // return propertiesChanged;
+                        SyntaxFactory.ReturnStatement(propertiesChangedVar)));
+            }
+
+            private IfStatementSyntax CreateIfPropertyChangedBlock(MetaField field, IdentifierNameSyntax otherParam, IdentifierNameSyntax propertiesChangedVar)
+            {
+                // if (this.Property != other.Property) {
+                return
+                    SyntaxFactory.IfStatement(
+                        SyntaxFactory.BinaryExpression(
+                            SyntaxKind.NotEqualsExpression,
+                            Syntax.ThisDot(field.NameAsProperty),
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, otherParam, field.NameAsProperty)),
+                        // propertiesChanged |= <#= enumTypeName #>.<#= field.NamePascalCase #>;
+                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.OrAssignmentExpression,
+                            propertiesChangedVar,
+                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, this.changedPropertiesEnumTypeName, field.NameAsProperty))));
+            }
+
+            protected MethodDeclarationSyntax CreateDiffPropertiesOverrideMethod()
+            {
+                var otherParam = SyntaxFactory.IdentifierName("other");
+                var propertiesChangedVar = SyntaxFactory.IdentifierName("propertiesChanged");
+                var otherTypedVar = SyntaxFactory.IdentifierName("other" + this.applyTo.TypeSymbol.Name);
+
+                // protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName #> other) {
+                return SyntaxFactory.MethodDeclaration(this.changedPropertiesEnumTypeName, DiffPropertiesMethodName.Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
+                        SyntaxFactory.Token(SyntaxKind.OverrideKeyword))
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(otherParam.Identifier).WithType(this.applyTo.RecursiveTypeFromFamily.TypeSyntax))
+                    .WithBody(SyntaxFactory.Block(
+                        // var propertiesChanged = base.DiffProperties(other);
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(propertiesChangedVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.BaseExpression(), DiffPropertiesMethodName))
+                                    .AddArgumentListArguments(SyntaxFactory.Argument(otherParam)))))),
+                        // var other<#= templateType.TypeName #> = other as <#= templateType.TypeName #>;
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
+                            SyntaxFactory.VariableDeclarator(otherTypedVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.BinaryExpression(SyntaxKind.AsExpression, otherParam, this.applyTo.TypeSyntax))))),
+                        // if (other<#= templateType.TypeName #> != null && other != this) {
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.LogicalAndExpression,
+                                SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, otherTypedVar, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, otherParam, SyntaxFactory.ThisExpression())),
+                            SyntaxFactory.Block(
+                                this.applyTo.LocalFields.Where(f => !f.IsRecursiveCollection).Select(field =>
+                                    CreateIfPropertyChangedBlock(field, otherTypedVar, propertiesChangedVar)).ToArray<StatementSyntax>())),
                         // return propertiesChanged;
                         SyntaxFactory.ReturnStatement(propertiesChangedVar)));
             }

@@ -1005,6 +1005,15 @@
                 }
             }
 
+            public bool IsDerivedFromRecursiveType
+            {
+                get
+                {
+                    var recursiveType = this.RecursiveTypeFromFamily;
+                    return !recursiveType.IsDefault && recursiveType.IsAssignableFrom(this.TypeSymbol);
+                }
+            }
+
             /// <summary>Gets the type that contains the collection of this (or a base) type.</summary>
             public MetaType RecursiveParent
             {
