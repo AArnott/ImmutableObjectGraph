@@ -307,5 +307,15 @@
                     linqMethod),
                 arguments.PrependArgument(SyntaxFactory.Argument(receiver)));
         }
+
+        internal static StatementSyntax RequiresNotNull(IdentifierNameSyntax parameter)
+        {
+            // if (other == null) { throw new System.ArgumentNullException(nameof(other)); }
+            return SyntaxFactory.IfStatement(
+                SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, parameter, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                SyntaxFactory.ThrowStatement(
+                    SyntaxFactory.ObjectCreationExpression(GetTypeSyntax(typeof(ArgumentNullException))).AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.NameOfExpression("nameof", parameter)))));
+        }
     }
 }
