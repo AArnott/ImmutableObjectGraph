@@ -256,6 +256,16 @@
         }
 
         [Fact]
+        public void DefaultRootedFileSystemDirectory()
+        {
+            var missing = default(RootedFileSystemDirectory);
+            Assert.Throws<InvalidOperationException>(() => missing.WithChildren(Enumerable.Empty<FileSystemEntry>()));
+            Assert.Throws<InvalidOperationException>(() => missing.AddChildren(Enumerable.Empty<FileSystemEntry>()));
+            Assert.Throws<InvalidOperationException>(() => missing.RemoveChildren(Enumerable.Empty<FileSystemEntry>()));
+            Assert.Throws<InvalidOperationException>(() => missing.Children);
+        }
+
+        [Fact]
         public void DefaultRootedFileSystemFile()
         {
             var missing = default(RootedFileSystemFile);
@@ -433,6 +443,70 @@
         {
             Assert.Equal("a.cs", this.root["a.cs"].PathSegment);
             Assert.Equal("d.cs", ((FileSystemDirectory)this.root["c"])["d.cs"].PathSegment);
+        }
+
+        [Fact]
+        public void ChangesSinceLoneFile()
+        {
+            // try a case-only change to the path segment.
+            var file1 = FileSystemFile.Create("a.txt");
+            var file2 = file1.WithPathSegment("A.txt");
+            var changes = file2.ChangesSince(file1);
+            Assert.Equal(1, changes.Count);
+            Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
+            Assert.Equal(FileSystemEntryChangedProperties.PathSegment, changes[0].Changes);
+
+            var file3 = file2.AddAttributes("someattribute");
+            changes = file3.ChangesSince(file1);
+            Assert.Equal(1, changes.Count);
+            Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
+            Assert.Equal(FileSystemEntryChangedProperties.PathSegment | FileSystemEntryChangedProperties.Attributes, changes[0].Changes);
+
+            var file3_reverted = file2.RemoveAttributes("someattribute");
+            changes = file3_reverted.ChangesSince(file1);
+            Assert.Equal(1, changes.Count);
+            Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
+            Assert.Equal(FileSystemEntryChangedProperties.PathSegment, changes[0].Changes);
+
+            changes = file3_reverted.ChangesSince(file3);
+            Assert.Equal(1, changes.Count);
+            Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
+            Assert.Equal(FileSystemEntryChangedProperties.Attributes, changes[0].Changes);
+        }
+
+        [Fact]
+        public void ChangesSinceSignificantPathSegmentChangeInChild()
+        {
+            var changedRoot = this.root.ReplaceDescendent(this.root["a.cs"], this.root["a.cs"].WithPathSegment("g.cs"));
+            var changes = changedRoot.ChangesSince(this.root);
+            Assert.Equal(1, changes.Count);
+            Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
+            Assert.Equal(FileSystemEntryChangedProperties.PathSegment | FileSystemEntryChangedProperties.PositionUnderParent, changes[0].Changes);
+        }
+
+        [Fact]
+        public void ChangesSinceSpanTypeChange()
+        {
+            var changedRoot = this.root.ReplaceDescendent(this.root["a.cs"], this.root["a.cs"].ToFileSystemDirectory());
+            var changes = changedRoot.ChangesSince(this.root);
+            Assert.Equal(1, changes.Count);
+            Assert.Equal(ChangeKind.Replaced, changes[0].Kind);
+            Assert.Equal(FileSystemEntryChangedProperties.Type, changes[0].Changes);
+        }
+
+        [Fact]
+        public void ChangesSinceWithPropertyChangeInChild()
+        {
+            var root1 = FileSystemDirectory.Create("c:").AddChildren(
+                FileSystemFile.Create("file1.txt").AddAttributes("att1")).AsRoot;
+            var root2 = root1["file1.txt"].AsFileSystemFile.AddAttributes("att2").Root;
+            IReadOnlyList<FileSystemEntry.DiffGram> changes = root2.ChangesSince(root1);
+            var changesList = changes.ToList();
+            Assert.Equal(1, changesList.Count);
+            Assert.Same(root1["file1.txt"].FileSystemEntry, changesList[0].Before);
+            Assert.Same(root2["file1.txt"].FileSystemEntry, changesList[0].After);
+            Assert.Equal(ChangeKind.Replaced, changesList[0].Kind);
+            Assert.Equal(FileSystemEntryChangedProperties.Attributes, changesList[0].Changes);
         }
 
         [Fact]

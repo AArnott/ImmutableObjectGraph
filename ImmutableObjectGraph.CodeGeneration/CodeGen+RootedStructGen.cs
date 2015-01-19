@@ -35,6 +35,7 @@
             private static readonly IdentifierNameSyntax ThrowIfDefaultMethodName = SyntaxFactory.IdentifierName("ThrowIfDefault");
             private static readonly IdentifierNameSyntax TryFindMethodName = SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.TryFind));
             private static readonly IdentifierNameSyntax NewSpineMethodName = SyntaxFactory.IdentifierName("NewSpine");
+            private static readonly IdentifierNameSyntax ChangesSinceMethodName = SyntaxFactory.IdentifierName("ChangesSince");
 
             private static readonly IdentifierNameSyntax GreenNodeFieldName = SyntaxFactory.IdentifierName("greenNode");
             private static readonly IdentifierNameSyntax RootFieldName = SyntaxFactory.IdentifierName("root");
@@ -222,6 +223,11 @@
                 if (this.generator.options.DefineWithMethodsPerProperty)
                 {
                     rootedStruct = rootedStruct.AddMembers(this.CreateWithPropertyMethods());
+                }
+
+                if (this.generator.options.Delta)
+                {
+                    rootedStruct = rootedStruct.AddMembers(this.CreateChangesSinceMethod());
                 }
 
                 return rootedStruct;
@@ -1091,6 +1097,33 @@
                 }
 
                 return methods.ToArray();
+            }
+
+            protected MethodDeclarationSyntax CreateChangesSinceMethod()
+            {
+                var priorVersionParam = SyntaxFactory.IdentifierName("priorVersion");
+                var diffTypeName = this.generator.mergedFeatures.OfType<DeltaGen>().Single().diffGramTypeSyntax;
+
+                // public IReadOnlyList<<#= diffTypeName #>> ChangesSince(RootedTemplateType priorVersion) {
+                return SyntaxFactory.MethodDeclaration(
+                    Syntax.IReadOnlyListOf(diffTypeName),
+                    ChangesSinceMethodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(priorVersionParam.Identifier).WithType(GetRootedTypeSyntax(this.applyTo)))
+                    .WithBody(SyntaxFactory.Block(
+                        CallThrowIfDefaultMethod,
+                        // return this.greenNode.ChangesSince(priorVersion.<#= templateType.GreenType.TypeName #>);
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    Syntax.ThisDot(GreenNodeFieldName),
+                                    SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.ChangesSince)))).AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    priorVersionParam,
+                                    SyntaxFactory.IdentifierName(this.applyTo.TypeSymbol.Name)))))));
             }
         }
     }

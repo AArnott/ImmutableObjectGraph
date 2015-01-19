@@ -148,8 +148,8 @@
             innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
 
             this.MergeFeature(new BuilderGen(this));
-            this.MergeFeature(new RootedStructGen(this));
             this.MergeFeature(new DeltaGen(this));
+            this.MergeFeature(new RootedStructGen(this));
             this.MergeFeature(new InterfacesGen(this));
             this.MergeFeature(new DefineWithMethodsPerPropertyGen(this));
             this.MergeFeature(new CollectionHelpersGen(this));

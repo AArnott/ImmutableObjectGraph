@@ -175,6 +175,19 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(elementType))));
         }
 
+        internal static NameSyntax IReadOnlyListOf(TypeSyntax elementType)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Generic))),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(IReadOnlyList<int>)),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(elementType))));
+        }
+
         internal static NameSyntax KeyValuePairOf(TypeSyntax keyType, TypeSyntax valueType)
         {
             return SyntaxFactory.QualifiedName(

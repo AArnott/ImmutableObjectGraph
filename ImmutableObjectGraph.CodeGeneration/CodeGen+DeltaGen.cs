@@ -40,12 +40,24 @@
             private static readonly IdentifierNameSyntax DiffGramChangesPropertyName = SyntaxFactory.IdentifierName("Changes");
 
             private IdentifierNameSyntax changedPropertiesEnumTypeName;
-            private NameSyntax diffGramTypeSyntax;
+            internal NameSyntax diffGramTypeSyntax;
             private QualifiedNameSyntax recursiveDiffingType;
 
             public DeltaGen(CodeGen generator)
                 : base(generator)
             {
+                var recursiveType = this.applyTo.RecursiveTypeFromFamily;
+                if (!recursiveType.IsDefault)
+                {
+                    this.changedPropertiesEnumTypeName = SyntaxFactory.IdentifierName(recursiveType.TypeSymbol.Name + "ChangedProperties");
+                    this.diffGramTypeSyntax = SyntaxFactory.QualifiedName(recursiveType.TypeSyntax, DiffGramTypeName);
+                    this.recursiveDiffingType = SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                        SyntaxFactory.GenericName(nameof(ImmutableObjectGraph.IRecursiveDiffingType<uint, uint>))
+                            .AddTypeArgumentListArguments(
+                                this.changedPropertiesEnumTypeName,
+                                this.diffGramTypeSyntax));
+                }
             }
 
             public override bool IsApplicable
@@ -55,21 +67,6 @@
 
             protected override void GenerateCore()
             {
-                var recursiveType = this.applyTo.RecursiveTypeFromFamily;
-                if (recursiveType.IsDefault)
-                {
-                    return;
-                }
-
-                this.changedPropertiesEnumTypeName = SyntaxFactory.IdentifierName(recursiveType.TypeSymbol.Name + "ChangedProperties");
-                this.diffGramTypeSyntax = SyntaxFactory.QualifiedName(recursiveType.TypeSyntax, DiffGramTypeName);
-                this.recursiveDiffingType = SyntaxFactory.QualifiedName(
-                    SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
-                    SyntaxFactory.GenericName(nameof(ImmutableObjectGraph.IRecursiveDiffingType<uint, uint>))
-                        .AddTypeArgumentListArguments(
-                            this.changedPropertiesEnumTypeName,
-                            this.diffGramTypeSyntax));
-
                 if (this.applyTo.IsRecursiveType)
                 {
                     // Implement IRecursiveDiffingType<RecursiveTypeChangedProperties, RecursiveType.DiffGram>
