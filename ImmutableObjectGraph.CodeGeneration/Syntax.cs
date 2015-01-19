@@ -175,6 +175,19 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(elementType))));
         }
 
+        internal static NameSyntax IReadOnlyListOf(TypeSyntax elementType)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Generic))),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(IReadOnlyList<int>)),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(elementType))));
+        }
+
         internal static NameSyntax KeyValuePairOf(TypeSyntax keyType, TypeSyntax valueType)
         {
             return SyntaxFactory.QualifiedName(
@@ -306,6 +319,16 @@
                     GetTypeSyntax(typeof(Enumerable)),
                     linqMethod),
                 arguments.PrependArgument(SyntaxFactory.Argument(receiver)));
+        }
+
+        internal static StatementSyntax RequiresNotNull(IdentifierNameSyntax parameter)
+        {
+            // if (other == null) { throw new System.ArgumentNullException(nameof(other)); }
+            return SyntaxFactory.IfStatement(
+                SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, parameter, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                SyntaxFactory.ThrowStatement(
+                    SyntaxFactory.ObjectCreationExpression(GetTypeSyntax(typeof(ArgumentNullException))).AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.NameOfExpression("nameof", parameter)))));
         }
     }
 }

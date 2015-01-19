@@ -148,8 +148,8 @@
             innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
 
             this.MergeFeature(new BuilderGen(this));
-            this.MergeFeature(new RootedStructGen(this));
             this.MergeFeature(new DeltaGen(this));
+            this.MergeFeature(new RootedStructGen(this));
             this.MergeFeature(new InterfacesGen(this));
             this.MergeFeature(new DefineWithMethodsPerPropertyGen(this));
             this.MergeFeature(new CollectionHelpersGen(this));
@@ -1002,6 +1002,15 @@
                 {
                     var that = this;
                     return this.GetTypeFamily().Any(t => that.Equals(t.RecursiveType));
+                }
+            }
+
+            public bool IsDerivedFromRecursiveType
+            {
+                get
+                {
+                    var recursiveType = this.RecursiveTypeFromFamily;
+                    return !recursiveType.IsDefault && recursiveType.IsAssignableFrom(this.TypeSymbol);
                 }
             }
 

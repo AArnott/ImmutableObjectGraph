@@ -231,7 +231,7 @@ protected override <#= enumTypeName #> DiffProperties(<#= recursiveType.TypeName
 	var propertiesChanged = base.DiffProperties(other);
 
 	var other<#= templateType.TypeName #> = other as <#= templateType.TypeName #>;
-	if (other<#= templateType.TypeName #> != null) {<#
+	if (other<#= templateType.TypeName #> != null && other != this) {<#
 	foreach (var field in additionalFields) {
 #>
 
