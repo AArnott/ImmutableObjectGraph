@@ -34,6 +34,11 @@
             private static readonly IdentifierNameSyntax DiffGramRemoveMethodName = SyntaxFactory.IdentifierName("Remove");
             private static readonly IdentifierNameSyntax DiffPropertiesMethodName = SyntaxFactory.IdentifierName(nameof(RecursiveDiffingTypeHelper.DiffProperties));
 
+            private static readonly IdentifierNameSyntax DiffGramBeforePropertyName = SyntaxFactory.IdentifierName("Before");
+            private static readonly IdentifierNameSyntax DiffGramAfterPropertyName = SyntaxFactory.IdentifierName("After");
+            private static readonly IdentifierNameSyntax DiffGramKindPropertyName = SyntaxFactory.IdentifierName("Kind");
+            private static readonly IdentifierNameSyntax DiffGramChangesPropertyName = SyntaxFactory.IdentifierName("Changes");
+
             private IdentifierNameSyntax changedPropertiesEnumTypeName;
             private NameSyntax diffGramTypeSyntax;
             private QualifiedNameSyntax recursiveDiffingType;
@@ -144,8 +149,135 @@
 
             protected StructDeclarationSyntax CreateDiffGramStruct()
             {
+                var beforeParam = SyntaxFactory.IdentifierName("before");
+                var afterParam = SyntaxFactory.IdentifierName("after");
+                var kindParam = SyntaxFactory.IdentifierName("kind");
+                var changesParam = SyntaxFactory.IdentifierName("changes");
+                var valueParam = SyntaxFactory.IdentifierName("value");
+
+                Func<TypeSyntax, SyntaxToken, PropertyDeclarationSyntax> createAutoProperty = (type, name) =>
+                    SyntaxFactory.PropertyDeclaration(type, name)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddAccessorListAccessors(
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)).AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword)));
+
                 return SyntaxFactory.StructDeclaration(DiffGramTypeName.Identifier)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddMembers(
+                        // private DiffGram(TemplateType before, TemplateType after, ChangeKind kind, ChangedProperties changes) : this()
+                        SyntaxFactory.ConstructorDeclaration(DiffGramTypeName.Identifier)
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                            .AddParameterListParameters(
+                                SyntaxFactory.Parameter(beforeParam.Identifier).WithType(this.applyTo.TypeSyntax),
+                                SyntaxFactory.Parameter(afterParam.Identifier).WithType(this.applyTo.TypeSyntax),
+                                SyntaxFactory.Parameter(kindParam.Identifier).WithType(Syntax.GetTypeSyntax(typeof(ChangeKind))),
+                                SyntaxFactory.Parameter(changesParam.Identifier).WithType(this.changedPropertiesEnumTypeName))
+                            .WithInitializer(SyntaxFactory.ConstructorInitializer(SyntaxKind.ThisConstructorInitializer, SyntaxFactory.ArgumentList()))
+                            .WithBody(SyntaxFactory.Block(
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, Syntax.ThisDot(DiffGramBeforePropertyName), beforeParam)),
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, Syntax.ThisDot(DiffGramAfterPropertyName), afterParam)),
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, Syntax.ThisDot(DiffGramKindPropertyName), kindParam)),
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, Syntax.ThisDot(DiffGramChangesPropertyName), changesParam)))),
+
+                        // public static DiffGram Change(<#= templateType.TypeName #> before, <#= templateType.TypeName #> after, <#= enumTypeName #> changes)
+                        SyntaxFactory.MethodDeclaration(this.diffGramTypeSyntax, DiffGramChangeMethodName.Identifier)
+                            .AddModifiers(
+                                SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                                SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                            .AddParameterListParameters(
+                                SyntaxFactory.Parameter(beforeParam.Identifier).WithType(this.applyTo.TypeSyntax),
+                                SyntaxFactory.Parameter(afterParam.Identifier).WithType(this.applyTo.TypeSyntax),
+                                SyntaxFactory.Parameter(changesParam.Identifier).WithType(this.changedPropertiesEnumTypeName))
+                            .WithBody(SyntaxFactory.Block(
+                                // return new DiffGram(before, after, ChangeKind.Replaced, changes);
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.ObjectCreationExpression(this.diffGramTypeSyntax).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(beforeParam),
+                                        SyntaxFactory.Argument(afterParam),
+                                        SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.GetTypeSyntax(typeof(ChangeKind)), SyntaxFactory.IdentifierName(nameof(ChangeKind.Replaced)))),
+                                        SyntaxFactory.Argument(changesParam))))),
+
+                        // public static DiffGram Add(<#= templateType.TypeName #> value) {
+                        SyntaxFactory.MethodDeclaration(this.diffGramTypeSyntax, DiffGramAddMethodName.Identifier)
+                            .AddModifiers(
+                                SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                                SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                            .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.TypeSyntax))
+                            .WithBody(SyntaxFactory.Block(
+                                // return new DiffGram(null, value, ChangeKind.Added, default(<#= enumTypeName #>));
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.ObjectCreationExpression(this.diffGramTypeSyntax).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                        SyntaxFactory.Argument(valueParam),
+                                        SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.GetTypeSyntax(typeof(ChangeKind)), SyntaxFactory.IdentifierName(nameof(ChangeKind.Added)))),
+                                        SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(this.changedPropertiesEnumTypeName)))))),
+
+                        // public static DiffGram Remove(<#= templateType.TypeName #> value) {
+                        SyntaxFactory.MethodDeclaration(this.diffGramTypeSyntax, DiffGramRemoveMethodName.Identifier)
+                            .AddModifiers(
+                                SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                                SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                            .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.TypeSyntax))
+                            .WithBody(SyntaxFactory.Block(
+                                // return new DiffGram(value, null, ChangeKind.Removed, default(<#= enumTypeName #>));
+                                SyntaxFactory.ReturnStatement(
+                                    SyntaxFactory.ObjectCreationExpression(this.diffGramTypeSyntax).AddArgumentListArguments(
+                                        SyntaxFactory.Argument(valueParam),
+                                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                                        SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.GetTypeSyntax(typeof(ChangeKind)), SyntaxFactory.IdentifierName(nameof(ChangeKind.Removed)))),
+                                        SyntaxFactory.Argument(SyntaxFactory.DefaultExpression(this.changedPropertiesEnumTypeName)))))),
+
+                        // public <#= templateType.TypeName #> Before { get; private set; }
+                        createAutoProperty(this.applyTo.TypeSyntax, DiffGramBeforePropertyName.Identifier),
+
+                        // public <#= templateType.TypeName #> After { get; private set; }
+                        createAutoProperty(this.applyTo.TypeSyntax, DiffGramAfterPropertyName.Identifier),
+
+                        // public ChangeKind Kind { get; private set; }
+                        createAutoProperty(Syntax.GetTypeSyntax(typeof(ChangeKind)), DiffGramKindPropertyName.Identifier),
+
+                        // public <#= enumTypeName #> Changes { get; private set; }
+                        createAutoProperty(this.changedPropertiesEnumTypeName, DiffGramChangesPropertyName.Identifier),
+
+                        // public uint Identity { get; }
+                        SyntaxFactory.PropertyDeclaration(IdentityFieldTypeSyntax, IdentityPropertyName.Identifier)
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                                SyntaxKind.GetAccessorDeclaration,
+                                SyntaxFactory.Block(
+                                    // return (this.Before ?? this.After).<#= templateType.RequiredIdentityField.NamePascalCase #>;
+                                    SyntaxFactory.ReturnStatement(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            SyntaxFactory.ParenthesizedExpression(
+                                                SyntaxFactory.BinaryExpression(
+                                                    SyntaxKind.CoalesceExpression,
+                                                    Syntax.ThisDot(DiffGramBeforePropertyName),
+                                                    Syntax.ThisDot(DiffGramAfterPropertyName))),
+                                            IdentityPropertyName)))))
+                    )
+                    .AddMembers(
+                        this.applyTo.AllFields.Where(f => !f.IsRecursiveCollection).Select(field =>
+                            // public bool Is<#=field.NamePascalCase#>Changed {
+                            SyntaxFactory.PropertyDeclaration(
+                                SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)),
+                                "Is" + field.NameAsProperty + "Changed")
+                                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                                .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                                    SyntaxKind.GetAccessorDeclaration,
+                                    SyntaxFactory.Block(
+                                        // return (this.Changes & <#= enumTypeName #>.<#= field.NamePascalCase #>) != <#= enumTypeName #>.None;
+                                        SyntaxFactory.ReturnStatement(
+                                            SyntaxFactory.BinaryExpression(
+                                                SyntaxKind.NotEqualsExpression,
+                                                SyntaxFactory.ParenthesizedExpression(
+                                                    SyntaxFactory.BinaryExpression(
+                                                        SyntaxKind.BitwiseAndExpression,
+                                                        Syntax.ThisDot(DiffGramChangesPropertyName),
+                                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, this.changedPropertiesEnumTypeName, field.NameAsProperty))),
+                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, this.changedPropertiesEnumTypeName, EnumValueNone))))))
+                        ).ToArray<MemberDeclarationSyntax>());
             }
 
             protected PropertyDeclarationSyntax[] CreateBoilerplateEnumProperties()
