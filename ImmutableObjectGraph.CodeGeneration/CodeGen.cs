@@ -493,9 +493,8 @@
 
         private MemberDeclarationSyntax CreateCreateMethod()
         {
-            var fields = this.GetFields();
             var body = SyntaxFactory.Block();
-            if (fields.Any())
+            if (this.applyToMetaType.AllFields.Any())
             {
                 body = body.AddStatements(
                     // var identity = Optional.For(NewIdentity());
