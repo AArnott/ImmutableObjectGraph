@@ -11,6 +11,29 @@
     public class MSBuildTests
     {
         [Fact]
+        public void IdentityUniqueAcrossTypesInFamily_DefaultInstance()
+        {
+            var pige = ProjectItemGroupElement.Create();
+            var ppge = ProjectPropertyGroupElement.Create();
+            Assert.Equal(pige.Identity + 1, ppge.Identity);
+        }
+
+        [Fact]
+        public void IdentityUniqueAcrossTypesInFamily_NonDefaultInstance()
+        {
+            var pige = ProjectItemGroupElement.Create(label: "mylabel");
+            var ppge = ProjectPropertyGroupElement.Create(label: "myotherlabel");
+            Assert.Equal(pige.Identity + 1, ppge.Identity);
+        }
+
+        [Fact]
+        public void CreateLabel()
+        {
+            var pige = ProjectItemGroupElement.Create(label: "mylabel");
+            Assert.Equal("mylabel", pige.Label);
+        }
+
+        [Fact]
         public void TypeExistanceTest()
         {
             Microsoft.Build.Construction.ProjectRootElement pre;
