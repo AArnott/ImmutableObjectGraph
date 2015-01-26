@@ -118,7 +118,7 @@
             protected MemberDeclarationSyntax CreateAsRootProperty()
             {
                 // public RootedRecursiveParent Root { get; }
-                return SyntaxFactory.PropertyDeclaration(GetRootedTypeSyntax(this.applyTo), AsRootPropertyName.Identifier)
+                var property = SyntaxFactory.PropertyDeclaration(GetRootedTypeSyntax(this.applyTo), AsRootPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
                         SyntaxKind.GetAccessorDeclaration,
@@ -127,6 +127,13 @@
                             SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))))));
+
+                if (!this.applyTo.IsRecursiveParent)
+                {
+                    property = Syntax.AddNewKeyword(property);
+                }
+
+                return property;
             }
 
             protected MemberDeclarationSyntax CreateWithRootMethod()
