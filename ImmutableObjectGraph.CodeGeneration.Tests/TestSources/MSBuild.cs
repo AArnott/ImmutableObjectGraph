@@ -3,7 +3,6 @@
     using System.Collections.Immutable;
     using System.Text;
 
-
     // Note that ProjectElementContainer-derived types lack any properties that expose
     // the specific types of children they support. And the Children member that is exposed
     // allows any type of ProjectElement.
@@ -52,16 +51,29 @@
 
         readonly bool treatAsLocalProperty;
         // readonly ElementLocation treatAsLocalPropertylocation;
+
+        static partial void CreateDefaultTemplate(ref Template template)
+        {
+            template.Children = ImmutableList.Create<ProjectElement>();
+        }
     }
 
     [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectPropertyGroupElement : ProjectElementContainer
     {
+        static partial void CreateDefaultTemplate(ref Template template)
+        {
+            template.Children = ImmutableList.Create<ProjectElement>();
+        }
     }
 
     [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectItemGroupElement : ProjectElementContainer
     {
+        static partial void CreateDefaultTemplate(ref Template template)
+        {
+            template.Children = ImmutableList.Create<ProjectElement>();
+        }
     }
 
     [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
