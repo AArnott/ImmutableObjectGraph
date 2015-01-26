@@ -8,7 +8,7 @@
 
     public interface IPropertySheet { }
 
-    [GenerateImmutable(DefineInterface = true, GenerateBuilder = true, DefineWithMethodsPerProperty = true)]
+    [GenerateImmutable(DefineInterface = true, GenerateBuilder = true, DefineWithMethodsPerProperty = true, DefineRootedStruct = true, Delta = true)]
     partial class ProjectTree
     {
         [Required]
@@ -22,7 +22,7 @@
         readonly ImmutableSortedSet<ProjectTree> children;
     }
 
-    [GenerateImmutable(DefineInterface = true, GenerateBuilder = true, DefineWithMethodsPerProperty = true)]
+    [GenerateImmutable(DefineInterface = true, GenerateBuilder = true, DefineWithMethodsPerProperty = true, DefineRootedStruct = true, Delta = true)]
     partial class ProjectItemTree : ProjectTree
     {
         [Required]
