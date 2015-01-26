@@ -134,8 +134,8 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Include="TestSources\XmlNode.Tests.cs" />
-    <Compile Include="TestSources\PersonBuilderTests.cs" />
-    <Compile Include="TestSources\PersonTests.cs" />
+    <Compile Include="TestSources\Person.BuilderTests.cs" />
+    <Compile Include="TestSources\Person.Tests.cs" />
     <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
     <Compile Include="TestSources\AbstractClassFamilies.Tests.cs" />
     <Compile Include="TestSources\DeepHierarchy.Tests.cs" />
