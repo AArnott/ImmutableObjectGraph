@@ -122,6 +122,13 @@
     <Compile Include="TestSources\ProjectTree.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
+    <Compile Include="TestSources\ProjectTreeCapabilities.cs" />
+    <Compile Include="TestSources\ProjectTreeNodeTest.cs" />
+    <Compile Include="TestSources\ProjectTreeNodeTest2.cs" />
+    <Compile Include="TestSources\ProjectTreeNodeTestBase.cs" />
+    <Compile Include="TestSources\ProjectTreePartial.cs" />
+    <Compile Include="TestSources\ProjectTreeSort.cs" />
+    <Compile Include="TestSources\ProjectTreeTests.cs" />
     <Compile Include="TestSources\RequiresAndHierarchy.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>

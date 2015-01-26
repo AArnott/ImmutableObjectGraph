@@ -127,6 +127,19 @@
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
         }
 
+        internal static NameSyntax IEqualityComparerOf(TypeSyntax typeSyntax)
+        {
+            return SyntaxFactory.QualifiedName(
+                SyntaxFactory.QualifiedName(
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Collections))),
+                    SyntaxFactory.IdentifierName(nameof(System.Collections.Generic))),
+                SyntaxFactory.GenericName(
+                    SyntaxFactory.Identifier(nameof(IEqualityComparer<int>)),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(typeSyntax))));
+        }
+
         internal static NameSyntax ImmutableStackOf(TypeSyntax typeSyntax)
         {
             return SyntaxFactory.QualifiedName(

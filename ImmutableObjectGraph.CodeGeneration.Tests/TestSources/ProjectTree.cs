@@ -8,6 +8,10 @@
 
     public interface IPropertySheet { }
 
+    public class ProjectPropertiesContext : IProjectPropertiesContext
+    {
+    }
+
     [GenerateImmutable(DefineInterface = true, GenerateBuilder = true, DefineWithMethodsPerProperty = true, DefineRootedStruct = true, Delta = true)]
     partial class ProjectTree
     {

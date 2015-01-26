@@ -39,6 +39,10 @@
             private static readonly IdentifierNameSyntax DiffGramKindPropertyName = SyntaxFactory.IdentifierName("Kind");
             private static readonly IdentifierNameSyntax DiffGramChangesPropertyName = SyntaxFactory.IdentifierName("Changes");
 
+            private static readonly IdentifierNameSyntax ComparersClassName = SyntaxFactory.IdentifierName("Comparers");
+            private static readonly IdentifierNameSyntax ComparersByValuePropertyName = SyntaxFactory.IdentifierName("ByValue");
+            private static readonly IdentifierNameSyntax ComparersByValueWithDescendentsPropertyName = SyntaxFactory.IdentifierName("ByValueWithDescendents");
+
             private IdentifierNameSyntax changedPropertiesEnumTypeName;
             internal NameSyntax diffGramTypeSyntax;
             private QualifiedNameSyntax recursiveDiffingType;
@@ -74,6 +78,7 @@
 
                     this.siblingMembers.Add(this.CreateChangedPropertiesEnum());
                     this.innerMembers.Add(this.CreateDiffGramStruct());
+                    this.innerMembers.Add(this.CreateComparersClass());
                     this.innerMembers.AddRange(this.CreateBoilerplateEnumProperties());
                     this.innerMembers.Add(this.CreateDiffPropertiesExplicitMethod());
                     this.innerMembers.Add(this.CreateChangeMethod());
@@ -462,6 +467,72 @@
 
                         // return propertiesChanged;
                         SyntaxFactory.ReturnStatement(propertiesChangedVar)));
+            }
+
+            protected ClassDeclarationSyntax CreateComparersClass()
+            {
+                Func<TypeSyntax, SyntaxToken, ExpressionSyntax, PropertyDeclarationSyntax> defineProperty = (type, name, returnExpression) =>
+                    SyntaxFactory.PropertyDeclaration(Syntax.IEqualityComparerOf(type), name)
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration,
+                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(returnExpression))));
+                // ImmutableObjectGraph.Comparers.ByValue<<#= templateType.TypeName #>ChangedProperties, DiffGram>
+                var byValueChangedPropertiesDiffGramMethod =
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)), SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Comparers))),
+                        SyntaxFactory.GenericName(nameof(Comparers.ByValue))
+                            .AddTypeArgumentListArguments(this.changedPropertiesEnumTypeName, this.diffGramTypeSyntax));
+
+                // public static class Comparers
+                return SyntaxFactory.ClassDeclaration(ComparersClassName.Identifier)
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddMembers(
+                        // /// <summary>Gets an equatable comparer that considers only the persistent identity of a pair of values.</summary>
+                        // public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> <#= templateType.RequiredIdentityField.NamePascalCase #> {
+                        //     get { return ImmutableObjectGraph.Comparers.Identity; }
+                        // }
+                        defineProperty(
+                            this.applyTo.TypeSyntax,
+                            IdentityPropertyName.Identifier,
+                            SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)), SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Comparers))),
+                                    SyntaxFactory.IdentifierName(nameof(Comparers.Identity)))),
+
+                        // /// <summary>Gets an equatable comparer that compares all properties between two instances.</summary>
+                        // public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValue {
+                        //     get { return ImmutableObjectGraph.Comparers.ByValue<<#= templateType.TypeName #>ChangedProperties, DiffGram>(deep: false); }
+                        // }
+                        defineProperty(
+                            this.applyTo.TypeSyntax,
+                            ComparersByValuePropertyName.Identifier,
+                            SyntaxFactory.InvocationExpression(byValueChangedPropertiesDiffGramMethod).AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.NameColon("deep"), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression)))),
+
+                        // /// <summary>Gets an equatable comparer that considers all properties between two instances and their children.</summary>
+                        // public static System.Collections.Generic.IEqualityComparer<<#= templateType.TypeName #>> ByValueWithDescendents {
+                        //     get { return ImmutableObjectGraph.Comparers.ByValue<<#= templateType.TypeName #>ChangedProperties, DiffGram>(deep: true); }
+                        // }
+                        defineProperty(
+                            this.applyTo.TypeSyntax,
+                            ComparersByValueWithDescendentsPropertyName.Identifier,
+                            SyntaxFactory.InvocationExpression(byValueChangedPropertiesDiffGramMethod).AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.NameColon("deep"), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))))
+
+                        //// internal static IEqualityComparer<ParentedRecursiveType<RecursiveParent, RecursiveTypeFromFamily> Parented<#= templateType.TypeName #><#= templateType.RequiredIdentityField.NamePascalCase #> {
+                        ////     get { return ImmutableObjectGraph.Comparers.Parented<<#= templateType.RecursiveParent.TypeName #>, <#= templateType.TypeName #>>(); }
+                        //// }
+                        //defineProperty(
+                            
+                        //    this.recursiveDiffingType
+                        //    ).WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+                    );
             }
 
             private IfStatementSyntax CreateIfPropertyChangedBlock(MetaField field, IdentifierNameSyntax otherParam, IdentifierNameSyntax propertiesChangedVar)
