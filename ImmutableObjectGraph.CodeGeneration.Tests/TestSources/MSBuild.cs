@@ -17,7 +17,7 @@
     // 	string locationString;
     // }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     abstract partial class ProjectElement
     {
         readonly string condition;
@@ -29,13 +29,13 @@
         // readonly ElementLocation location;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     abstract partial class ProjectElementContainer : ProjectElement
     {
         readonly ImmutableList<ProjectElement> children;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectRootElement : ProjectElementContainer
     {
         readonly string fullPath;
@@ -54,39 +54,39 @@
         // readonly ElementLocation treatAsLocalPropertylocation;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectPropertyGroupElement : ProjectElementContainer
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectItemGroupElement : ProjectElementContainer
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectChooseElement : ProjectElementContainer
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectOtherwiseElement : ProjectElementContainer
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectWhenElement : ProjectElementContainer
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectPropertyElement : ProjectElement
     {
         readonly string name;
         readonly string value;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectItemElement : ProjectElementContainer
     {
         readonly string exclude;
@@ -110,48 +110,48 @@
         // readonly ElementLocation RemoveMetadataLocation;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectMetadataElement : ProjectElement
     {
         readonly string name;
         readonly string value;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectExtensionsElement : ProjectElement
     {
         readonly string content;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectImportElement : ProjectElement
     {
         readonly string project;
         // readonly ElementLocation projectLocation;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectImportGroupElement : ProjectElementContainer
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectItemDefinitionElement : ProjectElementContainer
     {
         readonly string itemType;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectItemDefinitionGroupElement : ProjectElementContainer
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectOnErrorElement : ProjectElement
     {
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectOutputElement : ProjectElement
     {
         readonly bool isOutputItem;
@@ -167,7 +167,7 @@
         // readonly ElementLocation TaskParameterLocation;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectTargetElement : ProjectElementContainer
     {
         readonly string afterTargets;
@@ -195,7 +195,7 @@
         // readonly ElementLocation ReturnsLocation;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectTaskElement : ProjectElementContainer
     {
         readonly string continueOnError;
@@ -210,7 +210,7 @@
         readonly string name;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectUsingTaskBodyElement : ProjectElement
     {
         readonly string evaluate;
@@ -219,7 +219,7 @@
         readonly string taskBody;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectUsingTaskElement : ProjectElementContainer
     {
         readonly string architecture;
@@ -241,7 +241,7 @@
         // readonly ElementLocation TaskNameLocation;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class ProjectUsingTaskParameterElement : ProjectElement
     {
         readonly string name;
@@ -256,7 +256,7 @@
         // readonly ElementLocation requiredLocation;
     }
 
-    [GenerateImmutable]
+    [GenerateImmutable(DefineRootedStruct = true, Delta = true, DefineWithMethodsPerProperty = true)]
     partial class UsingTaskParameterGroupElement : ProjectElementContainer
     {
     }

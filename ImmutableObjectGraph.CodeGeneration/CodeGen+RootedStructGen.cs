@@ -68,6 +68,8 @@
 
             protected static IdentifierNameSyntax GetRootedTypeSyntax(MetaType metaType)
             {
+                Requires.Argument(!metaType.IsDefault, nameof(metaType), "Undefined type.");
+
                 return SyntaxFactory.IdentifierName("Rooted" + metaType.TypeSymbol.Name);
             }
 
@@ -79,8 +81,8 @@
                         SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
                         SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph.Adapters))),
                     SyntaxFactory.GenericName(collectionType).AddTypeArgumentListArguments(
-                        this.applyTo.RecursiveType.TypeSyntax,
-                        GetRootedTypeSyntax(this.applyTo.RecursiveType),
+                        this.applyTo.RecursiveTypeFromFamily.TypeSyntax,
+                        GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily),
                         this.applyTo.RecursiveParent.TypeSyntax));
             }
 
@@ -93,7 +95,7 @@
                             SyntaxFactory.IdentifierName(nameof(System.Collections))),
                         SyntaxFactory.IdentifierName(nameof(System.Collections.Immutable))),
                     SyntaxFactory.GenericName("IImmutable" + this.SetOrList)
-                        .AddTypeArgumentListArguments(GetRootedTypeSyntax(this.applyTo.RecursiveType)));
+                        .AddTypeArgumentListArguments(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)));
             }
 
             protected string SetOrList
@@ -205,19 +207,19 @@
                             .AddMembers(
                                 this.CreateCreateMethod());
                     }
+                }
 
-                    if (this.applyTo.IsRecursiveParentOrDerivative)
-                    {
-                        rootedStruct = rootedStruct
-                            .AddBaseListTypes(SyntaxFactory.SimpleBaseType(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
-                            .AddMembers(
-                                this.CreateIsRootProperty(),
-                                this.CreateFindMethod(),
-                                this.CreateTryFindMethod(),
-                                this.CreateGetEnumeratorMethod(),
-                                this.CreateParentedNodeMethod())
-                            .AddMembers(this.CreateChildrenProperties());
-                    }
+                if (this.applyTo.IsRecursiveParentOrDerivative)
+                {
+                    rootedStruct = rootedStruct
+                        .AddBaseListTypes(SyntaxFactory.SimpleBaseType(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
+                        .AddMembers(
+                            this.CreateIsRootProperty(),
+                            this.CreateFindMethod(),
+                            this.CreateTryFindMethod(),
+                            this.CreateGetEnumeratorMethod(),
+                            this.CreateParentedNodeMethod())
+                        .AddMembers(this.CreateChildrenProperties());
                 }
 
                 if (this.generator.options.DefineWithMethodsPerProperty)
@@ -255,11 +257,11 @@
                             Syntax.ThisDot(RootFieldName),
                             rootParam))));
 
-                if (this.applyTo.IsRecursiveParent)
+                if (this.applyTo.IsRecursiveParentOrDerivative)
                 {
                     ctor = ctor.AddBodyStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
-                        Syntax.ThisDot(this.applyTo.RecursiveField.NameAsField),
+                        Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsField),
                         SyntaxFactory.DefaultExpression(Syntax.OptionalOf(this.GetRootedCollectionTypeAdapterName())))));
                 }
 
@@ -270,24 +272,24 @@
             {
                 var fields = new List<MemberDeclarationSyntax>();
 
-                if (this.applyTo.IsRecursiveParent)
+                if (this.applyTo.IsRecursiveParentOrDerivative)
                 {
                     var rParam = SyntaxFactory.IdentifierName("r");
                     var uParam = SyntaxFactory.IdentifierName("u");
                     fields.AddRange(new MemberDeclarationSyntax[] {
                         // private static readonly System.Func<RootedRecursiveType, TRecursiveType> toUnrooted = r => r.TemplateType;
-                        SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(Syntax.FuncOf(this.rootedRecursiveType, this.applyTo.RecursiveType.TypeSyntax))
+                        SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(Syntax.FuncOf(this.rootedRecursiveType, this.applyTo.RecursiveTypeFromFamily.TypeSyntax))
                             .AddVariables(SyntaxFactory.VariableDeclarator(ToUnrootedFieldName.Identifier)
                                 .WithInitializer(SyntaxFactory.EqualsValueClause(
                                     SyntaxFactory.SimpleLambdaExpression(
                                         SyntaxFactory.Parameter(rParam.Identifier),
-                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, rParam, SyntaxFactory.IdentifierName(this.applyTo.RecursiveType.TypeSymbol.Name)))))))
+                                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, rParam, SyntaxFactory.IdentifierName(this.applyTo.RecursiveTypeFromFamily.TypeSymbol.Name)))))))
                             .AddModifiers(
                                 SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                                 SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)),
                         // private static readonly System.Func<TRecursiveType, TRecursiveParent, RootedRecursiveType> toRooted = (u, r) => new RootedRecursiveType(u, r);
-                        SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(Syntax.FuncOf(this.applyTo.RecursiveType.TypeSyntax, this.applyTo.RecursiveParent.TypeSyntax, this.rootedRecursiveType))
+                        SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(Syntax.FuncOf(this.applyTo.RecursiveTypeFromFamily.TypeSyntax, this.applyTo.RecursiveParent.TypeSyntax, this.rootedRecursiveType))
                             .AddVariables(SyntaxFactory.VariableDeclarator(ToRootedFieldName.Identifier)
                                 .WithInitializer(SyntaxFactory.EqualsValueClause(
                                     SyntaxFactory.ParenthesizedLambdaExpression(
@@ -304,7 +306,7 @@
                         // private Optional<Adapters.ImmutableSetRootAdapter<TRecursiveType, RootedRecursiveType, TRecursiveParent>> children;
                         SyntaxFactory.FieldDeclaration(
                             SyntaxFactory.VariableDeclaration(Syntax.OptionalOf(this.GetRootedCollectionTypeAdapterName())).AddVariables(
-                                SyntaxFactory.VariableDeclarator(this.applyTo.RecursiveField.NameAsField.Identifier)))
+                                SyntaxFactory.VariableDeclarator(this.applyTo.RecursiveParent.RecursiveField.NameAsField.Identifier)))
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword)),
                     });
                 }
@@ -625,13 +627,13 @@
             protected MethodDeclarationSyntax CreateFindMethod()
             {
                 // public RootedRecursiveType Find(uint identity)
-                return SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo.RecursiveType), SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.Find)))
+                return SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily), SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.Find)))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax))
                     .WithBody(SyntaxFactory.Block(
                         CallThrowIfDefaultMethod,
-                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddArgumentListArguments(
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)).AddArgumentListArguments(
                             SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(
                                 SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.ThisDot(GreenNodeFieldName), SyntaxFactory.IdentifierName(nameof(RecursiveTypeExtensions.Find))))
                                 .AddArgumentListArguments(SyntaxFactory.Argument(IdentityParameterName))),
@@ -648,11 +650,11 @@
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax),
-                        SyntaxFactory.Parameter(valueParameter.Identifier).WithType(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddModifiers(SyntaxFactory.Token(SyntaxKind.OutKeyword)))
+                        SyntaxFactory.Parameter(valueParameter.Identifier).WithType(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)).AddModifiers(SyntaxFactory.Token(SyntaxKind.OutKeyword)))
                     .WithBody(SyntaxFactory.Block(
                         CallThrowIfDefaultMethod,
                         // TRecursiveType greenValue;
-                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(this.applyTo.RecursiveType.TypeSyntax).AddVariables(
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(this.applyTo.RecursiveTypeFromFamily.TypeSyntax).AddVariables(
                             SyntaxFactory.VariableDeclarator(greenValueVar.Identifier))),
                         // if (this.greenNode.TryFind(identity, out greenValue)) {
                         SyntaxFactory.IfStatement(
@@ -666,7 +668,7 @@
                                 SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     valueParameter,
-                                    SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddArgumentListArguments(
+                                    SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)).AddArgumentListArguments(
                                         SyntaxFactory.Argument(greenValueVar),
                                         SyntaxFactory.Argument(Syntax.ThisDot(RootFieldName))))),
                                 // return true;
@@ -675,7 +677,7 @@
                         SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression,
                             valueParameter,
-                            SyntaxFactory.DefaultExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)))),
+                            SyntaxFactory.DefaultExpression(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)))),
                         // return false;
                         SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))));
             }
@@ -683,7 +685,7 @@
             protected MethodDeclarationSyntax CreateGetEnumeratorMethod()
             {
                 // public IEnumerator<TRootedRecursiveType> GetEnumerator()
-                return SyntaxFactory.MethodDeclaration(Syntax.IEnumeratorOf(GetRootedTypeSyntax(this.applyTo.RecursiveType)), nameof(IEnumerable<int>.GetEnumerator))
+                return SyntaxFactory.MethodDeclaration(Syntax.IEnumeratorOf(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)), nameof(IEnumerable<int>.GetEnumerator))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithBody(SyntaxFactory.Block(
                         // return this.Children.GetEnumerator();
@@ -691,7 +693,7 @@
                             SyntaxFactory.InvocationExpression(
                                 SyntaxFactory.MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
-                                    Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty),
+                                    Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty),
                                     SyntaxFactory.IdentifierName(nameof(IEnumerable<int>.GetEnumerator))),
                                 SyntaxFactory.ArgumentList()))));
             }
@@ -736,7 +738,7 @@
                                     Syntax.EnumerableExtension(
                                         SyntaxFactory.GenericName(nameof(Enumerable.Cast))
                                             .AddTypeArgumentListArguments(Syntax.GetTypeSyntax(typeof(IRecursiveType))),
-                                        Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty),
+                                        Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty),
                                         SyntaxFactory.ArgumentList()))))),
                     // IEnumerable<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
                     SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
@@ -745,7 +747,7 @@
                             SyntaxKind.GetAccessorDeclaration,
                             SyntaxFactory.Block(
                                 // return this.Children;
-                                SyntaxFactory.ReturnStatement(Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty))))),
+                                SyntaxFactory.ReturnStatement(Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty))))),
                 };
             }
 
@@ -1021,15 +1023,15 @@
                             var newParentVar = SyntaxFactory.IdentifierName("newParent");
                             var newChildVar = SyntaxFactory.IdentifierName("newChild");
                             var returnType = SyntaxFactory.GenericName(nameof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)).AddTypeArgumentListArguments(
-                                GetRootedTypeSyntax(this.applyTo.RecursiveParent),
-                                GetRootedTypeSyntax(this.applyTo.RecursiveType));
+                                GetRootedTypeSyntax(this.applyTo),
+                                GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily));
 
-                            // public ParentedRecursiveType<RootedRecursiveParent, RootedRecursiveType> AddChild(FileSystemEntry value)
+                            // public ParentedRecursiveType<RootedTemplateType, RootedRecursiveType> AddChild(FileSystemEntry value)
                             methods.Add(SyntaxFactory.MethodDeclaration(
                                 returnType,
                                 SyntaxFactory.Identifier("Add" + singular))
                                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
+                                .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.RecursiveTypeFromFamily.TypeSyntax))
                                 .WithBody(SyntaxFactory.Block(
                                     CallThrowIfDefaultMethod,
                                     // var mutatedLeaf = this.greenNode.AddChild(value);
@@ -1046,14 +1048,14 @@
                                      // var newChild = new RootedRecursiveType(value, newParent.root);
                                      SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
                                          SyntaxFactory.VariableDeclarator(newChildVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
-                                             SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveType)).AddArgumentListArguments(
+                                             SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)).AddArgumentListArguments(
                                                  SyntaxFactory.Argument(valueParam),
                                                  SyntaxFactory.Argument(
                                                      SyntaxFactory.MemberAccessExpression(
                                                         SyntaxKind.SimpleMemberAccessExpression,
                                                         newParentVar,
                                                         RootFieldName))))))),
-                                     // return new ParentedRecursiveType<RootedFileSystemDirectory, RootedFileSystemEntry>(newChild, newParent);
+                                     // return new ParentedRecursiveType<RootedTemplateType, RootedRecursiveType>(newChild, newParent);
                                      SyntaxFactory.ReturnStatement(
                                          SyntaxFactory.ObjectCreationExpression(returnType).AddArgumentListArguments(
                                              SyntaxFactory.Argument(newChildVar),

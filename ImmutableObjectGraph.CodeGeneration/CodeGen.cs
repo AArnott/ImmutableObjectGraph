@@ -1063,7 +1063,7 @@
                 get
                 {
                     // Not very precise, but it does the job for now.
-                    return this.RecursiveField.Type.Name == nameof(ImmutableSortedSet<int>);
+                    return this.RecursiveParent.RecursiveField.Type.Name == nameof(ImmutableSortedSet<int>);
                 }
             }
 
@@ -1072,7 +1072,7 @@
                 get
                 {
                     // Not very precise, but it does the job for now.
-                    var namedType = this.RecursiveField.Type as INamedTypeSymbol;
+                    var namedType = this.RecursiveParent.RecursiveField.Type as INamedTypeSymbol;
                     return namedType != null && namedType.AllInterfaces.Any(iface => iface.Name == nameof(IReadOnlyList<int>));
                 }
             }
@@ -1179,12 +1179,16 @@
 
             public IdentifierNameSyntax NameAsField
             {
-                get { return SyntaxFactory.IdentifierName(this.Symbol.Name); }
+                get
+                {
+                    Verify.Operation(!this.IsDefault, "Default instance.");
+                    return SyntaxFactory.IdentifierName(this.Symbol.Name);
+                }
             }
 
             public INamespaceOrTypeSymbol Type
             {
-                get { return this.Symbol.Type; }
+                get { return this.Symbol?.Type; }
             }
 
             public NameSyntax TypeSyntax
