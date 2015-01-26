@@ -107,9 +107,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="EmptyTests.cs" />
-    <Compile Include="Family.cs" />
-    <Compile Include="FamilyBuilderTests.cs" />
-    <Compile Include="FamilyTests.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="OptionalTests.cs" />
     <Compile Include="PersonBuilderTests.cs" />
     <Compile Include="PersonTests.cs" />

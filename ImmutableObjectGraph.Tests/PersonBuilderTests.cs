@@ -9,6 +9,15 @@
 
 	public class PersonBuilderTests {
 		[Fact]
+		public void BuildersWithCollectionsShouldUseCollectionBuilders() {
+			var billy = Person.Create(name: "billy");
+			var familyBuilder = Family.Create().ToBuilder();
+			familyBuilder.Members.Add(billy);
+			var family = familyBuilder.ToImmutable();
+			Assert.Contains(billy, family.Members);
+		}
+
+		[Fact]
 		public void ToBuilderReturnsSimilarObject() {
 			var person = Person.Create("bill", age: 10);
 
