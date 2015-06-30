@@ -100,4 +100,5 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="..\packages\NuProj.0.10.0-beta-gd6d4e1ff23\tools\Microsoft.Common.NuProj.targets" />
 </Project>

@@ -120,6 +120,9 @@
     <Compile Include="CodeGen+StyleCopCompliance.cs" />
     <Compile Include="CodeGen+TypeConversionGen.cs" />
     <Compile Include="CodeGen.cs" />
+    <Compile Include="Roslyn\CSharpDeclarationComputer.cs" />
+    <Compile Include="Roslyn\DeclarationComputer.cs" />
+    <Compile Include="Roslyn\DeclarationInfo.cs" />
     <Compile Include="StyleCop.cs" />
     <Compile Include="Syntax.cs" />
     <Compile Include="GenerateImmutableAttribute.cs" />

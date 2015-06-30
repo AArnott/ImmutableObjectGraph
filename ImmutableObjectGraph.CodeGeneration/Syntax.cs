@@ -5,10 +5,12 @@
     using System.Collections.Immutable;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.CodeAnalysis.Text;
     using Validation;
 
     internal static class Syntax
@@ -61,6 +63,11 @@
         internal static ExpressionSyntax OptionalForIf(ExpressionSyntax expression, bool isOptional)
         {
             return isOptional ? OptionalFor(expression) : expression;
+        }
+
+        internal static ImmutableArray<DeclarationInfo> GetDeclarationsInSpan(this SemanticModel model, TextSpan span, bool getSymbol, CancellationToken cancellationToken)
+        {
+            return CSharpDeclarationComputer.GetDeclarationsInSpan(model, span, getSymbol, cancellationToken);
         }
 
         internal static NameSyntax GetTypeSyntax(Type type)
@@ -346,7 +353,7 @@
                 SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, parameter, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
                 SyntaxFactory.ThrowStatement(
                     SyntaxFactory.ObjectCreationExpression(GetTypeSyntax(typeof(ArgumentNullException))).AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.NameOfExpression("nameof", parameter)))));
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(parameter.Identifier.ToString()))))));
         }
     }
 }

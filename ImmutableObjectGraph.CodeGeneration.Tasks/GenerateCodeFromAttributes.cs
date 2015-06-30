@@ -128,7 +128,7 @@
 
                             // Only produce a new file if the generated document is not empty.
                             var semanticModel = await outputDocument.GetSemanticModelAsync(this.CancellationToken);
-                            if (!semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), false, this.CancellationToken).IsEmpty)
+                            if (!CSharpDeclarationComputer.GetDeclarationsInSpan(semanticModel, TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), false, this.CancellationToken).IsEmpty)
                             {
                                 var outputText = await outputDocument.GetTextAsync(this.CancellationToken);
                                 using (var outputFileStream = File.OpenWrite(outputFilePath))
@@ -173,7 +173,7 @@
 
             private Project CreateProject()
             {
-                var workspace = new CustomWorkspace();
+                var workspace = new AdhocWorkspace();
                 var project = workspace.CurrentSolution.AddProject("codegen", "codegen", "C#")
                     .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                     .WithMetadataReferences(this.ReferencePath.Select(p => MetadataReference.CreateFromFile(p.ItemSpec)));
