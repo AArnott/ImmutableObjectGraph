@@ -17,8 +17,6 @@
     <NuProjPackagePath>packages\NuProj.0.10.0-beta-gd6d4e1ff23\tools</NuProjPackagePath>
     <NuProjPath Condition=" '$(SolutionDir)' != '' ">$(SolutionDir)$(NuProjPackagePath)</NuProjPath>
     <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\$(NuProjPackagePath)</NuProjPath>
-    <!-- When it's available, the installed location is preferable because it includes XAML files that make content files appear. -->
-    <NuProjPath Condition=" Exists('$(MSBuildExtensionsPath)\NuProj') ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
