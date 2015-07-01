@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.SFG
+﻿namespace ImmutableObjectGraph.CodeGeneration
 {
     using System;
     using System.Collections.Generic;

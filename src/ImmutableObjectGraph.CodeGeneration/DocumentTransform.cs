@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.SFG
+﻿namespace ImmutableObjectGraph.CodeGeneration
 {
     using System;
     using System.Collections.Generic;
@@ -49,25 +49,19 @@
             {
                 var namespaceNode = memberNode.Parent as NamespaceDeclarationSyntax;
 
-                var generationAttributesSymbols = FindCodeGenerationAttributes(
-                    inputSemanticModel,
-                    memberNode);
-                foreach (var generationAttributeSymbol in generationAttributesSymbols)
+                var generators = FindCodeGenerators(inputSemanticModel, memberNode);
+                foreach (var generator in generators)
                 {
-                    var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol, inputSemanticModel.Compilation);
-                    if (generationAttribute != null)
+                    var generatedTypes = await generator.GenerateAsync(memberNode, inputDocument, progress, CancellationToken.None);
+                    if (namespaceNode != null)
                     {
-                        var generatedTypes = await generationAttribute.GenerateAsync(memberNode, inputDocument, progress, CancellationToken.None);
-                        if (namespaceNode != null)
-                        {
-                            emittedMembers.Add(SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
-                                .WithUsings(SyntaxFactory.List(namespaceNode.ChildNodes().OfType<UsingDirectiveSyntax>()))
-                                .WithMembers(SyntaxFactory.List(generatedTypes)));
-                        }
-                        else
-                        {
-                            emittedMembers.AddRange(generatedTypes);
-                        }
+                        emittedMembers.Add(SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
+                            .WithUsings(SyntaxFactory.List(namespaceNode.ChildNodes().OfType<UsingDirectiveSyntax>()))
+                            .WithMembers(SyntaxFactory.List(generatedTypes)));
+                    }
+                    else
+                    {
+                        emittedMembers.AddRange(generatedTypes);
                     }
                 }
             }
@@ -96,7 +90,7 @@
             return document;
         }
 
-        private static IEnumerable<AttributeData> FindCodeGenerationAttributes(SemanticModel document, SyntaxNode nodeWithAttributesApplied)
+        private static IEnumerable<ICodeGenerator> FindCodeGenerators(SemanticModel document, SyntaxNode nodeWithAttributesApplied)
         {
             Requires.NotNull(document, "document");
             Requires.NotNull(nodeWithAttributesApplied, "nodeWithAttributesApplied");
@@ -104,30 +98,34 @@
             var symbol = document.GetDeclaredSymbol(nodeWithAttributesApplied);
             if (symbol != null)
             {
-                foreach (var attribute in symbol.GetAttributes())
+                foreach (var attributeData in symbol.GetAttributes())
                 {
-                    if (IsOrDerivesFromCodeGenerationAttribute(attribute.AttributeClass))
+                    string generatorTypeName = GetCodeGeneratorTypeNameForAttribute(attributeData.AttributeClass);
+                    if (generatorTypeName != null)
                     {
-                        yield return attribute;
+                        Type generatorType = Type.GetType(generatorTypeName);
+                        Attribute switchesAttribute = Instantiate(attributeData, document.Compilation);
+                        ICodeGenerator generator = (ICodeGenerator)Activator.CreateInstance(generatorType, switchesAttribute);
+                        yield return generator;
                     }
                 }
             }
         }
 
-        private static bool IsOrDerivesFromCodeGenerationAttribute(INamedTypeSymbol type)
+        private static string GetCodeGeneratorTypeNameForAttribute(INamedTypeSymbol attributeType)
         {
-            if (type != null)
+            if (attributeType != null)
             {
-                if (type.Name == typeof(CodeGenerationAttribute).Name)
+                foreach (var generatorCandidateAttribute in attributeType.GetAttributes())
                 {
-                    // Don't sweat accuracy too much at this point.
-                    return true;
+                    if (generatorCandidateAttribute.AttributeClass.Name == typeof(Generators.CodeGenerationAttribute).Name)
+                    {
+                        return (string)generatorCandidateAttribute.ConstructorArguments.Single().Value;
+                    }
                 }
-
-                return IsOrDerivesFromCodeGenerationAttribute(type.BaseType);
             }
 
-            return false;
+            return null;
         }
 
         private static Attribute Instantiate(AttributeData attributeData, Compilation compilation)

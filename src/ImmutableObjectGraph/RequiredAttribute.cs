@@ -1,9 +1,5 @@
-﻿namespace ImmutableObjectGraph {
+﻿namespace ImmutableObjectGraph.CodeGeneration {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
 
 	/// <summary>
 	/// Indicates that the field to which it is applied should not be optional when

@@ -201,10 +201,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGenerationAttribute.cs" />
-    <Compile Include="DocumentTransform.cs" />
     <Compile Include="Guids.cs" />
-    <Compile Include="IProgressAndErrors.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -246,6 +243,12 @@
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration\ImmutableObjectGraph.CodeGeneration.csproj">
+      <Project>{90c68b38-ecf1-46e1-aecd-86a562c50ad0}</Project>
+      <Name>ImmutableObjectGraph.CodeGeneration</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
