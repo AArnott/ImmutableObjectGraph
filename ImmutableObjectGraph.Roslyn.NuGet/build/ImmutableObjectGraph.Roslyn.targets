@@ -2,6 +2,16 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ImmutableObjectGraphToolsPath Condition=" '$(ImmutableObjectGraphToolsPath)' == '' ">$(MSBuildThisFileDirectory)..\tools\</ImmutableObjectGraphToolsPath>
+
+    <PrepareResourcesDependsOn>
+      GenerateCodeFromAttributes;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+
+    <CoreCompileDependsOn>
+      GenerateCodeFromAttributes;
+      $(CoreCompileDependsOn)
+    </CoreCompileDependsOn>
   </PropertyGroup>
 
   <UsingTask TaskName="GenerateCodeFromAttributes" AssemblyFile="$(ImmutableObjectGraphToolsPath)ImmutableObjectGraph.CodeGeneration.Tasks.dll" />
