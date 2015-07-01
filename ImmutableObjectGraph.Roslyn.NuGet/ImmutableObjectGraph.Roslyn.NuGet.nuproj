@@ -50,16 +50,4 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
-
-  <Target Name="ExcludeVSSDKAssembliesFromNuPkg" AfterTargets="GetPackageFiles">
-    <!-- Ensure that we never package up assemblies that we don't build. -->
-    <ItemGroup>
-      <PackageFilesToExclude Include="@(PackageFile)" Condition=" ('%(Extension)' == '.dll' or '%(Extension)' == '.xml' or '%(Extension)' == '.pdb') and (
-          '@(PackageFile->MetaData('FileName')->StartsWith(`ImmutableObjectGraph`, System.StringComparison.OrdinalIgnoreCase))' == 'false' or
-          '%(FileName)' == 'stdole'
-          )" />
-      <PackageFile Remove="@(PackageFilesToExclude)" />
-    </ItemGroup>
-    <Message Text='Excluding "%(PackageFilesToExclude.Identity)" from NuPkg.' Condition=" '@(PackageFilesToExclude)' != '' " />
-  </Target>
 </Project>
