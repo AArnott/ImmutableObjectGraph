@@ -65,7 +65,6 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>ImmutableObjectGraph.T4</Id>
-    <Version>0.1.0-beta5</Version>
     <Title>ImmutableObjectGraph T4 Templates</Title>
     <Authors>Andrew Arnott</Authors>
     <Owners>Andrew Arnott</Owners>
@@ -78,6 +77,19 @@
     </LicenseUrl>
     <Copyright>Copyright © Andrew Arnott</Copyright>
     <Tags>immutable </Tags>
+    <VersionDependsOn>$(VersionDependsOn);GetNuPkgVersion</VersionDependsOn>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Nerdbank.GitVersioning.1.0.15178-beta\build\NerdBank.GitVersioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Nerdbank.GitVersioning.1.0.15178-beta\build\NerdBank.GitVersioning.targets'))" />
+  </Target>
+  <Import Project="..\packages\Nerdbank.GitVersioning.1.0.15178-beta\build\NerdBank.GitVersioning.targets" Condition="Exists('..\packages\Nerdbank.GitVersioning.1.0.15178-beta\build\NerdBank.GitVersioning.targets')" />
+  <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
+    <PropertyGroup>
+      <Version>$(NuGetPackageVersion)</Version>
+    </PropertyGroup>
+  </Target>
 </Project>

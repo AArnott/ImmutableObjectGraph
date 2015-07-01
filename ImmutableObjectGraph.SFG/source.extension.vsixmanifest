@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="bb421361-2b95-4586-8b4c-9047aa9bcdaa" Version="1.0" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="bb421361-2b95-4586-8b4c-9047aa9bcdaa" Version="|ImmutableObjectGraph.SFG;GetBuildVersion|" Language="en-US" Publisher="Microsoft" />
     <DisplayName>ImmutableObjectGraph.SFG</DisplayName>
     <Description>Adds a single file generator (i.e. Custom Tool) for generating immutable object graph types.</Description>
   </Metadata>
