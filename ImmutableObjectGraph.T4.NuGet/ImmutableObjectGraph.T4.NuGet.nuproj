@@ -65,7 +65,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>ImmutableObjectGraph.T4</Id>
-    <Version>0.1.0-beta4</Version>
+    <Version>0.1.0-beta5</Version>
     <Title>ImmutableObjectGraph T4 Templates</Title>
     <Authors>Andrew Arnott</Authors>
     <Owners>Andrew Arnott</Owners>
