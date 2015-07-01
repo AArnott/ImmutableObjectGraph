@@ -24,15 +24,15 @@
 
         public CodeGenTests()
         {
-            var workspace = new CustomWorkspace();
+            var workspace = new AdhocWorkspace();
             var project = workspace.CurrentSolution.AddProject("test", "test", "C#")
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(string).Assembly))
-                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(GenerateImmutableAttribute).Assembly))
-                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(CodeGenerationAttribute).Assembly))
-                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(Optional).Assembly))
-                .AddMetadataReference(MetadataReference.CreateFromAssembly(typeof(ImmutableArray).Assembly))
-                .AddMetadataReference(MetadataReference.CreateFromAssembly(Assembly.LoadWithPartialName("System.Runtime")));
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(string).Assembly.Location))
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(GenerateImmutableAttribute).Assembly.Location))
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttribute).Assembly.Location))
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(Optional).Assembly.Location))
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(ImmutableArray).Assembly.Location))
+                .AddMetadataReference(MetadataReference.CreateFromFile(Assembly.LoadWithPartialName("System.Runtime").Location));
             var inputDocument = project.AddDocument("input.cs", string.Empty);
             this.inputDocumentId = inputDocument.Id;
             project = inputDocument.Project;
@@ -251,7 +251,7 @@
 
             public SemanticModel SemanticModel { get; private set; }
 
-            public ImmutableArray<DeclarationInfo> Declarations { get; private set; }
+            internal ImmutableArray<DeclarationInfo> Declarations { get; private set; }
 
             public IEnumerable<ISymbol> DeclaredSymbols
             {

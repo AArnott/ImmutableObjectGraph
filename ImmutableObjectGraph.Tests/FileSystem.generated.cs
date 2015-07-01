@@ -697,7 +697,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherFileSystemFile = other as FileSystemFile;
-			if (otherFileSystemFile != null) {
+			if (otherFileSystemFile != null && other != this) {
 				if (this.Attributes != otherFileSystemFile.Attributes) {
 					propertiesChanged |= FileSystemEntryChangedProperties.Attributes;
 				}

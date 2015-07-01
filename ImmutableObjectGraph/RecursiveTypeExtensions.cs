@@ -780,7 +780,7 @@
             public static void ValidateInternalIntegrity(TRecursiveParent parent)
             {
                 // Each node id appears at most once.
-                if (parent.Children.Count > 0)
+                if (parent.Children?.Count > 0)
                 {
                     var observedIdentities = new System.Collections.Generic.HashSet<IdentityFieldType>();
                     foreach (var node in parent.GetSelfAndDescendents())

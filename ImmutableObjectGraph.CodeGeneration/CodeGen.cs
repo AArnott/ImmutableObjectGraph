@@ -102,7 +102,7 @@
         private async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
         {
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            this.isAbstract = applyTo.Modifiers.Any(m => m.IsContextualKind(SyntaxKind.AbstractKeyword));
+            this.isAbstract = applyTo.Modifiers.Any(m => m.IsKind(SyntaxKind.AbstractKeyword));
             this.applyToTypeName = SyntaxFactory.IdentifierName(this.applyTo.Identifier);
 
             this.inputDeclarations = this.semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, this.semanticModel.SyntaxTree.Length), true, this.cancellationToken);

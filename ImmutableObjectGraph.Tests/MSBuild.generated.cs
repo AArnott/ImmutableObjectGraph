@@ -3255,7 +3255,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectRootElement = other as ProjectRootElement;
-			if (otherProjectRootElement != null) {
+			if (otherProjectRootElement != null && other != this) {
 				if (this.FullPath != otherProjectRootElement.FullPath) {
 					propertiesChanged |= ProjectElementChangedProperties.FullPath;
 				}
@@ -7496,7 +7496,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectPropertyElement = other as ProjectPropertyElement;
-			if (otherProjectPropertyElement != null) {
+			if (otherProjectPropertyElement != null && other != this) {
 				if (this.Name != otherProjectPropertyElement.Name) {
 					propertiesChanged |= ProjectElementChangedProperties.Name;
 				}
@@ -8250,7 +8250,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectItemElement = other as ProjectItemElement;
-			if (otherProjectItemElement != null) {
+			if (otherProjectItemElement != null && other != this) {
 				if (this.Exclude != otherProjectItemElement.Exclude) {
 					propertiesChanged |= ProjectElementChangedProperties.Exclude;
 				}
@@ -9029,7 +9029,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectMetadataElement = other as ProjectMetadataElement;
-			if (otherProjectMetadataElement != null) {
+			if (otherProjectMetadataElement != null && other != this) {
 				if (this.Name != otherProjectMetadataElement.Name) {
 					propertiesChanged |= ProjectElementChangedProperties.Name;
 				}
@@ -9582,7 +9582,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectExtensionsElement = other as ProjectExtensionsElement;
-			if (otherProjectExtensionsElement != null) {
+			if (otherProjectExtensionsElement != null && other != this) {
 				if (this.Content != otherProjectExtensionsElement.Content) {
 					propertiesChanged |= ProjectElementChangedProperties.Content;
 				}
@@ -10122,7 +10122,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectImportElement = other as ProjectImportElement;
-			if (otherProjectImportElement != null) {
+			if (otherProjectImportElement != null && other != this) {
 				if (this.Project != otherProjectImportElement.Project) {
 					propertiesChanged |= ProjectElementChangedProperties.Project;
 				}
@@ -11432,7 +11432,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectItemDefinitionElement = other as ProjectItemDefinitionElement;
-			if (otherProjectItemDefinitionElement != null) {
+			if (otherProjectItemDefinitionElement != null && other != this) {
 				if (this.ItemType != otherProjectItemDefinitionElement.ItemType) {
 					propertiesChanged |= ProjectElementChangedProperties.ItemType;
 				}
@@ -13374,7 +13374,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectOutputElement = other as ProjectOutputElement;
-			if (otherProjectOutputElement != null) {
+			if (otherProjectOutputElement != null && other != this) {
 				if (this.IsOutputItem != otherProjectOutputElement.IsOutputItem) {
 					propertiesChanged |= ProjectElementChangedProperties.IsOutputItem;
 				}
@@ -14188,7 +14188,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectTargetElement = other as ProjectTargetElement;
-			if (otherProjectTargetElement != null) {
+			if (otherProjectTargetElement != null && other != this) {
 				if (this.AfterTargets != otherProjectTargetElement.AfterTargets) {
 					propertiesChanged |= ProjectElementChangedProperties.AfterTargets;
 				}
@@ -15097,7 +15097,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectTaskElement = other as ProjectTaskElement;
-			if (otherProjectTaskElement != null) {
+			if (otherProjectTaskElement != null && other != this) {
 				if (this.ContinueOnError != otherProjectTaskElement.ContinueOnError) {
 					propertiesChanged |= ProjectElementChangedProperties.ContinueOnError;
 				}
@@ -15837,7 +15837,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectUsingTaskBodyElement = other as ProjectUsingTaskBodyElement;
-			if (otherProjectUsingTaskBodyElement != null) {
+			if (otherProjectUsingTaskBodyElement != null && other != this) {
 				if (this.Evaluate != otherProjectUsingTaskBodyElement.Evaluate) {
 					propertiesChanged |= ProjectElementChangedProperties.Evaluate;
 				}
@@ -16570,7 +16570,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectUsingTaskElement = other as ProjectUsingTaskElement;
-			if (otherProjectUsingTaskElement != null) {
+			if (otherProjectUsingTaskElement != null && other != this) {
 				if (this.Architecture != otherProjectUsingTaskElement.Architecture) {
 					propertiesChanged |= ProjectElementChangedProperties.Architecture;
 				}
@@ -17378,7 +17378,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectUsingTaskParameterElement = other as ProjectUsingTaskParameterElement;
-			if (otherProjectUsingTaskParameterElement != null) {
+			if (otherProjectUsingTaskParameterElement != null && other != this) {
 				if (this.Name != otherProjectUsingTaskParameterElement.Name) {
 					propertiesChanged |= ProjectElementChangedProperties.Name;
 				}

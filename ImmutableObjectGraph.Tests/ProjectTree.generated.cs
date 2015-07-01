@@ -2036,7 +2036,7 @@ namespace ImmutableObjectGraph.Tests {
 			var propertiesChanged = base.DiffProperties(other);
 		
 			var otherProjectItemTree = other as ProjectItemTree;
-			if (otherProjectItemTree != null) {
+			if (otherProjectItemTree != null && other != this) {
 				if (this.ProjectPropertiesContext != otherProjectItemTree.ProjectPropertiesContext) {
 					propertiesChanged |= ProjectTreeChangedProperties.ProjectPropertiesContext;
 				}
