@@ -14,7 +14,7 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
-    using Microsoft.ImmutableObjectGraph_SFG;
+    using ImmutableObjectGraph.SFG;
     using Validation;
     using LookupTableHelper = RecursiveTypeExtensions.LookupTable<IRecursiveType, IRecursiveParentWithLookupTable<IRecursiveType>>;
     using RecursiveDiffingTypeHelper = IRecursiveDiffingType<object, object>;

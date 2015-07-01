@@ -5,7 +5,7 @@
 
 [$RootKey$\CLSID\{163AA075-225C-4797-9019-FEB55E5CB392}]
 @="Generator for Immutable Object Graph"
-"Class"="Microsoft.ImmutableObjectGraph_SFG.SingleFileGenerator"
+"Class"="ImmutableObjectGraph.SFG.SingleFileGenerator"
 "InprocServer32"="$WinDir$\SYSTEM32\MSCOREE.DLL"
 "CodeBase"="$PackageFolder$\ImmutableObjectGraph.SFG.dll"
 "ThreadingModel"="Both"

@@ -13,7 +13,7 @@
     using Microsoft.CodeAnalysis.Diagnostics;
     using Microsoft.CodeAnalysis.MSBuild;
     using Microsoft.CodeAnalysis.Text;
-    using Microsoft.ImmutableObjectGraph_SFG;
+    using ImmutableObjectGraph.SFG;
     using Xunit;
 
     public class CodeGenTests

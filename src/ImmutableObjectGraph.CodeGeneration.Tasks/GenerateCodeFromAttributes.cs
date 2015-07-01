@@ -13,7 +13,7 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.MSBuild;
     using Microsoft.CodeAnalysis.Text;
-    using Microsoft.ImmutableObjectGraph_SFG;
+    using ImmutableObjectGraph.SFG;
     using Task = System.Threading.Tasks.Task;
 
     public class GenerateCodeFromAttributes : Microsoft.Build.Utilities.Task, ICancelableTask

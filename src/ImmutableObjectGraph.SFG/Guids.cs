@@ -2,7 +2,7 @@
 // MUST match guids.h
 using System;
 
-namespace Microsoft.ImmutableObjectGraph_SFG
+namespace ImmutableObjectGraph.SFG
 {
     static class GuidList
     {

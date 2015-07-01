@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.ImmutableObjectGraph_SFG {
+namespace ImmutableObjectGraph.SFG {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.ImmutableObjectGraph_SFG {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.ImmutableObjectGraph_SFG.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ImmutableObjectGraph.SFG.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

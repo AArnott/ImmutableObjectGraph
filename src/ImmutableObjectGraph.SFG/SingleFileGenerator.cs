@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ImmutableObjectGraph_SFG
+﻿namespace ImmutableObjectGraph.SFG
 {
     using System;
     using System.Collections.Generic;
@@ -98,7 +98,7 @@
         {
             var shellDocuments = Package.GetGlobalService(typeof(SVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
             Assumes.Present(shellDocuments);
-            VisualStudio.OLE.Interop.IServiceProvider sp;
+            Microsoft.VisualStudio.OLE.Interop.IServiceProvider sp;
             int docInProject;
             ErrorHandler.ThrowOnFailure(shellDocuments.IsDocumentInAProject(inputFilePath, out hierarchy, out itemid, out sp, out docInProject));
         }

@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ImmutableObjectGraph_SFG
+﻿namespace ImmutableObjectGraph.SFG
 {
     using System;
     using System.Diagnostics;

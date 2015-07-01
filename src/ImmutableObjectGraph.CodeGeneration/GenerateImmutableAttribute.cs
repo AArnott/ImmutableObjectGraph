@@ -12,7 +12,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.ImmutableObjectGraph_SFG;
+    using ImmutableObjectGraph.SFG;
     using Validation;
 
     [AttributeUsage(AttributeTargets.Class)]

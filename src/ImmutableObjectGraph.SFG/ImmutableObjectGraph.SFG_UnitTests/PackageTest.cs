@@ -16,7 +16,7 @@ using System.Reflection;
 using Microsoft.VsSDK.UnitTestLibrary;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.ImmutableObjectGraph_SFG;
+using ImmutableObjectGraph.SFG;
 
 namespace ImmutableObjectGraph.SFG_UnitTests
 {
