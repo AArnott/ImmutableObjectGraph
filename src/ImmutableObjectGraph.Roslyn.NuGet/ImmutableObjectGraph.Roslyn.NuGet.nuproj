@@ -11,10 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj">
+      <PackageDirectory>Tools</PackageDirectory>
+    </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Tasks\ImmutableObjectGraph.CodeGeneration.Tasks.csproj">
       <PackageDirectory>Tools</PackageDirectory>
     </ProjectReference>
-    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration\ImmutableObjectGraph.CodeGeneration.csproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration\ImmutableObjectGraph.CodeGeneration.csproj">
+      <PackageDirectory>Tools</PackageDirectory>
+    </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj" />
   </ItemGroup>
   <ItemGroup>
