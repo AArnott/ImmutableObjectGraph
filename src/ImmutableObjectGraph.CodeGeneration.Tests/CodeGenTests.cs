@@ -8,12 +8,12 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Generators;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
     using Microsoft.CodeAnalysis.MSBuild;
     using Microsoft.CodeAnalysis.Text;
-    using ImmutableObjectGraph.SFG;
     using Xunit;
 
     public class CodeGenTests
@@ -244,7 +244,7 @@
             {
                 this.Document = document;
                 this.SemanticModel = semanticModel;
-                this.Declarations = semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), true, CancellationToken.None);
+                this.Declarations = CSharpDeclarationComputer.GetDeclarationsInSpan(semanticModel, TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), true, CancellationToken.None);
             }
 
             public Document Document { get; private set; }
