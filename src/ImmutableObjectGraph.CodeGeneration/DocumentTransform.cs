@@ -104,8 +104,7 @@
                     if (generatorTypeName != null)
                     {
                         Type generatorType = Type.GetType(generatorTypeName);
-                        Attribute switchesAttribute = Instantiate(attributeData, document.Compilation);
-                        ICodeGenerator generator = (ICodeGenerator)Activator.CreateInstance(generatorType, switchesAttribute);
+                        ICodeGenerator generator = (ICodeGenerator)Activator.CreateInstance(generatorType, attributeData);
                         yield return generator;
                     }
                 }
@@ -126,21 +125,6 @@
             }
 
             return null;
-        }
-
-        private static Attribute Instantiate(AttributeData attributeData, Compilation compilation)
-        {
-            var ctor = GetConstructor(attributeData.AttributeConstructor, compilation);
-            object[] args = attributeData.ConstructorArguments.Select(a => a.Value).ToArray();
-            Attribute result = (Attribute)ctor.Invoke(args);
-
-            foreach (var namedArg in attributeData.NamedArguments)
-            {
-                var property = ctor.DeclaringType.GetProperty(namedArg.Key);
-                property.SetValue(result, namedArg.Value.Value);
-            }
-
-            return result;
         }
 
         private static Assembly GetAssembly(IAssemblySymbol symbol, Compilation compilation)
@@ -174,20 +158,6 @@
 
             Type type = assembly.GetType(nameBuilder.ToString(), true); // How to make this work more generally (nested types, etc)?
             return type;
-        }
-
-        private static ConstructorInfo GetConstructor(IMethodSymbol symbol, Compilation compilation)
-        {
-            Requires.NotNull(symbol, "symbol");
-
-            Type type = GetType(symbol.ContainingType, compilation);
-            return type.GetConstructors().First(ctor => ctor.GetParameters().Length == symbol.Parameters.Length); // TODO: make this pick overloads based on parameter types
-        }
-
-        private static object Construct(ConstructorInfo constructorInfo, SyntaxNode invocationSyntax, Document document)
-        {
-            // TODO: support parameters
-            return constructorInfo.Invoke(new object[0]);
         }
     }
 }
