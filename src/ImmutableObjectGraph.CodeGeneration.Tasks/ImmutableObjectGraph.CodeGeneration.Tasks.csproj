@@ -122,6 +122,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj">
+      <Project>{1c4c18ba-15ef-4d4d-9547-a2ee1e47ace1}</Project>
+      <Name>ImmutableObjectGraph.CodeGeneration.Roslyn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration\ImmutableObjectGraph.CodeGeneration.csproj">
       <Project>{90c68b38-ecf1-46e1-aecd-86a562c50ad0}</Project>
       <Name>ImmutableObjectGraph.CodeGeneration</Name>
