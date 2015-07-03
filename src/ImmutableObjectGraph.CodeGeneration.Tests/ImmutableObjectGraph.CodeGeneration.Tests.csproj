@@ -177,6 +177,10 @@
     <Compile Include="TestSources\FileSystem.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj">
+      <Project>{1c4c18ba-15ef-4d4d-9547-a2ee1e47ace1}</Project>
+      <Name>ImmutableObjectGraph.CodeGeneration.Roslyn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Tasks\ImmutableObjectGraph.CodeGeneration.Tasks.csproj">
       <Project>{64053579-3a50-4ffa-9499-172abe58fd0b}</Project>
       <Name>ImmutableObjectGraph.CodeGeneration.Tasks</Name>
