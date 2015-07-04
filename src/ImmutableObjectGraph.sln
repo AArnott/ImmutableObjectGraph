@@ -50,6 +50,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "T4", "T4", "{71C4425D-BE1D-
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Roslyn.NuGet", "ImmutableObjectGraph.Roslyn.NuGet\ImmutableObjectGraph.Roslyn.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Roslyn", "ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,10 @@ Global
 		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,5 +130,6 @@ Global
 		{90C68B38-ECF1-46E1-AECD-86A562C50AD0} = {6288222B-94FA-434F-89E7-A06D3A83417E}
 		{480D7D29-47EB-4110-A365-1246B49687D2} = {6288222B-94FA-434F-89E7-A06D3A83417E}
 		{C2529293-7A03-4E3A-B96A-59A6D70D3B86} = {6288222B-94FA-434F-89E7-A06D3A83417E}
+		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1} = {6288222B-94FA-434F-89E7-A06D3A83417E}
 	EndGlobalSection
 EndGlobal

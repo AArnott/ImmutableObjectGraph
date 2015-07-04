@@ -1,19 +1,13 @@
-﻿namespace ImmutableObjectGraph.SFG
+﻿namespace ImmutableObjectGraph.CodeGeneration
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-
-    /// <summary>
-    /// A base attribute type for code generation attributes.
-    /// </summary>
-    public abstract class CodeGenerationAttribute : Attribute
+    public interface ICodeGenerator
     {
         /// <summary>
         /// Create the syntax tree representing the expansion of some member to which this attribute is applied.
@@ -23,6 +17,6 @@
         /// <param name="progress">A way to report progress, errors and warnings.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>The generated member syntax to be added to the project.</returns>
-        public abstract Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken);
+        Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, CancellationToken cancellationToken);
     }
 }

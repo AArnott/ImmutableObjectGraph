@@ -10,7 +10,7 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.CSharp
 {
-    internal class CSharpDeclarationComputer : DeclarationComputer
+    public class CSharpDeclarationComputer : DeclarationComputer
     {
         public static ImmutableArray<DeclarationInfo> GetDeclarationsInSpan(SemanticModel model, TextSpan span, bool getSymbol, CancellationToken cancellationToken)
         {

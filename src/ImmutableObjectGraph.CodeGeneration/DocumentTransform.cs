@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.SFG
+﻿namespace ImmutableObjectGraph.CodeGeneration
 {
     using System;
     using System.Collections.Generic;
@@ -49,25 +49,19 @@
             {
                 var namespaceNode = memberNode.Parent as NamespaceDeclarationSyntax;
 
-                var generationAttributesSymbols = FindCodeGenerationAttributes(
-                    inputSemanticModel,
-                    memberNode);
-                foreach (var generationAttributeSymbol in generationAttributesSymbols)
+                var generators = FindCodeGenerators(inputSemanticModel, memberNode);
+                foreach (var generator in generators)
                 {
-                    var generationAttribute = (CodeGenerationAttribute)Instantiate(generationAttributeSymbol, inputSemanticModel.Compilation);
-                    if (generationAttribute != null)
+                    var generatedTypes = await generator.GenerateAsync(memberNode, inputDocument, progress, CancellationToken.None);
+                    if (namespaceNode != null)
                     {
-                        var generatedTypes = await generationAttribute.GenerateAsync(memberNode, inputDocument, progress, CancellationToken.None);
-                        if (namespaceNode != null)
-                        {
-                            emittedMembers.Add(SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
-                                .WithUsings(SyntaxFactory.List(namespaceNode.ChildNodes().OfType<UsingDirectiveSyntax>()))
-                                .WithMembers(SyntaxFactory.List(generatedTypes)));
-                        }
-                        else
-                        {
-                            emittedMembers.AddRange(generatedTypes);
-                        }
+                        emittedMembers.Add(SyntaxFactory.NamespaceDeclaration(namespaceNode.Name)
+                            .WithUsings(SyntaxFactory.List(namespaceNode.ChildNodes().OfType<UsingDirectiveSyntax>()))
+                            .WithMembers(SyntaxFactory.List(generatedTypes)));
+                    }
+                    else
+                    {
+                        emittedMembers.AddRange(generatedTypes);
                     }
                 }
             }
@@ -96,7 +90,7 @@
             return document;
         }
 
-        private static IEnumerable<AttributeData> FindCodeGenerationAttributes(SemanticModel document, SyntaxNode nodeWithAttributesApplied)
+        private static IEnumerable<ICodeGenerator> FindCodeGenerators(SemanticModel document, SyntaxNode nodeWithAttributesApplied)
         {
             Requires.NotNull(document, "document");
             Requires.NotNull(nodeWithAttributesApplied, "nodeWithAttributesApplied");
@@ -104,45 +98,33 @@
             var symbol = document.GetDeclaredSymbol(nodeWithAttributesApplied);
             if (symbol != null)
             {
-                foreach (var attribute in symbol.GetAttributes())
+                foreach (var attributeData in symbol.GetAttributes())
                 {
-                    if (IsOrDerivesFromCodeGenerationAttribute(attribute.AttributeClass))
+                    string generatorTypeName = GetCodeGeneratorTypeNameForAttribute(attributeData.AttributeClass);
+                    if (generatorTypeName != null)
                     {
-                        yield return attribute;
+                        Type generatorType = Type.GetType(generatorTypeName);
+                        ICodeGenerator generator = (ICodeGenerator)Activator.CreateInstance(generatorType, attributeData);
+                        yield return generator;
                     }
                 }
             }
         }
 
-        private static bool IsOrDerivesFromCodeGenerationAttribute(INamedTypeSymbol type)
+        private static string GetCodeGeneratorTypeNameForAttribute(INamedTypeSymbol attributeType)
         {
-            if (type != null)
+            if (attributeType != null)
             {
-                if (type.Name == typeof(CodeGenerationAttribute).Name)
+                foreach (var generatorCandidateAttribute in attributeType.GetAttributes())
                 {
-                    // Don't sweat accuracy too much at this point.
-                    return true;
+                    if (generatorCandidateAttribute.AttributeClass.Name == typeof(Generators.CodeGenerationAttribute).Name)
+                    {
+                        return (string)generatorCandidateAttribute.ConstructorArguments.Single().Value;
+                    }
                 }
-
-                return IsOrDerivesFromCodeGenerationAttribute(type.BaseType);
             }
 
-            return false;
-        }
-
-        private static Attribute Instantiate(AttributeData attributeData, Compilation compilation)
-        {
-            var ctor = GetConstructor(attributeData.AttributeConstructor, compilation);
-            object[] args = attributeData.ConstructorArguments.Select(a => a.Value).ToArray();
-            Attribute result = (Attribute)ctor.Invoke(args);
-
-            foreach (var namedArg in attributeData.NamedArguments)
-            {
-                var property = ctor.DeclaringType.GetProperty(namedArg.Key);
-                property.SetValue(result, namedArg.Value.Value);
-            }
-
-            return result;
+            return null;
         }
 
         private static Assembly GetAssembly(IAssemblySymbol symbol, Compilation compilation)
@@ -176,20 +158,6 @@
 
             Type type = assembly.GetType(nameBuilder.ToString(), true); // How to make this work more generally (nested types, etc)?
             return type;
-        }
-
-        private static ConstructorInfo GetConstructor(IMethodSymbol symbol, Compilation compilation)
-        {
-            Requires.NotNull(symbol, "symbol");
-
-            Type type = GetType(symbol.ContainingType, compilation);
-            return type.GetConstructors().First(ctor => ctor.GetParameters().Length == symbol.Parameters.Length); // TODO: make this pick overloads based on parameter types
-        }
-
-        private static object Construct(ConstructorInfo constructorInfo, SyntaxNode invocationSyntax, Document document)
-        {
-            // TODO: support parameters
-            return constructorInfo.Invoke(new object[0]);
         }
     }
 }

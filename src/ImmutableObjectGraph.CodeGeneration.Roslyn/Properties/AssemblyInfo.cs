@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ImmutableObjectGraph.CodeGeneration")]
+[assembly: AssemblyTitle("ImmutableObjectGraph.CodeGeneration.Roslyn")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ImmutableObjectGraph.CodeGeneration")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyProduct("ImmutableObjectGraph.CodeGeneration.Roslyn")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,4 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("90c68b38-ecf1-46e1-aecd-86a562c50ad0")]
+[assembly: Guid("1c4c18ba-15ef-4d4d-9547-a2ee1e47ace1")]

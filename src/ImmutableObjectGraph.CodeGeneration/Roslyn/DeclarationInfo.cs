@@ -10,7 +10,7 @@ namespace Microsoft.CodeAnalysis
     /// <summary>
     /// Struct containing information about a source declaration.
     /// </summary>
-    internal struct DeclarationInfo
+    public struct DeclarationInfo
     {
         private readonly SyntaxNode _declaredNode;
         private readonly ImmutableArray<SyntaxNode> _executableCodeBlocks;
