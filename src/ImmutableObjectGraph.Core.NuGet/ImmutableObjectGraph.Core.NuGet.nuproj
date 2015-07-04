@@ -20,7 +20,7 @@
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
-    <Id>ImmutableObjectGraph.Core</Id>
+    <Id>ImmutableObjectGraph</Id>
     <Title>ImmutableObjectGraph Core</Title>
     <Authors>Andrew Arnott</Authors>
     <Owners>Andrew Arnott</Owners>
