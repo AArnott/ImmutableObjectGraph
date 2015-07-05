@@ -5,7 +5,7 @@ ImmutableObjectGraph
 
 [![Build status](https://ci.appveyor.com/api/projects/status/sc0w4vlceulc2try?svg=true)](https://ci.appveyor.com/project/AArnott/immutableobjectgraph)
 
-This project hosts a [T4 template][1] that makes writing immutable objects
+This project offers code generation that makes writing immutable objects
 much easier. For instance, the following mutable class:
 
     public class Fruit {
@@ -19,9 +19,10 @@ support methods and even a Builder class for use in conveniently handling
 the immutable object when mutation by creating new objects may be required.
 These codebases for immutable objects can be quite large.
 
-To reduce the burden of writing and maintaining such codebases, the
-T4 templates found in this project generate the code for immutable objects
-for you based on a template mutable class that you supply. 
+To reduce the burden of writing and maintaining such codebases, this project
+generates immutable types for you based on a minimal definition of a class
+that you define. This is done using either Roslyn or the (deprecated)
+[T4 templates][T4].
 
 Supported features
 ------------------
@@ -29,29 +30,42 @@ Currently, the T4 template transformation supports a small subset of C#
 features being present on the mutable template type that otherwise might
 appear in a type in C#. 
 
- * Only fields are supported. 
  * Field types may be value or reference types.
  * When field types are collections, immutable collections should be used that
    support the Builder pattern.
- * When field types refer to other types also defined in the mutable template
-   file, multiple immutable object types are defined in the generated file.
-   In this way, an entire library of immutable classes with members that
+ * When field types refer to other types also defined in the template
+   file, an entire library of immutable classes with members that
    reference each other can be constructed.
  * Batch property changes can be made with a single allocation using a single
-   invocation of the **With** method.
+   invocation of the `With` method.
  * Builder classes are generated to allow efficient multi-step mutation
    without producing unnecessary GC pressure.
 
+Limitations unique to the T4 templates if you use them:
+
+ * Only fields are supported. 
+
 Usage
 -----
-This project is made up of both reference assemblies and T4 templates that
-should be included in your project. The easiest way to get started is to
-install [the NuGet package][2]:
+You can begin using this project by simply installing a NuGet package.
+The recommended package is [ImmutableObjectGraph.Generation][RoslynGenNuPkg]
+which uses Roslyn for its code generation:
+
+    Install-Package ImmutableObjectGraph.Generation -Pre
+
+The deprecated T4 templates may be used instead by installing the
+[ImmutableObjectGraph.T4][T4GenNuPkg] NuGet package:
 
     Install-Package ImmutableObjectGraph.T4 -Pre
 
 Example
 -------
+
+### Roslyn code generation
+
+TODO
+
+### T4 templates
 A live example can be seen by comparing the source file `Message.tt` to the 
 generated output found in `Message.generated.cs`. Both of these files are in 
 this project.
@@ -219,6 +233,7 @@ behavior on the generated types within your project in separate source files
 so that your additions do not get reverted with each run of the code
 generator.
 
-  [1]: http://www.bing.com/search?setmkt=en-US&q=visual+studio+t4
-  [2]: https://www.nuget.org/packages/immutableobjectgraph.t4
+  [T4]: http://www.bing.com/search?setmkt=en-US&q=visual+studio+t4
+  [T4GenNuPkg]: https://www.nuget.org/packages/immutableobjectgraph.t4
+  [RoslynGenNuPkg]: https://www.nuget.org/packages/immutableobjectgraph.generation
   
