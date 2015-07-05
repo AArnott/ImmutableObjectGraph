@@ -233,6 +233,16 @@ behavior on the generated types within your project in separate source files
 so that your additions do not get reverted with each run of the code
 generator.
 
+Known Issues
+------------
+
+When defining more than one immutable type, you may need to keep the arguments
+to the `[GenerateImmutable]` attribute consistent for every type. The generator
+currently assumes that every type has the same arguments as every other type
+and as a result, for example, generating a Builder from one type and referencing
+another type, that other type will be assumed to also have a Builder even when
+it does not, leading to compiler errors.
+
   [T4]: http://www.bing.com/search?setmkt=en-US&q=visual+studio+t4
   [T4GenNuPkg]: https://www.nuget.org/packages/immutableobjectgraph.t4
   [RoslynGenNuPkg]: https://www.nuget.org/packages/immutableobjectgraph.generation
