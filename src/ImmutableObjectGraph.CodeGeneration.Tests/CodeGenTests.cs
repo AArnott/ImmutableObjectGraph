@@ -14,6 +14,7 @@
     using Microsoft.CodeAnalysis.Diagnostics;
     using Microsoft.CodeAnalysis.MSBuild;
     using Microsoft.CodeAnalysis.Text;
+    using Validation;
     using Xunit;
 
     public class CodeGenTests
@@ -230,12 +231,37 @@
                 string actualNewLine = line.Text.GetSubText(TextSpan.FromBounds(line.End, line.EndIncludingLineBreak)).ToString();
                 if (actualNewLine != Environment.NewLine && actualNewLine.Length > 0)
                 {
-                    Assert.True(false, string.Format("Line {0} has unexpected line ending characters. Content: {1}", line.LineNumber, line));
+                    string expected = EscapeLineEndingCharacters(Environment.NewLine);
+                    string actual = EscapeLineEndingCharacters(actualNewLine);
+                    Assert.True(false, $"Expected line ending characters '{expected}' but found '{actual}' on line {line.LineNumber + 1}.\nContent: {line}");
                 }
             }
 
             var semanticModel = await outputDocument.GetSemanticModelAsync();
             return new GenerationResult(outputDocument, semanticModel);
+        }
+
+        private static string EscapeLineEndingCharacters(string whitespace)
+        {
+            Requires.NotNull(whitespace, nameof(whitespace));
+            var builder = new StringBuilder(whitespace.Length * 2);
+            foreach (char ch in whitespace)
+            {
+                switch (ch)
+                {
+                    case '\n':
+                        builder.Append("\\n");
+                        break;
+                    case '\r':
+                        builder.Append("\\r");
+                        break;
+                    default:
+                        builder.Append(ch);
+                        break;
+                }
+            }
+
+            return builder.ToString();
         }
 
         protected class GenerationResult
