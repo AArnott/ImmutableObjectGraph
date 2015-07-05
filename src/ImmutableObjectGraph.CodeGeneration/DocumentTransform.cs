@@ -71,7 +71,8 @@
                     SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("ImmutableObjectGraph"))))
                 .WithMembers(SyntaxFactory.List(emittedMembers))
                 .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble))
-                .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed);
+                .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
+                .NormalizeWhitespace();
 
             // Format the tree to get reasonably good whitespace.
             var formattedTree = Formatter.Format(emittedTree, workspace, workspace.Options);
