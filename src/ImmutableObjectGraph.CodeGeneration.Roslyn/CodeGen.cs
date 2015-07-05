@@ -566,7 +566,9 @@
                     SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier))))
                 .AddModifiers(
                     SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                .WithAttributeLists(SyntaxFactory.SingletonList(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(
+                     DebuggerBrowsableNeverAttribute))));
         }
 
         private static MemberDeclarationSyntax CreateIdentityProperty()
