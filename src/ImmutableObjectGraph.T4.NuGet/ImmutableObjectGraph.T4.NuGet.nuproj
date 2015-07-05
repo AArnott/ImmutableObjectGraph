@@ -78,6 +78,7 @@
     <Copyright>Copyright © Andrew Arnott</Copyright>
     <Tags>immutable </Tags>
     <VersionDependsOn>$(VersionDependsOn);GetNuPkgVersion</VersionDependsOn>
+    <GenerateSymbolPackage>false</GenerateSymbolPackage>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
