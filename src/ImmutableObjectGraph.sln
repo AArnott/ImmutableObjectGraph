@@ -49,7 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roslyn", "Roslyn", "{628822
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "T4", "T4", "{71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.CodeGeneration.NuGet", "ImmutableObjectGraph.CodeGeneration.NuGet\ImmutableObjectGraph.CodeGeneration.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Generation.NuGet", "ImmutableObjectGraph.CodeGeneration.NuGet\ImmutableObjectGraph.Generation.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Roslyn", "ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
 EndProject
