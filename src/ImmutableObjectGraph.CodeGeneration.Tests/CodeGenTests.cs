@@ -191,6 +191,12 @@
 
         }
 
+        [Fact]
+        public async Task Hierarchy3Levels_Compiles()
+        {
+            await this.GenerateFromStreamAsync("Hierarchy3Levels");
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
