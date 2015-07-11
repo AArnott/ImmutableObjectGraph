@@ -147,13 +147,13 @@
                     SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName("GetType")),
                     SyntaxFactory.ArgumentList());
 
-                // {0}.IsEquivalentTo(typeof(derivedType))
+                // {0}.Equals(typeof(derivedType))
                 var thisTypeIsEquivalentToDerivedType =
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             thisDotGetType,
-                            SyntaxFactory.IdentifierName(nameof(Type.IsEquivalentTo))),
+                            SyntaxFactory.IdentifierName(nameof(Type.Equals))),
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(
                             SyntaxFactory.TypeOfExpression(derivedTypeName)))));
 
