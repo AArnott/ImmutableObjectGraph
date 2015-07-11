@@ -45,13 +45,21 @@
                     this.innerMembers.Add(this.CreateToAncestorTypeMethod());
                 }
 
-                foreach (MetaType derivedType in this.generator.applyToMetaType.Descendents.Where(d => !d.TypeSymbol.IsAbstract))
+                // Only generate derived type conversion methods if we have something to add:
+                // either because we're the most base class, or because we have fields to add.
+                if (this.generator.applyToMetaType.LocalFields.Any() || !this.generator.applyToMetaType.Ancestors.Any())
                 {
-                    this.innerMembers.Add(this.CreateToDerivedTypeMethod(derivedType));
-
-                    foreach (MetaType ancestor in this.generator.applyToMetaType.Ancestors)
+                    foreach (MetaType derivedType in this.generator.applyToMetaType.Descendents.Where(d => !d.TypeSymbol.IsAbstract))
                     {
-                        this.innerMembers.Add(this.CreateToDerivedTypeOverrideMethod(derivedType, ancestor));
+                        this.innerMembers.Add(this.CreateToDerivedTypeMethod(derivedType));
+
+                        if (this.generator.applyToMetaType.LocalFields.Any())
+                        {
+                            foreach (MetaType ancestor in this.generator.applyToMetaType.Ancestors)
+                            {
+                                this.innerMembers.Add(this.CreateToDerivedTypeOverrideMethod(derivedType, ancestor));
+                            }
+                        }
                     }
                 }
             }
@@ -235,6 +243,7 @@
                     .WithParameterList(
                         this.generator.CreateParameterList(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired))
                     .WithBody(SyntaxFactory.Block(
+                        // return base.ToDerivedType(args);
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
                                 SyntaxFactory.MemberAccessExpression(
