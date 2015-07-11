@@ -855,6 +855,7 @@
             protected abstract void GenerateCore();
         }
 
+        [DebuggerDisplay("{TypeSymbol.Name}")]
         protected struct MetaType
         {
             private CodeGen generator;
