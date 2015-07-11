@@ -38,7 +38,7 @@
 
         private static void MeasureTests()
         {
-            var tests = new ProjectTreeTests();
+            var tests = new ProjectTreeTests(new LogHelper());
 
             RootedProjectTree templateTree = ProjectTreeTests.ConstructVeryLargeTree(new Random(21748171), 4, 100, 10000);
             Console.WriteLine("Template tree contains {0} nodes.", templateTree.GetSelfAndDescendents().Count());
@@ -61,6 +61,19 @@
             }
 
             Console.WriteLine("{0} {1}", timer.Elapsed, name);
+        }
+
+        private class LogHelper : Xunit.Abstractions.ITestOutputHelper
+        {
+            public void WriteLine(string message)
+            {
+                Console.WriteLine(message);
+            }
+
+            public void WriteLine(string format, params object[] args)
+            {
+                Console.WriteLine(format, args);
+            }
         }
     }
 

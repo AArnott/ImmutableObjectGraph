@@ -16,6 +16,7 @@
     using Microsoft.CodeAnalysis.Text;
     using Validation;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class CodeGenTests
     {
@@ -23,8 +24,13 @@
         protected ProjectId projectId;
         protected DocumentId inputDocumentId;
 
-        public CodeGenTests()
+        private readonly ITestOutputHelper logger;
+
+        public CodeGenTests(ITestOutputHelper logger)
         {
+            Requires.NotNull(logger, nameof(logger));
+
+            this.logger = logger;
             var workspace = new AdhocWorkspace();
             var project = workspace.CurrentSolution.AddProject("test", "test", "C#")
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
@@ -210,16 +216,16 @@
                            select diagnostic;
 
             SourceText outputDocumentText = await outputDocument.GetTextAsync();
-            Console.WriteLine(outputDocumentText);
+            this.logger.WriteLine("{0}", outputDocumentText);
 
             foreach (var error in errors)
             {
-                Console.WriteLine(error);
+                this.logger.WriteLine("{0}", error);
             }
 
             foreach (var warning in warnings)
             {
-                Console.WriteLine(warning);
+                this.logger.WriteLine("{0}", warning);
             }
 
             Assert.Empty(errors);
