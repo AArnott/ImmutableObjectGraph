@@ -8,9 +8,18 @@
     using System.Threading.Tasks;
     using Validation;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ProjectTreeTests
     {
+        private readonly ITestOutputHelper logger;
+
+        public ProjectTreeTests(ITestOutputHelper logger)
+        {
+            Requires.NotNull(logger, nameof(logger));
+            this.logger = logger;
+        }
+
         [Fact]
         public void ProjectTreeValueComparer()
         {
@@ -35,11 +44,11 @@
         public void ProjectTreeChangesSinceLargeTreeTest()
         {
             int seed = Environment.TickCount;
-            Console.WriteLine("Random seed: {0}", seed);
+            this.logger.WriteLine("Random seed: {0}", seed);
             var random = new Random(seed);
             var largeTree = ConstructVeryLargeTree(random, 4, 500, 10000);
             int actualSize = largeTree.ProjectTree.GetSelfAndDescendents().Count();
-            Console.WriteLine("Total tree size: {0} nodes", actualSize);
+            this.logger.WriteLine("Total tree size: {0} nodes", actualSize);
             IRecursiveParent lt = largeTree.ProjectTree;
             //lt.Write(Console.Out);
 
@@ -85,7 +94,7 @@
         internal RootedProjectTree ConstructLargeTreeOptimalHelper(int? seed = null, int maxSize = 1000)
         {
             int randSeed = seed.HasValue ? seed.Value : Environment.TickCount;
-            Console.WriteLine("Random seed: {0}", randSeed);
+            this.logger.WriteLine("Random seed: {0}", randSeed);
             var random = new Random(randSeed);
             return ConstructVeryLargeTree(random, 4, 100, maxSize);
         }

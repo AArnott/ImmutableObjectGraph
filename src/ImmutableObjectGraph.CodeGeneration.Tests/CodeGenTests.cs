@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -16,6 +17,7 @@
     using Microsoft.CodeAnalysis.Text;
     using Validation;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class CodeGenTests
     {
@@ -23,17 +25,21 @@
         protected ProjectId projectId;
         protected DocumentId inputDocumentId;
 
-        public CodeGenTests()
+        private readonly ITestOutputHelper logger;
+
+        public CodeGenTests(ITestOutputHelper logger)
         {
+            Requires.NotNull(logger, nameof(logger));
+
+            this.logger = logger;
             var workspace = new AdhocWorkspace();
             var project = workspace.CurrentSolution.AddProject("test", "test", "C#")
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(string).Assembly.Location))
+                .AddMetadataReferences(GetReferences("Profile78"))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(GenerateImmutableAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(Optional).Assembly.Location))
-                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(ImmutableArray).Assembly.Location))
-                .AddMetadataReference(MetadataReference.CreateFromFile(Assembly.LoadWithPartialName("System.Runtime").Location));
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(ImmutableArray).Assembly.Location));
             var inputDocument = project.AddDocument("input.cs", string.Empty);
             this.inputDocumentId = inputDocument.Id;
             project = inputDocument.Project;
@@ -210,16 +216,16 @@
                            select diagnostic;
 
             SourceText outputDocumentText = await outputDocument.GetTextAsync();
-            Console.WriteLine(outputDocumentText);
+            this.logger.WriteLine("{0}", outputDocumentText);
 
             foreach (var error in errors)
             {
-                Console.WriteLine(error);
+                this.logger.WriteLine("{0}", error);
             }
 
             foreach (var warning in warnings)
             {
-                Console.WriteLine(warning);
+                this.logger.WriteLine("{0}", warning);
             }
 
             Assert.Empty(errors);
@@ -267,6 +273,15 @@
             }
 
             return builder.ToString();
+        }
+
+        private static IEnumerable<MetadataReference> GetReferences(string profile)
+        {
+            string profileDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile", profile);
+            foreach (string assembly in Directory.GetFiles(profileDirectory, "*.dll"))
+            {
+                yield return MetadataReference.CreateFromFile(assembly);
+            }
         }
 
         protected class GenerationResult
