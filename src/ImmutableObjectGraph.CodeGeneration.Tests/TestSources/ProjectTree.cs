@@ -18,8 +18,8 @@
         [Required]
         readonly string caption;
         readonly string filePath;
-        readonly System.Drawing.Image icon;
-        readonly System.Drawing.Image expandedIcon;
+        readonly string iconMoniker;
+        readonly string expandedIconMoniker;
         readonly bool visible;
         readonly IRule browseObjectProperties;
         readonly ImmutableHashSet<string> capabilities;
