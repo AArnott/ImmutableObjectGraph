@@ -182,10 +182,13 @@
                 var lambdaParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("v"));
                 var argument = passThroughChildSync
                     ? (ExpressionSyntax)Syntax.EnumerableExtension(
-                        SyntaxFactory.IdentifierName(nameof(Enumerable.Select)),
-                        ValuesParameterName,
-                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
-                            SyntaxFactory.Argument(Syntax.ThisDot(SyncImmediateChildToCurrentVersionMethodName)))))
+                        SyntaxFactory.IdentifierName(nameof(Enumerable.ToList)),
+                        Syntax.EnumerableExtension(
+                            SyntaxFactory.IdentifierName(nameof(Enumerable.Select)),
+                            ValuesParameterName,
+                            SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                                SyntaxFactory.Argument(Syntax.ThisDot(SyncImmediateChildToCurrentVersionMethodName))))),
+                        SyntaxFactory.ArgumentList())
                     : ValuesParameterName;
 
                 paramsArrayMethod = this.AddMethodBody(
