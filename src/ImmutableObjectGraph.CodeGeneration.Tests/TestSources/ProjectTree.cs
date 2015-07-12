@@ -23,7 +23,7 @@
         readonly bool visible;
         readonly IRule browseObjectProperties;
         readonly ImmutableHashSet<string> capabilities;
-        readonly ImmutableSortedSet<ProjectTree> children;
+        readonly ImmutableList<ProjectTree> children;
     }
 
     [GenerateImmutable(DefineInterface = true, GenerateBuilder = true, DefineWithMethodsPerProperty = true, DefineRootedStruct = true, Delta = true)]

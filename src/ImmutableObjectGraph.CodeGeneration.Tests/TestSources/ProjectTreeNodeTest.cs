@@ -441,11 +441,17 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
             var moved = root.RemoveDescendent(aa).AddDescendent(aa, ab);
 
             var history = moved.ChangesSince(root);
-            Assert.Equal(1, history.Count);
+            Assert.Equal(2, history.Count);
+
             Assert.Equal(ChangeKind.Replaced, history[0].Kind);
             Assert.Same(aa, history[0].Before);
             Assert.Same(aa, history[0].After);
             Assert.Equal(ProjectTreeChangedProperties.Parent, history[0].Changes);
+
+            Assert.Equal(ChangeKind.Replaced, history[1].Kind);
+            Assert.Same(ab, history[1].Before);
+            Assert.Same(moved.Children[0], history[1].After);
+            Assert.Equal(ProjectTreeChangedProperties.PositionUnderParent, history[1].Changes);
         }
 
         [Fact]
@@ -460,12 +466,19 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
             var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
 
             var history = moved.ChangesSince(root);
-            Assert.Equal(1, history.Count);
+            Assert.Equal(2, history.Count);
+
             Assert.Equal(ChangeKind.Replaced, history[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.Parent | ProjectTreeChangedProperties.Visible, history[0].Changes);
             Assert.Same(aa, history[0].Before);
             Assert.Same(aaModified, history[0].After);
             Assert.Equal(aa.Identity, history[0].Identity);
+
+            Assert.Equal(ChangeKind.Replaced, history[1].Kind);
+            Assert.Equal(ProjectTreeChangedProperties.PositionUnderParent, history[1].Changes);
+            Assert.Same(ab, history[1].Before);
+            Assert.Same(moved.Children[0], history[1].After);
+            Assert.Equal(ab.Identity, history[1].Identity);
         }
 
         [Fact]
@@ -480,17 +493,24 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
             var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
 
             var history = moved.ChangesSince(root);
-            Assert.Equal(2, history.Count);
+            Assert.Equal(3, history.Count);
+
             Assert.Equal(ChangeKind.Replaced, history[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.Parent, history[0].Changes);
             Assert.Same(aa, history[0].Before);
             Assert.Same(aaModified, history[0].After);
             Assert.Equal(aa.Identity, history[0].Identity);
 
-            Assert.Equal(ChangeKind.Added, history[1].Kind);
-            Assert.Same(aaModified.Children[0], history[1].After);
-            Assert.Null(history[1].Before);
-            Assert.Equal(aaModified.Children[0].Identity, history[1].Identity);
+            Assert.Equal(ChangeKind.Replaced, history[1].Kind);
+            Assert.Equal(ProjectTreeChangedProperties.PositionUnderParent, history[1].Changes);
+            Assert.Same(ab, history[1].Before);
+            Assert.Same(moved.Children[0], history[1].After);
+            Assert.Equal(ab.Identity, history[1].Identity);
+
+            Assert.Equal(ChangeKind.Added, history[2].Kind);
+            Assert.Same(aaModified.Children[0], history[2].After);
+            Assert.Null(history[2].Before);
+            Assert.Equal(aaModified.Children[0].Identity, history[2].Identity);
         }
 
         [Fact]
@@ -506,7 +526,8 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
             var moved = root.RemoveDescendent(aa).AddDescendent(aaModified, ab);
 
             var history = moved.ChangesSince(root);
-            Assert.Equal(2, history.Count);
+            Assert.Equal(3, history.Count);
+
             Assert.Equal(ChangeKind.Removed, history[0].Kind);
             Assert.Same(aa.Children[0], history[0].Before);
             Assert.Null(history[0].After);
@@ -517,6 +538,12 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
             Assert.Same(aa, history[1].Before);
             Assert.Same(aaModified, history[1].After);
             Assert.Equal(aa.Identity, history[1].Identity);
+
+            Assert.Equal(ChangeKind.Replaced, history[2].Kind);
+            Assert.Equal(ProjectTreeChangedProperties.PositionUnderParent, history[2].Changes);
+            Assert.Same(ab, history[2].Before);
+            Assert.Same(moved.Children[0], history[2].After);
+            Assert.Equal(ab.Identity, history[2].Identity);
         }
 
         [Fact]
@@ -527,7 +554,8 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
                 aa = ProjectTree.Create("AA"),
                 ab = ProjectTree.Create("AB"));
             var ac = aa.WithCaption("AC");
-            var modified = root.ReplaceDescendent(aa, ac);
+            // TODO: we should generate a method for ordered collections for reordering.
+            var modified = root.WithChildren(root.Children.Remove(aa).Insert(1, ac));
 
             var history = modified.ChangesSince(root);
             Assert.Equal(1, history.Count);

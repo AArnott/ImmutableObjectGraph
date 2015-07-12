@@ -27,12 +27,12 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
 
         private int nodeCounter;
 
-        internal ImmutableSortedSet<ProjectTree> Children { get; set; }
+        internal ImmutableList<ProjectTree> Children { get; set; }
 
         public ProjectTreeNodeTestBase()
         {
             this.nodeCounter = 0;
-            this.Children = ImmutableSortedSet.Create(ProjectTreeSort.Default);
+            this.Children = ImmutableList.Create<ProjectTree>();
         }
 
         public void Dispose()
