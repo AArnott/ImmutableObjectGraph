@@ -2,13 +2,13 @@
 {
     using System.Collections.Immutable;
 
-    public interface IRule { }
+    interface IRule { }
 
-    public interface IProjectPropertiesContext { }
+    interface IProjectPropertiesContext { }
 
-    public interface IPropertySheet { }
+    interface IPropertySheet { }
 
-    public class ProjectPropertiesContext : IProjectPropertiesContext
+    class ProjectPropertiesContext : IProjectPropertiesContext
     {
     }
 
