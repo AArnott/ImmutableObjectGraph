@@ -197,6 +197,12 @@
             await this.GenerateFromStreamAsync("Hierarchy3Levels");
         }
 
+        [Fact]
+        public async Task Issue40_Compiles()
+        {
+            await this.GenerateFromStreamAsync("Issue40");
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
