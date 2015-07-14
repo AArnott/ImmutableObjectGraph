@@ -66,9 +66,19 @@
                 }
             }
 
+            // By default, retain all the using directives that came from the input file.
+            var resultFileLevelUsingDirectives = SyntaxFactory.List(inputFileLevelUsingDirectives);
+
+            // Add a using directive for the ImmutableObjectGraph if there isn't one.
+            var immutableObjectGraphName = nameof(ImmutableObjectGraph);
+            if (!resultFileLevelUsingDirectives.Any(u => u.Name.ToString() == immutableObjectGraphName))
+            {
+                resultFileLevelUsingDirectives = resultFileLevelUsingDirectives.Add(
+                    SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(immutableObjectGraphName)));
+            }
+
             var emittedTree = SyntaxFactory.CompilationUnit()
-                .WithUsings(SyntaxFactory.List(inputFileLevelUsingDirectives).Add(
-                    SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("ImmutableObjectGraph"))))
+                .WithUsings(resultFileLevelUsingDirectives)
                 .WithMembers(SyntaxFactory.List(emittedMembers))
                 .WithLeadingTrivia(SyntaxFactory.Comment(GeneratedByAToolPreamble))
                 .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)

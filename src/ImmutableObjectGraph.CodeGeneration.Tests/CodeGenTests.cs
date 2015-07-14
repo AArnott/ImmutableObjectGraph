@@ -48,6 +48,12 @@
         }
 
         [Fact]
+        public async Task UsingImmutableObjectGraph_Compiles()
+        {
+            await this.GenerateFromStreamAsync("UsingImmutableObjectGraph");
+        }
+
+        [Fact]
         public async Task NoFieldsAndNoFieldsDerived_HasCreateMethod()
         {
             var result = await this.GenerateFromStreamAsync("NoFieldsAndNoFieldsDerived");
