@@ -3,7 +3,7 @@ using ImmutableObjectGraph;
 using ImmutableObjectGraph.CodeGeneration;
 
 [GenerateImmutable]
-public partial class SyntaxNode
+partial class SyntaxNode
 {
     [Required]
     int startPosition;
@@ -12,14 +12,14 @@ public partial class SyntaxNode
 }
 
 [GenerateImmutable]
-public partial class ElseBlock : SyntaxNode
+partial class ElseBlock : SyntaxNode
 {
     [Required]
     readonly string elseKeyword;
 }
 
 [GenerateImmutable]
-public partial class ElseIfBlock : SyntaxNode
+partial class ElseIfBlock : SyntaxNode
 {
     [Required]
     readonly string elseIfKeyword;
@@ -28,7 +28,7 @@ public partial class ElseIfBlock : SyntaxNode
 }
 
 [GenerateImmutable]
-public partial class IfNode : SyntaxNode
+partial class IfNode : SyntaxNode
 {
     [Required]
     readonly string ifKeyword;
