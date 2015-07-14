@@ -149,6 +149,7 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Include="TestSources\TreeNode.Tests.cs" />
+    <EmbeddedResource Include="TestSources\UsingImmutableObjectGraph.cs" />
     <Compile Include="TestSources\XmlNode.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
