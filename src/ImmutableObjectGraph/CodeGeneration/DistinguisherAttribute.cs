@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph {
+﻿namespace ImmutableObjectGraph.CodeGeneration {
 	using System;
 
 	[System.AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]

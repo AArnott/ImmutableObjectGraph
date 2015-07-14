@@ -4,6 +4,7 @@
 <#@ assembly name="$(ProjectDir)$(OutDir)System.Collections.Immutable.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)ImmutableObjectGraph.dll" #>
 <#@ Import Namespace="ImmutableObjectGraph" #>
+<#@ Import Namespace="ImmutableObjectGraph.CodeGeneration" #>
 <#@ Import namespace="System.Globalization" #>
 <#@ Import Namespace="System.Collections.Generic" #>
 <#@ Import Namespace="System.Collections.Immutable" #>
