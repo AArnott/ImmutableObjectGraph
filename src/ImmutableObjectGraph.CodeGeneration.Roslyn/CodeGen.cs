@@ -74,7 +74,7 @@
             this.options = options ?? new Options();
             this.cancellationToken = cancellationToken;
 
-            this.PluralService = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+            this.PluralService = PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-US"));
         }
 
         public PluralizationService PluralService { get; set; }
