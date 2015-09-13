@@ -3,9 +3,9 @@
     using System;
 
     /// <summary>
-    /// Applied to types that should be ignored by the ImmutableObjectGraph T4 templates.
+    /// Applied to types and fields that should be ignored by the code generator.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Field)]
     public class IgnoreAttribute : Attribute
     {
     }
