@@ -191,6 +191,12 @@
         }
 
         [Fact]
+        public async Task IgnoreField_Compiles()
+        {
+            var result = await this.GenerateFromStreamAsync("IgnoreField");
+        }
+
+        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
