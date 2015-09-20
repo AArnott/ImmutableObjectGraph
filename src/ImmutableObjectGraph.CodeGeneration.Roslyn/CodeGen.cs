@@ -613,7 +613,8 @@
 
         private IEnumerable<FieldDeclarationSyntax> GetFields()
         {
-            return this.applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
+            return this.applyTo.ChildNodes().OfType<FieldDeclarationSyntax>()
+                .Where(f => f.Declaration.Variables.All(v => !IsFieldIgnored(this.semanticModel.GetDeclaredSymbol(v) as IFieldSymbol)));
         }
 
         private IEnumerable<KeyValuePair<FieldDeclarationSyntax, VariableDeclaratorSyntax>> GetFieldVariables()
@@ -681,6 +682,15 @@
         private static bool IsFieldRequired(IFieldSymbol fieldSymbol)
         {
             return IsAttributeApplied<RequiredAttribute>(fieldSymbol);
+        }
+
+        private static bool IsFieldIgnored(IFieldSymbol fieldSymbol)
+        {
+            if (fieldSymbol != null)
+            {
+                return fieldSymbol.IsStatic || fieldSymbol.IsImplicitlyDeclared || IsAttributeApplied<IgnoreAttribute>(fieldSymbol);
+            }
+            return false;
         }
 
         private static bool IsAttributeApplied<T>(ISymbol symbol) where T : Attribute
@@ -888,7 +898,9 @@
                 get
                 {
                     var that = this;
-                    return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>().Select(f => new MetaField(that, f)) ?? ImmutableArray<MetaField>.Empty;
+                    return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>()
+                        .Where(f => !IsFieldIgnored(f))
+                        .Select(f => new MetaField(that, f)) ?? ImmutableArray<MetaField>.Empty;
                 }
             }
 

@@ -211,7 +211,7 @@ protected class MetaType {
 	public Type Type { get; private set; }
 
 	public ImmutableList<MetaField> LocalFields {
-		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Select(this.CreateField).ToImmutableList(); }
+		get { return this.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Where(f => !f.GetCustomAttributes(typeof(IgnoreAttribute), false).Any()).Select(this.CreateField).ToImmutableList(); }
 	}
 
 	public ImmutableList<MetaField> AllFields {
