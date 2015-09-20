@@ -8,7 +8,19 @@ abstract partial class L2 : L1
 }
 
 [ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
-partial class L3 : L2
+partial class L31 : L2
 {
     string foo;
+}
+
+[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
+partial class L32 : L2
+{
+    bool baseField;
+}
+
+[ImmutableObjectGraph.CodeGeneration.GenerateImmutable]
+partial class L4 : L32
+{
+    bool secondField;
 }

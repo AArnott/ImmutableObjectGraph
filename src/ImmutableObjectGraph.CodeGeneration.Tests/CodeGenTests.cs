@@ -204,9 +204,9 @@
         }
 
         [Fact]
-        public async Task Hierarchy3Levels_Compiles()
+        public async Task HierarchyLevels_Compiles()
         {
-            await this.GenerateFromStreamAsync("Hierarchy3Levels");
+            await this.GenerateFromStreamAsync("HierarchyLevels");
         }
 
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)

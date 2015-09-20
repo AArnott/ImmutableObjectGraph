@@ -55,7 +55,7 @@
 
                         if (this.generator.applyToMetaType.LocalFields.Any())
                         {
-                            foreach (MetaType ancestor in this.generator.applyToMetaType.Ancestors)
+                            foreach (MetaType ancestor in this.generator.applyToMetaType.Ancestors.Where(a => a.LocalFields.Any()))
                             {
                                 this.innerMembers.Add(this.CreateToDerivedTypeOverrideMethod(derivedType, ancestor));
                             }

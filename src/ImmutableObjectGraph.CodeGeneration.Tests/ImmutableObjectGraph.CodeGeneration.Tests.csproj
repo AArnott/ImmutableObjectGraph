@@ -123,7 +123,7 @@
   <ItemGroup>
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="TestSources\Hierarchy3Levels.cs" />
+    <EmbeddedResource Include="TestSources\HierarchyLevels.cs" />
     <EmbeddedResource Include="TestSources\IgnoreField.cs" />
     <Compile Include="TestSources\MSBuild.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
