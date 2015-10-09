@@ -8,7 +8,7 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
 {
     partial class Nested
     {
-        [GenerateImmutable( GenerateBuilder = true, DefineWithMethodsPerProperty = true )]
+        [GenerateImmutable(GenerateBuilder = true, DefineWithMethodsPerProperty = true)]
         public partial class NestedClass
         {
             readonly string name;

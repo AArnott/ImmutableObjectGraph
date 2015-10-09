@@ -13,14 +13,14 @@ namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
         public void NestedCreateBuilder()
         {
             var nestedBuilder = Nested.NestedClass.CreateBuilder();
-            Assert.NotNull( nestedBuilder );
+            Assert.NotNull(nestedBuilder);
         }
 
         [Fact]
         public void NestedConstruction()
         {
-            var nested = Nested.NestedClass.Create( "a name" );
-            Assert.NotNull( nested );
+            var nested = Nested.NestedClass.Create("a name");
+            Assert.NotNull(nested);
         }
     }
 }

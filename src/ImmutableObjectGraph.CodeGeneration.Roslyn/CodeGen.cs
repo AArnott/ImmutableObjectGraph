@@ -166,15 +166,15 @@
 
             partialClass = this.mergedFeatures.Aggregate(partialClass, (acc, feature) => feature.ProcessApplyToClassDeclaration(acc));
             var outerMembers = SyntaxFactory.List<MemberDeclarationSyntax>();
-            if ( applyTo.Parent.Kind() == SyntaxKind.ClassDeclaration )
+            if (applyTo.Parent.Kind() == SyntaxKind.ClassDeclaration)
             {
                 var parent = applyTo.Parent as ClassDeclarationSyntax;
 
-                while ( parent != null )
+                while (parent != null)
                 {
-                    partialClass = SyntaxFactory.ClassDeclaration( parent.Identifier )
-                        .AddModifiers( SyntaxFactory.Token( SyntaxKind.PartialKeyword ) )
-                        .AddMembers( partialClass );
+                    partialClass = SyntaxFactory.ClassDeclaration(parent.Identifier)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+                        .AddMembers(partialClass);
                     parent = parent.Parent as ClassDeclarationSyntax;
                 }
             }
