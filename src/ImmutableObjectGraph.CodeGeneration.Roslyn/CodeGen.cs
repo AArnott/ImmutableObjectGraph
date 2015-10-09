@@ -364,8 +364,10 @@
                 .WithBody(body);
 
             if (!this.isSealed)
+            {
                 ctor = ctor
                     .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)));
+            }
 
             if (this.applyToMetaType.HasAncestor)
             {
@@ -413,8 +415,10 @@
                     .WithParameterList(this.CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional));
 
                 if (!this.isSealed)
+                {
                     method = method
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+                }
 
                 if (this.isAbstract)
                 {
@@ -425,8 +429,10 @@
                 else
                 {
                     if (!this.isSealed)
+                    {
                         method = method
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
+                    }
 
                     method = method
                         .WithBody(SyntaxFactory.Block(
