@@ -47,7 +47,7 @@
             var emittedMembers = new List<MemberDeclarationSyntax>();
             foreach (var memberNode in memberNodes)
             {
-                var namespaceNode = memberNode.Parent as NamespaceDeclarationSyntax;
+                var namespaceNode = memberNode.Ancestors().OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
 
                 var generators = FindCodeGenerators(inputSemanticModel, memberNode);
                 foreach (var generator in generators)

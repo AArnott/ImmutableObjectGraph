@@ -129,6 +129,10 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Include="TestSources\MSBuild.Tests.cs" />
+    <Compile Include="TestSources\Nested.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Nested.Tests.cs" />
     <Compile Include="TestSources\NonRecursive.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
