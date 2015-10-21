@@ -150,6 +150,10 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Include="TestSources\RequiresAndHierarchy.Tests.cs" />
+    <Compile Include="TestSources\Sealed.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Sealed.Tests.cs" />
     <Compile Include="TestSources\TreeNode.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
