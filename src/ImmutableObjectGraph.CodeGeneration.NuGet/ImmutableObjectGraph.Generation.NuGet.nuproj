@@ -26,7 +26,7 @@
     <ProjectGuid>C2529293-7A03-4E3A-B96A-59A6D70D3B86</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
-    <NuProjPackagePath>packages\NuProj.0.10.0-beta-gd6d4e1ff23\tools</NuProjPackagePath>
+    <NuProjPackagePath>packages\NuProj.0.10.10-beta-g13363167e1\tools</NuProjPackagePath>
     <NuProjPath Condition=" '$(SolutionDir)' != '' ">$(SolutionDir)..\$(NuProjPackagePath)</NuProjPath>
     <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\..\$(NuProjPackagePath)</NuProjPath>
   </PropertyGroup>
