@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
 
     [AttributeUsage(AttributeTargets.Class)]
-    [Generators.CodeGeneration("ImmutableObjectGraph.CodeGeneration.Roslyn.CodeGenerator, ImmutableObjectGraph.CodeGeneration.Roslyn, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bfd91f1bd601e0d7")]
+    [Generators.CodeGeneration("ImmutableObjectGraph.CodeGeneration.Roslyn.CodeGenerator, ImmutableObjectGraph.CodeGeneration.Roslyn, Version=" + ThisAssembly.AssemblyVersion + ", Culture=neutral, PublicKeyToken=bfd91f1bd601e0d7")]
     public class GenerateImmutableAttribute : Attribute
     {
         public GenerateImmutableAttribute()
