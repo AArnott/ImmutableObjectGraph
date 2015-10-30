@@ -40,6 +40,7 @@
             // Run under our own AppDomain so we can control the version of Roslyn we load.
             var appDomainSetup = new AppDomainSetup();
             appDomainSetup.ApplicationBase = Path.GetDirectoryName(this.GetType().Assembly.Location);
+            appDomainSetup.DisallowBindingRedirects = true; // We want the version of Roslyn we compiled against.
             var appDomain = AppDomain.CreateDomain("codegen", AppDomain.CurrentDomain.Evidence, appDomainSetup);
             try
             {
