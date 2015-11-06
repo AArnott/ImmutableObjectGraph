@@ -41,8 +41,7 @@
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>https://github.com/aarnott/immutableobjectgraph</ProjectUrl>
-    <LicenseUrl>
-    </LicenseUrl>
+    <LicenseUrl>https://raw.githubusercontent.com/AArnott/ImmutableObjectGraph/$CommitId$/LICENSE.txt</LicenseUrl>
     <Copyright>Copyright © Andrew Arnott</Copyright>
     <Tags>immutable </Tags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
@@ -60,6 +59,11 @@
   <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
     <PropertyGroup>
       <Version>$(NuGetPackageVersion)</Version>
+    </PropertyGroup>
+  </Target>
+  <Target Name="PerformNuSpecSubstitutions" BeforeTargets="GenerateNuSpec" DependsOnTargets="GetBuildVersion">
+    <PropertyGroup>
+      <LicenseUrl>$(LicenseUrl.Replace('$CommitId$', $(GitCommitId)))</LicenseUrl>
     </PropertyGroup>
   </Target>
 </Project>
