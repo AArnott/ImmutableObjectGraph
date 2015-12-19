@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.CodeGeneration.Tests
+﻿namespace ImmutableObjectGraph.Generation.Tests
 {
     using System;
     using System.Collections.Generic;

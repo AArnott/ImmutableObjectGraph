@@ -8,8 +8,8 @@
     <ProjectGuid>{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ImmutableObjectGraph.CodeGeneration</RootNamespace>
-    <AssemblyName>ImmutableObjectGraph.Attributes</AssemblyName>
+    <RootNamespace>ImmutableObjectGraph.Generation</RootNamespace>
+    <AssemblyName>ImmutableObjectGraph.Generation.Attributes</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>

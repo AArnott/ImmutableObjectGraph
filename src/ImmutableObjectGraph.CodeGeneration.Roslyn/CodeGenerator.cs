@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using CodeGeneration.Roslyn;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Validation;
-
-namespace ImmutableObjectGraph.CodeGeneration.Roslyn
+﻿namespace ImmutableObjectGraph.Generation.Roslyn
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using CodeGeneration.Roslyn;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Validation;
+
     public class CodeGenerator : ICodeGenerator
     {
         private readonly AttributeData attributeData;

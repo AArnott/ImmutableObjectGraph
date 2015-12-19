@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
+﻿namespace ImmutableObjectGraph.Generation.Tests.TestSources
 {
     [GenerateImmutable(GenerateBuilder = true, DefineInterface = true, DefineWithMethodsPerProperty = true)]
     partial class Empty { }

@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
+﻿namespace ImmutableObjectGraph.Generation.Tests.TestSources
 {
     [GenerateImmutable]
     partial class ReqAndHierL1

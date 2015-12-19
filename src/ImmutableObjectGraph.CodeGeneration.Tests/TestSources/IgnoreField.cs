@@ -1,4 +1,4 @@
-﻿[ImmutableObjectGraph.CodeGeneration.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineInterface = true, DefineWithMethodsPerProperty = true)]
+﻿[ImmutableObjectGraph.Generation.GenerateImmutable(GenerateBuilder = true, Delta = true, DefineInterface = true, DefineWithMethodsPerProperty = true)]
 partial class Foo
 {
     // Should get ignored by the generator

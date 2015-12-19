@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.CodeGeneration
+﻿namespace ImmutableObjectGraph.Generation
 {
     using System;
     using System.Diagnostics;
@@ -6,7 +6,7 @@
 
     [AttributeUsage(AttributeTargets.Class)]
     [Conditional("CodeGeneration")]
-    [CodeGenerationAttribute("ImmutableObjectGraph.CodeGeneration.Roslyn.CodeGenerator, ImmutableObjectGraph.CodeGeneration.Roslyn, Version=" + ThisAssembly.AssemblyVersion + ", Culture=neutral, PublicKeyToken=bfd91f1bd601e0d7")]
+    [CodeGenerationAttribute("ImmutableObjectGraph.Generation.CodeGenerator, ImmutableObjectGraph.Generation, Version=" + ThisAssembly.AssemblyVersion + ", Culture=neutral, PublicKeyToken=bfd91f1bd601e0d7")]
     public class GenerateImmutableAttribute : Attribute
     {
         public GenerateImmutableAttribute()

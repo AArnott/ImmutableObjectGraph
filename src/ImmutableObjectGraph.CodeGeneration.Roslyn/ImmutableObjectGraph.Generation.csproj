@@ -7,8 +7,8 @@
     <ProjectGuid>{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ImmutableObjectGraph.CodeGeneration.Roslyn</RootNamespace>
-    <AssemblyName>ImmutableObjectGraph.CodeGeneration.Roslyn</AssemblyName>
+    <RootNamespace>ImmutableObjectGraph.Generation</RootNamespace>
+    <AssemblyName>ImmutableObjectGraph.Generation</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -74,9 +74,9 @@
     <None Include="StrongNameKey.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Attributes.csproj">
+    <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
       <Project>{7b6dd09e-bd82-4b88-a10d-6d5606519ecd}</Project>
-      <Name>ImmutableObjectGraph.Attributes</Name>
+      <Name>ImmutableObjectGraph.Generation.Attributes</Name>
     </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>

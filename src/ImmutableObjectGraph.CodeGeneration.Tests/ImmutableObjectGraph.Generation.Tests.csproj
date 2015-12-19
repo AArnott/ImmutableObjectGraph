@@ -126,13 +126,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Attributes.csproj">
+    <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
       <Project>{7b6dd09e-bd82-4b88-a10d-6d5606519ecd}</Project>
-      <Name>ImmutableObjectGraph.Attributes</Name>
+      <Name>ImmutableObjectGraph.Generation.Attributes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj">
+    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.Generation.csproj">
       <Project>{1c4c18ba-15ef-4d4d-9547-a2ee1e47ace1}</Project>
-      <Name>ImmutableObjectGraph.CodeGeneration.Roslyn</Name>
+      <Name>ImmutableObjectGraph.Generation</Name>
     </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>

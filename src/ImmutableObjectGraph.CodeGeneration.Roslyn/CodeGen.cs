@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.CodeGeneration
+﻿namespace ImmutableObjectGraph.Generation
 {
     using System;
     using System.Collections.Generic;
@@ -626,7 +626,7 @@
             var method = SyntaxFactory.MethodDeclaration(
                 IdentityFieldTypeSyntax,
                 NewIdentityMethodName.Identifier)
-                .WithModifiers(SyntaxFactory.TokenList(                    
+                .WithModifiers(SyntaxFactory.TokenList(
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
                 .WithBody(SyntaxFactory.Block(
                     SyntaxFactory.ReturnStatement(

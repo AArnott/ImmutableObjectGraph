@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
+﻿namespace ImmutableObjectGraph.Generation.Tests.TestSources
 {
     [GenerateImmutable(DefineInterface = true, DefineWithMethodsPerProperty = true, GenerateBuilder = true)]
     sealed partial class Sealed

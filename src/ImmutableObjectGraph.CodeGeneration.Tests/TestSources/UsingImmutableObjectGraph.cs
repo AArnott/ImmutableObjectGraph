@@ -1,5 +1,5 @@
 ﻿using ImmutableObjectGraph; // this Using statement should remain
-using ImmutableObjectGraph.CodeGeneration;
+using ImmutableObjectGraph.Generation;
 
 [GenerateImmutable]
 partial class SomeClass

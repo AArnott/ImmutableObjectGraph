@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph
+﻿namespace ImmutableObjectGraph.Generation
 {
     using System;
     using System.Diagnostics;

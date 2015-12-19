@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ImmutableObjectGraph.CodeGeneration.Tests.TestSources
+namespace ImmutableObjectGraph.Generation.Tests.TestSources
 {
     public class SealedTests
     {
