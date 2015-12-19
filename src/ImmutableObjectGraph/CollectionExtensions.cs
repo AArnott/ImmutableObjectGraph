@@ -33,6 +33,10 @@
 			return list.SequenceEqual(values) ? list : list.Clear().AddRange(values);
 		}
 
+		public static ImmutableArray<T> ResetContents<T>(this ImmutableArray<T> array, IEnumerable<T> values) {
+			return array.SequenceEqual(values) ? array : array.Clear().AddRange(values);
+		}
+
 		public static ImmutableSortedSet<T> Replace<T>(this ImmutableSortedSet<T> set, T oldValue, T newValue) {
 			var alteredSet = set.Remove(oldValue);
 			return alteredSet != set ? alteredSet.Add(newValue) : set;

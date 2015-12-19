@@ -10,6 +10,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using global::CodeGeneration.Roslyn;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -63,6 +64,7 @@
         private ImmutableArray<DeclarationInfo> inputDeclarations;
         private MetaType applyToMetaType;
         private bool isAbstract;
+        private bool isSealed;
         private TypeSyntax applyToTypeName;
         private List<FeatureGenerator> mergedFeatures = new List<FeatureGenerator>();
 
@@ -74,7 +76,7 @@
             this.options = options ?? new Options();
             this.cancellationToken = cancellationToken;
 
-            this.PluralService = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+            this.PluralService = PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-US"));
         }
 
         public PluralizationService PluralService { get; set; }
@@ -102,6 +104,7 @@
         {
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             this.isAbstract = applyTo.Modifiers.Any(m => m.IsKind(SyntaxKind.AbstractKeyword));
+            this.isSealed = applyTo.Modifiers.Any(m => m.IsKind(SyntaxKind.SealedKeyword));
             this.applyToTypeName = SyntaxFactory.IdentifierName(this.applyTo.Identifier);
 
             this.inputDeclarations = this.semanticModel.GetDeclarationsInSpan(TextSpan.FromBounds(0, this.semanticModel.SyntaxTree.Length), true, this.cancellationToken);
@@ -118,8 +121,8 @@
             {
                 innerMembers.Add(CreateLastIdentityProducedField());
                 innerMembers.Add(CreateIdentityField());
-                innerMembers.Add(CreateIdentityProperty());
-                innerMembers.Add(CreateNewIdentityMethod());
+                innerMembers.Add(CreateIdentityProperty(this.isSealed));
+                innerMembers.Add(CreateNewIdentityMethod(this.isSealed));
             }
 
             innerMembers.AddRange(CreateWithCoreMethods());
@@ -166,6 +169,18 @@
 
             partialClass = this.mergedFeatures.Aggregate(partialClass, (acc, feature) => feature.ProcessApplyToClassDeclaration(acc));
             var outerMembers = SyntaxFactory.List<MemberDeclarationSyntax>();
+            if (applyTo.Parent.Kind() == SyntaxKind.ClassDeclaration)
+            {
+                var parent = applyTo.Parent as ClassDeclarationSyntax;
+
+                while (parent != null)
+                {
+                    partialClass = SyntaxFactory.ClassDeclaration(parent.Identifier)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+                        .AddMembers(partialClass);
+                    parent = parent.Parent as ClassDeclarationSyntax;
+                }
+            }
             outerMembers = outerMembers.Add(partialClass);
             outerMembers = this.mergedFeatures.Aggregate(outerMembers, (acc, feature) => feature.ProcessFinalGeneratedResult(acc));
 
@@ -355,12 +370,17 @@
 
             var ctor = SyntaxFactory.ConstructorDeclaration(
                 this.applyTo.Identifier)
-                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)))
                 .WithParameterList(
                     CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Required)
                     .PrependParameter(RequiredIdentityParameter)
                     .AddParameters(SyntaxFactory.Parameter(SkipValidationParameterName.Identifier).WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)))))
                 .WithBody(body);
+
+            if (!this.isSealed)
+            {
+                ctor = ctor
+                    .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)));
+            }
 
             if (this.applyToMetaType.HasAncestor)
             {
@@ -405,8 +425,14 @@
                 var method = SyntaxFactory.MethodDeclaration(
                     SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                     WithCoreMethodName.Identifier)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
                     .WithParameterList(this.CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional));
+
+                if (!this.isSealed)
+                {
+                    method = method
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+                }
+
                 if (this.isAbstract)
                 {
                     method = method
@@ -415,8 +441,13 @@
                 }
                 else
                 {
+                    if (!this.isSealed)
+                    {
+                        method = method
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
+                    }
+
                     method = method
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
                         .WithBody(SyntaxFactory.Block(
                             SyntaxFactory.ReturnStatement(
                                 SyntaxFactory.InvocationExpression(
@@ -571,28 +602,31 @@
                      DebuggerBrowsableNeverAttribute))));
         }
 
-        private static MemberDeclarationSyntax CreateIdentityProperty()
+        private static MemberDeclarationSyntax CreateIdentityProperty(bool containingTypeIsSealed)
         {
-            return SyntaxFactory.PropertyDeclaration(
+            var property = SyntaxFactory.PropertyDeclaration(
                 IdentityFieldTypeSyntax,
                 IdentityPropertyName.Identifier)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword))
                 .AddAccessorListAccessors(
                     SyntaxFactory.AccessorDeclaration(
                         SyntaxKind.GetAccessorDeclaration,
                         SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(IdentityParameterName)))));
+            if (!containingTypeIsSealed)
+                property = property
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+            return property;
         }
 
-        private static MemberDeclarationSyntax CreateNewIdentityMethod()
+        private static MemberDeclarationSyntax CreateNewIdentityMethod(bool containingTypeIsSealed)
         {
             // protected static <#= templateType.RequiredIdentityField.TypeName #> NewIdentity() {
             //     return (<#= templateType.RequiredIdentityField.TypeName #>)System.Threading.Interlocked.Increment(ref lastIdentityProduced);
             // }
-            return SyntaxFactory.MethodDeclaration(
+            var method = SyntaxFactory.MethodDeclaration(
                 IdentityFieldTypeSyntax,
                 NewIdentityMethodName.Identifier)
-                .WithModifiers(SyntaxFactory.TokenList(
-                    SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
+                .WithModifiers(SyntaxFactory.TokenList(                    
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
                 .WithBody(SyntaxFactory.Block(
                     SyntaxFactory.ReturnStatement(
@@ -604,6 +638,10 @@
                                     null,
                                     SyntaxFactory.Token(SyntaxKind.RefKeyword),
                                     LastIdentityProducedFieldName))))))));
+            if (!containingTypeIsSealed)
+                method = method
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+            return method;
         }
 
         private static IEnumerable<MetaField> SortRequiredFieldsFirst(IEnumerable<MetaField> fields)
@@ -613,7 +651,8 @@
 
         private IEnumerable<FieldDeclarationSyntax> GetFields()
         {
-            return this.applyTo.ChildNodes().OfType<FieldDeclarationSyntax>();
+            return this.applyTo.ChildNodes().OfType<FieldDeclarationSyntax>()
+                .Where(f => f.Declaration.Variables.All(v => !IsFieldIgnored(this.semanticModel.GetDeclaredSymbol(v) as IFieldSymbol)));
         }
 
         private IEnumerable<KeyValuePair<FieldDeclarationSyntax, VariableDeclaratorSyntax>> GetFieldVariables()
@@ -681,6 +720,15 @@
         private static bool IsFieldRequired(IFieldSymbol fieldSymbol)
         {
             return IsAttributeApplied<RequiredAttribute>(fieldSymbol);
+        }
+
+        private static bool IsFieldIgnored(IFieldSymbol fieldSymbol)
+        {
+            if (fieldSymbol != null)
+            {
+                return fieldSymbol.IsStatic || fieldSymbol.IsImplicitlyDeclared || IsAttributeApplied<IgnoreAttribute>(fieldSymbol);
+            }
+            return false;
         }
 
         private static bool IsAttributeApplied<T>(ISymbol symbol) where T : Attribute
@@ -855,7 +903,7 @@
             protected abstract void GenerateCore();
         }
 
-        [DebuggerDisplay("{TypeSymbol.Name}")]
+        [DebuggerDisplay("{TypeSymbol?.Name}")]
         protected struct MetaType
         {
             private CodeGen generator;
@@ -888,7 +936,9 @@
                 get
                 {
                     var that = this;
-                    return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>().Select(f => new MetaField(that, f)) ?? ImmutableArray<MetaField>.Empty;
+                    return this.TypeSymbol?.GetMembers().OfType<IFieldSymbol>()
+                        .Where(f => !IsFieldIgnored(f))
+                        .Select(f => new MetaField(that, f)) ?? ImmutableArray<MetaField>.Empty;
                 }
             }
 

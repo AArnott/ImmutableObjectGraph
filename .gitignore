@@ -42,6 +42,7 @@ local.properties
 *.sln.docstates
 *.sln.ide
 UpgradeLog*htm
+.vs/
 
 # Build results
 [Dd]ebug/
@@ -67,6 +68,9 @@ UpgradeLog*htm
 *.log
 
 packages/
+*.nuget.props
+*.nuget.targets
+project.lock.json
 
 # Visual C++ cache files
 ipch/
@@ -106,7 +110,6 @@ sql
 TestResults
 *.Cache
 ClientBin
-stylecop.*
 ~$*
 *.dbmdl
 Generated_Code #added for RIA/Silverlight projects

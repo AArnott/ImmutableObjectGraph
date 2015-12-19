@@ -9,7 +9,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Generators;
+    using global::CodeGeneration.Roslyn;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -37,7 +37,7 @@
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddMetadataReferences(GetReferences("Profile78"))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(GenerateImmutableAttribute).Assembly.Location))
-                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttribute).Assembly.Location))
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttributeAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(Optional).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(ImmutableArray).Assembly.Location));
             var inputDocument = project.AddDocument("input.cs", string.Empty);
@@ -45,6 +45,12 @@
             project = inputDocument.Project;
             this.projectId = inputDocument.Project.Id;
             this.solution = project.Solution;
+        }
+
+        [Fact]
+        public async Task UsingImmutableObjectGraph_Compiles()
+        {
+            await this.GenerateFromStreamAsync("UsingImmutableObjectGraph");
         }
 
         [Fact]
@@ -185,6 +191,12 @@
         }
 
         [Fact]
+        public async Task IgnoreField_Compiles()
+        {
+            var result = await this.GenerateFromStreamAsync("IgnoreField");
+        }
+
+        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
@@ -192,9 +204,9 @@
         }
 
         [Fact]
-        public async Task Hierarchy3Levels_Compiles()
+        public async Task HierarchyLevels_Compiles()
         {
-            await this.GenerateFromStreamAsync("Hierarchy3Levels");
+            await this.GenerateFromStreamAsync("HierarchyLevels");
         }
 
         [Fact]
