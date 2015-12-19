@@ -1,4 +1,4 @@
-﻿namespace ImmutableObjectGraph.Generation.Roslyn
+﻿namespace ImmutableObjectGraph.Generation
 {
     using System;
     using System.Collections.Generic;
