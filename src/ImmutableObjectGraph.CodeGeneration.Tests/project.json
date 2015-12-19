@@ -6,7 +6,8 @@
       "suppressParent": "none"
     },
     "ReadOnlySourceTree": "0.1.21-beta",
-    "xunit": "2.1.0"
+    "xunit": "2.1.0",
+    "xunit.runner.visualstudio": "2.1.0"
   },
   "frameworks": {
     ".NETFramework,Version=v4.6": {}
