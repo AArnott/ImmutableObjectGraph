@@ -10,7 +10,7 @@
       "version": "0.10.30-beta-gcbd7693f91",
       "suppressParent": "none"
     },
-    "ReadOnlySourceTree": "0.1.21-beta",
+    "ReadOnlySourceTree": "0.1.24-beta",
     "System.Collections.Immutable": "1.1.37",
     "Validation": "2.2.8"
   },

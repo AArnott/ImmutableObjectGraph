@@ -17,7 +17,7 @@
     <NuProjPath>$(NuProjPackagePath)\tools</NuProjPath>
   </PropertyGroup>
   <ImportGroup>
-    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.props" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.props')" />
+    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props')" />
   </ImportGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>bc4943cf-ca4c-4d24-96aa-7712061526e4</ProjectGuid>
@@ -51,7 +51,7 @@
   </Target>
   <ImportGroup>
     <Import Project="$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets" Condition="Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" />
-    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.targets" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.targets')" />
+    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.targets" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.targets')" />
   </ImportGroup>
   <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
     <PropertyGroup>
