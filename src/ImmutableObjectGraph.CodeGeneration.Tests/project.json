@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "CodeGeneration.Roslyn": "0.1.33-alpha-g1051809d59",
+    "CodeGeneration.Roslyn": "0.1.33-alpha",
     "Nerdbank.GitVersioning": {
       "version": "1.1.61-rc",
       "suppressParent": "none"
@@ -8,9 +8,9 @@
     "xunit": "2.1.0"
   },
   "frameworks": {
-    ".NETFramework,Version=v4.6": { }
+    ".NETFramework,Version=v4.6": {}
   },
   "runtimes": {
-    "win": { }
+    "win": {}
   }
 }

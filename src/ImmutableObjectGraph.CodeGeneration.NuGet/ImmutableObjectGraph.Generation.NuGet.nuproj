@@ -29,7 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Dependency Include="CodeGeneration.Roslyn">
-      <Version>0.1.33-alpha-g1051809d59</Version>
+      <Version>0.1.33-alpha</Version>
       <TargetFramework>.NETPortable0.0-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10</TargetFramework>
     </Dependency>
   </ItemGroup>

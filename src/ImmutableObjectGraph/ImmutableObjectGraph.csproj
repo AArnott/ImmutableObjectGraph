@@ -79,5 +79,4 @@
     <Folder Include="CodeGeneration\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="..\..\packages\NuProj.0.10.10-beta-g13363167e1\tools\Microsoft.Common.NuProj.targets" />
 </Project>
