@@ -9,7 +9,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Generators;
+    using global::CodeGeneration.Roslyn;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -37,7 +37,7 @@
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddMetadataReferences(GetReferences("Profile78"))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(GenerateImmutableAttribute).Assembly.Location))
-                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttribute).Assembly.Location))
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttributeAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(Optional).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(ImmutableArray).Assembly.Location));
             var inputDocument = project.AddDocument("input.cs", string.Empty);

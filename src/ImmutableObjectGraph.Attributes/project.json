@@ -1,0 +1,21 @@
+﻿{
+  "dependencies": {
+    "CodeGeneration.Roslyn": "0.1.33-alpha",
+    "Nerdbank.GitVersioning": {
+      "version": "1.1.61-rc",
+      "suppressParent": "none"
+    },
+    "NuProj.Common": {
+      "version": "0.10.30-beta-gcbd7693f91",
+      "suppressParent": "none"
+    },
+    "System.Collections.Immutable": "1.1.37",
+    "Validation": "2.2.8"
+  },
+  "frameworks": {
+    ".NETPortable,Version=v4.5,Profile=Profile259": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

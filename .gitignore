@@ -68,6 +68,9 @@ UpgradeLog*htm
 *.log
 
 packages/
+*.nuget.props
+*.nuget.targets
+project.lock.json
 
 # Visual C++ cache files
 ipch/
@@ -107,7 +110,6 @@ sql
 TestResults
 *.Cache
 ClientBin
-stylecop.*
 ~$*
 *.dbmdl
 Generated_Code #added for RIA/Silverlight projects
