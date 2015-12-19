@@ -23,15 +23,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Core.NuGet", "ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Tests", "ImmutableObjectGraph.CodeGeneration.Tests\ImmutableObjectGraph.Generation.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Tests", "ImmutableObjectGraph.Generation.Tests\ImmutableObjectGraph.Generation.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Generation.NuGet", "ImmutableObjectGraph.CodeGeneration.NuGet\ImmutableObjectGraph.Generation.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Generation.NuGet", "ImmutableObjectGraph.Generation.NuGet\ImmutableObjectGraph.Generation.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation", "ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.Generation.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation", "ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynDemo", "RoslynDemo\RoslynDemo.csproj", "{07DCAAF3-0825-499C-85C5-7D8B23230BBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Attributes", "ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj", "{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Attributes", "ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj", "{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

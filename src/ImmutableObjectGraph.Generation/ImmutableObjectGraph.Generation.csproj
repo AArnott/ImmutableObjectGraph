@@ -74,7 +74,7 @@
     <None Include="StrongNameKey.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
       <Project>{7b6dd09e-bd82-4b88-a10d-6d5606519ecd}</Project>
       <Name>ImmutableObjectGraph.Generation.Attributes</Name>
     </ProjectReference>

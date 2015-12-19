@@ -20,8 +20,8 @@
     <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props')" />
   </ImportGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" />
-    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.Generation.csproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj" />
     <ProjectReference Include="..\ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj" />
   </ItemGroup>
   <ItemGroup>

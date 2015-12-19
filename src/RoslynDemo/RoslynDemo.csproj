@@ -60,11 +60,11 @@
     <GeneratorAssemblySearchPaths Include="..\..\bin\$(Configuration)\ImmutableObjectGraph.Generation" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
       <Project>{7b6dd09e-bd82-4b88-a10d-6d5606519ecd}</Project>
       <Name>ImmutableObjectGraph.Generation.Attributes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.Generation.csproj">
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj">
       <Project>{1c4c18ba-15ef-4d4d-9547-a2ee1e47ace1}</Project>
       <Name>ImmutableObjectGraph.Generation</Name>
     </ProjectReference>
