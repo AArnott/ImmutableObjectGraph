@@ -14,9 +14,9 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildProjectDirectory)\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
-    <ImmutableObjectGraphToolsPath>$(SolutionDir)ImmutableObjectGraph.CodeGeneration.Tasks\bin\$(Configuration)\</ImmutableObjectGraphToolsPath>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <CopyNuGetImplementations>true</CopyNuGetImplementations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
