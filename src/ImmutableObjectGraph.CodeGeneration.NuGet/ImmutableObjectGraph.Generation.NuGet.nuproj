@@ -19,9 +19,6 @@
   <ItemGroup>
     <Content Include="Readme.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="build\ImmutableObjectGraph.Generation.targets" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>C2529293-7A03-4E3A-B96A-59A6D70D3B86</ProjectGuid>
   </PropertyGroup>

@@ -1,0 +1,15 @@
+﻿{
+  "dependencies": {
+    "CodeGeneration.Roslyn": "0.1.33-alpha-g1051809d59",
+    "Nerdbank.GitVersioning": {
+      "version": "1.1.61-rc",
+      "suppressParent": "none"
+    }
+  },
+  "frameworks": {
+    ".NETFramework,Version=v4.6": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}
