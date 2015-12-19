@@ -10,13 +10,14 @@
       <Platform>AnyCPU</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup>
+    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NerdbankGitVersioningPackagePath>$(NuGetPackageRoot)\Nerdbank.GitVersioning\1.1.61-rc\</NerdbankGitVersioningPackagePath>
+    <NuProjPackagePath>$(NuGetPackageRoot)\NuProj\0.10.30-beta-gcbd7693f91\</NuProjPackagePath>
+    <NuProjPath>$(NuProjPackagePath)\tools</NuProjPath>
+  </PropertyGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>bc4943cf-ca4c-4d24-96aa-7712061526e4</ProjectGuid>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NuProjPackagePath>packages\NuProj.0.10.10-beta-g13363167e1\tools</NuProjPackagePath>
-    <NuProjPath Condition=" '$(SolutionDir)' != '' ">$(SolutionDir)..\$(NuProjPackagePath)</NuProjPath>
-    <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\..\$(NuProjPackagePath)</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
@@ -43,9 +44,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Nerdbank.GitVersioning.1.1.52-rc\build\NerdBank.GitVersioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Nerdbank.GitVersioning.1.1.52-rc\build\NerdBank.GitVersioning.targets'))" />
+    <Error Condition="!Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Nerdbank.GitVersioning.1.1.52-rc\build\NerdBank.GitVersioning.targets" Condition="Exists('..\..\packages\Nerdbank.GitVersioning.1.1.52-rc\build\NerdBank.GitVersioning.targets')" />
+  <Import Project="$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets" Condition="Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" />
   <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
     <PropertyGroup>
       <Version>$(NuGetPackageVersion)</Version>

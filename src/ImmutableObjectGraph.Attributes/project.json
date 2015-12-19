@@ -5,6 +5,10 @@
       "version": "1.1.61-rc",
       "suppressParent": "none"
     },
+    "NuProj.Common": {
+      "version": "0.10.30-beta-gcbd7693f91",
+      "suppressParent": "none"
+    },
     "System.Collections.Immutable": "1.1.37",
     "Validation": "2.2.8"
   },
