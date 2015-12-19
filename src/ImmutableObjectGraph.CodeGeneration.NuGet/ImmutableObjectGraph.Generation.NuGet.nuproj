@@ -16,6 +16,9 @@
     <NuProjPackagePath>$(NuGetPackageRoot)\NuProj\0.10.30-beta-gcbd7693f91\</NuProjPackagePath>
     <NuProjPath>$(NuProjPackagePath)\tools</NuProjPath>
   </PropertyGroup>
+  <ImportGroup>
+    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.props" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.props')" />
+  </ImportGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.Attributes\ImmutableObjectGraph.Attributes.csproj" />
     <ProjectReference Include="..\ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj">
@@ -61,7 +64,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets'))" />
   </Target>
-  <Import Project="$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets" Condition="Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" />
+  <ImportGroup>
+    <Import Project="$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets" Condition="Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" />
+    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.targets" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.21-beta\build\dotnet\ReadOnlySourceTree.targets')" />
+  </ImportGroup>
   <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
     <PropertyGroup>
       <Version>$(NuGetPackageVersion)</Version>

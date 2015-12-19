@@ -4,7 +4,8 @@
     "Nerdbank.GitVersioning": {
       "version": "1.1.61-rc",
       "suppressParent": "none"
-    }
+    },
+    "ReadOnlySourceTree": "0.1.21-beta"
   },
   "frameworks": {
     ".NETFramework,Version=v4.6": {}
