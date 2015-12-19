@@ -24,7 +24,14 @@
     <ProjectReference Include="..\ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="build\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\ImmutableObjectGraph.Generation.targets" />
     <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Dependency Include="CodeGeneration.Roslyn">
+      <Version>0.1.33-alpha-g1051809d59</Version>
+      <TargetFramework>.NETPortable0.0-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10</TargetFramework>
+    </Dependency>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>C2529293-7A03-4E3A-B96A-59A6D70D3B86</ProjectGuid>
