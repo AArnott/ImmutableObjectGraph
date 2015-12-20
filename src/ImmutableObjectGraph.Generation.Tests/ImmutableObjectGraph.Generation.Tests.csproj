@@ -7,8 +7,8 @@
     <ProjectGuid>{480D7D29-47EB-4110-A365-1246B49687D2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ImmutableObjectGraph.CodeGeneration.Tests</RootNamespace>
-    <AssemblyName>ImmutableObjectGraph.CodeGeneration.Tests</AssemblyName>
+    <RootNamespace>ImmutableObjectGraph.Generation.Tests</RootNamespace>
+    <AssemblyName>ImmutableObjectGraph.Generation.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildProjectDirectory)\..\</SolutionDir>
