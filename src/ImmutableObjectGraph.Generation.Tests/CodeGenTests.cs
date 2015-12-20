@@ -205,9 +205,9 @@
 
             var location = warning.Location.GetLineSpan();
             Assert.Equal(9, location.StartLinePosition.Line);
-            Assert.Equal(47, location.StartLinePosition.Character);
+            Assert.Equal(23, location.StartLinePosition.Character);
             Assert.Equal(9, location.EndLinePosition.Line);
-            Assert.Equal(72, location.EndLinePosition.Character);
+            Assert.Equal(48, location.EndLinePosition.Character);
         }
 
         [Fact]
