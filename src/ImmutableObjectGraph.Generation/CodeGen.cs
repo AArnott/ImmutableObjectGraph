@@ -754,6 +754,14 @@
                         Syntax.OptionalForIf(dereference(f), optionalWrap(f))))));
         }
 
+        private SyntaxNode GetOptionArgumentSyntax(string parameterName)
+        {
+            var attributeSyntax = (AttributeSyntax)this.options.AttributeData.ApplicationSyntaxReference.GetSyntax();
+            var argument = attributeSyntax.ArgumentList.Arguments.FirstOrDefault(
+                a => a.NameEquals.Name.Identifier.ValueText == parameterName);
+            return argument;
+        }
+
         private static bool IsFieldRequired(IFieldSymbol fieldSymbol)
         {
             return IsAttributeApplied<RequiredAttribute>(fieldSymbol);
@@ -870,7 +878,16 @@
 
         public class Options
         {
-            public Options() { }
+            public Options()
+            {
+            }
+
+            public Options(AttributeData attributeData)
+            {
+                this.AttributeData = attributeData;
+            }
+
+            public AttributeData AttributeData { get; }
 
             public bool GenerateBuilder { get; set; }
 

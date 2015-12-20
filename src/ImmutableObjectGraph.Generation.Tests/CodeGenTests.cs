@@ -197,6 +197,20 @@
         }
 
         [Fact]
+        public async Task DefineRootedStruct_NotApplicable()
+        {
+            var result = await this.GenerateFromStreamAsync("DefineRootedStruct_NotApplicable");
+            var warning = result.GeneratorDiagnostics.Single();
+            Assert.Equal(Diagnostics.NotApplicableSetting, warning.Id);
+
+            var location = warning.Location.GetLineSpan();
+            Assert.Equal(9, location.StartLinePosition.Line);
+            Assert.Equal(47, location.StartLinePosition.Character);
+            Assert.Equal(9, location.EndLinePosition.Line);
+            Assert.Equal(72, location.EndLinePosition.Character);
+        }
+
+        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
@@ -215,7 +229,8 @@
             {
                 var result = await this.GenerateAsync(SourceText.From(stream));
 
-                Assert.Empty(result.CompilationDiagnostics);
+                Assert.Empty(result.CompilationDiagnostics.Where(
+                    d => !d.IsSuppressed && d.Severity != DiagnosticSeverity.Hidden));
 
                 return result;
             }
@@ -256,9 +271,14 @@
             var semanticModel = await outputDocument.GetSemanticModelAsync();
             var result = new GenerationResult(outputDocument, semanticModel, generatorDiagnostics, compilationDiagnostics);
 
+            foreach (var diagnostic in generatorDiagnostics)
+            {
+                this.logger.WriteLine(diagnostic.ToString());
+            }
+
             foreach (var diagnostic in result.CompilationDiagnostics)
             {
-                this.logger.WriteLine("{0}", diagnostic);
+                this.logger.WriteLine(diagnostic.ToString());
             }
 
             return result;

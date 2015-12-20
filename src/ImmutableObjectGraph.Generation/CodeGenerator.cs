@@ -29,7 +29,7 @@
         {
             Requires.NotNull(applyTo, nameof(applyTo));
 
-            var options = new CodeGen.Options
+            var options = new CodeGen.Options(this.attributeData)
             {
                 GenerateBuilder = this.GetBoolData(nameof(GenerateImmutableAttribute.GenerateBuilder)),
                 Delta = this.GetBoolData(nameof(GenerateImmutableAttribute.Delta)),

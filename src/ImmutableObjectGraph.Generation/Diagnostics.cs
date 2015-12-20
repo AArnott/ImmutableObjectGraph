@@ -3,11 +3,11 @@
     using System;
     using Microsoft.CodeAnalysis;
 
-    internal static class Diagnostics
+    public static class Diagnostics
     {
-        internal const string MissingReadOnly = "IOG0001";
+        public const string MissingReadOnly = "IOG0001";
 
-        internal const string NotApplicableSetting = "IOG0002";
+        public const string NotApplicableSetting = "IOG0002";
 
         internal static DiagnosticSeverity GetSeverity(string id)
         {
