@@ -7,17 +7,9 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    [GenerateImmutable(GenerateBuilder = true)]
-    public partial class Node
-    {
-        readonly string name;
-        readonly ImmutableHashSet<string> tags;
-    }
-
-    [GenerateImmutable(GenerateBuilder = true, DefineRootedStruct = true)]
+    [GenerateImmutable(DefineRootedStruct = true)]
     public partial class Tree
     {
         readonly ImmutableSortedSet<Tree> children;
-        readonly Node node;
     }
 }
