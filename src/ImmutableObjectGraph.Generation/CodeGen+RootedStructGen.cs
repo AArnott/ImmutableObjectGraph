@@ -1015,6 +1015,11 @@
 
             protected MemberDeclarationSyntax[] CreateCollectionHelperMethods()
             {
+                if (!this.generator.options.DefineWithMethodsPerProperty)
+                {
+                    return Array.Empty<MemberDeclarationSyntax>();
+                }
+
                 var valueParam = CollectionHelpersGen.ValueParameterName;
                 var valuesParam = CollectionHelpersGen.ValuesParameterName;
                 var mutatedLeafVar = SyntaxFactory.IdentifierName("mutatedLeaf");

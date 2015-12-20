@@ -211,6 +211,12 @@
         }
 
         [Fact]
+        public async Task RootedStruct_Without_WithMethodsPerProperty()
+        {
+            var result = await this.GenerateFromStreamAsync("RootedStruct_Without_WithMethodsPerProperty");
+        }
+
+        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
