@@ -1,6 +1,7 @@
 ﻿namespace ImmutableObjectGraph.Generation
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Data.Entity.Design.PluralizationServices;
@@ -129,7 +130,7 @@
 
             if (!isAbstract)
             {
-                innerMembers.Add(CreateCreateMethod());
+                innerMembers.AddRange(CreateCreateMethods());
                 if (this.applyToMetaType.AllFields.Any())
                 {
                     innerMembers.Add(CreateWithFactoryMethod());
@@ -144,7 +145,7 @@
 
             if (this.applyToMetaType.AllFields.Any())
             {
-                innerMembers.Add(CreateWithMethod());
+                innerMembers.AddRange(CreateWithMethods());
             }
 
             innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
@@ -203,6 +204,18 @@
                                         ))) })))
                 .WithLeadingTrivia(xmldocComment); // TODO: modify the <summary> to translate "Some description" to "Gets some description."
             return property;
+        }
+
+        private static IdentifierNameSyntax GetGenerationalMethodName(IdentifierNameSyntax baseName, int generation)
+        {
+            Requires.NotNull(baseName, nameof(baseName));
+
+            if (generation == 0)
+            {
+                return baseName;
+            }
+
+            return SyntaxFactory.IdentifierName(baseName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
         }
 
         private void ValidateInput()
@@ -395,27 +408,30 @@
             return ctor;
         }
 
-        private MethodDeclarationSyntax CreateWithMethod()
+        private IEnumerable<MethodDeclarationSyntax> CreateWithMethods()
         {
-            var method = SyntaxFactory.MethodDeclaration(
-                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
-                WithMethodName.Identifier)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .WithParameterList(CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional))
-                .WithBody(SyntaxFactory.Block(
-                    SyntaxFactory.ReturnStatement(
-                        SyntaxFactory.CastExpression(
-                            SyntaxFactory.IdentifierName(this.applyTo.Identifier),
-                            SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(WithCoreMethodName),
-                                this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.Argument))))));
-
-            if (!this.applyToMetaType.LocalFields.Any())
+            foreach (var fieldsGroup in this.applyToMetaType.AllFieldsByGeneration)
             {
-                method = Syntax.AddNewKeyword(method);
-            }
+                var method = SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                    GetGenerationalMethodName(WithMethodName, fieldsGroup.Key).Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.Optional))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.CastExpression(
+                                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                                SyntaxFactory.InvocationExpression(
+                                    Syntax.ThisDot(WithCoreMethodName),
+                                    this.CreateArgumentList(fieldsGroup, ArgSource.Argument))))));
 
-            return method;
+                if (!this.applyToMetaType.LocalFields.Any())
+                {
+                    method = Syntax.AddNewKeyword(method);
+                }
+
+                yield return method;
+            }
         }
 
         private IEnumerable<MethodDeclarationSyntax> CreateWithCoreMethods()
@@ -521,48 +537,51 @@
                             SyntaxFactory.ReturnStatement(SyntaxFactory.ThisExpression()))))));
         }
 
-        private MemberDeclarationSyntax CreateCreateMethod()
+        private IEnumerable<MemberDeclarationSyntax> CreateCreateMethods()
         {
-            var body = SyntaxFactory.Block();
-            if (this.applyToMetaType.AllFields.Any())
+            foreach (var fieldsGroup in this.applyToMetaType.AllFieldsByGeneration)
             {
-                body = body.AddStatements(
-                    // var identity = Optional.For(NewIdentity());
-                    SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
-                        varType,
-                        SyntaxFactory.SingletonSeparatedList(
-                            SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier)
-                                .WithInitializer(SyntaxFactory.EqualsValueClause(Syntax.OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
-                    SyntaxFactory.ReturnStatement(
-                        SyntaxFactory.InvocationExpression(
-                            SyntaxFactory.MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                DefaultInstanceFieldName,
-                                WithFactoryMethodName),
-                            CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
-                                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), NoneToken, IdentityParameterName)))));
-            }
-            else
-            {
-                body = body.AddStatements(
-                    SyntaxFactory.ReturnStatement(DefaultInstanceFieldName));
-            }
+                var body = SyntaxFactory.Block();
+                if (fieldsGroup.Any())
+                {
+                    body = body.AddStatements(
+                        // var identity = Optional.For(NewIdentity());
+                        SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
+                            varType,
+                            SyntaxFactory.SingletonSeparatedList(
+                                SyntaxFactory.VariableDeclarator(IdentityParameterName.Identifier)
+                                    .WithInitializer(SyntaxFactory.EqualsValueClause(Syntax.OptionalFor(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList()))))))),
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    DefaultInstanceFieldName,
+                                    WithFactoryMethodName),
+                                CreateArgumentList(fieldsGroup, ArgSource.OptionalArgumentOrTemplate, asOptional: OptionalStyle.Always)
+                                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), NoneToken, IdentityParameterName)))));
+                }
+                else
+                {
+                    body = body.AddStatements(
+                        SyntaxFactory.ReturnStatement(DefaultInstanceFieldName));
+                }
 
-            var method = SyntaxFactory.MethodDeclaration(
-                SyntaxFactory.IdentifierName(applyTo.Identifier),
-                CreateMethodName.Identifier)
-                .WithModifiers(SyntaxFactory.TokenList(
-                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                    SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
-                .WithParameterList(CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.OptionalOrRequired))
-                .WithBody(body);
+                var method = SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.IdentifierName(applyTo.Identifier),
+                    GetGenerationalMethodName(CreateMethodName, fieldsGroup.Key).Identifier)
+                    .WithModifiers(SyntaxFactory.TokenList(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+                    .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.OptionalOrRequired))
+                    .WithBody(body);
 
-            if (this.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract && a.AllFields.Count() == this.applyToMetaType.AllFields.Count()))
-            {
-                method = Syntax.AddNewKeyword(method);
+                if (this.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract && a.AllFieldsByGeneration.FirstOrDefault(g => g.Key == fieldsGroup.Key)?.Count() == fieldsGroup.Count()))
+                {
+                    method = Syntax.AddNewKeyword(method);
+                }
+
+                yield return method;
             }
-
-            return method;
         }
 
         private MethodDeclarationSyntax CreateValidateMethod()
@@ -720,6 +739,13 @@
         private static bool IsFieldRequired(IFieldSymbol fieldSymbol)
         {
             return IsAttributeApplied<RequiredAttribute>(fieldSymbol);
+        }
+
+        private static int GetFieldGeneration(IFieldSymbol fieldSymbol)
+        {
+            AttributeData attribute = fieldSymbol?.GetAttributes().SingleOrDefault(
+                a => IsOrDerivesFrom<GenerationAttribute>(a.AttributeClass));
+            return (int?)attribute?.ConstructorArguments.Single().Value ?? 0;
         }
 
         private static bool IsFieldIgnored(IFieldSymbol fieldSymbol)
@@ -973,6 +999,45 @@
                     }
                 }
             }
+
+            public IEnumerable<IGrouping<int, MetaField>> AllFieldsByGeneration
+            {
+                get
+                {
+                    var that = this;
+                    var results = from generation in that.DefinedGenerations
+                                  from field in that.AllFields
+                                  where field.FieldGeneration <= generation
+                                  group field by generation into fieldsByGeneration
+                                  select fieldsByGeneration;
+                    bool observedDefaultGeneration = false;
+                    foreach (var result in results)
+                    {
+                        observedDefaultGeneration |= result.Key == 0;
+                        yield return result;
+                    }
+
+                    if (!observedDefaultGeneration)
+                    {
+                        yield return EmptyDefaultGeneration.Default;
+                    }
+                }
+            }
+
+            private class EmptyDefaultGeneration : IGrouping<int, MetaField>
+            {
+                internal static readonly IGrouping<int, MetaField> Default = new EmptyDefaultGeneration();
+
+                private EmptyDefaultGeneration() { }
+
+                public int Key { get; }
+
+                public IEnumerator<MetaField> GetEnumerator() => Enumerable.Empty<MetaField>().GetEnumerator();
+
+                IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+            }
+
+            public IEnumerable<int> DefinedGenerations => this.AllFields.Select(f => f.FieldGeneration).Distinct();
 
             public MetaType Ancestor
             {
@@ -1266,6 +1331,8 @@
             {
                 get { return IsFieldRequired(this.Symbol); }
             }
+
+            public int FieldGeneration => GetFieldGeneration(this.Symbol);
 
             public bool IsCollection
             {

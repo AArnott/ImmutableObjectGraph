@@ -37,6 +37,8 @@ Supported features
    invocation of the `With` method.
  * Builder classes are generated to allow efficient multi-step mutation
    without producing unnecessary GC pressure.
+ * Version across time without breaking changes by adding Create and With method
+   overloads with an easy application of `[Generation(2)]`.
 
 Usage
 -----
