@@ -14,4 +14,12 @@
         readonly string firstName;
         readonly string lastName;
     }
+
+    [GenerateImmutable]
+    partial class GenerationsDerived : Generations
+    {
+        [Generation(2)]
+        readonly string title;
+        readonly string position;
+    }
 }
