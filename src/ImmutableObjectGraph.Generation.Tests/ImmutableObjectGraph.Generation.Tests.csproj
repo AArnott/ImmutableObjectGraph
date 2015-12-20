@@ -52,6 +52,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="TestSources\HierarchyLevels.cs" />
     <EmbeddedResource Include="TestSources\IgnoreField.cs" />
+    <Compile Include="TestSources\Issue64.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
     <Compile Include="TestSources\Generations.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
