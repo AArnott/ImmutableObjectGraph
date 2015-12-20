@@ -4,19 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{07DCAAF3-0825-499C-85C5-7D8B23230BBE}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RoslynDemo</RootNamespace>
-    <AssemblyName>RoslynDemo</AssemblyName>
+    <RootNamespace>ImmutableObjectGraph.Generation</RootNamespace>
+    <AssemblyName>ImmutableObjectGraph.Generation</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildProjectDirectory)\..\</SolutionDir>
-    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -26,7 +24,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,9 +31,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>StrongNameKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,36 +49,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fruit.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Include="Message.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="CodeGen+BuilderGen.cs" />
+    <Compile Include="CodeGen+CollectionHelpersGen.cs" />
+    <Compile Include="CodeGen+DeepMutationGen.cs" />
+    <Compile Include="CodeGen+DefineWithMethodsPerPropertyGen.cs" />
+    <Compile Include="CodeGen+DeltaGen.cs" />
+    <Compile Include="CodeGen+EnumerableRecursiveParentGen.cs" />
+    <Compile Include="CodeGen+FastSpineGen.cs" />
+    <Compile Include="CodeGen+InterfacesGen.cs" />
+    <Compile Include="CodeGen+RecursiveTypeGen.cs" />
+    <Compile Include="CodeGen+RootedStructGen.cs" />
+    <Compile Include="CodeGen+StyleCopCompliance.cs" />
+    <Compile Include="CodeGen+TypeConversionGen.cs" />
+    <Compile Include="CodeGen.cs" />
+    <Compile Include="CodeGenerator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StyleCop.cs" />
+    <Compile Include="Syntax.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <GeneratorAssemblySearchPaths Include="..\..\bin\$(Configuration)\ImmutableObjectGraph.Generation" />
+    <None Include="StrongNameKey.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
       <Project>{7b6dd09e-bd82-4b88-a10d-6d5606519ecd}</Project>
       <Name>ImmutableObjectGraph.Generation.Attributes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj">
-      <Project>{1c4c18ba-15ef-4d4d-9547-a2ee1e47ace1}</Project>
-      <Name>ImmutableObjectGraph.Generation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
       <Name>ImmutableObjectGraph</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
