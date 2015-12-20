@@ -218,17 +218,31 @@
             return SyntaxFactory.IdentifierName(baseName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
         }
 
+        private void Warn(string message, SyntaxNode blamedSyntax)
+        {
+            Requires.NotNullOrEmpty(message, nameof(message));
+            Requires.NotNull(blamedSyntax, nameof(blamedSyntax));
+
+            var location = blamedSyntax.GetLocation().GetLineSpan().StartLinePosition;
+            this.progress.Warning(message, (uint)location.Line, (uint)location.Character);
+        }
+
+        private void Error(string message, CSharpSyntaxNode blamedSyntax)
+        {
+            Requires.NotNullOrEmpty(message, nameof(message));
+            Requires.NotNull(blamedSyntax, nameof(blamedSyntax));
+
+            var location = blamedSyntax.GetLocation().GetLineSpan().StartLinePosition;
+            this.progress.Error(message, (uint)location.Line, (uint)location.Character);
+        }
+
         private void ValidateInput()
         {
             foreach (var field in this.GetFields())
             {
                 if (!field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)))
                 {
-                    var location = field.GetLocation().GetLineSpan().StartLinePosition;
-                    progress.Warning(
-                        string.Format(CultureInfo.CurrentCulture, "Field '{0}' should be marked readonly.", field.Declaration.Variables.First().Identifier),
-                        (uint)location.Line,
-                        (uint)location.Character);
+                    Warn($"Field '{field.Declaration.Variables.First().Identifier}' should be marked readonly.", field);
                 }
             }
         }
