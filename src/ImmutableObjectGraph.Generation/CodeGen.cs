@@ -1283,15 +1283,9 @@
                 this.Symbol = symbol;
             }
 
-            public string Name
-            {
-                get { return this.Symbol.Name; }
-            }
+            public string Name => this.Symbol.Name;
 
-            public IdentifierNameSyntax NameAsProperty
-            {
-                get { return SyntaxFactory.IdentifierName(this.Symbol.Name.ToPascalCase()); }
-            }
+            public IdentifierNameSyntax NameAsProperty => SyntaxFactory.IdentifierName(this.Symbol.Name.ToPascalCase());
 
             public IdentifierNameSyntax NameAsField
             {
@@ -1302,20 +1296,11 @@
                 }
             }
 
-            public INamespaceOrTypeSymbol Type
-            {
-                get { return this.Symbol?.Type; }
-            }
+            public INamespaceOrTypeSymbol Type => this.Symbol?.Type;
 
-            public NameSyntax TypeSyntax
-            {
-                get { return GetFullyQualifiedSymbolName(this.Type); }
-            }
+            public NameSyntax TypeSyntax => GetFullyQualifiedSymbolName(this.Type);
 
-            public bool IsGeneratedImmutableType
-            {
-                get { return !this.TypeAsGeneratedImmutable.IsDefault; }
-            }
+            public bool IsGeneratedImmutableType => !this.TypeAsGeneratedImmutable.IsDefault;
 
             public MetaType TypeAsGeneratedImmutable
             {
@@ -1327,17 +1312,11 @@
                 }
             }
 
-            public bool IsRequired
-            {
-                get { return IsFieldRequired(this.Symbol); }
-            }
+            public bool IsRequired => IsFieldRequired(this.Symbol);
 
             public int FieldGeneration => GetFieldGeneration(this.Symbol);
 
-            public bool IsCollection
-            {
-                get { return IsCollectionType(this.Symbol.Type); }
-            }
+            public bool IsCollection => IsCollectionType(this.Symbol.Type);
 
             public MetaType DeclaringType
             {
@@ -1349,10 +1328,7 @@
                 get { return this.IsCollection && !this.DeclaringType.RecursiveType.IsDefault && this.ElementType == this.DeclaringType.RecursiveType.TypeSymbol; }
             }
 
-            public bool IsDefinitelyNotRecursive
-            {
-                get { return IsAttributeApplied<NotRecursiveAttribute>(this.Symbol); }
-            }
+            public bool IsDefinitelyNotRecursive => IsAttributeApplied<NotRecursiveAttribute>(this.Symbol);
 
             /// <summary>
             /// Gets a value indicating whether this field is defined on the template type
@@ -1363,30 +1339,18 @@
                 get { return this.Symbol.ContainingType == this.metaType.Generator.applyToSymbol; }
             }
 
-            public IFieldSymbol Symbol { get; private set; }
+            public IFieldSymbol Symbol { get; }
 
             public DistinguisherAttribute Distinguisher
             {
                 get { return null; /* TODO */ }
             }
 
-            public ITypeSymbol ElementType
-            {
-                get { return GetTypeOrCollectionMemberType(this.Symbol.Type); }
-            }
+            public ITypeSymbol ElementType => GetTypeOrCollectionMemberType(this.Symbol.Type);
 
-            public TypeSyntax ElementTypeSyntax
-            {
-                get
-                {
-                    return GetFullyQualifiedSymbolName(this.ElementType);
-                }
-            }
+            public TypeSyntax ElementTypeSyntax => GetFullyQualifiedSymbolName(this.ElementType);
 
-            public bool IsDefault
-            {
-                get { return this.Symbol == null; }
-            }
+            public bool IsDefault => this.Symbol == null;
 
             public bool IsAssignableFrom(ITypeSymbol type)
             {
@@ -1459,10 +1423,7 @@
                 return null;
             }
 
-            private static bool IsCollectionType(ITypeSymbol type)
-            {
-                return GetCollectionType(type) != null;
-            }
+            private static bool IsCollectionType(ITypeSymbol type) => GetCollectionType(type) != null;
         }
 
         private enum ParameterStyle
