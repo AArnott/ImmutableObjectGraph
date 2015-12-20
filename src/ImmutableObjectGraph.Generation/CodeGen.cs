@@ -575,7 +575,7 @@
                     .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.OptionalOrRequired))
                     .WithBody(body);
 
-                if (this.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract && a.AllFields.Count() == fieldsGroup.Count()))
+                if (this.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract && a.AllFieldsByGeneration.FirstOrDefault(g => g.Key == fieldsGroup.Key)?.Count() == fieldsGroup.Count()))
                 {
                     method = Syntax.AddNewKeyword(method);
                 }
