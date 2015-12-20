@@ -71,6 +71,10 @@
 
         private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
+            Requires.NotNull(applyTo, nameof(applyTo));
+            Requires.NotNull(document, nameof(document));
+            Requires.NotNull(progress, nameof(progress));
+
             this.applyTo = applyTo;
             this.document = document;
             this.progress = progress;
