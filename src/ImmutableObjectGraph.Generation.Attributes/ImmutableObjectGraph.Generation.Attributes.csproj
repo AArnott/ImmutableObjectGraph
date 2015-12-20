@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="DistinguisherAttribute.cs" />
     <Compile Include="GenerateImmutableAttribute.cs" />
+    <Compile Include="GenerationAttribute.cs" />
     <Compile Include="IgnoreAttribute.cs" />
     <Compile Include="NotRecursiveAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
