@@ -145,7 +145,7 @@
 
             if (this.applyToMetaType.AllFields.Any())
             {
-                innerMembers.Add(CreateWithMethod());
+                innerMembers.AddRange(CreateWithMethods());
             }
 
             innerMembers.AddRange(this.GetFieldVariables().Select(fv => CreatePropertyForField(fv.Key, fv.Value)));
@@ -206,14 +206,16 @@
             return property;
         }
 
-        private static IdentifierNameSyntax GetCreateMethodName(int generation)
+        private static IdentifierNameSyntax GetGenerationalMethodName(IdentifierNameSyntax baseName, int generation)
         {
+            Requires.NotNull(baseName, nameof(baseName));
+
             if (generation == 0)
             {
-                return CreateMethodName;
+                return baseName;
             }
 
-            return SyntaxFactory.IdentifierName(CreateMethodName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
+            return SyntaxFactory.IdentifierName(baseName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
         }
 
         private void ValidateInput()
@@ -406,27 +408,30 @@
             return ctor;
         }
 
-        private MethodDeclarationSyntax CreateWithMethod()
+        private IEnumerable<MethodDeclarationSyntax> CreateWithMethods()
         {
-            var method = SyntaxFactory.MethodDeclaration(
-                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
-                WithMethodName.Identifier)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .WithParameterList(CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Optional))
-                .WithBody(SyntaxFactory.Block(
-                    SyntaxFactory.ReturnStatement(
-                        SyntaxFactory.CastExpression(
-                            SyntaxFactory.IdentifierName(this.applyTo.Identifier),
-                            SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(WithCoreMethodName),
-                                this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.Argument))))));
-
-            if (!this.applyToMetaType.LocalFields.Any())
+            foreach (var fieldsGroup in this.applyToMetaType.AllFieldsByGeneration)
             {
-                method = Syntax.AddNewKeyword(method);
-            }
+                var method = SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                    GetGenerationalMethodName(WithMethodName, fieldsGroup.Key).Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.Optional))
+                    .WithBody(SyntaxFactory.Block(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.CastExpression(
+                                SyntaxFactory.IdentifierName(this.applyTo.Identifier),
+                                SyntaxFactory.InvocationExpression(
+                                    Syntax.ThisDot(WithCoreMethodName),
+                                    this.CreateArgumentList(fieldsGroup, ArgSource.Argument))))));
 
-            return method;
+                if (!this.applyToMetaType.LocalFields.Any())
+                {
+                    method = Syntax.AddNewKeyword(method);
+                }
+
+                yield return method;
+            }
         }
 
         private IEnumerable<MethodDeclarationSyntax> CreateWithCoreMethods()
@@ -563,7 +568,7 @@
 
                 var method = SyntaxFactory.MethodDeclaration(
                     SyntaxFactory.IdentifierName(applyTo.Identifier),
-                    GetCreateMethodName(fieldsGroup.Key).Identifier)
+                    GetGenerationalMethodName(CreateMethodName, fieldsGroup.Key).Identifier)
                     .WithModifiers(SyntaxFactory.TokenList(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
