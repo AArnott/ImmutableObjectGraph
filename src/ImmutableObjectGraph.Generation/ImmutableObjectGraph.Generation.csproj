@@ -63,6 +63,12 @@
     <Compile Include="CodeGen+TypeConversionGen.cs" />
     <Compile Include="CodeGen.cs" />
     <Compile Include="CodeGenerator.cs" />
+    <Compile Include="Diagnostics.cs" />
+    <Compile Include="DiagnosticsStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DiagnosticsStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StyleCop.cs" />
     <Compile Include="Syntax.cs" />
@@ -82,6 +88,12 @@
       <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
       <Name>ImmutableObjectGraph</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DiagnosticsStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DiagnosticsStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

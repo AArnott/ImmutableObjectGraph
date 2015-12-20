@@ -215,8 +215,7 @@
             {
                 var result = await this.GenerateAsync(SourceText.From(stream));
 
-                Assert.Empty(result.CompilationErrors);
-                Assert.Empty(result.CompilationWarnings);
+                Assert.Empty(result.CompilationDiagnostics);
 
                 return result;
             }
@@ -226,12 +225,13 @@
         {
             var solution = this.solution.WithDocumentText(this.inputDocumentId, inputSource);
             var inputDocument = solution.GetDocument(this.inputDocumentId);
-            var progress = new MockProgress(this.logger);
+            var generatorDiagnostics = new List<Diagnostic>();
+            var progress = new Progress<Diagnostic>(generatorDiagnostics.Add);
             var outputDocument = await DocumentTransform.TransformAsync(inputDocument, progress);
 
             // Make sure the result compiles without errors or warnings.
             var compilation = await outputDocument.Project.GetCompilationAsync();
-            var diagnostics = compilation.GetDiagnostics();
+            var compilationDiagnostics = compilation.GetDiagnostics();
 
             SourceText outputDocumentText = await outputDocument.GetTextAsync();
             this.logger.WriteLine("{0}", outputDocumentText);
@@ -254,16 +254,11 @@
             }
 
             var semanticModel = await outputDocument.GetSemanticModelAsync();
-            var result = new GenerationResult(outputDocument, semanticModel, progress.Warnings, progress.Errors, diagnostics);
+            var result = new GenerationResult(outputDocument, semanticModel, generatorDiagnostics, compilationDiagnostics);
 
-            foreach (var error in result.CompilationErrors)
+            foreach (var diagnostic in result.CompilationDiagnostics)
             {
-                this.logger.WriteLine("{0}", error);
-            }
-
-            foreach (var warning in result.CompilationWarnings)
-            {
-                this.logger.WriteLine("{0}", warning);
+                this.logger.WriteLine("{0}", diagnostic);
             }
 
             return result;
@@ -306,15 +301,13 @@
             public GenerationResult(
                 Document document,
                 SemanticModel semanticModel,
-                IReadOnlyList<Tuple<string, uint, uint>> generationWarnings,
-                IReadOnlyList<Tuple<string, uint, uint>> generationErrors,
+                IReadOnlyList<Diagnostic> generatorDiagnostics,
                 IReadOnlyList<Diagnostic> compilationDiagnostics)
             {
                 this.Document = document;
                 this.SemanticModel = semanticModel;
                 this.Declarations = CSharpDeclarationComputer.GetDeclarationsInSpan(semanticModel, TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), true, CancellationToken.None);
-                this.GenerationWarnings = generationWarnings;
-                this.GenerationErrors = generationErrors;
+                this.GeneratorDiagnostics = generatorDiagnostics;
                 this.CompilationDiagnostics = compilationDiagnostics;
             }
 
@@ -344,65 +337,9 @@
                 get { return this.DeclaredSymbols.OfType<INamedTypeSymbol>(); }
             }
 
-            public IReadOnlyList<Tuple<string, uint, uint>> GenerationWarnings { get; }
-
-            public IReadOnlyList<Tuple<string, uint, uint>> GenerationErrors { get; }
+            public IReadOnlyList<Diagnostic> GeneratorDiagnostics { get; }
 
             public IReadOnlyList<Diagnostic> CompilationDiagnostics { get; }
-
-            public IEnumerable<Diagnostic> CompilationWarnings
-            {
-                get
-                {
-                    return from d in this.CompilationDiagnostics
-                           where d.Severity == DiagnosticSeverity.Warning
-                           select d;
-                }
-            }
-
-            public IEnumerable<Diagnostic> CompilationErrors
-            {
-                get
-                {
-                    return from d in this.CompilationDiagnostics
-                           where d.Severity == DiagnosticSeverity.Error
-                           select d;
-                }
-            }
-        }
-
-        private class MockProgress : IProgressAndErrors
-        {
-            private readonly ITestOutputHelper logger;
-
-            private readonly List<Tuple<string, uint, uint>> warnings = new List<Tuple<string, uint, uint>>();
-
-            private readonly List<Tuple<string, uint, uint>> errors = new List<Tuple<string, uint, uint>>();
-
-            internal MockProgress(ITestOutputHelper logger)
-            {
-                this.logger = logger;
-            }
-
-            internal IReadOnlyList<Tuple<string, uint, uint>> Warnings => this.warnings;
-
-            internal IReadOnlyList<Tuple<string, uint, uint>> Errors => this.errors;
-
-            public void Error(string message, uint line, uint column)
-            {
-                this.logger.WriteLine($"Error (source line {line}, col {column}): {message}");
-                this.errors.Add(Tuple.Create(message, line, column));
-            }
-
-            public void Warning(string message, uint line, uint column)
-            {
-                this.logger.WriteLine($"Warning (source line {line}, col {column}): {message}");
-                this.warnings.Add(Tuple.Create(message, line, column));
-            }
-
-            public void Report(uint progress, uint total)
-            {
-            }
         }
     }
 }

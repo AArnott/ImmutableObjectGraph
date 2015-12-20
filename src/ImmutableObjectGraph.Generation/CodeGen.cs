@@ -56,7 +56,7 @@
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
-        private readonly IProgressAndErrors progress;
+        private readonly IProgress<Diagnostic> progress;
         private readonly Options options;
         private readonly CancellationToken cancellationToken;
 
@@ -69,7 +69,7 @@
         private TypeSyntax applyToTypeName;
         private List<FeatureGenerator> mergedFeatures = new List<FeatureGenerator>();
 
-        private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
+        private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
             this.applyTo = applyTo;
             this.document = document;
@@ -82,7 +82,7 @@
 
         public PluralizationService PluralService { get; set; }
 
-        public static async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
+        public static async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
             Requires.NotNull(applyTo, "applyTo");
             Requires.NotNull(document, "document");
@@ -218,22 +218,23 @@
             return SyntaxFactory.IdentifierName(baseName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
         }
 
-        private void Warn(string message, SyntaxNode blamedSyntax)
+        private void ReportDiagnostic(string id, SyntaxNode blamedSyntax, params string[] formattingArgs)
         {
-            Requires.NotNullOrEmpty(message, nameof(message));
             Requires.NotNull(blamedSyntax, nameof(blamedSyntax));
+            Requires.NotNullOrEmpty(id, nameof(id));
 
-            var location = blamedSyntax.GetLocation().GetLineSpan().StartLinePosition;
-            this.progress.Warning(message, (uint)location.Line, (uint)location.Character);
-        }
-
-        private void Error(string message, CSharpSyntaxNode blamedSyntax)
-        {
-            Requires.NotNullOrEmpty(message, nameof(message));
-            Requires.NotNull(blamedSyntax, nameof(blamedSyntax));
-
-            var location = blamedSyntax.GetLocation().GetLineSpan().StartLinePosition;
-            this.progress.Error(message, (uint)location.Line, (uint)location.Character);
+            var severity = Diagnostics.GetSeverity(id);
+            this.progress.Report(
+                Diagnostic.Create(
+                    id, // id
+                    string.Empty, // category
+                    new LocalizableResourceString(id, DiagnosticsStrings.ResourceManager, typeof(DiagnosticsStrings), formattingArgs),
+                    severity,
+                    severity,
+                    true,
+                    severity == DiagnosticSeverity.Warning ? 2 : 0,
+                    false,
+                    location: blamedSyntax.GetLocation()));
         }
 
         private void ValidateInput()
@@ -242,7 +243,10 @@
             {
                 if (!field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)))
                 {
-                    Warn($"Field '{field.Declaration.Variables.First().Identifier}' should be marked readonly.", field);
+                    this.ReportDiagnostic(
+                        Diagnostics.MissingReadOnly,
+                        field,
+                        field.Declaration.Variables.First().Identifier.ValueText);
                 }
             }
         }
