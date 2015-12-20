@@ -241,7 +241,7 @@
             var solution = this.solution.WithDocumentText(this.inputDocumentId, inputSource);
             var inputDocument = solution.GetDocument(this.inputDocumentId);
             var generatorDiagnostics = new List<Diagnostic>();
-            var progress = new Progress<Diagnostic>(generatorDiagnostics.Add);
+            var progress = new SynchronousProgress<Diagnostic>(generatorDiagnostics.Add);
             var outputDocument = await DocumentTransform.TransformAsync(inputDocument, progress);
 
             // Make sure the result compiles without errors or warnings.
@@ -360,6 +360,23 @@
             public IReadOnlyList<Diagnostic> GeneratorDiagnostics { get; }
 
             public IReadOnlyList<Diagnostic> CompilationDiagnostics { get; }
+        }
+
+        private class SynchronousProgress<T> : IProgress<T>
+        {
+            private readonly Action<T> action;
+
+            public SynchronousProgress(Action<T> action)
+            {
+                Requires.NotNull(action, nameof(action));
+
+                this.action = action;
+            }
+
+            public void Report(T value)
+            {
+                this.action(value);
+            }
         }
     }
 }
