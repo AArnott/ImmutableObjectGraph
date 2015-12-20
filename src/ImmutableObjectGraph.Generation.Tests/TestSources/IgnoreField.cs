@@ -7,7 +7,7 @@ partial class Foo
     readonly bool field;
 
     // Should get ignored by the generator
-    [ImmutableObjectGraph.Ignore]
+    [ImmutableObjectGraph.Generation.Ignore]
     readonly bool userField;
 
     protected Foo()
