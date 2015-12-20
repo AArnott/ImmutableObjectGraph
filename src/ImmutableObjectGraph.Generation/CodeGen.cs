@@ -56,7 +56,7 @@
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
-        private readonly IProgressAndErrors progress;
+        private readonly IProgress<Diagnostic> progress;
         private readonly Options options;
         private readonly CancellationToken cancellationToken;
 
@@ -69,8 +69,12 @@
         private TypeSyntax applyToTypeName;
         private List<FeatureGenerator> mergedFeatures = new List<FeatureGenerator>();
 
-        private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
+        private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
+            Requires.NotNull(applyTo, nameof(applyTo));
+            Requires.NotNull(document, nameof(document));
+            Requires.NotNull(progress, nameof(progress));
+
             this.applyTo = applyTo;
             this.document = document;
             this.progress = progress;
@@ -82,7 +86,7 @@
 
         public PluralizationService PluralService { get; set; }
 
-        public static async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgressAndErrors progress, Options options, CancellationToken cancellationToken)
+        public static async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
             Requires.NotNull(applyTo, "applyTo");
             Requires.NotNull(document, "document");
@@ -218,17 +222,35 @@
             return SyntaxFactory.IdentifierName(baseName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
         }
 
+        private void ReportDiagnostic(string id, SyntaxNode blamedSyntax, params string[] formattingArgs)
+        {
+            Requires.NotNull(blamedSyntax, nameof(blamedSyntax));
+            Requires.NotNullOrEmpty(id, nameof(id));
+
+            var severity = Diagnostics.GetSeverity(id);
+            this.progress.Report(
+                Diagnostic.Create(
+                    id, // id
+                    string.Empty, // category
+                    new LocalizableResourceString(id, DiagnosticsStrings.ResourceManager, typeof(DiagnosticsStrings), formattingArgs),
+                    severity,
+                    severity,
+                    true,
+                    severity == DiagnosticSeverity.Warning ? 2 : 0,
+                    false,
+                    location: blamedSyntax.GetLocation()));
+        }
+
         private void ValidateInput()
         {
             foreach (var field in this.GetFields())
             {
                 if (!field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)))
                 {
-                    var location = field.GetLocation().GetLineSpan().StartLinePosition;
-                    progress.Warning(
-                        string.Format(CultureInfo.CurrentCulture, "Field '{0}' should be marked readonly.", field.Declaration.Variables.First().Identifier),
-                        (uint)location.Line,
-                        (uint)location.Character);
+                    this.ReportDiagnostic(
+                        Diagnostics.MissingReadOnly,
+                        field,
+                        field.Declaration.Variables.First().Identifier.ValueText);
                 }
             }
         }
@@ -736,6 +758,14 @@
                         Syntax.OptionalForIf(dereference(f), optionalWrap(f))))));
         }
 
+        private SyntaxNode GetOptionArgumentSyntax(string parameterName)
+        {
+            var attributeSyntax = (AttributeSyntax)this.options.AttributeData.ApplicationSyntaxReference.GetSyntax();
+            var argument = attributeSyntax.ArgumentList.Arguments.FirstOrDefault(
+                a => a.NameEquals.Name.Identifier.ValueText == parameterName);
+            return argument;
+        }
+
         private static bool IsFieldRequired(IFieldSymbol fieldSymbol)
         {
             return IsAttributeApplied<RequiredAttribute>(fieldSymbol);
@@ -852,7 +882,16 @@
 
         public class Options
         {
-            public Options() { }
+            public Options()
+            {
+            }
+
+            public Options(AttributeData attributeData)
+            {
+                this.AttributeData = attributeData;
+            }
+
+            public AttributeData AttributeData { get; }
 
             public bool GenerateBuilder { get; set; }
 

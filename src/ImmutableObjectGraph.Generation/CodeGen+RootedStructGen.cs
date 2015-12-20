@@ -62,7 +62,24 @@
 
             public override bool IsApplicable
             {
-                get { return this.generator.options.DefineRootedStruct; }
+                get
+                {
+                    if (this.generator.options.DefineRootedStruct)
+                    {
+                        if (this.applyTo.RecursiveParent.IsDefault)
+                        {
+                            this.generator.ReportDiagnostic(
+                                Diagnostics.NotApplicableSetting,
+                                this.generator.GetOptionArgumentSyntax(nameof(GenerateImmutableAttribute.DefineRootedStruct)),
+                                nameof(GenerateImmutableAttribute.DefineRootedStruct));
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    return false;
+                }
             }
 
             protected static IdentifierNameSyntax GetRootedTypeSyntax(MetaType metaType)
