@@ -1101,6 +1101,18 @@
                 }
             }
 
+            public IEnumerable<MetaType> ThisTypeAndAncestors
+            {
+                get
+                {
+                    yield return this;
+                    foreach (var ancestor in this.Ancestors)
+                    {
+                        yield return ancestor;
+                    }
+                }
+            }
+
             public bool HasAncestor
             {
                 get { return !this.Ancestor.IsDefault; }
@@ -1136,8 +1148,8 @@
             {
                 get
                 {
-                    var rootOrThisType = this.RootAncestorOrThisType;
-                    var matches = this.LocalFields.Where(f => f.IsCollection && !f.IsDefinitelyNotRecursive && rootOrThisType.IsAssignableFrom(f.ElementType)).ToList();
+                    var allowedElementTypes = this.ThisTypeAndAncestors;
+                    var matches = this.LocalFields.Where(f => f.IsCollection && !f.IsDefinitelyNotRecursive && allowedElementTypes.Any(t => t.TypeSymbol.Equals(f.ElementType))).ToList();
                     return matches.Count == 1 ? matches.First() : default(MetaField);
                 }
             }
