@@ -976,10 +976,50 @@
                                     SyntaxFactory.Argument(newRootVar)))))).ToArray();
             }
 
+            protected MethodDeclarationSyntax CreateDictionaryHelperMethod(MetaField field, IdentifierNameSyntax methodName, bool includeValue)
+            {
+                var methodParameters = SyntaxFactory.ParameterList().AddParameters(
+                    SyntaxFactory.Parameter(CollectionHelpersGen.KeyParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementKeyType)));
+                var collectionMethodArguments = SyntaxFactory.ArgumentList().AddArguments(
+                    SyntaxFactory.Argument(CollectionHelpersGen.KeyParameterName));
+                if (includeValue)
+                {
+                    methodParameters = methodParameters.AddParameters(
+                        SyntaxFactory.Parameter(CollectionHelpersGen.ValueParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementValueType)));
+                    collectionMethodArguments = collectionMethodArguments.AddArguments(
+                        SyntaxFactory.Argument(CollectionHelpersGen.ValueParameterName));
+                }
+
+                // this.greenNode.MethodName(key, value)
+                ExpressionSyntax modifiedGreenNode = SyntaxFactory.InvocationExpression(
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        Syntax.ThisDot(GreenNodeFieldName),
+                        methodName),
+                    collectionMethodArguments);
+
+                var method = SyntaxFactory.MethodDeclaration(
+                    GetRootedTypeSyntax(this.applyTo),
+                    methodName.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithParameterList(methodParameters)
+                    .WithBody(SyntaxFactory.Block(
+                        CallThrowIfDefaultMethod,
+                        // return this.NewSpine(<modifiedGreenNode>);
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.InvocationExpression(
+                                Syntax.ThisDot(NewSpineMethodName),
+                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
+                                    SyntaxFactory.Argument(
+                                        modifiedGreenNode)))))));
+
+                return method;
+            }
+
             protected MethodDeclarationSyntax CreateCollectionHelperMethodStarter(MetaField field, bool isPlural, string verb)
             {
                 var distinguisher = field.Distinguisher;
-                string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
+                string suffix = distinguisher?.CollectionModifierMethodSuffix;
                 string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
                 string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
                 string term = isPlural ? plural : singular;
@@ -1028,13 +1068,13 @@
                 // Compare to the CollectionHelpersGen.GenerateCore method.
                 foreach (var field in this.applyTo.AllFields)
                 {
+                    var distinguisher = field.Distinguisher;
+                    string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
+                    string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
+                    string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
+
                     if (field.IsCollection)
                     {
-                        var distinguisher = field.Distinguisher;
-                        string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
-                        string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
-                        string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
-
                         // With[Plural] methods
                         var paramsArrayMethod = this.CreateCollectionHelperMethodStarter(field, true, "With");
                         methods.Add(paramsArrayMethod);
@@ -1123,6 +1163,26 @@
 
                         // Remove[Singular] method
                         methods.Add(this.CreateCollectionHelperMethodStarter(field, false, "Remove"));
+                    }
+                    else if (field.IsDictionary)
+                    {
+                        // public RootedTemplateType Add[Singular](TKey key, TValue value)
+                        methods.Add(this.CreateDictionaryHelperMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Add" + singular),
+                            true));
+
+                        // public RootedTemplateType Remove[Singular](TKey key)
+                        methods.Add(this.CreateDictionaryHelperMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Remove" + singular),
+                            false));
+
+                        // public RootedTemplateType Set[Singular](TKey key, TValue value)
+                        methods.Add(this.CreateDictionaryHelperMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Set" + singular),
+                            true));
                     }
                 }
 
