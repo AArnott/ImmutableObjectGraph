@@ -53,6 +53,16 @@
     <EmbeddedResource Include="TestSources\Issue40.cs" />
     <EmbeddedResource Include="TestSources\HierarchyLevels.cs" />
     <EmbeddedResource Include="TestSources\IgnoreField.cs" />
+    <EmbeddedResource Include="TestSources\RootedStruct_Without_WithMethodsPerProperty.cs" />
+    <Compile Include="TestSources\Generations.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Generations.Tests.cs" />
+    <EmbeddedResource Include="TestSources\DefineRootedStruct_NotApplicable.cs" />
+    <Compile Include="TestSources\ImmutableDictionaryHelpers.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\ImmutableDictionaryHelpers.Tests.cs" />
     <Compile Include="TestSources\MSBuild.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>

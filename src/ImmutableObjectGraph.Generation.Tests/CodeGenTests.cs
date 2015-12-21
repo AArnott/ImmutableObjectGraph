@@ -197,6 +197,26 @@
         }
 
         [Fact]
+        public async Task DefineRootedStruct_NotApplicable()
+        {
+            var result = await this.GenerateFromStreamAsync("DefineRootedStruct_NotApplicable");
+            var warning = result.GeneratorDiagnostics.Single();
+            Assert.Equal(Diagnostics.NotApplicableSetting, warning.Id);
+
+            var location = warning.Location.GetLineSpan();
+            Assert.Equal(9, location.StartLinePosition.Line);
+            Assert.Equal(23, location.StartLinePosition.Character);
+            Assert.Equal(9, location.EndLinePosition.Line);
+            Assert.Equal(48, location.EndLinePosition.Character);
+        }
+
+        [Fact]
+        public async Task RootedStruct_Without_WithMethodsPerProperty()
+        {
+            var result = await this.GenerateFromStreamAsync("RootedStruct_Without_WithMethodsPerProperty");
+        }
+
+        [Fact]
         public async Task OneImmutableFieldToAnotherWithOneScalarField_Compiles()
         {
             var result = await this.GenerateFromStreamAsync("OneImmutableFieldToAnotherWithOneScalarField");
@@ -219,7 +239,12 @@
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
             {
-                return await this.GenerateAsync(SourceText.From(stream));
+                var result = await this.GenerateAsync(SourceText.From(stream));
+
+                Assert.Empty(result.CompilationDiagnostics.Where(
+                    d => !d.IsSuppressed && d.Severity != DiagnosticSeverity.Hidden));
+
+                return result;
             }
         }
 
@@ -227,33 +252,16 @@
         {
             var solution = this.solution.WithDocumentText(this.inputDocumentId, inputSource);
             var inputDocument = solution.GetDocument(this.inputDocumentId);
-            var outputDocument = await DocumentTransform.TransformAsync(inputDocument, new MockProgress());
+            var generatorDiagnostics = new List<Diagnostic>();
+            var progress = new SynchronousProgress<Diagnostic>(generatorDiagnostics.Add);
+            var outputDocument = await DocumentTransform.TransformAsync(inputDocument, progress);
 
-            // Make sure there are no compile errors.
+            // Make sure the result compiles without errors or warnings.
             var compilation = await outputDocument.Project.GetCompilationAsync();
-            var diagnostics = compilation.GetDiagnostics();
-            var errors = from diagnostic in diagnostics
-                         where diagnostic.Severity >= DiagnosticSeverity.Error
-                         select diagnostic;
-            var warnings = from diagnostic in diagnostics
-                           where diagnostic.Severity >= DiagnosticSeverity.Warning
-                           select diagnostic;
+            var compilationDiagnostics = compilation.GetDiagnostics();
 
             SourceText outputDocumentText = await outputDocument.GetTextAsync();
             this.logger.WriteLine("{0}", outputDocumentText);
-
-            foreach (var error in errors)
-            {
-                this.logger.WriteLine("{0}", error);
-            }
-
-            foreach (var warning in warnings)
-            {
-                this.logger.WriteLine("{0}", warning);
-            }
-
-            Assert.Empty(errors);
-            Assert.Empty(warnings);
 
             // Verify all line endings are consistent (otherwise VS can bug the heck out of the user if they have the generated file open).
             string firstLineEnding = null;
@@ -273,7 +281,19 @@
             }
 
             var semanticModel = await outputDocument.GetSemanticModelAsync();
-            return new GenerationResult(outputDocument, semanticModel);
+            var result = new GenerationResult(outputDocument, semanticModel, generatorDiagnostics, compilationDiagnostics);
+
+            foreach (var diagnostic in generatorDiagnostics)
+            {
+                this.logger.WriteLine(diagnostic.ToString());
+            }
+
+            foreach (var diagnostic in result.CompilationDiagnostics)
+            {
+                this.logger.WriteLine(diagnostic.ToString());
+            }
+
+            return result;
         }
 
         private static string EscapeLineEndingCharacters(string whitespace)
@@ -310,11 +330,17 @@
 
         protected class GenerationResult
         {
-            public GenerationResult(Document document, SemanticModel semanticModel)
+            public GenerationResult(
+                Document document,
+                SemanticModel semanticModel,
+                IReadOnlyList<Diagnostic> generatorDiagnostics,
+                IReadOnlyList<Diagnostic> compilationDiagnostics)
             {
                 this.Document = document;
                 this.SemanticModel = semanticModel;
                 this.Declarations = CSharpDeclarationComputer.GetDeclarationsInSpan(semanticModel, TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), true, CancellationToken.None);
+                this.GeneratorDiagnostics = generatorDiagnostics;
+                this.CompilationDiagnostics = compilationDiagnostics;
             }
 
             public Document Document { get; private set; }
@@ -342,20 +368,26 @@
             {
                 get { return this.DeclaredSymbols.OfType<INamedTypeSymbol>(); }
             }
+
+            public IReadOnlyList<Diagnostic> GeneratorDiagnostics { get; }
+
+            public IReadOnlyList<Diagnostic> CompilationDiagnostics { get; }
         }
 
-        private class MockProgress : IProgressAndErrors
+        private class SynchronousProgress<T> : IProgress<T>
         {
-            public void Error(string message, uint line, uint column)
+            private readonly Action<T> action;
+
+            public SynchronousProgress(Action<T> action)
             {
+                Requires.NotNull(action, nameof(action));
+
+                this.action = action;
             }
 
-            public void Report(uint progress, uint total)
+            public void Report(T value)
             {
-            }
-
-            public void Warning(string message, uint line, uint column)
-            {
+                this.action(value);
             }
         }
     }

@@ -36,6 +36,7 @@
         [Fact]
         public void TypeExistanceTest()
         {
+#pragma warning disable CS0168
             Microsoft.Build.Construction.ProjectRootElement pre;
             ProjectRootElement ipre;
 
@@ -107,6 +108,7 @@
 
             Microsoft.Build.Construction.UsingTaskParameterGroupElement utpge;
             UsingTaskParameterGroupElement iutpge;
+#pragma warning restore CS0168
         }
 
         [Fact]
