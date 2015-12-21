@@ -976,11 +976,8 @@
                                     SyntaxFactory.Argument(newRootVar)))))).ToArray();
             }
 
-            protected MethodDeclarationSyntax CreateDictionaryHelperMethod(MetaField field, string methodName, IdentifierNameSyntax collectionMethodName, bool includeValue)
+            protected MethodDeclarationSyntax CreateDictionaryHelperMethod(MetaField field, IdentifierNameSyntax methodName, bool includeValue)
             {
-                Requires.NotNullOrEmpty(methodName, nameof(methodName));
-                Requires.NotNull(collectionMethodName, nameof(collectionMethodName));
-
                 var methodParameters = SyntaxFactory.ParameterList().AddParameters(
                     SyntaxFactory.Parameter(CollectionHelpersGen.KeyParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementKeyType)));
                 var collectionMethodArguments = SyntaxFactory.ArgumentList().AddArguments(
@@ -993,30 +990,28 @@
                         SyntaxFactory.Argument(CollectionHelpersGen.ValueParameterName));
                 }
 
-                // this.SomeCollection.Operation(key, value)
-                ExpressionSyntax modifiedCollection = SyntaxFactory.InvocationExpression(
+                // this.greenNode.MethodName(key, value)
+                ExpressionSyntax modifiedGreenNode = SyntaxFactory.InvocationExpression(
                     SyntaxFactory.MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        Syntax.ThisDot(field.NameAsProperty),
-                        collectionMethodName),
+                        Syntax.ThisDot(GreenNodeFieldName),
+                        methodName),
                     collectionMethodArguments);
 
                 var method = SyntaxFactory.MethodDeclaration(
                     GetRootedTypeSyntax(this.applyTo),
-                    SyntaxFactory.Identifier(methodName))
+                    methodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithParameterList(methodParameters)
                     .WithBody(SyntaxFactory.Block(
                         CallThrowIfDefaultMethod,
-                        // return this.With(collection: <modifiedCollection>);
+                        // return this.NewSpine(<modifiedGreenNode>);
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(WithMethodName),
+                                Syntax.ThisDot(NewSpineMethodName),
                                 SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
                                     SyntaxFactory.Argument(
-                                        SyntaxFactory.NameColon(field.NameAsField),
-                                        SyntaxFactory.Token(SyntaxKind.None),
-                                        modifiedCollection)))))));
+                                        modifiedGreenNode)))))));
 
                 return method;
             }
@@ -1174,22 +1169,19 @@
                         // public RootedTemplateType Add[Singular](TKey key, TValue value)
                         methods.Add(this.CreateDictionaryHelperMethod(
                             field,
-                            "Add" + singular,
-                            SyntaxFactory.IdentifierName(nameof(IImmutableDictionary<int, int>.Add)),
+                            SyntaxFactory.IdentifierName("Add" + singular),
                             true));
 
                         // public RootedTemplateType Remove[Singular](TKey key)
                         methods.Add(this.CreateDictionaryHelperMethod(
                             field,
-                            "Remove" + singular,
-                            SyntaxFactory.IdentifierName(nameof(IImmutableDictionary<int, int>.Remove)),
+                            SyntaxFactory.IdentifierName("Remove" + singular),
                             false));
 
                         // public RootedTemplateType Set[Singular](TKey key, TValue value)
                         methods.Add(this.CreateDictionaryHelperMethod(
                             field,
-                            "Set" + singular,
-                            SyntaxFactory.IdentifierName(nameof(IImmutableDictionary<int, int>.SetItem)),
+                            SyntaxFactory.IdentifierName("Set" + singular),
                             true));
                     }
                 }
