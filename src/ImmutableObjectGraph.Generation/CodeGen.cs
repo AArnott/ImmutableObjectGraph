@@ -1357,6 +1357,8 @@
 
             public bool IsCollection => IsCollectionType(this.Symbol.Type);
 
+            public bool IsDictionary => IsDictionaryType(this.Symbol.Type);
+
             public MetaType DeclaringType
             {
                 get { return new MetaType(this.metaType.Generator, this.Symbol.ContainingType); }
@@ -1386,6 +1388,10 @@
             }
 
             public ITypeSymbol ElementType => GetTypeOrCollectionMemberType(this.Symbol.Type);
+
+            public ITypeSymbol ElementKeyType => GetDictionaryType(this.Symbol.Type)?.TypeArguments[0];
+
+            public ITypeSymbol ElementValueType => GetDictionaryType(this.Symbol.Type)?.TypeArguments[1];
 
             public TypeSyntax ElementTypeSyntax => GetFullyQualifiedSymbolName(this.ElementType);
 
@@ -1462,7 +1468,27 @@
                 return null;
             }
 
+            private static INamedTypeSymbol GetDictionaryType(ITypeSymbol type)
+            {
+                var namedType = type as INamedTypeSymbol;
+                if (namedType != null)
+                {
+                    if (namedType.IsGenericType && namedType.TypeArguments.Length == 2)
+                    {
+                        var collectionType = namedType.AllInterfaces.FirstOrDefault(i => i.Name == nameof(IImmutableDictionary<int, int>));
+                        if (collectionType != null)
+                        {
+                            return collectionType;
+                        }
+                    }
+                }
+
+                return null;
+            }
+
             private static bool IsCollectionType(ITypeSymbol type) => GetCollectionType(type) != null;
+
+            private static bool IsDictionaryType(ITypeSymbol type) => GetDictionaryType(type) != null;
         }
 
         private enum ParameterStyle

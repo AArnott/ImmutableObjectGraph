@@ -21,6 +21,7 @@
     {
         protected class CollectionHelpersGen : FeatureGenerator
         {
+            internal static readonly IdentifierNameSyntax KeyParameterName = SyntaxFactory.IdentifierName("key");
             internal static readonly IdentifierNameSyntax ValuesParameterName = SyntaxFactory.IdentifierName("values");
             internal static readonly IdentifierNameSyntax ValueParameterName = SyntaxFactory.IdentifierName("value");
             private static readonly IdentifierNameSyntax SyncImmediateChildToCurrentVersionMethodName = SyntaxFactory.IdentifierName("SyncImmediateChildToCurrentVersion");
@@ -44,13 +45,13 @@
 
                 foreach (var field in this.generator.applyToMetaType.AllFields)
                 {
+                    var distinguisher = field.Distinguisher;
+                    string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
+                    string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
+                    string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
+
                     if (field.IsCollection)
                     {
-                        var distinguisher = field.Distinguisher;
-                        string suffix = distinguisher != null ? distinguisher.CollectionModifierMethodSuffix : null;
-                        string plural = suffix != null ? (this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + this.generator.PluralService.Pluralize(suffix)) : field.Name.ToPascalCase();
-                        string singular = this.generator.PluralService.Singularize(field.Name.ToPascalCase()) + suffix;
-
                         // With[Plural] methods
                         MethodDeclarationSyntax paramsArrayMethod = this.CreateParamsElementArrayMethod(
                             field,
@@ -90,6 +91,31 @@
                             SyntaxFactory.IdentifierName("Remove" + singular),
                             SyntaxFactory.IdentifierName(nameof(ICollection<int>.Remove)),
                             passThroughChildSync: field.IsRecursiveCollection);
+                        this.innerMembers.Add(singleMethod);
+                    }
+                    else if (field.IsDictionary)
+                    {
+                        // Add[Singular] method
+                        MethodDeclarationSyntax singleMethod = this.CreateKeyValueMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Add" + singular),
+                            SyntaxFactory.IdentifierName(nameof(IImmutableDictionary<int, int>.Add)));
+                        this.innerMembers.Add(singleMethod);
+
+                        // Set[Singular] method
+                        singleMethod = this.CreateKeyValueMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Set" + singular),
+                            SyntaxFactory.IdentifierName(nameof(IImmutableDictionary<int, int>.SetItem)));
+                        this.innerMembers.Add(singleMethod);
+
+                        // Remove[Singular] method
+                        singleMethod = this.CreateSingleElementMethod(
+                            field,
+                            SyntaxFactory.IdentifierName("Remove" + singular),
+                            SyntaxFactory.IdentifierName(nameof(IImmutableDictionary<int, int>.Remove)),
+                            elementParameterName: KeyParameterName,
+                            elementType: field.ElementKeyType);
                         this.innerMembers.Add(singleMethod);
                     }
                 }
@@ -202,17 +228,20 @@
                 return paramsArrayMethod;
             }
 
-            private MethodDeclarationSyntax CreateSingleElementMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName, bool passThroughChildSync = false)
+            private MethodDeclarationSyntax CreateSingleElementMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName, bool passThroughChildSync = false, IdentifierNameSyntax elementParameterName = null, ITypeSymbol elementType = null)
             {
+                elementParameterName = elementParameterName ?? ValueParameterName;
+
                 var paramsArrayMethod = CreateMethodStarter(methodName.Identifier, field)
                     .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList(
-                        SyntaxFactory.Parameter(ValueParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementType)))));
+                        SyntaxFactory.Parameter(elementParameterName.Identifier)
+                        .WithType(GetFullyQualifiedSymbolName(elementType ?? field.ElementType)))));
 
                 var argument = passThroughChildSync
                     ? (ExpressionSyntax)SyntaxFactory.InvocationExpression(
                         Syntax.ThisDot(SyncImmediateChildToCurrentVersionMethodName),
-                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(ValueParameterName))))
-                    : ValueParameterName;
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(elementParameterName))))
+                    : elementParameterName;
 
                 paramsArrayMethod = this.AddMethodBody(
                     paramsArrayMethod,
@@ -224,6 +253,31 @@
                             collectionMutationMethodName),
                         SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(
                             SyntaxFactory.Argument(argument)))));
+
+                return paramsArrayMethod;
+            }
+
+            private MethodDeclarationSyntax CreateKeyValueMethod(MetaField field, IdentifierNameSyntax methodName, SimpleNameSyntax collectionMutationMethodName)
+            {
+                var paramsArrayMethod = CreateMethodStarter(methodName.Identifier, field)
+                    .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(
+                        new ParameterSyntax[] {
+                            SyntaxFactory.Parameter(KeyParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementKeyType)),
+                            SyntaxFactory.Parameter(ValueParameterName.Identifier).WithType(GetFullyQualifiedSymbolName(field.ElementValueType)),
+                        })));
+
+                paramsArrayMethod = this.AddMethodBody(
+                    paramsArrayMethod,
+                    field,
+                    receiver => SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            receiver,
+                            collectionMutationMethodName),
+                        SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new ArgumentSyntax[] {
+                            SyntaxFactory.Argument(KeyParameterName),
+                            SyntaxFactory.Argument(ValueParameterName),
+                        }))));
 
                 return paramsArrayMethod;
             }
