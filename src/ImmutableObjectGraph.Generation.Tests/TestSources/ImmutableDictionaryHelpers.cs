@@ -18,25 +18,4 @@
             template.Matches = ImmutableDictionary.Create<string, int>();
         }
     }
-
-    partial struct RootedImmutableDictionaryHelpers
-    {
-        public RootedImmutableDictionaryHelpers AddMatch(string key, int value)
-        {
-            this.ThrowIfDefault();
-            return this.With(matches: this.Matches.Add(key, value));
-        }
-
-        public RootedImmutableDictionaryHelpers SetMatch(string key, int value)
-        {
-            this.ThrowIfDefault();
-            return this.With(matches: this.Matches.SetItem(key, value));
-        }
-
-        public RootedImmutableDictionaryHelpers RemoveMatch(string key)
-        {
-            this.ThrowIfDefault();
-            return this.With(matches: this.Matches.Remove(key));
-        }
-    }
 }
