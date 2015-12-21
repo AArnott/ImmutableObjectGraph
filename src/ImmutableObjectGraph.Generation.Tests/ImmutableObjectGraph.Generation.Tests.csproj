@@ -50,7 +50,7 @@
   <ItemGroup>
     <Compile Include="CodeGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="TestSources\Issue40.cs" />
+    <EmbeddedResource Include="TestSources\AlmostRecursive.cs" />
     <EmbeddedResource Include="TestSources\HierarchyLevels.cs" />
     <EmbeddedResource Include="TestSources\IgnoreField.cs" />
     <EmbeddedResource Include="TestSources\RootedStruct_Without_WithMethodsPerProperty.cs" />

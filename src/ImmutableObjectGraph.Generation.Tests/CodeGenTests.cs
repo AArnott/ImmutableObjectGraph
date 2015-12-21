@@ -230,9 +230,9 @@
         }
 
         [Fact]
-        public async Task Issue40_Compiles()
+        public async Task AlmostRecursive_Compiles()
         {
-            await this.GenerateFromStreamAsync("Issue40");
+            await this.GenerateFromStreamAsync("AlmostRecursive");
         }
 
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
