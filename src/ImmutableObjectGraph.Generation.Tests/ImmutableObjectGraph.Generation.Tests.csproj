@@ -58,6 +58,10 @@
     </Compile>
     <Compile Include="TestSources\Generations.Tests.cs" />
     <EmbeddedResource Include="TestSources\DefineRootedStruct_NotApplicable.cs" />
+    <Compile Include="TestSources\ImmutableDictionaryHelpers.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\ImmutableDictionaryHelpers.Tests.cs" />
     <Compile Include="TestSources\MSBuild.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
