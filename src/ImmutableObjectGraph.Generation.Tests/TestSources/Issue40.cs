@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ImmutableObjectGraph;
-using ImmutableObjectGraph.CodeGeneration;
+using ImmutableObjectGraph.Generation;
 
 [GenerateImmutable]
 partial class SyntaxNode
