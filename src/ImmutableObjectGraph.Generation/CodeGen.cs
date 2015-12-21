@@ -1101,6 +1101,18 @@
                 }
             }
 
+            public IEnumerable<MetaType> ThisTypeAndAncestors
+            {
+                get
+                {
+                    yield return this;
+                    foreach (var ancestor in this.Ancestors)
+                    {
+                        yield return ancestor;
+                    }
+                }
+            }
+
             public bool HasAncestor
             {
                 get { return !this.Ancestor.IsDefault; }
@@ -1136,8 +1148,9 @@
             {
                 get
                 {
-                    var rootOrThisType = this.RootAncestorOrThisType;
-                    return this.LocalFields.SingleOrDefault(f => f.IsCollection && !f.IsDefinitelyNotRecursive && rootOrThisType.IsAssignableFrom(f.ElementType));
+                    var allowedElementTypes = this.ThisTypeAndAncestors;
+                    var matches = this.LocalFields.Where(f => f.IsCollection && !f.IsDefinitelyNotRecursive && allowedElementTypes.Any(t => t.TypeSymbol.Equals(f.ElementType))).ToList();
+                    return matches.Count == 1 ? matches.First() : default(MetaField);
                 }
             }
 
@@ -1190,14 +1203,7 @@
                 get { return this.IsRecursiveParent || this.Ancestors.Any(a => a.IsRecursiveParent); }
             }
 
-            public bool IsRecursive
-            {
-                get
-                {
-                    var rootOrThisType = this.RootAncestorOrThisType;
-                    return this.LocalFields.Count(f => f.IsCollection && rootOrThisType.IsAssignableFrom(f.ElementType) && !f.IsDefinitelyNotRecursive) == 1;
-                }
-            }
+            public bool IsRecursive => !this.RecursiveField.IsDefault;
 
             public MetaType RootAncestorOrThisType
             {

@@ -229,6 +229,12 @@
             await this.GenerateFromStreamAsync("HierarchyLevels");
         }
 
+        [Fact]
+        public async Task AlmostRecursive_Compiles()
+        {
+            await this.GenerateFromStreamAsync("AlmostRecursive");
+        }
+
         protected async Task<GenerationResult> GenerateFromStreamAsync(string testName)
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".TestSources." + testName + ".cs"))
