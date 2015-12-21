@@ -66,7 +66,7 @@
                 if (this.applyTo.IsRecursiveParentOrDerivative)
                 {
                     // Add the lookupTable parameter to the constructor's signature.
-                    var origCtor = applyTo.Members.OfType<ConstructorDeclarationSyntax>().Single();
+                    var origCtor = GetMeaningfulConstructor(applyTo);
                     var alteredCtor = origCtor.AddParameterListParameters(SyntaxFactory.Parameter(LookupTableFieldName.Identifier).WithType(Syntax.OptionalOf(this.lookupTableType)));
 
                     // If this type isn't itself the recursive parent then we derive from it. And we must propagate the value to the chained base type.
@@ -82,46 +82,63 @@
                     applyTo = applyTo.ReplaceNode(origCtor, alteredCtor);
 
                     // Search for invocations of the constructor that we now have to update.
-                    var invocations = (
+                    var creationInvocations = (
                         from n in applyTo.DescendantNodes()
                         let ctorInvocation = n as ObjectCreationExpressionSyntax
                         let instantiatedTypeName = ctorInvocation?.Type?.ToString()
                         where instantiatedTypeName == this.applyTo.TypeSyntax.ToString() || instantiatedTypeName == this.applyTo.TypeSymbol.Name
                         select ctorInvocation).ToImmutableArray();
+                    var chainedInvocations = (
+                        from n in applyTo.DescendantNodes()
+                        let chained = n as ConstructorInitializerSyntax
+                        where chained.IsKind(SyntaxKind.ThisConstructorInitializer) && chained.FirstAncestorOrSelf<ConstructorDeclarationSyntax>().Identifier.ValueText == this.applyTo.TypeSymbol.Name
+                        select chained).ToImmutableArray();
+                    var invocations = creationInvocations.Concat<CSharpSyntaxNode>(chainedInvocations);
                     var trackedTree = applyTo.TrackNodes(invocations);
 
                     var recursiveField = this.applyTo.RecursiveParent.RecursiveField;
                     foreach (var ctorInvocation in invocations)
                     {
-                        var currentInvocation = trackedTree.GetCurrentNode(ctorInvocation);
-
                         ExpressionSyntax lookupTableValue = SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression);
-                        var containingMethod = currentInvocation.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-                        if (containingMethod != null)
+
+                        var currentInvocation = trackedTree.GetCurrentNode(ctorInvocation);
+                        var currentCreationInvocation = currentInvocation as ObjectCreationExpressionSyntax;
+                        var currentChainedInvocation = currentInvocation as ConstructorInitializerSyntax;
+
+                        if (currentCreationInvocation != null)
                         {
-                            if (containingMethod.ParameterList.Parameters.Any(p => p.Identifier.ToString() == recursiveField.Name))
+                            var containingMethod = currentInvocation.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+                            if (containingMethod != null)
                             {
-                                // We're in a method that accepts the recursive field as a parameter.
-                                // The value we want to pass in for the lookup table is:
-                                // (children.IsDefined && children.Value != this.Children) ? default(Optional<ImmutableDictionary<uint, KeyValuePair<RecursiveType, uint>>>) : Optional.For(this.lookupTable);
-                                lookupTableValue = SyntaxFactory.ConditionalExpression(
-                                    SyntaxFactory.ParenthesizedExpression(
-                                        SyntaxFactory.BinaryExpression(
-                                            SyntaxKind.LogicalAndExpression,
-                                            Syntax.OptionalIsDefined(recursiveField.NameAsField),
+                                if (containingMethod.ParameterList.Parameters.Any(p => p.Identifier.ToString() == recursiveField.Name))
+                                {
+                                    // We're in a method that accepts the recursive field as a parameter.
+                                    // The value we want to pass in for the lookup table is:
+                                    // (children.IsDefined && children.Value != this.Children) ? default(Optional<ImmutableDictionary<uint, KeyValuePair<RecursiveType, uint>>>) : Optional.For(this.lookupTable);
+                                    lookupTableValue = SyntaxFactory.ConditionalExpression(
+                                        SyntaxFactory.ParenthesizedExpression(
                                             SyntaxFactory.BinaryExpression(
-                                                SyntaxKind.NotEqualsExpression,
-                                                Syntax.OptionalValue(recursiveField.NameAsField),
-                                                Syntax.ThisDot(recursiveField.NameAsProperty)))),
-                                    SyntaxFactory.DefaultExpression(Syntax.OptionalOf(this.lookupTableType)),
-                                    Syntax.OptionalFor(Syntax.ThisDot(LookupTableFieldName)));
+                                                SyntaxKind.LogicalAndExpression,
+                                                Syntax.OptionalIsDefined(recursiveField.NameAsField),
+                                                SyntaxFactory.BinaryExpression(
+                                                    SyntaxKind.NotEqualsExpression,
+                                                    Syntax.OptionalValue(recursiveField.NameAsField),
+                                                    Syntax.ThisDot(recursiveField.NameAsProperty)))),
+                                        SyntaxFactory.DefaultExpression(Syntax.OptionalOf(this.lookupTableType)),
+                                        Syntax.OptionalFor(Syntax.ThisDot(LookupTableFieldName)));
+                                }
                             }
+
+                            var alteredInvocation = currentCreationInvocation.AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.NameColon(LookupTableFieldName), NoneToken, lookupTableValue));
+                            trackedTree = trackedTree.ReplaceNode(currentInvocation, alteredInvocation);
                         }
-
-                        var alteredInvocation = currentInvocation.AddArgumentListArguments(
-                            SyntaxFactory.Argument(SyntaxFactory.NameColon(LookupTableFieldName), NoneToken, lookupTableValue));
-
-                        trackedTree = trackedTree.ReplaceNode(currentInvocation, alteredInvocation);
+                        else
+                        {
+                            var alteredInvocation = currentChainedInvocation.AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.NameColon(LookupTableFieldName), NoneToken, lookupTableValue));
+                            trackedTree = trackedTree.ReplaceNode(currentInvocation, alteredInvocation);
+                        }
                     }
 
                     applyTo = trackedTree;

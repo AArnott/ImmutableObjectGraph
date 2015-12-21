@@ -13,12 +13,17 @@
     public class PersonTests
     {
         /// <summary>
-        /// Immutable types should not have public constructors to avoid creating duplicate instances.
+        /// Immutable types should have 1 public constructor to support deserialization.
         /// </summary>
         [Fact]
-        public void NoPublicConstructors()
+        public void PublicConstructor()
         {
-            Assert.Equal(0, typeof(Person).GetConstructors(BindingFlags.Public | BindingFlags.Instance).Length);
+#pragma warning disable CS0618
+            var p = new Person(Name: "Andrew", Age: 15, Watch: null);
+#pragma warning restore CS0618
+            Assert.Equal("Andrew", p.Name);
+            Assert.Equal(15, p.Age);
+            Assert.Null(p.Watch);
         }
 
         [Fact]

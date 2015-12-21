@@ -53,6 +53,7 @@
         private static readonly ThrowStatementSyntax ThrowNotImplementedException = SyntaxFactory.ThrowStatement(
             SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeof(NotImplementedException).FullName), SyntaxFactory.ArgumentList(), null));
         private static readonly ArgumentSyntax DoNotSkipValidationArgument = SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression));
+        private static readonly AttributeSyntax ObsoletePublicCtor = SyntaxFactory.Attribute(Syntax.GetTypeSyntax(typeof(ObsoleteAttribute))).AddArgumentListArguments(SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("This constructor for use with deserializers only. Use the static Create factory method instead."))));
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly Document document;
@@ -166,7 +167,9 @@
             this.MergeFeature(new StyleCopCompliance(this));
 
             // Define the constructor after merging all features since they can add to it.
-            innerMembers.Add(CreateCtor());
+            innerMembers.Add(CreateNonPublicCtor());
+
+            innerMembers.AddRange(CreatePublicCtors());
 
             var partialClass = SyntaxFactory.ClassDeclaration(applyTo.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
@@ -367,7 +370,31 @@
                     SyntaxFactory.ElasticCarriageReturnLineFeed);
         }
 
-        private MemberDeclarationSyntax CreateCtor()
+        private IEnumerable<MemberDeclarationSyntax> CreatePublicCtors()
+        {
+            if (!this.isAbstract)
+            {
+                // This constructor takes the value of each and every property
+                // (by PropertyName not fieldName). No extra parameters, and no Optional<T> wrappers.
+                // This is intended to support deserialization or perhaps one day, the new C# `with`
+                // keyword for record types.
+                var thisArguments = this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.ArgumentWithPascalCase)
+                    .PrependArgument(SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(NewIdentityMethodName, SyntaxFactory.ArgumentList())))
+                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), SyntaxFactory.Token(SyntaxKind.None), SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression)));
+                var ctor = SyntaxFactory.ConstructorDeclaration(this.applyTo.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithParameterList(this.CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Required, usePascalCasing: true))
+                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(ObsoletePublicCtor))
+                    .WithInitializer(SyntaxFactory.ConstructorInitializer(
+                        SyntaxKind.ThisConstructorInitializer,
+                        thisArguments))
+                    .WithBody(SyntaxFactory.Block());
+
+                yield return ctor;
+            }
+        }
+
+        private MemberDeclarationSyntax CreateNonPublicCtor()
         {
             BlockSyntax body = SyntaxFactory.Block(
                 // this.someField = someField;
@@ -707,7 +734,7 @@
             }
         }
 
-        private ParameterListSyntax CreateParameterList(IEnumerable<MetaField> fields, ParameterStyle style)
+        private ParameterListSyntax CreateParameterList(IEnumerable<MetaField> fields, ParameterStyle style, bool usePascalCasing = false)
         {
             if (style == ParameterStyle.OptionalOrRequired)
             {
@@ -721,7 +748,7 @@
             return SyntaxFactory.ParameterList(
                 Syntax.JoinSyntaxNodes(
                     SyntaxKind.CommaToken,
-                    fields.Select(f => setTypeAndDefault(SyntaxFactory.Parameter(SyntaxFactory.Identifier(f.Name)), f))));
+                    fields.Select(f => setTypeAndDefault(SyntaxFactory.Parameter((usePascalCasing ? f.NameAsProperty : f.NameAsField).Identifier), f))));
         }
 
         private ArgumentListSyntax CreateArgumentList(IEnumerable<MetaField> fields, ArgSource source = ArgSource.Property, OptionalStyle asOptional = OptionalStyle.None)
@@ -738,6 +765,8 @@
                         return Syntax.ThisDot(propertyName);
                     case ArgSource.Argument:
                         return name;
+                    case ArgSource.ArgumentWithPascalCase:
+                        return propertyName;
                     case ArgSource.OptionalArgumentOrProperty:
                         return Syntax.OptionalGetValueOrDefault(name, Syntax.ThisDot(propertyName));
                     case ArgSource.OptionalArgumentOrTemplate:
@@ -764,6 +793,12 @@
             var argument = attributeSyntax.ArgumentList.Arguments.FirstOrDefault(
                 a => a.NameEquals.Name.Identifier.ValueText == parameterName);
             return argument;
+        }
+
+        private static ConstructorDeclarationSyntax GetMeaningfulConstructor(TypeDeclarationSyntax applyTo)
+        {
+            return applyTo.Members.OfType<ConstructorDeclarationSyntax>()
+                .Where(ctor => !ctor.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword))).Single();
         }
 
         private static bool IsFieldRequired(IFieldSymbol fieldSymbol)
@@ -947,7 +982,7 @@
 
                 if (this.additionalCtorStatements.Count > 0)
                 {
-                    var origCtor = applyTo.Members.OfType<ConstructorDeclarationSyntax>().Single();
+                    var origCtor = GetMeaningfulConstructor(applyTo);
                     var updatedCtor = origCtor.AddBodyStatements(this.additionalCtorStatements.ToArray());
                     applyTo = applyTo.ReplaceNode(origCtor, updatedCtor);
                 }
@@ -1508,6 +1543,7 @@
         {
             Property,
             Argument,
+            ArgumentWithPascalCase,
             OptionalArgumentOrProperty,
             OptionalArgumentOrTemplate,
             Missing,
