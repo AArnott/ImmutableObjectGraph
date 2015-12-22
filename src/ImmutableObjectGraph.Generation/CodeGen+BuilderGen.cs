@@ -76,12 +76,12 @@
                     BuilderTypeName,
                     ToBuilderMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .WithBody(SyntaxFactory.Block(
-                        SyntaxFactory.ReturnStatement(
-                            SyntaxFactory.ObjectCreationExpression(
-                                BuilderTypeName,
-                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))),
-                                null))));
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                        SyntaxFactory.ObjectCreationExpression(
+                            BuilderTypeName,
+                            SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))),
+                            null)))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
@@ -99,12 +99,12 @@
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                    .WithBody(SyntaxFactory.Block(
-                        SyntaxFactory.ReturnStatement(
-                            SyntaxFactory.ObjectCreationExpression(
-                                BuilderTypeName,
-                                SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(DefaultInstanceFieldName))),
-                                null))));
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                        SyntaxFactory.ObjectCreationExpression(
+                            BuilderTypeName,
+                            SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(DefaultInstanceFieldName))),
+                            null)))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
                 if (this.generator.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract))
                 {

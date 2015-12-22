@@ -171,33 +171,30 @@
                     this.baseTypes.Add(SyntaxFactory.SimpleBaseType(interfaceType));
                     var explicitImplementation = SyntaxFactory.ExplicitInterfaceSpecifier(interfaceType);
 
-                    // uint IRecursiveParentWithLookupTable<TRecursiveType>.InefficiencyLoad { get; }
+                    // uint IRecursiveParentWithLookupTable<TRecursiveType>.InefficiencyLoad => this.ineffiencyLoad;
                     this.innerMembers.Add(
                         SyntaxFactory.PropertyDeclaration(inefficiencyLoadType, nameof(IRecursiveParentWithLookupTable<IRecursiveType>.InefficiencyLoad))
                         .WithExplicitInterfaceSpecifier(explicitImplementation)
-                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(InefficiencyLoadFieldName))))));
+                        .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(InefficiencyLoadFieldName)))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
 
-                    // IReadOnlyCollection<TRecursiveType> IRecursiveParentWithLookupTable<TRecursiveType>.Children { get; }
+                    // IReadOnlyCollection<TRecursiveType> IRecursiveParentWithLookupTable<TRecursiveType>.Children => this.recursiveField;
                     this.innerMembers.Add(
                         SyntaxFactory.PropertyDeclaration(
                             Syntax.IReadOnlyCollectionOf(this.applyTo.RecursiveType.TypeSyntax),
                             nameof(IRecursiveParentWithLookupTable<IRecursiveType>.Children))
                         .WithExplicitInterfaceSpecifier(explicitImplementation)
-                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty))))));
+                        .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty)))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
 
-                    // ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>> IRecursiveParentWithLookupTable<TRecursiveType>.LookupTable { get; }
+                    // ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>> IRecursiveParentWithLookupTable<TRecursiveType>.LookupTable => this.lookupTable;
                     this.innerMembers.Add(
                         SyntaxFactory.PropertyDeclaration(
                             this.lookupTableType,
                             nameof(IRecursiveParentWithLookupTable<IRecursiveType>.LookupTable))
                         .WithExplicitInterfaceSpecifier(explicitImplementation)
-                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(LookupTablePropertyName))))));
+                        .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(LookupTablePropertyName)))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
                 }
 
                 if (this.applyTo.IsRecursive)

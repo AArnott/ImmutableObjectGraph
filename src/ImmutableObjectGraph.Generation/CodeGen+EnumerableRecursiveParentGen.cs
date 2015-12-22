@@ -112,8 +112,8 @@
                 var irecursiveParentOfT = CreateIRecursiveParentOfTSyntax(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveType.TypeSymbol));
                 this.baseTypes.Add(SyntaxFactory.SimpleBaseType(irecursiveParentOfT));
 
-                // return this.Children;
-                var returnThisDotChildren = SyntaxFactory.ReturnStatement(Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name.ToPascalCase())));
+                // this.Children;
+                var thisDotChildren = Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name.ToPascalCase()));
 
                 // System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children
                 this.innerMembers.Add(
@@ -121,9 +121,8 @@
                         Syntax.GetTypeSyntax(typeof(IEnumerable<IRecursiveType>)),
                         nameof(IRecursiveParent.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
-                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                        SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(returnThisDotChildren))));
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
 
                 // public ParentedRecursiveType<TRecursiveParent, TRecursiveType> GetParentedNode(uint identity)
                 this.innerMembers.Add(
@@ -164,17 +163,15 @@
                             SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentedVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Value)))),
                             SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentedVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Parent)))))))));
 
-                ////System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children {
-                ////	get { return this.Children; }
-                ////}
+                ////System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children
+                ////	=> return this.Children;
                 this.innerMembers.Add(
                     SyntaxFactory.PropertyDeclaration(
                         Syntax.IEnumerableOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
                         nameof(IRecursiveParent<IRecursiveType>.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(irecursiveParentOfT))
-                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                        SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(returnThisDotChildren))));
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
             }
 
             private void ImplementOrderedChildrenInterface()
