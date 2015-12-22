@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{480D7D29-47EB-4110-A365-1246B49687D2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ImmutableObjectGraph.Generation.Tests</RootNamespace>
+    <AssemblyName>ImmutableObjectGraph.Generation.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildProjectDirectory)\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <CopyNuGetImplementations>true</CopyNuGetImplementations>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeGenTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="TestSources\AlmostRecursive.cs" />
+    <EmbeddedResource Include="TestSources\HierarchyLevels.cs" />
+    <EmbeddedResource Include="TestSources\IgnoreField.cs" />
+    <EmbeddedResource Include="TestSources\RootedStruct_Without_WithMethodsPerProperty.cs" />
+    <Compile Include="TestSources\AbstractClassMidTypeHierarchyWithRequiredField.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Generations.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Generations.Tests.cs" />
+    <EmbeddedResource Include="TestSources\DefineRootedStruct_NotApplicable.cs" />
+    <Compile Include="TestSources\ImmutableDictionaryHelpers.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\ImmutableDictionaryHelpers.Tests.cs" />
+    <Compile Include="TestSources\MSBuild.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\MSBuild.Tests.cs" />
+    <Compile Include="TestSources\Nested.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Nested.Tests.cs" />
+    <Compile Include="TestSources\NonRecursive.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\ProjectTree.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\ProjectTreeCapabilities.cs" />
+    <Compile Include="TestSources\ProjectTreeNodeTest.cs" />
+    <Compile Include="TestSources\ProjectTreeNodeTest2.cs" />
+    <Compile Include="TestSources\ProjectTreeNodeTestBase.cs" />
+    <Compile Include="TestSources\ProjectTreePartial.cs" />
+    <Compile Include="TestSources\ProjectTreeSort.cs" />
+    <Compile Include="TestSources\ProjectTreeTests.cs" />
+    <Compile Include="TestSources\RequiresAndHierarchy.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\RequiresAndHierarchy.Tests.cs" />
+    <Compile Include="TestSources\Sealed.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Sealed.Tests.cs" />
+    <Compile Include="TestSources\TreeNode.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\TreeNode.Tests.cs" />
+    <EmbeddedResource Include="TestSources\UsingImmutableObjectGraph.cs" />
+    <Compile Include="TestSources\XmlNode.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\XmlNode.Tests.cs" />
+    <Compile Include="TestSources\Person.BuilderTests.cs" />
+    <Compile Include="TestSources\Person.Tests.cs" />
+    <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
+    <Compile Include="TestSources\AbstractClassFamilies.Tests.cs" />
+    <Compile Include="TestSources\DeepHierarchy.Tests.cs" />
+    <Compile Include="TestSources\Empty.Tests.cs" />
+    <Compile Include="TestSources\FileSystem.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\AbstractClassFamilies.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\DeepHierarchy.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <EmbeddedResource Include="TestSources\OneScalarFieldAndEmptyDerived.cs" />
+    <EmbeddedResource Include="TestSources\NoFieldsAndNoFieldsDerived.cs" />
+    <EmbeddedResource Include="TestSources\NoFieldsAndOneScalarFieldDerived.cs" />
+    <EmbeddedResource Include="TestSources\AbstractNonEmptyWithDerivedEmpty.cs" />
+    <EmbeddedResource Include="TestSources\ClassDerivesFromAnotherWithFieldsAndBuilder.cs" />
+    <EmbeddedResource Include="TestSources\ClassDerivesFromAnotherWithFields.cs" />
+    <EmbeddedResource Include="TestSources\OneScalarFieldWithBuilder.cs" />
+    <EmbeddedResource Include="TestSources\OneScalarField.cs" />
+    <Compile Include="TestSources\Person.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\Empty.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <Compile Include="TestSources\FileSystem.Tests.cs" />
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
+      <Project>{7b6dd09e-bd82-4b88-a10d-6d5606519ecd}</Project>
+      <Name>ImmutableObjectGraph.Generation.Attributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj">
+      <Project>{1c4c18ba-15ef-4d4d-9547-a2ee1e47ace1}</Project>
+      <Name>ImmutableObjectGraph.Generation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj">
+      <Project>{63930555-500f-4e7b-9f24-3d5c3d4f0573}</Project>
+      <Name>ImmutableObjectGraph</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

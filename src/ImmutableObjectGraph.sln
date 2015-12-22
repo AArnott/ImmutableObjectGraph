@@ -1,59 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23102.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A36BA1C-9698-4E6A-B917-D8753FDBE09A}"
 	ProjectSection(SolutionItems) = preProject
 		IntegrationTests.testsettings = IntegrationTests.testsettings
-		NuGet.Config = NuGet.Config
-		.nuget\packages.config = .nuget\packages.config
+		..\NuGet.Config = ..\NuGet.Config
 		UnitTests.testsettings = UnitTests.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Tests", "ImmutableObjectGraph.Tests\ImmutableObjectGraph.Tests.csproj", "{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B370D792-CACB-47AD-BD16-801120F94515}"
 	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
 		..\CONTRIB.md = ..\CONTRIB.md
 		..\LICENSE.txt = ..\LICENSE.txt
 		..\README.md = ..\README.md
-		..\Version.txt = ..\Version.txt
+		..\version.json = ..\version.json
 	EndProjectSection
-EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBConsumerTests", "VBConsumerTests\VBConsumerTests.vbproj", "{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F}"
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Core.NuGet", "ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.T4.NuGet", "ImmutableObjectGraph.T4.NuGet\ImmutableObjectGraph.T4.NuGet.nuproj", "{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Tests", "ImmutableObjectGraph.Generation.Tests\ImmutableObjectGraph.Generation.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.SFG", "ImmutableObjectGraph.SFG\ImmutableObjectGraph.SFG.csproj", "{2918B8EF-855A-41F6-8D94-88A049EFB0B3}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Generation.NuGet", "ImmutableObjectGraph.Generation.NuGet\ImmutableObjectGraph.Generation.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.SFG_IntegrationTests", "ImmutableObjectGraph.SFG\ImmutableObjectGraph.SFG_IntegrationTests\ImmutableObjectGraph.SFG_IntegrationTests.csproj", "{A6F216C8-7D24-42FC-8E7E-274F8923CC55}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.SFG_UnitTests", "ImmutableObjectGraph.SFG\ImmutableObjectGraph.SFG_UnitTests\ImmutableObjectGraph.SFG_UnitTests.csproj", "{F2B07036-9C8E-47FD-B37A-5BEA88178145}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFG", "SFG", "{68FFB2A4-7421-4D8C-A5BD-C412A34938FF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration", "ImmutableObjectGraph.CodeGeneration\ImmutableObjectGraph.CodeGeneration.csproj", "{90C68B38-ECF1-46E1-AECD-86A562C50AD0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tests", "ImmutableObjectGraph.CodeGeneration.Tests\ImmutableObjectGraph.CodeGeneration.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Tasks", "ImmutableObjectGraph.CodeGeneration.Tasks\ImmutableObjectGraph.CodeGeneration.Tasks.csproj", "{64053579-3A50-4FFA-9499-172ABE58FD0B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roslyn", "Roslyn", "{6288222B-94FA-434F-89E7-A06D3A83417E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "T4", "T4", "{71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}"
-EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Generation.NuGet", "ImmutableObjectGraph.CodeGeneration.NuGet\ImmutableObjectGraph.Generation.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.CodeGeneration.Roslyn", "ImmutableObjectGraph.CodeGeneration.Roslyn\ImmutableObjectGraph.CodeGeneration.Roslyn.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation", "ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynDemo", "RoslynDemo\RoslynDemo.csproj", "{07DCAAF3-0825-499C-85C5-7D8B23230BBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Attributes", "ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj", "{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,50 +43,14 @@ Global
 		{63930555-500F-4E7B-9F24-3D5C3D4F0573}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63930555-500F-4E7B-9F24-3D5C3D4F0573}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63930555-500F-4E7B-9F24-3D5C3D4F0573}.Release|Any CPU.Build.0 = Release|Any CPU
-		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2918B8EF-855A-41F6-8D94-88A049EFB0B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6F216C8-7D24-42FC-8E7E-274F8923CC55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2B07036-9C8E-47FD-B37A-5BEA88178145}.Release|Any CPU.Build.0 = Release|Any CPU
-		{90C68B38-ECF1-46E1-AECD-86A562C50AD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90C68B38-ECF1-46E1-AECD-86A562C50AD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90C68B38-ECF1-46E1-AECD-86A562C50AD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90C68B38-ECF1-46E1-AECD-86A562C50AD0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64053579-3A50-4FFA-9499-172ABE58FD0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -121,23 +63,12 @@ Global
 		{07DCAAF3-0825-499C-85C5-7D8B23230BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07DCAAF3-0825-499C-85C5-7D8B23230BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07DCAAF3-0825-499C-85C5-7D8B23230BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{193F0D66-B1D2-4ACB-9BDC-6341A3F90153} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
-		{BA4FEC54-851E-46D8-8025-C0EF079E9BB3} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
-		{0AA48BE4-9209-4DA0-8858-4E4ED8A73C1F} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
-		{9648E7D4-6B45-4D90-9CEF-A1491FE01F98} = {71C4425D-BE1D-492E-B3C9-7DAE3ECC4CA9}
-		{2918B8EF-855A-41F6-8D94-88A049EFB0B3} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
-		{A6F216C8-7D24-42FC-8E7E-274F8923CC55} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
-		{F2B07036-9C8E-47FD-B37A-5BEA88178145} = {68FFB2A4-7421-4D8C-A5BD-C412A34938FF}
-		{68FFB2A4-7421-4D8C-A5BD-C412A34938FF} = {6288222B-94FA-434F-89E7-A06D3A83417E}
-		{90C68B38-ECF1-46E1-AECD-86A562C50AD0} = {6288222B-94FA-434F-89E7-A06D3A83417E}
-		{480D7D29-47EB-4110-A365-1246B49687D2} = {6288222B-94FA-434F-89E7-A06D3A83417E}
-		{C2529293-7A03-4E3A-B96A-59A6D70D3B86} = {6288222B-94FA-434F-89E7-A06D3A83417E}
-		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1} = {6288222B-94FA-434F-89E7-A06D3A83417E}
-		{07DCAAF3-0825-499C-85C5-7D8B23230BBE} = {6288222B-94FA-434F-89E7-A06D3A83417E}
 	EndGlobalSection
 EndGlobal

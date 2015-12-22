@@ -437,7 +437,7 @@
 
             if (priorVersion.Identity != current.Identity)
             {
-                throw new System.ArgumentException("Not another version of the same node.", "priorVersion");
+                throw new System.ArgumentException("Not another version of the same node.", nameof(priorVersion));
             }
 
             var currentAsParent = current as IRecursiveParent<IRecursiveDiffingType<TPropertiesEnum, TDiffGram>>;
