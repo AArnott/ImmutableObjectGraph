@@ -1387,6 +1387,11 @@
 
             public bool IsDictionary => IsDictionaryType(this.Symbol.Type);
 
+            /// <summary>
+            /// Gets a value indicating whether the elements in the collection have a defined order.
+            /// This may be because it is sorted, or because it is documented to retain the order
+            /// in which the elements were inserted (e.g. a list).
+            /// </summary>
             public bool IsCollectionOrdered
             {
                 get
