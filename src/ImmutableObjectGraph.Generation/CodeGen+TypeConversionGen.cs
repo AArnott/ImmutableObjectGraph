@@ -250,7 +250,7 @@
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     SyntaxFactory.BaseExpression(),
                                     GetToTypeMethodName(derivedType.TypeSymbol.Name)),
-                                this.generator.CreateArgumentList(this.generator.applyToMetaType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrProperty, OptionalStyle.WhenNotRequired)
+                                this.generator.CreateArgumentList(this.generator.applyToMetaType.GetFieldsBeyond(ancestor), ArgSource.OptionalArgumentOrPropertyExceptWhenRequired, OptionalStyle.WhenNotRequired)
                                     .AddArguments(this.generator.CreateArgumentList(derivedType.GetFieldsBeyond(this.generator.applyToMetaType), ArgSource.Argument).Arguments.ToArray())))));
             }
         }

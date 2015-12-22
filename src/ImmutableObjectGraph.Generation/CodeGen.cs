@@ -769,6 +769,8 @@
                         return propertyName;
                     case ArgSource.OptionalArgumentOrProperty:
                         return Syntax.OptionalGetValueOrDefault(name, Syntax.ThisDot(propertyName));
+                    case ArgSource.OptionalArgumentOrPropertyExceptWhenRequired:
+                        return f.IsRequired ? (ExpressionSyntax)name : Syntax.OptionalGetValueOrDefault(name, Syntax.ThisDot(propertyName));
                     case ArgSource.OptionalArgumentOrTemplate:
                         return Syntax.OptionalGetValueOrDefault(name, SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, DefaultInstanceFieldName, propertyName));
                     case ArgSource.Missing:
@@ -1545,6 +1547,7 @@
             Argument,
             ArgumentWithPascalCase,
             OptionalArgumentOrProperty,
+            OptionalArgumentOrPropertyExceptWhenRequired,
             OptionalArgumentOrTemplate,
             Missing,
         }
