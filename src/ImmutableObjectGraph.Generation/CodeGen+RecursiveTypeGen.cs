@@ -35,18 +35,15 @@
             {
                 this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveType))));
 
-                ////<#= templateType.RequiredIdentityField.TypeName #> IRecursiveType.Identity {
-                ////	get { return this.Identity; }
-                ////}
+                //// uint IRecursiveType.Identity => this.Identity;
                 this.innerMembers.Add(SyntaxFactory.PropertyDeclaration(
                     IdentityFieldTypeSyntax,
                     nameof(IRecursiveType.Identity))
                     .WithExplicitInterfaceSpecifier(
                         SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveType))))
-                    .AddAccessorListAccessors(
-                        SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(IdentityPropertyName))))));
+                    .WithExpressionBody(
+                        SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(IdentityPropertyName)))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
             }
         }
     }

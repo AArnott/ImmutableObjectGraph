@@ -136,13 +136,13 @@
                 // public RootedRecursiveParent Root { get; }
                 var property = SyntaxFactory.PropertyDeclaration(GetRootedTypeSyntax(this.applyTo), AsRootPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                        SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(
-                            // return new RootedRecursiveParent(this, this);
-                            SyntaxFactory.ReturnStatement(SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
+                    .WithExpressionBody(
+                        SyntaxFactory.ArrowExpressionClause(
+                            // => new RootedRecursiveParent(this, this);
+                            SyntaxFactory.ObjectCreationExpression(GetRootedTypeSyntax(this.applyTo)).AddArgumentListArguments(
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))))));
+                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
                 if (!this.applyTo.IsRecursiveParent)
                 {
@@ -474,44 +474,37 @@
 
             protected PropertyDeclarationSyntax CreateIsRootProperty()
             {
-                // public bool IsRoot { get; }
+                // public bool IsRoot => this.root == this.greenNode;
                 return SyntaxFactory.PropertyDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), IsRootPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                        SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(
-                            // return this.root == this.greenNode;
-                            SyntaxFactory.ReturnStatement(SyntaxFactory.BinaryExpression(
-                                SyntaxKind.EqualsExpression,
-                                Syntax.ThisDot(RootFieldName),
-                                Syntax.ThisDot(GreenNodeFieldName))))));
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(SyntaxFactory.BinaryExpression(
+                        SyntaxKind.EqualsExpression,
+                        Syntax.ThisDot(RootFieldName),
+                        Syntax.ThisDot(GreenNodeFieldName))))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
             }
 
             protected PropertyDeclarationSyntax CreateIsDefaultProperty()
             {
-                // public bool IsDefault { get; }
+                // public bool IsDefault => this.greenNode == null;
                 return SyntaxFactory.PropertyDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), IsDefaultPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                        SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(
-                            // return this.greenNode == null;
-                            SyntaxFactory.ReturnStatement(
-                                SyntaxFactory.BinaryExpression(
-                                    SyntaxKind.EqualsExpression,
-                                    Syntax.ThisDot(GreenNodeFieldName),
-                                    SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression))))));
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                        SyntaxFactory.BinaryExpression(
+                            SyntaxKind.EqualsExpression,
+                            Syntax.ThisDot(GreenNodeFieldName),
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression))))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
             }
 
             protected PropertyDeclarationSyntax CreateTemplateTypeProperty()
             {
                 return SyntaxFactory.PropertyDeclaration(this.applyTo.TypeSyntax, this.applyTo.TypeSymbol.Name)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                        SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(
-                            // return this.greenNode;
-                            SyntaxFactory.ReturnStatement(Syntax.ThisDot(GreenNodeFieldName)))));
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                            // => this.greenNode;
+                            Syntax.ThisDot(GreenNodeFieldName)))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
             }
 
             protected MethodDeclarationSyntax CreateWithMethod()
@@ -766,30 +759,26 @@
                     // IEnumerable<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
                     SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
-                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(
-                                // return this.Children;
-                                SyntaxFactory.ReturnStatement(Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty))))),
+                        // => this.Children;
+                        .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty)))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
                 };
             }
 
             protected PropertyDeclarationSyntax[] CreateIsDerivedProperties()
             {
-                // public bool IsDerivedType { get; }
+                // public bool IsDerivedType => this.greenNode is TDerivedType;
                 return this.applyTo.Descendents.Select(descendent =>
                     SyntaxFactory.PropertyDeclaration(
                         SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)),
                         string.Format(CultureInfo.InvariantCulture, IsDerivedPropertyNameFormat, descendent.TypeSymbol.Name))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(
-                                SyntaxFactory.ReturnStatement(
-                                    SyntaxFactory.BinaryExpression(
-                                        SyntaxKind.IsExpression,
-                                        Syntax.ThisDot(GreenNodeFieldName),
-                                        descendent.TypeSyntax)))))
+                        .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.IsExpression,
+                                Syntax.ThisDot(GreenNodeFieldName),
+                                descendent.TypeSyntax)))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                     ).ToArray();
             }
 

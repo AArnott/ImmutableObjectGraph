@@ -201,14 +201,11 @@
 
             var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToPascalCase())
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                .WithAccessorList(
-                    SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[] {
-                                SyntaxFactory.AccessorDeclaration(
-                                    SyntaxKind.GetAccessorDeclaration,
-                                    SyntaxFactory.Block(
-                                        SyntaxFactory.ReturnStatement(
-                                            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(variable.Identifier))
-                                        ))) })))
+                .WithExpressionBody(
+                    SyntaxFactory.ArrowExpressionClause(
+                        // => this.fieldName
+                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(variable.Identifier))))
+                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                 .WithLeadingTrivia(xmldocComment); // TODO: modify the <summary> to translate "Some description" to "Gets some description."
             return property;
         }
@@ -676,10 +673,9 @@
                 IdentityFieldTypeSyntax,
                 IdentityPropertyName.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword))
-                .AddAccessorListAccessors(
-                    SyntaxFactory.AccessorDeclaration(
-                        SyntaxKind.GetAccessorDeclaration,
-                        SyntaxFactory.Block(SyntaxFactory.ReturnStatement(Syntax.ThisDot(IdentityParameterName)))));
+                .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                    Syntax.ThisDot(IdentityParameterName)))
+                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
             if (!containingTypeIsSealed)
                 property = property
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));

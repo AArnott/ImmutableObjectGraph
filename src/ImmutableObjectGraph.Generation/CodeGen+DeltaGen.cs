@@ -287,14 +287,13 @@
                     // <#= templateType.TypeName #>ChangedProperties IRecursiveDiffingType<<#= templateType.TypeName #>ChangedProperties, TemplateType.DiffGram>.ParentProperty {
                     SyntaxFactory.PropertyDeclaration(this.changedPropertiesEnumTypeName, propertyName)
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(this.recursiveDiffingType))
-                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(
-                                // return <#= templateType.TypeName #>ChangedProperties.Parent;
-                                SyntaxFactory.ReturnStatement(SyntaxFactory.MemberAccessExpression(
+                        .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                                // <#= templateType.TypeName #>ChangedProperties.Parent;
+                                SyntaxFactory.MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     this.changedPropertiesEnumTypeName,
-                                    enumValueName)))));
+                                    enumValueName)))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
                 return new PropertyDeclarationSyntax[] {
                     createProperty(nameof(RecursiveDiffingTypeHelper.ParentProperty), EnumValueParent),
