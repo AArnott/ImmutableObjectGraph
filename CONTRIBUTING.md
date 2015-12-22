@@ -71,6 +71,23 @@ for your pull request. You can get the version number by reviewing the result of
 validation build for your pull request, clicking ARTIFACTS, and noting the version
 of the produced packages.
 
+There are two styles of tests:
+
+1. Generated and compiled at build time.
+2. Generated and compiled at test execution time.
+
+The build-time generated tests are in source files with `Build Action` set to `Compile`
+and `Custom Tool` set to `MSBuild:GenerateCodeFromAttributes`. This style is best
+suited for when you will be testing the functionality of the generated code and must write
+`[Fact]`'s that call into that generated code.
+
+The test execution time tests are in source files with `Build Action` set to
+`Embedded Resource` and `Custom Tool` is blank. There are associated test method(s)
+in another compiled test class (typically `CodeGenTests.cs`) that will extract
+the embedded resource at test execution time, execute code generation, and compile the
+result. This style is best suited for tests that want to assert API aspects of the generated
+code (such as asserting that no public constructor exists).
+
  [VS]: https://www.visualstudio.com/en-us/downloads/visual-studio-2015-downloads-vs.aspx
  [NuProj]: https://onedrive.live.com/redir?resid=63D0C265F96E43D!2477835&authkey=!AHh2k9FoNR-nFHo&ithint=file%2cmsi
  [NuGetClient]: https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
