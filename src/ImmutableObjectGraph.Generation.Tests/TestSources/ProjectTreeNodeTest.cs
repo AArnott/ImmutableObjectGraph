@@ -564,5 +564,32 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             Assert.Same(aa, history[0].Before);
             Assert.Same(ac, history[0].After);
         }
+
+        [Fact]
+        public void ReorderChildrenInOrderedList()
+        {
+            ProjectTree aa, ab, ac, ad, ae;
+            var original = ProjectTree.Create("A").WithChildren(
+                aa = ProjectTree.Create("AA"),
+                ab = ProjectTree.Create("AB"),
+                ac = ProjectTree.Create("AC"),
+                ad = ProjectTree.Create("AD"),
+                ae = ProjectTree.Create("AE"));
+            var reordered = original.RemoveChild(ac).AddChild(ac); // move AC to bottom.
+            Assert.Equal(new string[] { "AA", "AB", "AD", "AE", "AC" }, reordered.Children.Select(c => c.Caption));
+
+            var changes = reordered.ChangesSince(original);
+            Assert.NotEmpty(changes);
+
+            // Now move it back to its original position.
+            var restored = reordered.WithChildren(
+                reordered.Children.Remove(ac).Insert(2, ac));
+            Assert.Equal(new string[] { "AA", "AB", "AC", "AD", "AE" }, restored.Children.Select(c => c.Caption));
+
+            changes = restored.ChangesSince(reordered);
+            Assert.NotEmpty(changes);
+
+            Assert.Empty(restored.ChangesSince(original));
+        }
     }
 }
