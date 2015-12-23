@@ -122,7 +122,8 @@
                         nameof(IRecursiveParent.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))
-                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
                 // public ParentedRecursiveType<TRecursiveParent, TRecursiveType> GetParentedNode(uint identity)
                 this.innerMembers.Add(
@@ -171,7 +172,8 @@
                         nameof(IRecursiveParent<IRecursiveType>.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(irecursiveParentOfT))
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))
-                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
             }
 
             private void ImplementOrderedChildrenInterface()

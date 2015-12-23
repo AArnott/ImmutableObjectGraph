@@ -161,7 +161,8 @@
                             .AddVariables(SyntaxFactory.VariableDeclarator(InefficiencyLoadFieldName.Identifier)))
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)));
+                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                        .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
                     var interfaceType = SyntaxFactory.QualifiedName(
                         SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
@@ -176,7 +177,8 @@
                         SyntaxFactory.PropertyDeclaration(inefficiencyLoadType, nameof(IRecursiveParentWithLookupTable<IRecursiveType>.InefficiencyLoad))
                         .WithExplicitInterfaceSpecifier(explicitImplementation)
                         .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(InefficiencyLoadFieldName)))
-                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                        .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
                     // IReadOnlyCollection<TRecursiveType> IRecursiveParentWithLookupTable<TRecursiveType>.Children => this.recursiveField;
                     this.innerMembers.Add(
@@ -185,7 +187,8 @@
                             nameof(IRecursiveParentWithLookupTable<IRecursiveType>.Children))
                         .WithExplicitInterfaceSpecifier(explicitImplementation)
                         .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(this.applyTo.RecursiveField.NameAsProperty)))
-                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                        .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
                     // ImmutableDictionary<IdentityFieldType, KeyValuePair<TRecursiveType, IdentityFieldType>> IRecursiveParentWithLookupTable<TRecursiveType>.LookupTable => this.lookupTable;
                     this.innerMembers.Add(
@@ -194,7 +197,8 @@
                             nameof(IRecursiveParentWithLookupTable<IRecursiveType>.LookupTable))
                         .WithExplicitInterfaceSpecifier(explicitImplementation)
                         .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(LookupTablePropertyName)))
-                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                        .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
                 }
 
                 if (this.applyTo.IsRecursive)
@@ -251,8 +255,8 @@
                     this.innerMembers.Add(SyntaxFactory.FieldDeclaration(
                         SyntaxFactory.VariableDeclaration(this.lookupTableType)
                             .AddVariables(SyntaxFactory.VariableDeclarator(LookupTableFieldName.Identifier)))
-                        .AddModifiers(
-                            SyntaxFactory.Token(SyntaxKind.ProtectedKeyword)));
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword))
+                        .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
                     // public System.Collections.Immutable.ImmutableStack<TRecursiveType> GetSpine(TRecursiveType descendent) {
                     // 	return this.GetSpine<TRecursiveParent, TRecursiveType>(descendent);
