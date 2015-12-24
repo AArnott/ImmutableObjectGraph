@@ -33,6 +33,10 @@
       <Version>0.1.38-alpha-gf7a138c48e</Version>
       <TargetFramework>.NETPortable0.0-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10</TargetFramework>
     </Dependency>
+    <Dependency Include="CodeGeneration.Roslyn">
+      <Version>0.1.38-alpha-gf7a138c48e</Version>
+      <TargetFramework>net46</TargetFramework>
+    </Dependency>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>C2529293-7A03-4E3A-B96A-59A6D70D3B86</ProjectGuid>
