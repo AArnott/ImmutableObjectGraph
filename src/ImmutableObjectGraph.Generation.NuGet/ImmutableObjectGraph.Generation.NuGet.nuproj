@@ -73,11 +73,7 @@
   <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
     <PropertyGroup>
       <Version>$(NuGetPackageVersion)</Version>
-    </PropertyGroup>
-  </Target>
-  <Target Name="PerformNuSpecSubstitutions" BeforeTargets="GenerateNuSpec" DependsOnTargets="GetBuildVersion">
-    <PropertyGroup>
-      <LicenseUrl>$(LicenseUrl.Replace('$CommitId$', $(GitCommitId)))</LicenseUrl>
+      <NuSpecProperties>$(NuGetProperties);CommitId=$(GitCommitIdShort)</NuSpecProperties>
     </PropertyGroup>
   </Target>
 </Project>
