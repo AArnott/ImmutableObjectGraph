@@ -11,33 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup>
-    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-    <NerdbankGitVersioningPackagePath>$(NuGetPackageRoot)\Nerdbank.GitVersioning\1.1.61-rc\</NerdbankGitVersioningPackagePath>
-    <NuProjPackagePath>$(NuGetPackageRoot)\NuProj\0.10.30-beta-gcbd7693f91\</NuProjPackagePath>
-    <NuProjPath>$(NuProjPackagePath)\tools</NuProjPath>
+    <NuProjPath>$(UserProfile)\.nuget\packages\NuProj\0.10.48-beta-gea4a31bbc5\tools</NuProjPath>
   </PropertyGroup>
-  <ImportGroup>
-    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props')" />
-  </ImportGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" />
-    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj" />
-    <ProjectReference Include="..\ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="build\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\ImmutableObjectGraph.Generation.targets" />
-    <Content Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Dependency Include="CodeGeneration.Roslyn">
-      <Version>0.1.38-alpha-gf7a138c48e</Version>
-      <TargetFramework>.NETPortable0.0-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10</TargetFramework>
-    </Dependency>
-    <Dependency Include="CodeGeneration.Roslyn">
-      <Version>0.1.38-alpha-gf7a138c48e</Version>
-      <TargetFramework>net46</TargetFramework>
-    </Dependency>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>C2529293-7A03-4E3A-B96A-59A6D70D3B86</ProjectGuid>
   </PropertyGroup>
@@ -52,28 +27,24 @@
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>https://github.com/aarnott/immutableobjectgraph</ProjectUrl>
-    <LicenseUrl>https://raw.githubusercontent.com/AArnott/ImmutableObjectGraph/$CommitId$/LICENSE.txt</LicenseUrl>
+    <LicenseUrl>https://raw.githubusercontent.com/AArnott/ImmutableObjectGraph/$GitCommitIdShort$/LICENSE.txt</LicenseUrl>
     <Copyright>Copyright © Andrew Arnott</Copyright>
     <Tags>immutable </Tags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <VersionDependsOn>$(VersionDependsOn);GetNuPkgVersion</VersionDependsOn>
     <GenerateSymbolPackage>false</GenerateSymbolPackage>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="build\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\ImmutableObjectGraph.Generation.targets" />
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="project.json" />
+  </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets'))" />
-  </Target>
-  <ImportGroup>
-    <Import Project="$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets" Condition="Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" />
-    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.targets" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.targets')" />
-  </ImportGroup>
-  <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
-    <PropertyGroup>
-      <Version>$(NuGetPackageVersion)</Version>
-      <NuSpecProperties>$(NuGetProperties);CommitId=$(GitCommitIdShort)</NuSpecProperties>
-    </PropertyGroup>
-  </Target>
 </Project>

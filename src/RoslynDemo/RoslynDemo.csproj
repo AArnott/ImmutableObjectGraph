@@ -57,7 +57,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <GeneratorAssemblySearchPaths Include="..\..\bin\$(Configuration)\ImmutableObjectGraph.Generation" />
+    <GeneratorAssemblySearchPaths Include="..\..\bin\$(Configuration)\ImmutableObjectGraph.Generation">
+      <Visible>false</Visible>
+    </GeneratorAssemblySearchPaths>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj">
