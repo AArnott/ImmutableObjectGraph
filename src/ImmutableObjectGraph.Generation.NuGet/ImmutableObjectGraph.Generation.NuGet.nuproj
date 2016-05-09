@@ -13,6 +13,7 @@
   <PropertyGroup>
     <NuProjPath>$(UserProfile)\.nuget\packages\NuProj\0.10.48-beta-gea4a31bbc5\tools</NuProjPath>
     <NuSpecTemplate>ImmutableObjectGraph.Generation.nuspec</NuSpecTemplate>
+    <ProjectBuildOutputGroup>Packages\</ProjectBuildOutputGroup>
   </PropertyGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>C2529293-7A03-4E3A-B96A-59A6D70D3B86</ProjectGuid>
