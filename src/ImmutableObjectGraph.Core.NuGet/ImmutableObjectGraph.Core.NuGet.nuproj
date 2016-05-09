@@ -11,14 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup>
-    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-    <NerdbankGitVersioningPackagePath>$(NuGetPackageRoot)\Nerdbank.GitVersioning\1.1.61-rc\</NerdbankGitVersioningPackagePath>
-    <NuProjPackagePath>$(NuGetPackageRoot)\NuProj\0.10.30-beta-gcbd7693f91\</NuProjPackagePath>
-    <NuProjPath>$(NuProjPackagePath)\tools</NuProjPath>
+    <NuProjPath>$(UserProfile)\.nuget\packages\NuProj\0.10.48-beta-gea4a31bbc5\tools</NuProjPath>
+    <NuSpecTemplate>ImmutableObjectGraph.nuspec</NuSpecTemplate>
   </PropertyGroup>
-  <ImportGroup>
-    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.props')" />
-  </ImportGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>bc4943cf-ca4c-4d24-96aa-7712061526e4</ProjectGuid>
   </PropertyGroup>
@@ -33,34 +28,17 @@
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>https://github.com/aarnott/immutableobjectgraph</ProjectUrl>
-    <LicenseUrl>https://raw.githubusercontent.com/AArnott/ImmutableObjectGraph/$CommitId$/LICENSE.txt</LicenseUrl>
+    <LicenseUrl>https://raw.githubusercontent.com/AArnott/ImmutableObjectGraph/$GitCommitIdShort$/LICENSE.txt</LicenseUrl>
     <Copyright>Copyright © Andrew Arnott</Copyright>
     <Tags>immutable </Tags>
-    <VersionDependsOn>$(VersionDependsOn);GetNuPkgVersion</VersionDependsOn>
     <GenerateSymbolPackage>false</GenerateSymbolPackage>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="project.json" />
+    <None Include="ImmutableObjectGraph.nuspec" />
+  </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets'))" />
-  </Target>
-  <ImportGroup>
-    <Import Project="$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets" Condition="Exists('$(NerdbankGitVersioningPackagePath)build\NerdBank.GitVersioning.targets')" />
-    <Import Project="$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.targets" Condition="Exists('$(NuGetPackageRoot)\ReadOnlySourceTree\0.1.24-beta\build\dotnet\ReadOnlySourceTree.targets')" />
-  </ImportGroup>
-  <Target Name="GetNuPkgVersion" DependsOnTargets="GetBuildVersion">
-    <PropertyGroup>
-      <Version>$(NuGetPackageVersion)</Version>
-    </PropertyGroup>
-  </Target>
-  <Target Name="PerformNuSpecSubstitutions" BeforeTargets="GenerateNuSpec" DependsOnTargets="GetBuildVersion">
-    <PropertyGroup>
-      <LicenseUrl>$(LicenseUrl.Replace('$CommitId$', $(GitCommitId)))</LicenseUrl>
-    </PropertyGroup>
-  </Target>
 </Project>
