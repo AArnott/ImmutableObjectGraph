@@ -44,7 +44,7 @@
     <ProjectReference Include="..\ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="build\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\ImmutableObjectGraph.Generation.targets" />
+    <Content Include="build\ImmutableObjectGraph.Generation.targets" />
     <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -52,4 +52,12 @@
     <None Include="project.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
+  <Target Name="CopyAssemblyToLibDotNetFolder" DependsOnTargets="ConvertItems" AfterTargets="ConvertItems">
+    <ItemGroup>
+      <File Include="@(File)"
+            Condition=" '%(File.TargetFrameworkMoniker)' == '.NETPortable,Version=v4.5,Profile=Profile259' ">
+        <TargetPath>lib\dotnet\%(FileName)%(Extension)</TargetPath>
+      </File>
+    </ItemGroup>
+  </Target>
 </Project>
