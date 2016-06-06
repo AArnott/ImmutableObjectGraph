@@ -12,6 +12,7 @@
       "version": "0.10.48-beta-gea4a31bbc5",
       "suppressParent": "none"
     },
+    "NuSpec.ReferenceGenerator": "1.4.2",
     "ReadOnlySourceTree": {
       "version": "0.1.37-beta",
       "suppressParent": "none"
@@ -20,7 +21,7 @@
     "Validation": "2.2.8"
   },
   "frameworks": {
-    ".NETPortable,Version=v4.5,Profile=Profile78": { }
+    ".NETPortable,Version=v4.5,Profile=Profile259": { }
   },
   "runtimes": {
     "win": { }

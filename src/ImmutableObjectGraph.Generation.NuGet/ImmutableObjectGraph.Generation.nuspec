@@ -11,7 +11,7 @@
     <copyright></copyright>
     <tags></tags>
     <dependencies>
-      <group targetFramework=".NETPortable0.0-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10">
+      <group targetFramework="portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10">
         <dependency id="CodeGeneration.Roslyn.BuildTime" version="0.1.57" />
       </group>
     </dependencies>

@@ -42,4 +42,12 @@
     <None Include="ImmutableObjectGraph.nuspec" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
+  <Target Name="CopyAssemblyToLibDotNetFolder" DependsOnTargets="ConvertItems" AfterTargets="ConvertItems">
+    <ItemGroup>
+      <File Include="@(File)"
+            Condition=" '%(File.TargetFrameworkMoniker)' == '.NETPortable,Version=v4.5,Profile=Profile259' ">
+        <TargetPath>lib\dotnet\%(FileName)%(Extension)</TargetPath>
+      </File>
+    </ItemGroup>
+  </Target>
 </Project>
