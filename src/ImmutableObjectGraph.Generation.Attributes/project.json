@@ -2,7 +2,7 @@
   "dependencies": {
     "CodeGeneration.Roslyn": "0.1.54",
     "Nerdbank.GitVersioning": {
-      "version": "1.4.19",
+      "version": "1.4.41",
       "suppressParent": "none"
     },
     "NuProj.Common": {
