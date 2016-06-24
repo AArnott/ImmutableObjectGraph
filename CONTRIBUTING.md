@@ -19,7 +19,8 @@ Assuming your working directory is the root directory of this git repo, the comm
 
     nuget restore src
 
-You may need to [download NuGet.exe][NuGetClient] first.
+You may need to [download NuGet.exe][NuGetClient] first. **Be sure to use nuget.exe 3.3.0** rather than
+3.4.4 or any version in between because these newer versions have regressions that break the build.
 
 Everything in the repo may be built via building the solution file
 either from Visual Studio 2015 or the command line:
@@ -90,4 +91,4 @@ code (such as asserting that no public constructor exists).
 
  [VS]: https://www.visualstudio.com/en-us/downloads/visual-studio-2015-downloads-vs.aspx
  [NuProj]: https://onedrive.live.com/redir?resid=63D0C265F96E43D!2477835&authkey=!AHh2k9FoNR-nFHo&ithint=file%2cmsi
- [NuGetClient]: https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+ [NuGetClient]: https://dist.nuget.org/win-x86-commandline/v3.3.0/nuget.exe
