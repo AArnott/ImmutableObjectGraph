@@ -54,14 +54,10 @@
                 builderMembers.Add(this.CreateConstructor());
                 builderMembers.AddRange(this.CreateMutableProperties());
                 builderMembers.Add(this.CreateToImmutableMethod());
-                builderMembers.Add(this.CreatePropertyChangedEvent());
-                builderMembers.Add(this.CreateOnPropertyChangedMethod());
                 var builderType = SyntaxFactory.ClassDeclaration(BuilderTypeName.Identifier)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                        SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                    .AddBaseListTypes(SyntaxFactory.SimpleBaseType(INotifyPropertyChanged))
-                    .WithMembers(SyntaxFactory.List(builderMembers));
+                        SyntaxFactory.Token(SyntaxKind.PartialKeyword));
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
                     builderType = builderType
@@ -71,6 +67,16 @@
                                 BuilderTypeName)))))
                         .WithModifiers(builderType.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));
                 }
+                else
+                {
+                    builderType = builderType
+                        .AddBaseListTypes(SyntaxFactory.SimpleBaseType(INotifyPropertyChanged));
+                    builderMembers.Add(this.CreatePropertyChangedEvent());
+                    builderMembers.Add(this.CreateOnPropertyChangedMethod());
+                }
+
+                builderType = builderType
+                    .WithMembers(SyntaxFactory.List(builderMembers));
 
                 this.innerMembers.Add(builderType);
             }
