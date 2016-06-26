@@ -26,6 +26,8 @@
             private static readonly IdentifierNameSyntax ToImmutableMethodName = SyntaxFactory.IdentifierName("ToImmutable");
             private static readonly IdentifierNameSyntax CreateBuilderMethodName = SyntaxFactory.IdentifierName("CreateBuilder");
             private static readonly IdentifierNameSyntax ImmutableFieldName = SyntaxFactory.IdentifierName("immutable");
+            private static readonly TypeSyntax INotifyPropertyChanged = SyntaxFactory.ParseTypeName("System.ComponentModel.INotifyPropertyChanged");
+            private static readonly IdentifierNameSyntax OnPropertyChangedMethodName = SyntaxFactory.IdentifierName("OnPropertyChanged");
 
             public BuilderGen(CodeGen generator)
                 : base(generator)
@@ -52,10 +54,13 @@
                 builderMembers.Add(this.CreateConstructor());
                 builderMembers.AddRange(this.CreateMutableProperties());
                 builderMembers.Add(this.CreateToImmutableMethod());
+                builderMembers.Add(this.CreatePropertyChangedEvent());
+                builderMembers.Add(this.CreateOnPropertyChangedMethod());
                 var builderType = SyntaxFactory.ClassDeclaration(BuilderTypeName.Identifier)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+                    .AddBaseListTypes(SyntaxFactory.SimpleBaseType(INotifyPropertyChanged))
                     .WithMembers(SyntaxFactory.List(builderMembers));
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
@@ -206,7 +211,13 @@
                         SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression,
                             thisField,
-                            SyntaxFactory.IdentifierName("value"))));
+                            SyntaxFactory.IdentifierName("value"))),
+                        SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.ThisExpression(),
+                                    OnPropertyChangedMethodName))));
 
                     var property = SyntaxFactory.PropertyDeclaration(
                         this.GetPropertyTypeForBuilder(field),
@@ -237,6 +248,51 @@
                 return field.IsGeneratedImmutableType
                     ? Syntax.OptionalOf(SyntaxFactory.QualifiedName(typeBasis, BuilderTypeName))
                     : typeBasis;
+            }
+
+            protected EventFieldDeclarationSyntax CreatePropertyChangedEvent()
+            {
+                var handler = SyntaxFactory.ParseTypeName("System.ComponentModel.PropertyChangedEventHandler");
+                return SyntaxFactory.EventFieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(handler)
+                        .AddVariables(SyntaxFactory.VariableDeclarator(nameof(System.ComponentModel.INotifyPropertyChanged.PropertyChanged))))
+                        .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
+            }
+
+            protected MethodDeclarationSyntax CreateOnPropertyChangedMethod()
+            {
+                var callerMemberName = SyntaxFactory.ParseName("System.Runtime.CompilerServices.CallerMemberNameAttribute");
+                var propertyNameParameterName = SyntaxFactory.IdentifierName("propertyName");
+                var evt = SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.ThisExpression(),
+                    SyntaxFactory.IdentifierName(nameof(System.ComponentModel.INotifyPropertyChanged.PropertyChanged)));
+                var invokeMethod = SyntaxFactory.ConditionalAccessExpression(
+                    evt,
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(nameof(System.ComponentModel.PropertyChangedEventHandler.Invoke))),
+                        SyntaxFactory.ArgumentList().AddArguments(
+                            SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                            SyntaxFactory.Argument(
+                                SyntaxFactory.ObjectCreationExpression(
+                                    SyntaxFactory.ParseTypeName("System.ComponentModel.PropertyChangedEventArgs"),
+                                    SyntaxFactory.ArgumentList().AddArguments(
+                                        SyntaxFactory.Argument(propertyNameParameterName)),
+                                    null)))));
+                var body = SyntaxFactory.Block(
+                    SyntaxFactory.ExpressionStatement(invokeMethod));
+                return SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                    OnPropertyChangedMethodName.Identifier)
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(propertyNameParameterName.Identifier)
+                            .WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword)))
+                            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxFactory.Attribute(callerMemberName)))
+                            .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(string.Empty)))))
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
+                        SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
+                    .WithBody(body);
             }
 
             protected MethodDeclarationSyntax CreateToImmutableMethod()
