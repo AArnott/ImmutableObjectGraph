@@ -193,11 +193,12 @@
                 foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
                     var thisField = Syntax.ThisDot(field.NameAsField);
+                    var optionalFieldNotYetDefined = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(thisField));
                     var getterBlock = field.IsGeneratedImmutableType
                         ? SyntaxFactory.Block(
                             // if (!this.fieldName.IsDefined) {
                             SyntaxFactory.IfStatement(
-                                SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(thisField)),
+                                optionalFieldNotYetDefined,
                                 SyntaxFactory.Block(
                                     // this.fieldName = this.immutable.fieldName?.ToBuilder();
                                     SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
@@ -213,17 +214,32 @@
                                                 SyntaxFactory.ArgumentList())))))),
                             SyntaxFactory.ReturnStatement(Syntax.OptionalValue(thisField)))
                         : SyntaxFactory.Block(SyntaxFactory.ReturnStatement(thisField));
-                    var setterBlock = SyntaxFactory.Block(
-                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression,
+                    var setterCondition = field.IsGeneratedImmutableType
+                        ? SyntaxFactory.BinaryExpression(
+                            SyntaxKind.LogicalOrExpression,
+                            optionalFieldNotYetDefined,
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.NotEqualsExpression,
+                                Syntax.OptionalValue(thisField),
+                                SyntaxFactory.IdentifierName("value")))
+                        : SyntaxFactory.BinaryExpression(
+                            SyntaxKind.NotEqualsExpression,
                             thisField,
-                            SyntaxFactory.IdentifierName("value"))),
-                        SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.InvocationExpression(
-                                SyntaxFactory.MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    SyntaxFactory.ThisExpression(),
-                                    OnPropertyChangedMethodName))));
+                            SyntaxFactory.IdentifierName("value"));
+                    var setterBlock = SyntaxFactory.Block(
+                        SyntaxFactory.IfStatement(
+                            setterCondition,
+                            SyntaxFactory.Block(
+                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression,
+                                    thisField,
+                                    SyntaxFactory.IdentifierName("value"))),
+                                SyntaxFactory.ExpressionStatement(
+                                    SyntaxFactory.InvocationExpression(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            SyntaxFactory.ThisExpression(),
+                                            OnPropertyChangedMethodName))))));
 
                     var property = SyntaxFactory.PropertyDeclaration(
                         this.GetPropertyTypeForBuilder(field),
