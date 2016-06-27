@@ -17,5 +17,15 @@
         internal int Field1 { get; }
 
         internal int Field2 { get; }
+
+        ////public static bool operator ==(SomeStructWithMultipleFields one, SomeStructWithMultipleFields two)
+        ////{
+        ////    return one.Field1 == two.Field1 && one.Field2 == two.Field2;
+        ////}
+
+        ////public static bool operator !=(SomeStructWithMultipleFields one, SomeStructWithMultipleFields two)
+        ////{
+        ////    return !(one == two);
+        ////}
     }
 }
