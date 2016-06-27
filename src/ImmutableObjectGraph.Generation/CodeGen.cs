@@ -219,9 +219,15 @@
         {
             Requires.NotNull(symbol, nameof(symbol));
 
-            // Reference types inherit their equality operators from System.Object.
             if (symbol.IsReferenceType)
             {
+                // Reference types inherit their equality operators from System.Object.
+                return true;
+            }
+
+            if (symbol.SpecialType != SpecialType.None)
+            {
+                // C# knows how to run equality checks for special (built-in) types like int.
                 return true;
             }
 
