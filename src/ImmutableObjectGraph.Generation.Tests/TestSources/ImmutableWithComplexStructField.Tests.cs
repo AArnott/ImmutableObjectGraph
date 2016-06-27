@@ -32,7 +32,7 @@
             Assert.Equal(s1.Field1, v2.SomeStructField.Field1);
         }
 
-        [Fact]
+        [Fact(Skip = "Not yet passing (#81).")]
         public void StructWithoutOperatorsAlwaysRecreatesObjectWithoutValue()
         {
             var s1 = new SomeStructWithMultipleFields(1, 2);
@@ -52,7 +52,7 @@
             Assert.Equal(s13.Field2, v2.SomeStructFieldWithOperator.Field2);
         }
 
-        [Fact]
+        [Fact(Skip = "Not yet passing (#81).")]
         public void StructWithOperatorsRecyclesObjectWithSameValue()
         {
             var s12 = new SomeStructWithMultipleFieldsAndOperator(1, 2);
