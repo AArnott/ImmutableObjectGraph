@@ -57,6 +57,7 @@
     <Compile Include="TestSources\AbstractClassMidTypeHierarchyWithRequiredField.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
+    <EmbeddedResource Include="TestSources\ByteArray.cs" />
     <Compile Include="TestSources\Generations.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
