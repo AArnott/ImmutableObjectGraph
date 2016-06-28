@@ -214,32 +214,38 @@
                                                 SyntaxFactory.ArgumentList())))))),
                             SyntaxFactory.ReturnStatement(Syntax.OptionalValue(thisField)))
                         : SyntaxFactory.Block(SyntaxFactory.ReturnStatement(thisField));
-                    var setterCondition = field.IsGeneratedImmutableType
-                        ? SyntaxFactory.BinaryExpression(
+                    var setterValueArg = SyntaxFactory.IdentifierName("value");
+                    var setterCondition = field.IsGeneratedImmutableType ?
+                        SyntaxFactory.BinaryExpression(
                             SyntaxKind.LogicalOrExpression,
                             optionalFieldNotYetDefined,
                             SyntaxFactory.BinaryExpression(
                                 SyntaxKind.NotEqualsExpression,
                                 Syntax.OptionalValue(thisField),
-                                SyntaxFactory.IdentifierName("value")))
-                        : SyntaxFactory.BinaryExpression(
-                            SyntaxKind.NotEqualsExpression,
+                                setterValueArg)) :
+                        HasEqualityOperators(field.Symbol.Type) ?
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.NotEqualsExpression,
+                                thisField,
+                                setterValueArg) :
+                        null;
+                    var setterSignificantBlock = SyntaxFactory.Block(
+                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
                             thisField,
-                            SyntaxFactory.IdentifierName("value"));
-                    var setterBlock = SyntaxFactory.Block(
-                        SyntaxFactory.IfStatement(
-                            setterCondition,
-                            SyntaxFactory.Block(
-                                SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                                    SyntaxKind.SimpleAssignmentExpression,
-                                    thisField,
-                                    SyntaxFactory.IdentifierName("value"))),
-                                SyntaxFactory.ExpressionStatement(
-                                    SyntaxFactory.InvocationExpression(
-                                        SyntaxFactory.MemberAccessExpression(
-                                            SyntaxKind.SimpleMemberAccessExpression,
-                                            SyntaxFactory.ThisExpression(),
-                                            OnPropertyChangedMethodName))))));
+                            setterValueArg)),
+                        SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.ThisExpression(),
+                                    OnPropertyChangedMethodName))));
+                    var setterBlock = setterCondition != null ? 
+                        SyntaxFactory.Block(
+                            SyntaxFactory.IfStatement(
+                                setterCondition,
+                                setterSignificantBlock)) :
+                        setterSignificantBlock;
 
                     var property = SyntaxFactory.PropertyDeclaration(
                         this.GetPropertyTypeForBuilder(field),
