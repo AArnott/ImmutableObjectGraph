@@ -2,7 +2,7 @@
 {
     using System;
 
-    [GenerateImmutable]
+    [GenerateImmutable(GenerateBuilder = true)]
     partial class ImmutableWithComplexStructField
     {
         readonly SomeStructWithMultipleFields someStructField;

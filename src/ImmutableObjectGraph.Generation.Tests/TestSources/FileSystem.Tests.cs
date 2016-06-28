@@ -572,6 +572,45 @@
             Assert.True(r1a != r1Rerooted);
         }
 
+        [Fact]
+        public void Builder_INotifyPropertyChanged_SimpleValue()
+        {
+            var builder = FileSystemFile.CreateBuilder();
+            var raisedName = new Stack<string>();
+            builder.PropertyChanged += (s, e) => raisedName.Push(e.PropertyName);
+
+            // Set a value property and assert it raises the changed event once.
+            builder.PathSegment = "fo";
+            Assert.Equal(nameof(builder.PathSegment), raisedName.Pop());
+            Assert.Equal(0, raisedName.Count);
+
+            // Set it to the same value and assert no event is raised.
+            builder.PathSegment = builder.PathSegment;
+            Assert.Equal(0, raisedName.Count);
+        }
+
+        [Fact]
+        public void Builder_INotifyPropertyChanged_LazyImmutable()
+        {
+            var builder = FileSystemFile.CreateBuilder();
+            var raisedName = new Stack<string>();
+            builder.PropertyChanged += (s, e) => raisedName.Push(e.PropertyName);
+
+            // Set a Builder property and assert it raises the changed event once.
+            builder.Data = RichData.CreateBuilder();
+            Assert.Equal(nameof(builder.Data), raisedName.Pop());
+            Assert.Equal(0, raisedName.Count);
+
+            // Set it to the same value and assert no event is raised.
+            builder.Data = builder.Data;
+            Assert.Equal(0, raisedName.Count);
+
+            // Set it to another value.
+            builder.Data = RichData.CreateBuilder();
+            Assert.Equal(nameof(builder.Data), raisedName.Pop());
+            Assert.Equal(0, raisedName.Count);
+        }
+
         private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory)
         {
             foreach (var child in directory)
