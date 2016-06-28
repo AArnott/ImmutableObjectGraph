@@ -210,6 +210,35 @@
             return SyntaxFactory.IdentifierName(baseName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
         }
 
+        /// <summary>
+        /// Checks whether a type defines equality operators for itself.
+        /// </summary>
+        /// <param name="symbol">The type to check.</param>
+        /// <returns><c>true</c> if the == and != operators are defined on the type.</returns>
+        private static bool HasEqualityOperators(ITypeSymbol symbol)
+        {
+            Requires.NotNull(symbol, nameof(symbol));
+
+            if (symbol.IsReferenceType)
+            {
+                // Reference types inherit their equality operators from System.Object.
+                return true;
+            }
+
+            if (symbol.SpecialType != SpecialType.None)
+            {
+                // C# knows how to run equality checks for special (built-in) types like int.
+                return true;
+            }
+
+            var equalityOperators = from method in symbol.GetMembers().OfType<IMethodSymbol>()
+                                    where method.MethodKind == MethodKind.BuiltinOperator || method.MethodKind == MethodKind.UserDefinedOperator
+                                    where method.Parameters.Length == 2 && method.Parameters.All(p => p.Type == symbol)
+                                    where method.Name == "op_Equality"
+                                    select method;
+            return equalityOperators.Any();
+        }
+
         private void ReportDiagnostic(string id, SyntaxNode blamedSyntax, params string[] formattingArgs)
         {
             Requires.NotNull(blamedSyntax, nameof(blamedSyntax));
@@ -533,18 +562,20 @@
         private MemberDeclarationSyntax CreateWithFactoryMethod()
         {
             // (field.IsDefined && field.Value != this.field)
-            Func<IdentifierNameSyntax, IdentifierNameSyntax, ExpressionSyntax> isChangedByNames = (propertyName, fieldName) =>
-                SyntaxFactory.ParenthesizedExpression(
-                    SyntaxFactory.BinaryExpression(
-                        SyntaxKind.LogicalAndExpression,
-                        Syntax.OptionalIsDefined(fieldName),
+            Func<IdentifierNameSyntax, IdentifierNameSyntax, ITypeSymbol, ExpressionSyntax> isChangedByNames = (propertyName, fieldName, fieldType) =>
+                fieldType == null || HasEqualityOperators(fieldType) ?
+                    (ExpressionSyntax)SyntaxFactory.ParenthesizedExpression(
                         SyntaxFactory.BinaryExpression(
-                            SyntaxKind.NotEqualsExpression,
-                            Syntax.OptionalValue(fieldName),
-                            Syntax.ThisDot(propertyName))));
-            Func<MetaField, ExpressionSyntax> isChanged = v => isChangedByNames(v.NameAsProperty, v.NameAsField);
+                            SyntaxKind.LogicalAndExpression,
+                            Syntax.OptionalIsDefined(fieldName),
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.NotEqualsExpression,
+                                Syntax.OptionalValue(fieldName),
+                                Syntax.ThisDot(propertyName)))) :
+                    Syntax.OptionalIsDefined(fieldName);
+            Func<MetaField, ExpressionSyntax> isChanged = v => isChangedByNames(v.NameAsProperty, v.NameAsField, v.Symbol.Type);
             var anyChangesExpression =
-                new ExpressionSyntax[] { isChangedByNames(IdentityPropertyName, IdentityParameterName) }.Concat(
+                new ExpressionSyntax[] { isChangedByNames(IdentityPropertyName, IdentityParameterName, null) }.Concat(
                     this.applyToMetaType.AllFields.Select(isChanged))
                     .ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
 

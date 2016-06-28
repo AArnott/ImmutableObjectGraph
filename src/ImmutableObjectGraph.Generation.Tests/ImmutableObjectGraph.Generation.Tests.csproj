@@ -66,6 +66,10 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Include="TestSources\ImmutableDictionaryHelpers.Tests.cs" />
+    <Compile Include="TestSources\ImmutableWithComplexStructField.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\ImmutableWithComplexStructField.Tests.cs" />
     <Compile Include="TestSources\MSBuild.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>

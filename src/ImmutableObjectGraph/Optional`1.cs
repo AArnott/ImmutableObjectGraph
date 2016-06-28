@@ -57,6 +57,7 @@
 		/// </summary>
 		/// <param name="defaultValue">The default value to use if a value was not specified.</param>
 		/// <returns>The value.</returns>
+		[DebuggerStepThrough]
 		public T GetValueOrDefault(T defaultValue) {
 			return this.IsDefined ? this.value : defaultValue;
 		}
