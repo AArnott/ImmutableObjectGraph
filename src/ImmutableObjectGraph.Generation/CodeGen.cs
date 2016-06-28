@@ -531,7 +531,7 @@
                             SyntaxFactory.ReturnStatement(
                                 SyntaxFactory.InvocationExpression(
                                     Syntax.ThisDot(WithFactoryMethodName),
-                                    this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
+                                    this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.Argument, OptionalStyle.None)
                                     .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), NoneToken, Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
                 }
 
