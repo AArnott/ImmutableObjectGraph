@@ -883,7 +883,25 @@
 
         private static NameSyntax GetFullyQualifiedSymbolName(INamespaceOrTypeSymbol symbol)
         {
-            if (symbol == null || string.IsNullOrEmpty(symbol.Name))
+            if (symbol == null)
+            {
+                return null;
+            }
+
+            if (symbol.Kind == SymbolKind.ArrayType)
+            {
+                var arraySymbol = (IArrayTypeSymbol)symbol;
+                var elementType = GetFullyQualifiedSymbolName(arraySymbol.ElementType);
+
+                // I don't know how to create a NameSyntax with an array inside it,
+                // so use ParseName as an escape hatch.
+                ////return SyntaxFactory.ArrayType(elementType)
+                ////    .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier()
+                ////        .AddSizes(SyntaxFactory.OmittedArraySizeExpression()));
+                return SyntaxFactory.ParseName(elementType.ToString() + "[]");
+            }
+
+            if (string.IsNullOrEmpty(symbol.Name))
             {
                 return null;
             }
