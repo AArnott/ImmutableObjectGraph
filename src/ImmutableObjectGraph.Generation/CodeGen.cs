@@ -87,7 +87,7 @@
 
         public PluralizationService PluralService { get; set; }
 
-        public static async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
+        public static async Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
             Requires.NotNull(applyTo, "applyTo");
             Requires.NotNull(document, "document");
@@ -106,7 +106,7 @@
             }
         }
 
-        private async Task<IReadOnlyList<MemberDeclarationSyntax>> GenerateAsync()
+        private async Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync()
         {
             this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             this.isAbstract = applyTo.Modifiers.Any(m => m.IsKind(SyntaxKind.AbstractKeyword));
@@ -177,18 +177,6 @@
 
             partialClass = this.mergedFeatures.Aggregate(partialClass, (acc, feature) => feature.ProcessApplyToClassDeclaration(acc));
             var outerMembers = SyntaxFactory.List<MemberDeclarationSyntax>();
-            if (applyTo.Parent.Kind() == SyntaxKind.ClassDeclaration)
-            {
-                var parent = applyTo.Parent as ClassDeclarationSyntax;
-
-                while (parent != null)
-                {
-                    partialClass = SyntaxFactory.ClassDeclaration(parent.Identifier)
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                        .AddMembers(partialClass);
-                    parent = parent.Parent as ClassDeclarationSyntax;
-                }
-            }
             outerMembers = outerMembers.Add(partialClass);
             outerMembers = this.mergedFeatures.Aggregate(outerMembers, (acc, feature) => feature.ProcessFinalGeneratedResult(acc));
 
@@ -220,6 +208,35 @@
             }
 
             return SyntaxFactory.IdentifierName(baseName.Identifier.ValueText + generation.ToString(CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
+        /// Checks whether a type defines equality operators for itself.
+        /// </summary>
+        /// <param name="symbol">The type to check.</param>
+        /// <returns><c>true</c> if the == and != operators are defined on the type.</returns>
+        private static bool HasEqualityOperators(ITypeSymbol symbol)
+        {
+            Requires.NotNull(symbol, nameof(symbol));
+
+            if (symbol.IsReferenceType)
+            {
+                // Reference types inherit their equality operators from System.Object.
+                return true;
+            }
+
+            if (symbol.SpecialType != SpecialType.None)
+            {
+                // C# knows how to run equality checks for special (built-in) types like int.
+                return true;
+            }
+
+            var equalityOperators = from method in symbol.GetMembers().OfType<IMethodSymbol>()
+                                    where method.MethodKind == MethodKind.BuiltinOperator || method.MethodKind == MethodKind.UserDefinedOperator
+                                    where method.Parameters.Length == 2 && method.Parameters.All(p => p.Type == symbol)
+                                    where method.Name == "op_Equality"
+                                    select method;
+            return equalityOperators.Any();
         }
 
         private void ReportDiagnostic(string id, SyntaxNode blamedSyntax, params string[] formattingArgs)
@@ -514,7 +531,7 @@
                             SyntaxFactory.ReturnStatement(
                                 SyntaxFactory.InvocationExpression(
                                     Syntax.ThisDot(WithFactoryMethodName),
-                                    this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.OptionalArgumentOrProperty, OptionalStyle.Always)
+                                    this.CreateArgumentList(this.applyToMetaType.AllFields, ArgSource.Argument, OptionalStyle.None)
                                     .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(IdentityParameterName), NoneToken, Syntax.OptionalFor(Syntax.ThisDot(IdentityPropertyName))))))));
                 }
 
@@ -545,18 +562,20 @@
         private MemberDeclarationSyntax CreateWithFactoryMethod()
         {
             // (field.IsDefined && field.Value != this.field)
-            Func<IdentifierNameSyntax, IdentifierNameSyntax, ExpressionSyntax> isChangedByNames = (propertyName, fieldName) =>
-                SyntaxFactory.ParenthesizedExpression(
-                    SyntaxFactory.BinaryExpression(
-                        SyntaxKind.LogicalAndExpression,
-                        Syntax.OptionalIsDefined(fieldName),
+            Func<IdentifierNameSyntax, IdentifierNameSyntax, ITypeSymbol, ExpressionSyntax> isChangedByNames = (propertyName, fieldName, fieldType) =>
+                fieldType == null || HasEqualityOperators(fieldType) ?
+                    (ExpressionSyntax)SyntaxFactory.ParenthesizedExpression(
                         SyntaxFactory.BinaryExpression(
-                            SyntaxKind.NotEqualsExpression,
-                            Syntax.OptionalValue(fieldName),
-                            Syntax.ThisDot(propertyName))));
-            Func<MetaField, ExpressionSyntax> isChanged = v => isChangedByNames(v.NameAsProperty, v.NameAsField);
+                            SyntaxKind.LogicalAndExpression,
+                            Syntax.OptionalIsDefined(fieldName),
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.NotEqualsExpression,
+                                Syntax.OptionalValue(fieldName),
+                                Syntax.ThisDot(propertyName)))) :
+                    Syntax.OptionalIsDefined(fieldName);
+            Func<MetaField, ExpressionSyntax> isChanged = v => isChangedByNames(v.NameAsProperty, v.NameAsField, v.Symbol.Type);
             var anyChangesExpression =
-                new ExpressionSyntax[] { isChangedByNames(IdentityPropertyName, IdentityParameterName) }.Concat(
+                new ExpressionSyntax[] { isChangedByNames(IdentityPropertyName, IdentityParameterName, null) }.Concat(
                     this.applyToMetaType.AllFields.Select(isChanged))
                     .ChainBinaryExpressions(SyntaxKind.LogicalOrExpression);
 
@@ -864,7 +883,25 @@
 
         private static NameSyntax GetFullyQualifiedSymbolName(INamespaceOrTypeSymbol symbol)
         {
-            if (symbol == null || string.IsNullOrEmpty(symbol.Name))
+            if (symbol == null)
+            {
+                return null;
+            }
+
+            if (symbol.Kind == SymbolKind.ArrayType)
+            {
+                var arraySymbol = (IArrayTypeSymbol)symbol;
+                var elementType = GetFullyQualifiedSymbolName(arraySymbol.ElementType);
+
+                // I don't know how to create a NameSyntax with an array inside it,
+                // so use ParseName as an escape hatch.
+                ////return SyntaxFactory.ArrayType(elementType)
+                ////    .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier()
+                ////        .AddSizes(SyntaxFactory.OmittedArraySizeExpression()));
+                return SyntaxFactory.ParseName(elementType.ToString() + "[]");
+            }
+
+            if (string.IsNullOrEmpty(symbol.Name))
             {
                 return null;
             }

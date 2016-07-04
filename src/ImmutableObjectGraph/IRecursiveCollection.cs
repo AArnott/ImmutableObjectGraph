@@ -13,14 +13,14 @@
 	}
 
 	public interface IRecursiveParent : IRecursiveType {
-		IEnumerable<IRecursiveType> Children { get; }
+		IReadOnlyCollection<IRecursiveType> Children { get; }
 
 		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> GetParentedNode(IdentityFieldType identity);
 	}
 
 	public interface IRecursiveParent<out TRecursiveType> : IRecursiveParent
 		where TRecursiveType : IRecursiveType {
-		new IEnumerable<TRecursiveType> Children { get; }
+		new IReadOnlyCollection<TRecursiveType> Children { get; }
 	}
 
     public interface IRecursiveParentWithChildReplacement<TRecursiveType> : IRecursiveParent
@@ -30,11 +30,13 @@
     }
 
 	public interface IRecursiveParentWithOrderedChildren : IRecursiveParent {
-		int IndexOf(IRecursiveType value);
+        new IReadOnlyList<IRecursiveType> Children { get; }
+
+        int IndexOf(IRecursiveType value);
 	}
 
 	public interface IRecursiveParentWithSortedChildren : IRecursiveParentWithOrderedChildren {
-		int Compare(IRecursiveType first, IRecursiveType second);
+        int Compare(IRecursiveType first, IRecursiveType second);
 	}
 
     public interface IRecursiveParentWithLookupTable<TRecursiveType> : IRecursiveParent<TRecursiveType>

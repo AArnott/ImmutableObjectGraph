@@ -292,10 +292,10 @@
                 var visiting = nodesToVisit.Dequeue();
                 yield return visiting;
 
-                var visitingAsParent = visiting as IRecursiveParent;
+                var visitingAsParent = visiting as IRecursiveParent<TRecursiveType>;
                 if (visitingAsParent != null && visitingAsParent.Children != null)
                 {
-                    foreach (TRecursiveType child in visitingAsParent.Children)
+                    foreach (var child in visitingAsParent.Children)
                     {
                         nodesToVisit.Enqueue(child);
                     }

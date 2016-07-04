@@ -26,6 +26,8 @@
             private static readonly IdentifierNameSyntax ToImmutableMethodName = SyntaxFactory.IdentifierName("ToImmutable");
             private static readonly IdentifierNameSyntax CreateBuilderMethodName = SyntaxFactory.IdentifierName("CreateBuilder");
             private static readonly IdentifierNameSyntax ImmutableFieldName = SyntaxFactory.IdentifierName("immutable");
+            private static readonly TypeSyntax INotifyPropertyChanged = SyntaxFactory.ParseTypeName("System.ComponentModel.INotifyPropertyChanged");
+            private static readonly IdentifierNameSyntax OnPropertyChangedMethodName = SyntaxFactory.IdentifierName("OnPropertyChanged");
 
             public BuilderGen(CodeGen generator)
                 : base(generator)
@@ -55,8 +57,7 @@
                 var builderType = SyntaxFactory.ClassDeclaration(BuilderTypeName.Identifier)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                        SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                    .WithMembers(SyntaxFactory.List(builderMembers));
+                        SyntaxFactory.Token(SyntaxKind.PartialKeyword));
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
                     builderType = builderType
@@ -66,6 +67,16 @@
                                 BuilderTypeName)))))
                         .WithModifiers(builderType.Modifiers.Insert(0, SyntaxFactory.Token(SyntaxKind.NewKeyword)));
                 }
+                else
+                {
+                    builderType = builderType
+                        .AddBaseListTypes(SyntaxFactory.SimpleBaseType(INotifyPropertyChanged));
+                    builderMembers.Add(this.CreatePropertyChangedEvent());
+                    builderMembers.Add(this.CreateOnPropertyChangedMethod());
+                }
+
+                builderType = builderType
+                    .WithMembers(SyntaxFactory.List(builderMembers));
 
                 this.innerMembers.Add(builderType);
             }
@@ -182,11 +193,12 @@
                 foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
                     var thisField = Syntax.ThisDot(field.NameAsField);
+                    var optionalFieldNotYetDefined = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(thisField));
                     var getterBlock = field.IsGeneratedImmutableType
                         ? SyntaxFactory.Block(
                             // if (!this.fieldName.IsDefined) {
                             SyntaxFactory.IfStatement(
-                                SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, Syntax.OptionalIsDefined(thisField)),
+                                optionalFieldNotYetDefined,
                                 SyntaxFactory.Block(
                                     // this.fieldName = this.immutable.fieldName?.ToBuilder();
                                     SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
@@ -202,11 +214,38 @@
                                                 SyntaxFactory.ArgumentList())))))),
                             SyntaxFactory.ReturnStatement(Syntax.OptionalValue(thisField)))
                         : SyntaxFactory.Block(SyntaxFactory.ReturnStatement(thisField));
-                    var setterBlock = SyntaxFactory.Block(
+                    var setterValueArg = SyntaxFactory.IdentifierName("value");
+                    var setterCondition = field.IsGeneratedImmutableType ?
+                        SyntaxFactory.BinaryExpression(
+                            SyntaxKind.LogicalOrExpression,
+                            optionalFieldNotYetDefined,
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.NotEqualsExpression,
+                                Syntax.OptionalValue(thisField),
+                                setterValueArg)) :
+                        HasEqualityOperators(field.Symbol.Type) ?
+                            SyntaxFactory.BinaryExpression(
+                                SyntaxKind.NotEqualsExpression,
+                                thisField,
+                                setterValueArg) :
+                        null;
+                    var setterSignificantBlock = SyntaxFactory.Block(
                         SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression,
                             thisField,
-                            SyntaxFactory.IdentifierName("value"))));
+                            setterValueArg)),
+                        SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.ThisExpression(),
+                                    OnPropertyChangedMethodName))));
+                    var setterBlock = setterCondition != null ? 
+                        SyntaxFactory.Block(
+                            SyntaxFactory.IfStatement(
+                                setterCondition,
+                                setterSignificantBlock)) :
+                        setterSignificantBlock;
 
                     var property = SyntaxFactory.PropertyDeclaration(
                         this.GetPropertyTypeForBuilder(field),
@@ -237,6 +276,51 @@
                 return field.IsGeneratedImmutableType
                     ? Syntax.OptionalOf(SyntaxFactory.QualifiedName(typeBasis, BuilderTypeName))
                     : typeBasis;
+            }
+
+            protected EventFieldDeclarationSyntax CreatePropertyChangedEvent()
+            {
+                var handler = SyntaxFactory.ParseTypeName("System.ComponentModel.PropertyChangedEventHandler");
+                return SyntaxFactory.EventFieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(handler)
+                        .AddVariables(SyntaxFactory.VariableDeclarator(nameof(System.ComponentModel.INotifyPropertyChanged.PropertyChanged))))
+                        .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
+            }
+
+            protected MethodDeclarationSyntax CreateOnPropertyChangedMethod()
+            {
+                var callerMemberName = SyntaxFactory.ParseName("System.Runtime.CompilerServices.CallerMemberNameAttribute");
+                var propertyNameParameterName = SyntaxFactory.IdentifierName("propertyName");
+                var evt = SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.ThisExpression(),
+                    SyntaxFactory.IdentifierName(nameof(System.ComponentModel.INotifyPropertyChanged.PropertyChanged)));
+                var invokeMethod = SyntaxFactory.ConditionalAccessExpression(
+                    evt,
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(nameof(System.ComponentModel.PropertyChangedEventHandler.Invoke))),
+                        SyntaxFactory.ArgumentList().AddArguments(
+                            SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                            SyntaxFactory.Argument(
+                                SyntaxFactory.ObjectCreationExpression(
+                                    SyntaxFactory.ParseTypeName("System.ComponentModel.PropertyChangedEventArgs"),
+                                    SyntaxFactory.ArgumentList().AddArguments(
+                                        SyntaxFactory.Argument(propertyNameParameterName)),
+                                    null)))));
+                var body = SyntaxFactory.Block(
+                    SyntaxFactory.ExpressionStatement(invokeMethod));
+                return SyntaxFactory.MethodDeclaration(
+                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                    OnPropertyChangedMethodName.Identifier)
+                    .AddParameterListParameters(
+                        SyntaxFactory.Parameter(propertyNameParameterName.Identifier)
+                            .WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword)))
+                            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxFactory.Attribute(callerMemberName)))
+                            .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(string.Empty)))))
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
+                        SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
+                    .WithBody(body);
             }
 
             protected MethodDeclarationSyntax CreateToImmutableMethod()

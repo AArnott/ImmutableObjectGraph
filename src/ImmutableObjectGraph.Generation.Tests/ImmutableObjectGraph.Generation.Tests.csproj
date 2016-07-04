@@ -57,6 +57,7 @@
     <Compile Include="TestSources\AbstractClassMidTypeHierarchyWithRequiredField.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
+    <EmbeddedResource Include="TestSources\ByteArray.cs" />
     <Compile Include="TestSources\Generations.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
@@ -66,6 +67,10 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Include="TestSources\ImmutableDictionaryHelpers.Tests.cs" />
+    <Compile Include="TestSources\ImmutableWithComplexStructField.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Include="TestSources\ImmutableWithComplexStructField.Tests.cs" />
     <Compile Include="TestSources\MSBuild.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>

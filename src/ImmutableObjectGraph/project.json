@@ -1,21 +1,27 @@
 ﻿{
   "dependencies": {
-    "CodeGeneration.Roslyn": "0.1.38-alpha-gf7a138c48e",
+    "CodeGeneration.Roslyn": {
+      "version": "0.1.54",
+      "suppressParent": "none"
+    },
     "Nerdbank.GitVersioning": {
-      "version": "1.1.61-rc",
+      "version": "1.4.41",
       "suppressParent": "none"
     },
-    "NuProj": "0.10.30-beta-gcbd7693f91",
     "NuProj.Common": {
-      "version": "0.10.30-beta-gcbd7693f91",
+      "version": "0.10.48-beta-gea4a31bbc5",
       "suppressParent": "none"
     },
-    "ReadOnlySourceTree": "0.1.24-beta",
+    "NuSpec.ReferenceGenerator": "1.4.2",
+    "ReadOnlySourceTree": {
+      "version": "0.1.37-beta",
+      "suppressParent": "none"
+    },
     "System.Collections.Immutable": "1.1.37",
     "Validation": "2.2.8"
   },
   "frameworks": {
-    ".NETPortable,Version=v4.5,Profile=Profile78": { }
+    ".NETPortable,Version=v4.5,Profile=Profile259": { }
   },
   "runtimes": {
     "win": { }

@@ -69,6 +69,12 @@
         }
 
         [Fact]
+        public async Task ByteArray_CanBuild()
+        {
+            var result = await this.GenerateFromStreamAsync("ByteArray");
+        }
+
+        [Fact]
         public async Task OneScalarFieldAndEmptyDerived_HasCreateMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarFieldAndEmptyDerived");

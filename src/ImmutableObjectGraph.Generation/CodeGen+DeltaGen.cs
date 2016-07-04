@@ -293,7 +293,8 @@
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     this.changedPropertiesEnumTypeName,
                                     enumValueName)))
-                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                        .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute)));
 
                 return new PropertyDeclarationSyntax[] {
                     createProperty(nameof(RecursiveDiffingTypeHelper.ParentProperty), EnumValueParent),

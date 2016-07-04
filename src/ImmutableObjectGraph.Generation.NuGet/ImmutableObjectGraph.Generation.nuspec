@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+  <metadata>
+    <id>placeholder</id>
+    <version>$version$</version>
+    <authors>aarnott</authors>
+    <owners></owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>to be overwritten by project file</description>
+    <releaseNotes></releaseNotes>
+    <copyright></copyright>
+    <tags></tags>
+    <dependencies>
+      <group targetFramework="portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10">
+        <dependency id="CodeGeneration.Roslyn.BuildTime" version="0.1.57" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

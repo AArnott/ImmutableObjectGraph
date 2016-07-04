@@ -5,7 +5,7 @@
 
 1. Add the [GenerateImmutable] attribute on classes that define the readonly fields of an immutable type.
 
-    using ImmutableObjectGraph.CodeGeneration;
+    using ImmutableObjectGraph.Generation;
 
     [GenerateImmutable]
     partial class Person
