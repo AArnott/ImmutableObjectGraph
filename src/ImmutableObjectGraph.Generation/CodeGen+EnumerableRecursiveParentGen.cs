@@ -185,6 +185,15 @@
                     this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithOrderedChildren))));
                 }
 
+                // IReadOnlyList<IRecursiveType> IRecursiveParentWithOrderedChildren.Children => this.children;
+                this.innerMembers.Add(SyntaxFactory.PropertyDeclaration(
+                    Syntax.IReadOnlyListOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))),
+                    nameof(IRecursiveParentWithOrderedChildren.Children))
+                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(SyntaxFactory.IdentifierName(nameof(IRecursiveParentWithOrderedChildren))))
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name))))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
+
                 // int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value)
                 var valueParameterName = SyntaxFactory.IdentifierName("value");
                 this.innerMembers.Add(SyntaxFactory.MethodDeclaration(
