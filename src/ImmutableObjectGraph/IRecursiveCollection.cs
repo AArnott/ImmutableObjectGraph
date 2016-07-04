@@ -13,7 +13,7 @@
 	}
 
 	public interface IRecursiveParent : IRecursiveType {
-		IEnumerable<IRecursiveType> Children { get; }
+		IReadOnlyCollection<IRecursiveType> Children { get; }
 
 		ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> GetParentedNode(IdentityFieldType identity);
 	}

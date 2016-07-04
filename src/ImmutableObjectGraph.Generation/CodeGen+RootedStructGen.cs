@@ -743,8 +743,8 @@
             protected PropertyDeclarationSyntax[] CreateChildrenProperties()
             {
                 return new PropertyDeclarationSyntax[] {
-                    // IEnumerable<IRecursiveType> IRecursiveParent.Children => this.greenNode.Children;
-                    SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))), nameof(IRecursiveParent.Children))
+                    // IReadOnlyCollection<IRecursiveType> IRecursiveParent.Children => this.greenNode.Children;
+                    SyntaxFactory.PropertyDeclaration(Syntax.IReadOnlyCollectionOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))), nameof(IRecursiveParent.Children))
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                         .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
                             SyntaxFactory.MemberAccessExpression(

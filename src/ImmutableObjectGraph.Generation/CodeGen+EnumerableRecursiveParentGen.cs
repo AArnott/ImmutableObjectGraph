@@ -115,10 +115,10 @@
                 // this.Children;
                 var thisDotChildren = Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name.ToPascalCase()));
 
-                // System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children
+                // System.Collections.Generic.IReadOnlyCollection<IRecursiveType> IRecursiveParent.Children
                 this.innerMembers.Add(
                     SyntaxFactory.PropertyDeclaration(
-                        Syntax.GetTypeSyntax(typeof(IEnumerable<IRecursiveType>)),
+                        Syntax.GetTypeSyntax(typeof(IReadOnlyCollection<IRecursiveType>)),
                         nameof(IRecursiveParent.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))
