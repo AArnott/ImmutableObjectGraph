@@ -20,7 +20,7 @@
 
 	public interface IRecursiveParent<out TRecursiveType> : IRecursiveParent
 		where TRecursiveType : IRecursiveType {
-		new IEnumerable<TRecursiveType> Children { get; }
+		new IReadOnlyCollection<TRecursiveType> Children { get; }
 	}
 
     public interface IRecursiveParentWithChildReplacement<TRecursiveType> : IRecursiveParent

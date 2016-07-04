@@ -164,11 +164,11 @@
                             SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentedVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Value)))),
                             SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentedVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Parent)))))))));
 
-                ////System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children
+                ////System.Collections.Generic.IReadOnlyCollection<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children
                 ////	=> return this.Children;
                 this.innerMembers.Add(
                     SyntaxFactory.PropertyDeclaration(
-                        Syntax.IEnumerableOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
+                        Syntax.IReadOnlyCollectionOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
                         nameof(IRecursiveParent<IRecursiveType>.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(irecursiveParentOfT))
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))

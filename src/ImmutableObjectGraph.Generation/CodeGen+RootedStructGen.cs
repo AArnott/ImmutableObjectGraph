@@ -752,8 +752,8 @@
                                 Syntax.ThisDot(GreenNodeFieldName),
                                 this.applyTo.RecursiveParent.RecursiveField.NameAsProperty)))
                         .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
-                    // IEnumerable<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
-                    SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
+                    // IReadOnlyCollection<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
+                    SyntaxFactory.PropertyDeclaration(Syntax.IReadOnlyCollectionOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
                         // => this.Children;
                         .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty)))
