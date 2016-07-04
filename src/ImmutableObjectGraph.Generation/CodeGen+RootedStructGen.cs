@@ -743,21 +743,17 @@
             protected PropertyDeclarationSyntax[] CreateChildrenProperties()
             {
                 return new PropertyDeclarationSyntax[] {
-                    // IEnumerable<IRecursiveType> IRecursiveParent.Children { get; }
-                    SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))), nameof(IRecursiveParent.Children))
+                    // IReadOnlyCollection<IRecursiveType> IRecursiveParent.Children => this.greenNode.Children;
+                    SyntaxFactory.PropertyDeclaration(Syntax.IReadOnlyCollectionOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))), nameof(IRecursiveParent.Children))
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
-                        .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            SyntaxFactory.Block(
-                                // return System.Linq.Enumerable.Cast<IRecursiveType>(this.Children);
-                                SyntaxFactory.ReturnStatement(
-                                    Syntax.EnumerableExtension(
-                                        SyntaxFactory.GenericName(nameof(Enumerable.Cast))
-                                            .AddTypeArgumentListArguments(Syntax.GetTypeSyntax(typeof(IRecursiveType))),
-                                        Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty),
-                                        SyntaxFactory.ArgumentList()))))),
-                    // IEnumerable<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
-                    SyntaxFactory.PropertyDeclaration(Syntax.IEnumerableOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
+                        .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                Syntax.ThisDot(GreenNodeFieldName),
+                                this.applyTo.RecursiveParent.RecursiveField.NameAsProperty)))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
+                    // IReadOnlyCollection<TRootedRecursiveType> IRecursiveParent<TRootedRecursiveType>.Children { get; }
+                    SyntaxFactory.PropertyDeclaration(Syntax.IReadOnlyCollectionOf(this.rootedRecursiveType), nameof(IRecursiveParent<IRecursiveType>.Children))
                         .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(CreateIRecursiveParentOfTSyntax(this.rootedRecursiveType)))
                         // => this.Children;
                         .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(this.applyTo.RecursiveParent.RecursiveField.NameAsProperty)))

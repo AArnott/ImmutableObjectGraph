@@ -115,10 +115,10 @@
                 // this.Children;
                 var thisDotChildren = Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name.ToPascalCase()));
 
-                // System.Collections.Generic.IEnumerable<IRecursiveType> IRecursiveParent.Children
+                // System.Collections.Generic.IReadOnlyCollection<IRecursiveType> IRecursiveParent.Children
                 this.innerMembers.Add(
                     SyntaxFactory.PropertyDeclaration(
-                        Syntax.GetTypeSyntax(typeof(IEnumerable<IRecursiveType>)),
+                        Syntax.GetTypeSyntax(typeof(IReadOnlyCollection<IRecursiveType>)),
                         nameof(IRecursiveParent.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))
@@ -164,11 +164,11 @@
                             SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentedVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Value)))),
                             SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, parentedVar, SyntaxFactory.IdentifierName(nameof(ParentedRecursiveTypeNonGeneric.Parent)))))))));
 
-                ////System.Collections.Generic.IEnumerable<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children
+                ////System.Collections.Generic.IReadOnlyCollection<<#= templateType.RecursiveType.TypeName #>> IRecursiveParent<<#= templateType.RecursiveType.TypeName #>>.Children
                 ////	=> return this.Children;
                 this.innerMembers.Add(
                     SyntaxFactory.PropertyDeclaration(
-                        Syntax.IEnumerableOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
+                        Syntax.IReadOnlyCollectionOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
                         nameof(IRecursiveParent<IRecursiveType>.Children))
                     .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(irecursiveParentOfT))
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(thisDotChildren))
@@ -184,6 +184,15 @@
                 {
                     this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithOrderedChildren))));
                 }
+
+                // IReadOnlyList<IRecursiveType> IRecursiveParentWithOrderedChildren.Children => this.children;
+                this.innerMembers.Add(SyntaxFactory.PropertyDeclaration(
+                    Syntax.IReadOnlyListOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))),
+                    nameof(IRecursiveParentWithOrderedChildren.Children))
+                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(SyntaxFactory.IdentifierName(nameof(IRecursiveParentWithOrderedChildren))))
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name))))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
                 // int IRecursiveParentWithOrderedChildren.IndexOf(IRecursiveType value)
                 var valueParameterName = SyntaxFactory.IdentifierName("value");
