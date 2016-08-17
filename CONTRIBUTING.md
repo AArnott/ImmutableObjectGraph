@@ -14,18 +14,35 @@ All other dependencies are acquired via NuGet.
 
 ## Building
 
-To build this repository from the command line, you must first execute a complete NuGet package restore.
+To build this repository from the command line, you must first execute our init.ps1 script,
+which downloads NuGet 3.3.0 and uses it to restore packages.
 Assuming your working directory is the root directory of this git repo, the command is:
 
-    nuget restore src
-
-You may need to [download NuGet.exe][NuGetClient] first. **Be sure to use nuget.exe 3.3.0** rather than
-3.4.4 or any version in between because these newer versions have regressions that break the build.
+    .\init
 
 Everything in the repo may be built via building the solution file
 either from Visual Studio 2015 or the command line:
 
     msbuild src\ImmutableObjectGraph.sln
+
+### Important notice when developing with Visual Studio
+
+The NuGet package restore functionality in Visual Studio does not work for this project, which relies
+on newer functionality than comes with Visual Studio 2015 Update 3. You should disable automatic
+package restore on build in Visual Studio in order to build successfully and have a useful Error List
+while developing.
+
+Follow these steps to disable automatic package restore in Visual Studio:
+
+1. Tools -> Options -> NuGet Package Manager -> General
+2. *Clear* the checkbox for "Automatically check for missing packages during build in Visual Studio
+
+With this setting, you can still execute a package restore within Visual Studio by right-clicking
+on the _solution_ node in Solution Explorer and clicking "Restore NuGet Packages". But do not ever
+execute that on this project as that will corrupt the result of `init.ps1`.
+
+Before developing this project in Visual Studio, or after making project or project.json changes,
+or to recover after Visual Studio executes a package restore, run the `init` script again.
 
 ## Testing
 
