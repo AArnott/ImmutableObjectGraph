@@ -44,6 +44,49 @@
         }
 
         [Fact]
+        public void CopyIntoWorks()
+        {
+            var bill = Person.Create("bill", age: 10);
+            var sally = Person.Create("sally", age: 12);
+            var personBuilder = bill.ToBuilder();
+
+            personBuilder.Name = "billy";
+            personBuilder.Age = 8;
+
+            Assert.Equal("billy", personBuilder.Name);
+            Assert.Equal(8, personBuilder.Age);
+
+            personBuilder.CopyInto(sally);
+
+            Assert.Equal("sally", personBuilder.Name);
+            Assert.Equal(12, personBuilder.Age);
+            Assert.Equal(null, personBuilder.Watch);
+        }
+
+        [Fact]
+        public void CopyInto2Works()
+        {
+            var bill = Person.Create("bill", age: 10, watch: Watch.Create());
+            var watch = Watch.Create(color:"blue", size:67);
+            var sally = Person.Create("sally", age: 12, watch: watch);
+            var personBuilder = bill.ToBuilder();
+
+            personBuilder.Name = "billy";
+            personBuilder.Age = 8;
+
+            Assert.Equal("billy", personBuilder.Name);
+            Assert.Equal(8, personBuilder.Age);
+
+            personBuilder.CopyInto(sally);
+
+            Assert.Equal("sally", personBuilder.Name);
+            Assert.Equal(12, personBuilder.Age);
+            Assert.NotNull(personBuilder.Watch);
+
+            Assert.Equal(personBuilder.ToImmutable().Watch, watch);
+        }
+
+        [Fact]
         public void ToImmutableReturnsSimilarObject()
         {
             var person = Person.Create("bill", age: 10);
