@@ -58,6 +58,7 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <EmbeddedResource Include="TestSources\ByteArray.cs" />
+    <EmbeddedResource Include="TestSources\ImmutableArray.cs" />
     <Compile Include="TestSources\Generations.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
