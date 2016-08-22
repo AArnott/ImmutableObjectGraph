@@ -75,6 +75,12 @@
         }
 
         [Fact]
+        public async Task ImmutableArray_CanBuild()
+        {
+            var result = await this.GenerateFromStreamAsync("ImmutableArray");
+        }
+
+        [Fact]
         public async Task OneScalarFieldAndEmptyDerived_HasCreateMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarFieldAndEmptyDerived");

@@ -74,15 +74,18 @@
             {
                 this.baseTypes.Add(SyntaxFactory.SimpleBaseType(Syntax.IEnumerableOf(this.generator.applyToMetaType.RecursiveType.TypeSyntax)));
 
-                // return this.<#=templateType.RecursiveField.NameCamelCase#>.GetEnumerator();
+                // return ((IEnumerable<RecursiveType>)this.<#=templateType.RecursiveField.NameCamelCase#>).GetEnumerator();
                 var body = SyntaxFactory.Block(
                     SyntaxFactory.ReturnStatement(
                         SyntaxFactory.InvocationExpression(
                             SyntaxFactory.MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
-                                Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name)),
-                                SyntaxFactory.IdentifierName(nameof(IEnumerable<int>.GetEnumerator))),
-                            SyntaxFactory.ArgumentList())));
+                                SyntaxFactory.ParenthesizedExpression(
+                                    SyntaxFactory.CastExpression(
+                                        Syntax.IEnumerableOf(GetFullyQualifiedSymbolName(this.generator.applyToMetaType.RecursiveField.ElementType)),
+                                        Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name)))),
+                                            SyntaxFactory.IdentifierName(nameof(IEnumerable<int>.GetEnumerator))),
+                                        SyntaxFactory.ArgumentList())));
 
                 // public System.Collections.Generic.IEnumerator<RecursiveType> GetEnumerator()
                 this.innerMembers.Add(
