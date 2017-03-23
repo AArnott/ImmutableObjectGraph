@@ -60,5 +60,15 @@
             var v2 = v1.With(someStructFieldWithOperator: s12);
             Assert.Same(v1, v2);
         }
+
+        [Fact]
+        public void GenericStructWithOperatorsRecyclesObjectWithSameValue()
+        {
+            var v = new object();
+            var s12 = new SomeGenericStructWithOperator<object>(v);
+            var v1 = ImmutableWithComplexStructField.Create(someGenericStructFieldWithOperator: s12);
+            var v2 = v1.With(someGenericStructFieldWithOperator: s12);
+            Assert.Same(v1, v2);
+        }
     }
 }

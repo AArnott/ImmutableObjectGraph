@@ -233,7 +233,7 @@
 
             var equalityOperators = from method in symbol.GetMembers().OfType<IMethodSymbol>()
                                     where method.MethodKind == MethodKind.BuiltinOperator || method.MethodKind == MethodKind.UserDefinedOperator
-                                    where method.Parameters.Length == 2 && method.Parameters.All(p => p.Type == symbol)
+                                    where method.Parameters.Length == 2 && method.Parameters.All(p => p.Type.Equals(symbol))
                                     where method.Name == "op_Equality"
                                     select method;
             return equalityOperators.Any();
