@@ -8,6 +8,8 @@
         readonly SomeStructWithMultipleFields someStructField;
 
         readonly SomeStructWithMultipleFieldsAndOperator someStructFieldWithOperator;
+
+        readonly SomeGenericStructWithOperator<object> someGenericStructFieldWithOperator;
     }
 
     struct SomeStructWithMultipleFields
@@ -41,6 +43,36 @@
         }
 
         public static bool operator !=(SomeStructWithMultipleFieldsAndOperator one, SomeStructWithMultipleFieldsAndOperator two)
+        {
+            return !(one == two);
+        }
+
+        public override bool Equals(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    struct SomeGenericStructWithOperator<T> where T : class
+    {
+        internal SomeGenericStructWithOperator(T field1)
+        {
+            Field1 = field1;
+        }
+
+        internal T Field1 { get; }
+
+        public static bool operator ==(SomeGenericStructWithOperator<T> one, SomeGenericStructWithOperator<T> two)
+        {
+            return one.Field1 == two.Field1;
+        }
+
+        public static bool operator !=(SomeGenericStructWithOperator<T> one, SomeGenericStructWithOperator<T> two)
         {
             return !(one == two);
         }
