@@ -151,14 +151,14 @@ partial class Fruit
         }
     }
 
-#pragma warning disable 649 // field initialization is optional in user code
+# pragma warning disable 649 // field initialization is optional in user code
 
     private struct Template
     {
         internal System.String Color;
         internal System.Int32 SkinThickness;
     }
-#pragma warning restore 649
+# pragma warning restore 649
 }
 ```
 
