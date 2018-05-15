@@ -56,12 +56,11 @@
         private static readonly AttributeSyntax ObsoletePublicCtor = SyntaxFactory.Attribute(Syntax.GetTypeSyntax(typeof(ObsoleteAttribute))).AddArgumentListArguments(SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("This constructor for use with deserializers only. Use the static Create factory method instead."))));
 
         private readonly ClassDeclarationSyntax applyTo;
-        private readonly Document document;
+        private readonly SemanticModel semanticModel;
         private readonly IProgress<Diagnostic> progress;
         private readonly Options options;
         private readonly CancellationToken cancellationToken;
 
-        private SemanticModel semanticModel;
         private INamedTypeSymbol applyToSymbol;
         private ImmutableArray<DeclarationInfo> inputDeclarations;
         private MetaType applyToMetaType;
@@ -70,14 +69,14 @@
         private TypeSyntax applyToTypeName;
         private List<FeatureGenerator> mergedFeatures = new List<FeatureGenerator>();
 
-        private CodeGen(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
+        private CodeGen(ClassDeclarationSyntax applyTo, SemanticModel semanticModel, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
             Requires.NotNull(applyTo, nameof(applyTo));
-            Requires.NotNull(document, nameof(document));
+            Requires.NotNull(semanticModel, nameof(semanticModel));
             Requires.NotNull(progress, nameof(progress));
 
             this.applyTo = applyTo;
-            this.document = document;
+            this.semanticModel = semanticModel;
             this.progress = progress;
             this.options = options ?? new Options();
             this.cancellationToken = cancellationToken;
@@ -87,13 +86,13 @@
 
         public PluralizationService PluralService { get; set; }
 
-        public static async Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
+        public static async Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(ClassDeclarationSyntax applyTo, SemanticModel semanticModel, IProgress<Diagnostic> progress, Options options, CancellationToken cancellationToken)
         {
-            Requires.NotNull(applyTo, "applyTo");
-            Requires.NotNull(document, "document");
-            Requires.NotNull(progress, "progress");
+            Requires.NotNull(applyTo, nameof(applyTo));
+            Requires.NotNull(semanticModel, nameof(semanticModel));
+            Requires.NotNull(progress, nameof(progress));
 
-            var instance = new CodeGen(applyTo, document, progress, options, cancellationToken);
+            var instance = new CodeGen(applyTo, semanticModel, progress, options, cancellationToken);
             return await instance.GenerateAsync();
         }
 
@@ -106,9 +105,8 @@
             }
         }
 
-        private async Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync()
+        private Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync()
         {
-            this.semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             this.isAbstract = applyTo.Modifiers.Any(m => m.IsKind(SyntaxKind.AbstractKeyword));
             this.isSealed = applyTo.Modifiers.Any(m => m.IsKind(SyntaxKind.SealedKeyword));
             this.applyToTypeName = SyntaxFactory.IdentifierName(this.applyTo.Identifier);
@@ -180,7 +178,7 @@
             outerMembers = outerMembers.Add(partialClass);
             outerMembers = this.mergedFeatures.Aggregate(outerMembers, (acc, feature) => feature.ProcessFinalGeneratedResult(acc));
 
-            return outerMembers;
+            return Task.FromResult(outerMembers);
         }
 
         private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)

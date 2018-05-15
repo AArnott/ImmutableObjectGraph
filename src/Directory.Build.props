@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)StrongNameKey.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+
+    <Authors>Andrew Arnott</Authors>
+    <Owners>Andrew Arnott</Owners>
+    <PackageProjectUrl>https://github.com/aarnott/immutableobjectgraph</PackageProjectUrl>
+    <LicenseUrl>https://raw.githubusercontent.com/AArnott/ImmutableObjectGraph/$GitCommitIdShort$/LICENSE.txt</LicenseUrl>
+    <Copyright>Copyright © Andrew Arnott</Copyright>
+    <PackageTags>immutable</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="all" />
+    <!-- <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="all" /> -->
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+  </ItemGroup>
+  <Target Name="SetNuSpecProperties" BeforeTargets="GenerateNuspec" DependsOnTargets="GetBuildVersion">
+    <PropertyGroup>
+      <PackageLicenseUrl>https://raw.githubusercontent.com/aarnott/ImmutableObjectGraph/$(GitCommitIdShort)/LICENSE.txt</PackageLicenseUrl>
+    </PropertyGroup>
+  </Target>
+</Project>

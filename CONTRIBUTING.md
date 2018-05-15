@@ -7,46 +7,20 @@ This project is actively developed using the following software.
 It is highly recommended that anyone contributing to this library use the same
 software.
 
-1. [Visual Studio 2015][VS].
-2. [NuProj for VS2015][NuProj]
+1. [Visual Studio 2017][VS].
 
 All other dependencies are acquired via NuGet.
 
 ## Building
 
-To build this repository from the command line, you must first execute our init.ps1 script,
-which downloads NuGet 3.3.0 and uses it to restore packages.
-Assuming your working directory is the root directory of this git repo, the command is:
-
-    .\init
-
 Everything in the repo may be built via building the solution file
-either from Visual Studio 2015 or the command line:
+either from Visual Studio 2017 or the command line:
 
-    msbuild src\ImmutableObjectGraph.sln
-
-### Important notice when developing with Visual Studio
-
-The NuGet package restore functionality in Visual Studio does not work for this project, which relies
-on newer functionality than comes with Visual Studio 2015 Update 3. You should disable automatic
-package restore on build in Visual Studio in order to build successfully and have a useful Error List
-while developing.
-
-Follow these steps to disable automatic package restore in Visual Studio:
-
-1. Tools -> Options -> NuGet Package Manager -> General
-2. *Clear* the checkbox for "Automatically check for missing packages during build in Visual Studio
-
-With this setting, you can still execute a package restore within Visual Studio by right-clicking
-on the _solution_ node in Solution Explorer and clicking "Restore NuGet Packages". But do not ever
-execute that on this project as that will corrupt the result of `init.ps1`.
-
-Before developing this project in Visual Studio, or after making project or project.json changes,
-or to recover after Visual Studio executes a package restore, run the `init` script again.
+    msbuild /restore src\ImmutableObjectGraph.sln /t:pack
 
 ## Testing
 
-The Visual Studio 2015 Test Explorer will list and execute all tests.
+The Visual Studio 2017 Test Explorer will list and execute all tests.
 
 ## Pull requests
 
@@ -106,6 +80,4 @@ the embedded resource at test execution time, execute code generation, and compi
 result. This style is best suited for tests that want to assert API aspects of the generated
 code (such as asserting that no public constructor exists).
 
- [VS]: https://www.visualstudio.com/en-us/downloads/visual-studio-2015-downloads-vs.aspx
- [NuProj]: https://onedrive.live.com/redir?resid=63D0C265F96E43D!2477835&authkey=!AHh2k9FoNR-nFHo&ithint=file%2cmsi
- [NuGetClient]: https://dist.nuget.org/win-x86-commandline/v3.3.0/nuget.exe
+ [VS]: https://www.visualstudio.com/downloads/
