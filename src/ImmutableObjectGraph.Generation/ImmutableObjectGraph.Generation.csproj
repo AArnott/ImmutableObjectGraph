@@ -27,15 +27,20 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <!-- TODO: Suppress this assembly from showing up as a frameworkAssembly dependency in our .nuspec file. -->
     <Reference Include="System.Data.Entity.Design" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" />
-    <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+     <DotNetCliToolReference Include="dotnet-codegen" />
   </ItemGroup>
   <Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
     <ItemGroup>

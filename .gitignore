@@ -66,6 +66,7 @@ UpgradeLog*htm
 .builds
 *.dotCover
 *.log
+*.binlog
 
 packages/
 *.nuget.props
