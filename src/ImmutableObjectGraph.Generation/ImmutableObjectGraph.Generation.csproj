@@ -7,6 +7,8 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
 
+    <GenerateNuspecDependsOn>$(GenerateNuspecDependsOn);SetNuSpecPropertiesForHost</GenerateNuspecDependsOn>
+    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
@@ -48,5 +50,10 @@
       <!--<TfmSpecificPackageFile Include="@(DebugSymbolsProjectOutputGroupOutput)" PackagePath="tools\" />-->
       <TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupOutput->'%(FinalOutputPath)')" PackagePath="tools\%(SatelliteDllsProjectOutputGroupOutput.Culture)\" />
     </ItemGroup>
+  </Target>
+  <Target Name="SetNuSpecPropertiesForHost" DependsOnTargets="SetNuSpecProperties">
+    <PropertyGroup>
+      <NuspecProperties>id=$(PackageId);version=$(NuGetPackageVersion);authors=$(Authors);copyright=$(Copyright);tags=$(PackageTags);requireLicenseAcceptance=$(PackageRequireLicenseAcceptance);licenseUrl=$(PackageLicenseUrl);description=$(Description);CodeGenerationRoslynVersion=$(CodeGenerationRoslynVersion);Configuration=$(Configuration);OutDir=$(OutDir)</NuspecProperties>
+    </PropertyGroup>
   </Target>
 </Project>
