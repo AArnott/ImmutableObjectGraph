@@ -906,7 +906,12 @@
             return type?.GetAttributes().Any(a => IsAttribute<T>(a.AttributeClass)) ?? false;
         }
 
-        private static NameSyntax GetFullyQualifiedSymbolName(INamespaceOrTypeSymbol symbol)
+        private static NameSyntax GetFullyQualifiedSymbolName(INamedTypeSymbol typeSymbol)
+        {
+            return (NameSyntax)GetFullyQualifiedSymbolName((INamespaceOrTypeSymbol)typeSymbol);
+        }
+
+        private static TypeSyntax GetFullyQualifiedSymbolName(INamespaceOrTypeSymbol symbol)
         {
             if (symbol == null)
             {
@@ -918,12 +923,9 @@
                 var arraySymbol = (IArrayTypeSymbol)symbol;
                 var elementType = GetFullyQualifiedSymbolName(arraySymbol.ElementType);
 
-                // I don't know how to create a NameSyntax with an array inside it,
-                // so use ParseName as an escape hatch.
-                ////return SyntaxFactory.ArrayType(elementType)
-                ////    .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier()
-                ////        .AddSizes(SyntaxFactory.OmittedArraySizeExpression()));
-                return SyntaxFactory.ParseName(elementType.ToString() + "[]");
+                return SyntaxFactory.ArrayType(elementType)
+                    .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier()
+                        .AddSizes(SyntaxFactory.OmittedArraySizeExpression()));
             }
 
             if (string.IsNullOrEmpty(symbol.Name))
@@ -931,13 +933,13 @@
                 return null;
             }
 
-            var parent = GetFullyQualifiedSymbolName(symbol.ContainingSymbol as INamespaceOrTypeSymbol);
+            var parent = GetFullyQualifiedSymbolName(symbol.ContainingSymbol as INamespaceOrTypeSymbol) as NameSyntax;
             SimpleNameSyntax leafName = SyntaxFactory.IdentifierName(symbol.Name);
             var typeSymbol = symbol as INamedTypeSymbol;
             if (typeSymbol != null && typeSymbol.IsGenericType)
             {
                 leafName = SyntaxFactory.GenericName(symbol.Name)
-                    .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(Syntax.JoinSyntaxNodes<TypeSyntax>(
+                    .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(Syntax.JoinSyntaxNodes(
                         SyntaxKind.CommaToken,
                         typeSymbol.TypeArguments.Select(GetFullyQualifiedSymbolName))));
             }
@@ -1436,9 +1438,9 @@
                 }
             }
 
-            public INamespaceOrTypeSymbol Type => this.Symbol?.Type;
+            public ITypeSymbol Type => this.Symbol?.Type;
 
-            public NameSyntax TypeSyntax => GetFullyQualifiedSymbolName(this.Type);
+            public TypeSyntax TypeSyntax => GetFullyQualifiedSymbolName(this.Type);
 
             public bool IsGeneratedImmutableType => !this.TypeAsGeneratedImmutable.IsDefault;
 
