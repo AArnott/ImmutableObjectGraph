@@ -11,10 +11,6 @@
     <copyright>$Copyright$</copyright>
     <tags>$PackageTags$</tags>
     <dependencies>
-      <group targetFramework=".NETPortable0.0-Profile259">
-        <dependency id="CodeGeneration.Roslyn.BuildTime" version="$CodeGenerationRoslynVersion$" />
-        <dependency id="ImmutableObjectGraph" version="$version$" />
-      </group>
       <group targetFramework=".NETStandard1.0">
         <dependency id="CodeGeneration.Roslyn.BuildTime" version="$CodeGenerationRoslynVersion$" />
         <dependency id="ImmutableObjectGraph" version="$version$" />
@@ -28,6 +24,5 @@
     <file src="Readme.txt" target="Readme.txt" />
     <file src="build\*" target="build\" />
     <file src="..\..\bin\ImmutableObjectGraph.Generation.Attributes\$Configuration$\netstandard1.0\ImmutableObjectGraph.Generation.Attributes.dll" target="lib\netstandard1.0\" />
-    <file src="..\..\bin\ImmutableObjectGraph.Generation.Attributes\$Configuration$\portable-net45+win8+wpa81+wp8\ImmutableObjectGraph.Generation.Attributes.dll" target="lib\portable-net45+win8+wpa81+wp8\" />
   </files>
 </package>
