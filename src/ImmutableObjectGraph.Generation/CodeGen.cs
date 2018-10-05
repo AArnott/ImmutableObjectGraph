@@ -54,6 +54,7 @@
             SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeof(NotImplementedException).FullName), SyntaxFactory.ArgumentList(), null));
         private static readonly ArgumentSyntax DoNotSkipValidationArgument = SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression));
         private static readonly AttributeSyntax ObsoletePublicCtor = SyntaxFactory.Attribute(Syntax.GetTypeSyntax(typeof(ObsoleteAttribute))).AddArgumentListArguments(SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("This constructor for use with deserializers only. Use the static Create factory method instead."))));
+        private static ImmutableHashSet<INamedTypeSymbol> CheckedTypes = ImmutableHashSet<INamedTypeSymbol>.Empty;
 
         private readonly ClassDeclarationSyntax applyTo;
         private readonly SemanticModel semanticModel;
@@ -92,8 +93,34 @@
             Requires.NotNull(semanticModel, nameof(semanticModel));
             Requires.NotNull(progress, nameof(progress));
 
-            var instance = new CodeGen(applyTo, semanticModel, progress, options, cancellationToken);
-            return await instance.GenerateAsync();
+            // Ensure code gets generated only once per definition
+            var typeSymbol = semanticModel.GetDeclaredSymbol(applyTo);
+            if (typeSymbol != null)
+            {
+                var key = typeSymbol.OriginalDefinition ?? typeSymbol;
+                if (TryAdd(ref CheckedTypes, key))
+                {
+                    var instance = new CodeGen(applyTo, semanticModel, progress, options, cancellationToken);
+                    return await instance.GenerateAsync();
+                }
+            }
+            return new SyntaxList<MemberDeclarationSyntax>();
+        }
+
+        static bool TryAdd<T>(ref ImmutableHashSet<T> set, T value)
+        {
+            while (true)
+            {
+                var currentSet = Volatile.Read(ref set);
+                var updatedSet = currentSet.Add(value);
+                var originalSet = Interlocked.CompareExchange(ref set, updatedSet, currentSet);
+                if (originalSet != currentSet)
+                {
+                    // Try again
+                    continue;
+                }
+                return updatedSet != currentSet;
+            }
         }
 
         private void MergeFeature(FeatureGenerator featureGenerator)

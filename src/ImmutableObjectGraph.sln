@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27713.0
+VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
@@ -10,6 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 		..\appveyor.yml = ..\appveyor.yml
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		global.json = global.json
 		..\LICENSE.txt = ..\LICENSE.txt
 		NuGet.Config = NuGet.Config
 		..\README.md = ..\README.md
@@ -55,6 +58,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {71E43380-4A06-41E1-AAAD-A7EF06351FEA}
+		SolutionGuid = {72000F80-488D-45BC-91CE-75ED06C92E6C}
 	EndGlobalSection
 EndGlobal

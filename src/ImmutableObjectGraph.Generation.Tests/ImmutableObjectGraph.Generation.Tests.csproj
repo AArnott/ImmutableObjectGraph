@@ -9,8 +9,12 @@
     <Compile Update="TestSources\AbstractClassMidTypeHierarchyWithRequiredField.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
+    <EmbeddedResource Include="TestSources\AlmostRecursive.cs" />
     <EmbeddedResource Include="TestSources\ByteArray.cs" />
+    <EmbeddedResource Include="TestSources\HierarchyLevels.cs" />
+    <EmbeddedResource Include="TestSources\IgnoreField.cs" />
     <EmbeddedResource Include="TestSources\ImmutableArray.cs" />
+    <EmbeddedResource Include="TestSources\RootedStruct_Without_WithMethodsPerProperty.cs" />
     <Compile Update="TestSources\Generations.cs">
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
@@ -71,6 +75,10 @@
       <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
     </Compile>
     <Compile Remove="@(EmbeddedResource)" />
+    <Compile Remove="TestSources\AlmostRecursive.cs" />
+    <Compile Remove="TestSources\HierarchyLevels.cs" />
+    <Compile Remove="TestSources\IgnoreField.cs" />
+    <Compile Remove="TestSources\RootedStruct_Without_WithMethodsPerProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" />

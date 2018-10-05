@@ -36,6 +36,7 @@
             var project = workspace.CurrentSolution.AddProject("test", "test", "C#")
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddMetadataReferences(GetReferences("Profile78"))
+                .AddMetadataReference(MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0").Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(GenerateImmutableAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttributeAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(Optional).Assembly.Location))
@@ -266,7 +267,11 @@
             var inputDocument = solution.GetDocument(this.inputDocumentId);
             var generatorDiagnostics = new List<Diagnostic>();
             var progress = new SynchronousProgress<Diagnostic>(generatorDiagnostics.Add);
-            var outputDocument = await DocumentTransform.TransformAsync(inputDocument, progress);
+            var inputCompilation = (CSharpCompilation)await inputDocument.Project.GetCompilationAsync();
+            var inputSyntaxTree = await inputDocument.GetSyntaxTreeAsync();
+            var outputSyntaxTree = await DocumentTransform.TransformAsync(inputCompilation, inputSyntaxTree, null, Assembly.Load, progress);
+            var outputDocument = inputDocument.Project
+                .AddDocument("output.cs", outputSyntaxTree.GetRoot());
 
             // Make sure the result compiles without errors or warnings.
             var compilation = await outputDocument.Project.GetCompilationAsync();
