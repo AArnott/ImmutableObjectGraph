@@ -34,13 +34,17 @@
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CG.Pluralization" Version="0.3000.12" PrivateAssets="all" />
     <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" PrivateAssets="none" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CG.Pluralization">
+      <HintPath>..\..\lib\netstandard1.0\CG.Pluralization.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
     <ItemGroup>
