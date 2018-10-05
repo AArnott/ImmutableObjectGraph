@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <CodeGenerationRoslynVersion>0.4.42</CodeGenerationRoslynVersion>
+    <CodeGenerationRoslynVersion>0.4.74</CodeGenerationRoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Update="CodeGeneration.Roslyn.Attributes" Version="$(CodeGenerationRoslynVersion)" />

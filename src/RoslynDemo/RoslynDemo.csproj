@@ -11,9 +11,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <GeneratorAssemblySearchPaths Include="..\..\bin\$(Configuration)\ImmutableObjectGraph.Generation">
+    <GeneratorAssemblySearchPaths Include="..\..\bin\ImmutableObjectGraph.Generation\$(Configuration)\net461">
       <Visible>false</Visible>
     </GeneratorAssemblySearchPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-codegen" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" />

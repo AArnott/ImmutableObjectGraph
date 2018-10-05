@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Validation" />

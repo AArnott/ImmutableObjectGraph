@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
@@ -74,7 +75,7 @@
         {
             for (int i = 0; i < MemberDeclarationOrder.Length; i++)
             {
-                if (MemberDeclarationOrder[i].IsInstanceOfType(member))
+                if (MemberDeclarationOrder[i].GetTypeInfo().IsInstanceOfType(member))
                 {
                     return i;
                 }

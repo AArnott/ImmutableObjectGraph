@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>ImmutableObjectGraph.Generation</RootNamespace>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81</PackageTargetFallback>
     <Description>MSBuild-based code generator to transform simple mutable type definitions into fully functional immutable types with persistent characteristics.</Description>
 
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -29,20 +30,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <!-- TODO: Suppress this assembly from showing up as a frameworkAssembly dependency in our .nuspec file. -->
-    <Reference Include="System.Data.Entity.Design" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CG.Pluralization" Version="0.3000.5" PrivateAssets="all" />
     <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" PrivateAssets="none" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-     <DotNetCliToolReference Include="dotnet-codegen" />
+    <DotNetCliToolReference Include="dotnet-codegen" />
   </ItemGroup>
   <Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
     <ItemGroup>

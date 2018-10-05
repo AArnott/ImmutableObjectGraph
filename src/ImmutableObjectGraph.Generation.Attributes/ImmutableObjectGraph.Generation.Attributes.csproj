@@ -1,9 +1,9 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <RootNamespace>ImmutableObjectGraph.Generation</RootNamespace>
-    <TargetFrameworks>netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0</TargetFrameworks>
     <Description>The runtime components behind the types generated with the ImmutableObjectGraph.Generation package.</Description>
-    
+
     <!-- This gets included in ImmutableObjectGraph.Generation -->
     <IsPackable>false</IsPackable>
   </PropertyGroup>
