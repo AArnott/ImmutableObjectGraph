@@ -44,10 +44,10 @@
                 .AddMatch("six", 6);
             Assert.Equal(2, obj.Matches.Count);
             obj = obj.RemoveMatch("five");
-            Assert.Equal(1, obj.Matches.Count);
+            Assert.Single(obj.Matches);
 
             var rooted = obj.AsRoot.RemoveMatch("six");
-            Assert.Equal(0, rooted.Matches.Count);
+            Assert.Empty(rooted.Matches);
         }
     }
 }

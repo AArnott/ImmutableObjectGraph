@@ -96,8 +96,8 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var newChild = this.NewNode();
             var nodeWithChildren = this.node.AddChildren(newChild);
             var nodeWithoutChildren = nodeWithChildren.RemoveChildren(newChild);
-            Assert.Equal(1, nodeWithChildren.Children.Count);
-            Assert.Equal(0, nodeWithoutChildren.Children.Count);
+            Assert.Single(nodeWithChildren.Children);
+            Assert.Empty(nodeWithoutChildren.Children);
         }
 
         [Fact]
@@ -122,8 +122,8 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var parent = this.NewNode(child);
 
             var newParent = parent.RemoveDescendent(grandChild1);
-            Assert.Equal(1, parent.Children[0].Children.Count);
-            Assert.Equal(0, newParent.Children[0].Children.Count);
+            Assert.Single(parent.Children[0].Children);
+            Assert.Empty(newParent.Children[0].Children);
         }
 
         [Fact]
@@ -133,8 +133,8 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var newChild2 = this.NewNode();
             var nodeWithChildren = this.node.AddChildren(newChild1);
             var newNodeWithChildren = nodeWithChildren.ReplaceDescendent(newChild1, newChild2);
-            Assert.Equal(1, nodeWithChildren.Children.Count);
-            Assert.Equal(1, newNodeWithChildren.Children.Count);
+            Assert.Single(nodeWithChildren.Children);
+            Assert.Single(newNodeWithChildren.Children);
             Assert.Same(newChild1, nodeWithChildren.Children[0]);
             Assert.Same(newChild2, newNodeWithChildren.Children[0]);
         }
@@ -157,7 +157,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
 
             var newParent = parent.ReplaceDescendent(grandChild1, grandChild2);
             Assert.Same(grandChild1, parent.Children[0].Children[0]);
-            Assert.Equal(1, newParent.Children[0].Children.Count);
+            Assert.Single(newParent.Children[0].Children);
             Assert.Same(grandChild2, newParent.Children[0].Children[0]);
         }
 
@@ -231,7 +231,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
         public void GetSpine()
         {
             var path = this.node.GetSpine(this.node.Identity).ToList();
-            Assert.Equal(1, path.Count);
+            Assert.Single(path);
             Assert.Same(this.node, path[0]);
 
             ProjectTree child;

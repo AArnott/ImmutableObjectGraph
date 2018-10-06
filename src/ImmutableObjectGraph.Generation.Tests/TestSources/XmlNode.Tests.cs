@@ -55,7 +55,7 @@
         public void TypeConversion()
         {
             XmlElement ordinaryElement = XmlElement.Create("TagName");
-            Assert.IsNotType(typeof(XmlElementWithContent), ordinaryElement);
+            Assert.IsNotType<XmlElementWithContent>(ordinaryElement);
 
             // Switch to derived type, without extra data.
             XmlElementWithContent elementWithContent = ordinaryElement.ToXmlElementWithContent();
@@ -68,7 +68,7 @@
 
             // Switch back to base type.
             XmlElement backAgain = elementWithContent.ToXmlElement();
-            Assert.IsNotType(typeof(XmlElementWithContent), backAgain);
+            Assert.IsNotType<XmlElementWithContent>(backAgain);
             Assert.Equal(ordinaryElement.LocalName, backAgain.LocalName);
         }
     }

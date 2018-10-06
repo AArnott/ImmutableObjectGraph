@@ -92,67 +92,67 @@
         public async Task OneScalarField_HasWithMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarField");
-            Assert.True(result.DeclaredMethods.Any(m => m.Name == "With" && m.Parameters.Single().Name == "seeds" && !m.IsStatic));
+            Assert.Contains(result.DeclaredMethods, m => m.Name == "With" && m.Parameters.Single().Name == "seeds" && !m.IsStatic);
         }
 
         [Fact]
         public async Task OneScalarField_HasCreateMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarField");
-            Assert.True(result.DeclaredMethods.Any(m => m.Name == "Create" && m.Parameters.Single().Name == "seeds"));
+            Assert.Contains(result.DeclaredMethods, m => m.Name == "Create" && m.Parameters.Single().Name == "seeds");
         }
 
         [Fact]
         public async Task OneScalarFieldWithBuilder_HasToBuilderMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
-            Assert.True(result.DeclaredMethods.Any(m => m.Name == "ToBuilder" && m.Parameters.Length == 0 && !m.IsStatic));
+            Assert.Contains(result.DeclaredMethods, m => m.Name == "ToBuilder" && m.Parameters.Length == 0 && !m.IsStatic);
         }
 
         [Fact]
         public async Task OneScalarFieldWithBuilder_HasCreateBuilderMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
-            Assert.True(result.DeclaredMethods.Any(m => m.Name == "CreateBuilder" && m.Parameters.Length == 0 && m.IsStatic));
+            Assert.Contains(result.DeclaredMethods, m => m.Name == "CreateBuilder" && m.Parameters.Length == 0 && m.IsStatic);
         }
 
         [Fact]
         public async Task OneScalarFieldWithBuilder_BuilderHasMutableProperties()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
-            Assert.True(result.DeclaredProperties.Any(p => p.ContainingType?.Name == "Builder" && p.Name == "Seeds" && p.SetMethod != null && p.GetMethod != null));
+            Assert.Contains(result.DeclaredProperties, p => p.ContainingType?.Name == "Builder" && p.Name == "Seeds" && p.SetMethod != null && p.GetMethod != null);
         }
 
         [Fact]
         public async Task OneScalarFieldWithBuilder_BuilderHasToImmutableMethod()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Builder" && m.Name == "ToImmutable" && m.Parameters.Length == 0 && !m.IsStatic));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Builder" && m.Name == "ToImmutable" && m.Parameters.Length == 0 && !m.IsStatic);
         }
 
         [Fact]
         public async Task ClassDerivesFromAnotherWithFields_DerivedCreateParametersIncludeBaseFields()
         {
             var result = await this.GenerateFromStreamAsync("ClassDerivesFromAnotherWithFields");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Fruit" && m.Name == "Create" && m.Parameters.Length == 1));
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "Create" && m.Parameters.Length == 2));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Fruit" && m.Name == "Create" && m.Parameters.Length == 1);
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Apple" && m.Name == "Create" && m.Parameters.Length == 2);
         }
 
         [Fact]
         public async Task ClassDerivesFromAnotherWithFields_DerivedWithParametersIncludeBaseFields()
         {
             var result = await this.GenerateFromStreamAsync("ClassDerivesFromAnotherWithFields");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Fruit" && m.Name == "With" && m.Parameters.Length == 1));
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "With" && m.Parameters.Length == 2));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Fruit" && m.Name == "With" && m.Parameters.Length == 1);
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Apple" && m.Name == "With" && m.Parameters.Length == 2);
         }
 
         [Fact]
         public async Task ClassDerivesFromAnotherWithFields_DerivedWithCoreParametersIncludeBaseFields()
         {
             var result = await this.GenerateFromStreamAsync("ClassDerivesFromAnotherWithFields");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Fruit" && m.Name == "WithCore" && m.Parameters.Length == 1 && m.IsVirtual));
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "WithCore" && m.Parameters.Length == 1 && m.IsOverride));
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType?.Name == "Apple" && m.Name == "WithCore" && m.Parameters.Length == 2 && m.IsVirtual));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Fruit" && m.Name == "WithCore" && m.Parameters.Length == 1 && m.IsVirtual);
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Apple" && m.Name == "WithCore" && m.Parameters.Length == 1 && m.IsOverride);
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType?.Name == "Apple" && m.Name == "WithCore" && m.Parameters.Length == 2 && m.IsVirtual);
         }
 
         [Fact]
@@ -167,40 +167,40 @@
         public async Task AbstractNonEmptyWithDerivedEmpty_HasCreateOnlyInNonAbstractClass()
         {
             var result = await this.GenerateFromStreamAsync("AbstractNonEmptyWithDerivedEmpty");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "Create" && m.Parameters.Single().Name == "oneField"));
-            Assert.False(result.DeclaredMethods.Any(m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "Create"));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "Create" && m.Parameters.Single().Name == "oneField");
+            Assert.DoesNotContain(result.DeclaredMethods, m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "Create");
         }
 
         [Fact]
         public async Task AbstractNonEmptyWithDerivedEmpty_HasValidateMethodOnBothTypes()
         {
             var result = await this.GenerateFromStreamAsync("AbstractNonEmptyWithDerivedEmpty");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "Validate"));
-            Assert.False(result.DeclaredMethods.Any(m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "Validate"));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "Validate");
+            Assert.DoesNotContain(result.DeclaredMethods, m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "Validate");
         }
 
         [Fact]
         public async Task AbstractNonEmptyWithDerivedEmpty_HasWithMethodOnBothTypes()
         {
             var result = await this.GenerateFromStreamAsync("AbstractNonEmptyWithDerivedEmpty");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "With" && m.Parameters.Single().Name == "oneField"));
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "With" && m.Parameters.Single().Name == "oneField"));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "With" && m.Parameters.Single().Name == "oneField");
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "With" && m.Parameters.Single().Name == "oneField");
         }
 
         [Fact]
         public async Task AbstractNonEmptyWithDerivedEmpty_HasWithCoreMethodOnBothTypes()
         {
             var result = await this.GenerateFromStreamAsync("AbstractNonEmptyWithDerivedEmpty");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "WithCore" && m.Parameters.Single().Name == "oneField"));
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "WithCore" && m.Parameters.Single().Name == "oneField"));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "WithCore" && m.Parameters.Single().Name == "oneField");
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "WithCore" && m.Parameters.Single().Name == "oneField");
         }
 
         [Fact]
         public async Task AbstractNonEmptyWithDerivedEmpty_HasWithFactoryMethodOnConcreteTypeOnly()
         {
             var result = await this.GenerateFromStreamAsync("AbstractNonEmptyWithDerivedEmpty");
-            Assert.True(result.DeclaredMethods.Any(m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "WithFactory" && m.Parameters.Length == 2));
-            Assert.False(result.DeclaredMethods.Any(m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "WithFactory" && m.Parameters.Length == 2));
+            Assert.Contains(result.DeclaredMethods, m => m.ContainingType.Name == "EmptyDerivedFromAbstract" && m.Name == "WithFactory" && m.Parameters.Length == 2);
+            Assert.DoesNotContain(result.DeclaredMethods, m => m.ContainingType.Name == "AbstractNonEmpty" && m.Name == "WithFactory" && m.Parameters.Length == 2);
         }
 
         [Fact]

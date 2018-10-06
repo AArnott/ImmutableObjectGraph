@@ -29,10 +29,10 @@
         {
             var emptyRoot = FileSystemDirectory.Create("c:");
             Assert.True(emptyRoot is IEnumerable<FileSystemEntry>);
-            Assert.Equal(0, emptyRoot.Count()); // using Linq exercises the enumerable
+            Assert.Empty(emptyRoot); // using Linq exercises the enumerable
 
             Assert.Equal(3, this.root.Count());  // use Linq to exercise enumerator
-            Assert.Equal(1, this.root.OfType<FileSystemDirectory>().Single().Count());
+            Assert.Single(this.root.OfType<FileSystemDirectory>().Single());
         }
 
         [Fact]
@@ -99,7 +99,7 @@
             FileSystemDirectory updatedRoot = root.AddDescendent(newLeaf, subdir);
             Assert.Equal(root.Identity, updatedRoot.Identity);
             FileSystemDirectory updatedSubdir = updatedRoot.OfType<FileSystemDirectory>().First();
-            Assert.True(updatedSubdir.Contains(newLeaf));
+            Assert.Contains(newLeaf, updatedSubdir);
         }
 
         [Fact]
@@ -110,7 +110,7 @@
             FileSystemDirectory updatedRoot = this.root.AddDescendent(newLeaf, subdir);
             Assert.Equal(this.root.Identity, updatedRoot.Identity);
             FileSystemDirectory updatedSubdir = updatedRoot.OfType<FileSystemDirectory>().First();
-            Assert.True(updatedSubdir.Contains(newLeaf));
+            Assert.Contains(newLeaf, updatedSubdir);
         }
 
         [Fact]
@@ -122,7 +122,7 @@
             FileSystemDirectory updatedRoot = root.RemoveDescendent(fileUnderSubdir);
             Assert.Equal(root.Identity, updatedRoot.Identity);
             FileSystemDirectory updatedSubdir = (FileSystemDirectory)updatedRoot.Single(c => c.Identity == subdir.Identity);
-            Assert.False(updatedSubdir.Contains(fileUnderSubdir));
+            Assert.DoesNotContain(fileUnderSubdir, updatedSubdir);
         }
 
         [Fact]
@@ -133,7 +133,7 @@
             FileSystemDirectory updatedRoot = this.root.RemoveDescendent(fileUnderSubdir);
             Assert.Equal(this.root.Identity, updatedRoot.Identity);
             FileSystemDirectory updatedSubdir = (FileSystemDirectory)updatedRoot.Single(c => c.Identity == subdir.Identity);
-            Assert.False(updatedSubdir.Contains(fileUnderSubdir));
+            Assert.DoesNotContain(fileUnderSubdir, updatedSubdir);
         }
 
         [Fact]
@@ -142,8 +142,8 @@
             var redRoot = this.root.AsRoot;
             Assert.Equal(this.root.PathSegment, redRoot.PathSegment);
             Assert.Equal(this.root.Children.Count, redRoot.Children.Count);
-            Assert.True(redRoot.Children.Any(c => c.PathSegment == "a.cs" && c.IsFileSystemFile));
-            Assert.True(redRoot.Children.Any(c => c.PathSegment == "b.cs" && c.IsFileSystemFile));
+            Assert.Contains(redRoot.Children, c => c.PathSegment == "a.cs" && c.IsFileSystemFile);
+            Assert.Contains(redRoot.Children, c => c.PathSegment == "b.cs" && c.IsFileSystemFile);
 
             RootedFileSystemDirectory subdir = redRoot.Children.Last().AsFileSystemDirectory;
             Assert.Equal("d.cs", subdir.Children.Single().PathSegment);
@@ -502,7 +502,7 @@
             var root2 = root1["file1.txt"].AsFileSystemFile.AddAttributes("att2").Root;
             IReadOnlyList<FileSystemEntry.DiffGram> changes = root2.ChangesSince(root1);
             var changesList = changes.ToList();
-            Assert.Equal(1, changesList.Count);
+            Assert.Single(changesList);
             Assert.Same(root1["file1.txt"].FileSystemEntry, changesList[0].Before);
             Assert.Same(root2["file1.txt"].FileSystemEntry, changesList[0].After);
             Assert.Equal(ChangeKind.Replaced, changesList[0].Kind);
@@ -582,11 +582,11 @@
             // Set a value property and assert it raises the changed event once.
             builder.PathSegment = "fo";
             Assert.Equal(nameof(builder.PathSegment), raisedName.Pop());
-            Assert.Equal(0, raisedName.Count);
+            Assert.Empty(raisedName);
 
             // Set it to the same value and assert no event is raised.
             builder.PathSegment = builder.PathSegment;
-            Assert.Equal(0, raisedName.Count);
+            Assert.Empty(raisedName);
         }
 
         [Fact]
@@ -599,16 +599,16 @@
             // Set a Builder property and assert it raises the changed event once.
             builder.Data = RichData.CreateBuilder();
             Assert.Equal(nameof(builder.Data), raisedName.Pop());
-            Assert.Equal(0, raisedName.Count);
+            Assert.Empty(raisedName);
 
             // Set it to the same value and assert no event is raised.
             builder.Data = builder.Data;
-            Assert.Equal(0, raisedName.Count);
+            Assert.Empty(raisedName);
 
             // Set it to another value.
             builder.Data = RichData.CreateBuilder();
             Assert.Equal(nameof(builder.Data), raisedName.Pop());
-            Assert.Equal(0, raisedName.Count);
+            Assert.Empty(raisedName);
         }
 
         private static void VerifyDescendentsShareRoot(RootedFileSystemDirectory directory)

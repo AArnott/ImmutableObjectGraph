@@ -58,7 +58,7 @@
         {
             C1 c1 = C1.Create(1, 2, 3);
             A a = c1.ToA();
-            Assert.IsType(typeof(A), a); // should not be a derived type.
+            Assert.IsType<A>(a); // should not be a derived type.
             Assert.Equal(1, a.Field1);
         }
 
