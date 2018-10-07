@@ -1,6 +1,6 @@
 # ImmutableObjectGraph
 
-[![Build status](https://ci.appveyor.com/api/projects/status/sc0w4vlceulc2try?svg=true)](https://ci.appveyor.com/project/AArnott/immutableobjectgraph)
+[![Build Status](https://dev.azure.com/andrewarnott/OSS/_apis/build/status/ImmutableObjectGraph)](https://dev.azure.com/andrewarnott/OSS/_build/latest?definitionId=21)
 [![NuGet package](https://img.shields.io/nuget/v/ImmutableObjectGraph.svg)](https://nuget.org/packages/ImmutableObjectGraph)
 [![Join the chat at https://gitter.im/AArnott/ImmutableObjectGraph](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/AArnott/ImmutableObjectGraph?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
