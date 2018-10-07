@@ -11,7 +11,7 @@
 
     internal static class Utilities
     {
-        internal static readonly PluralizationService PluralizationService = PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-US"));
+        internal static readonly PluralizationService PluralizationService = PluralizationService.CreateService(new CultureInfo("en-US"));
 
         internal static string ToPascalCase(this string name)
         {

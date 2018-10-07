@@ -1,5 +1,4 @@
-ImmutableObjectGraph
-=======================
+# ImmutableObjectGraph
 
 [![Build status](https://ci.appveyor.com/api/projects/status/sc0w4vlceulc2try?svg=true)](https://ci.appveyor.com/project/AArnott/immutableobjectgraph)
 [![NuGet package](https://img.shields.io/nuget/v/ImmutableObjectGraph.svg)](https://nuget.org/packages/ImmutableObjectGraph)
@@ -23,26 +22,25 @@ These codebases for immutable objects can be quite large.
 
 To reduce the burden of writing and maintaining such codebases, this project
 generates immutable types for you based on a minimal definition of a class
-that you define. 
+that you define.
 
-Supported features
-------------------
+## Supported features
 
- * Field types may be value or reference types.
- * When field types are collections, immutable collections should be used that
-   support the Builder pattern.
- * When field types refer to other types also defined in the template
-   file, an entire library of immutable classes with members that
-   reference each other can be constructed.
- * Batch property changes can be made with a single allocation using a single
-   invocation of the `With` method.
- * Builder classes are generated to allow efficient multi-step mutation
-   without producing unnecessary GC pressure.
- * Version across time without breaking changes by adding Create and With method
-   overloads with an easy application of `[Generation(2)]`.
+* Field types may be value or reference types.
+* When field types are collections, immutable collections should be used that
+  support the Builder pattern.
+* When field types refer to other types also defined in the template
+  file, an entire library of immutable classes with members that
+  reference each other can be constructed.
+* Batch property changes can be made with a single allocation using a single
+  invocation of the `With` method.
+* Builder classes are generated to allow efficient multi-step mutation
+  without producing unnecessary GC pressure.
+* Version across time without breaking changes by adding Create and With method
+  overloads with an easy application of `[Generation(2)]`.
 
-Usage
------
+## Usage
+
 You can begin using this project by simply installing a NuGet package:
 
     Install-Package ImmutableObjectGraph.Generation -Pre
@@ -50,7 +48,7 @@ You can begin using this project by simply installing a NuGet package:
 On any source file that you use the `[GenerateImmutable]` attribute in,
 set the Custom Tool property to: `MSBuild:GenerateCodeFromAttributes`
 
-## Example source file
+### Example source file
 
 ```csharp
 [GenerateImmutable]
@@ -61,7 +59,7 @@ partial class Fruit
 }
 ```
 
-## Example generated code
+### Example generated code
 
 The following code will be generated automatically for you and added to a source file
 in your intermediate outputs folder:
@@ -165,10 +163,9 @@ partial class Fruit
 The integration of the code generator support in Visual Studio allows for you to
 conveniently maintain your own code, and on every save or build of that file,
 the code generator runs and automatically creates or updates the generated partial
-class. 
+class.
 
-Known Issues
-------------
+## Known Issues
 
 When defining more than one immutable type, you may need to keep the arguments
 to the `[GenerateImmutable]` attribute consistent for every type. The generator

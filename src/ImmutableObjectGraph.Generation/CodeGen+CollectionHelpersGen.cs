@@ -16,6 +16,7 @@
     using Microsoft.CodeAnalysis.Text;
     using Validation;
     using LookupTableHelper = RecursiveTypeExtensions.LookupTable<IRecursiveType, IRecursiveParentWithLookupTable<IRecursiveType>>;
+    using CollectionExtensions = ImmutableObjectGraph.CollectionExtensions;
 
     public partial class CodeGen
     {

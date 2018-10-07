@@ -451,7 +451,7 @@
                                                 SyntaxFactory.InvocationExpression(
                                                     Syntax.ThisDot(SyntaxFactory.IdentifierName(nameof(GetType))),
                                                     SyntaxFactory.ArgumentList()),
-                                                SyntaxFactory.IdentifierName(nameof(Type.IsEquivalentTo)))).AddArgumentListArguments(
+                                                SyntaxFactory.IdentifierName("IsEquivalentTo"))).AddArgumentListArguments(
                                                     SyntaxFactory.Argument(
                                                         SyntaxFactory.InvocationExpression(
                                                             SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, otherParam, SyntaxFactory.IdentifierName(nameof(GetType))),

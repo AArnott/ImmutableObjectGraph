@@ -262,18 +262,18 @@
                 return properties;
             }
 
-            protected NameSyntax GetPropertyTypeForBuilder(MetaField field)
+            protected TypeSyntax GetPropertyTypeForBuilder(MetaField field)
             {
-                var typeBasis = GetFullyQualifiedSymbolName(field.Type);
-                return field.IsGeneratedImmutableType
+                var typeBasis = GetFullyQualifiedSymbolName(field.Type) as NameSyntax;
+                return field.IsGeneratedImmutableType && typeBasis != null
                     ? SyntaxFactory.QualifiedName(typeBasis, BuilderTypeName)
                     : typeBasis;
             }
 
-            protected NameSyntax GetFieldTypeForBuilder(MetaField field)
+            protected TypeSyntax GetFieldTypeForBuilder(MetaField field)
             {
-                var typeBasis = GetFullyQualifiedSymbolName(field.Type);
-                return field.IsGeneratedImmutableType
+                var typeBasis = GetFullyQualifiedSymbolName(field.Type) as NameSyntax;
+                return field.IsGeneratedImmutableType && typeBasis != null
                     ? Syntax.OptionalOf(SyntaxFactory.QualifiedName(typeBasis, BuilderTypeName))
                     : typeBasis;
             }

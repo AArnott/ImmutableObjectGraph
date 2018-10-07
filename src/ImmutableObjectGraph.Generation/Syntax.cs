@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -74,8 +75,8 @@
         {
             Requires.NotNull(type, nameof(type));
 
-            SimpleNameSyntax leafType = SyntaxFactory.IdentifierName(type.IsGenericType ? type.Name.Substring(0, type.Name.IndexOf('`')) : type.Name);
-            if (type.IsGenericType)
+            SimpleNameSyntax leafType = SyntaxFactory.IdentifierName(type.GetTypeInfo().IsGenericType ? type.Name.Substring(0, type.Name.IndexOf('`')) : type.Name);
+            if (type.GetTypeInfo().IsGenericType)
             {
                 leafType = SyntaxFactory.GenericName(
                     ((IdentifierNameSyntax)leafType).Identifier,

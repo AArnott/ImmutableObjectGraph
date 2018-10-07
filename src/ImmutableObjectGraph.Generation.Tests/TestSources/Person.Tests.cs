@@ -32,7 +32,7 @@
             var defaultPerson = Person.Create(null);
             Assert.NotNull(defaultPerson);
             Assert.Equal(0, defaultPerson.Age);
-            Assert.Equal(null, defaultPerson.Name);
+            Assert.Null(defaultPerson.Name);
         }
 
         [Fact]
@@ -111,7 +111,7 @@
 
             var age10 = billAge10.With(name: null);
             Assert.Equal(10, age10.Age);
-            Assert.Equal(null, age10.Name);
+            Assert.Null(age10.Name);
         }
 
         [Fact]
@@ -139,7 +139,7 @@
             // We expect Members to be non-null because we have a partial class defined that specifies that.
             var family = Family.Create();
             Assert.NotNull(family.Members);
-            Assert.Equal(0, family.Members.Count);
+            Assert.Empty(family.Members);
         }
 
         [Fact]
@@ -179,15 +179,15 @@
         {
             var family = Family.Create();
             var familyAdd1 = family.AddMembers(Person.Create("billy", age: 5));
-            Assert.Equal(0, family.Members.Count);
-            Assert.Equal(1, familyAdd1.Members.Count);
+            Assert.Empty(family.Members);
+            Assert.Single(familyAdd1.Members);
 
             var familyAdd1More = familyAdd1.AddMembers(Person.Create("sally", age: 8));
             Assert.Equal(2, familyAdd1More.Members.Count);
 
             var familyRemove1 = familyAdd1More.RemoveMembers(familyAdd1.Members[0]);
             Assert.Equal(2, familyAdd1More.Members.Count);
-            Assert.Equal(1, familyRemove1.Members.Count);
+            Assert.Single(familyRemove1.Members);
 
             var familyAddMany = familyAdd1.AddMembers(
                 Person.Create("sally", age: 8),
@@ -195,10 +195,10 @@
             Assert.Equal(3, familyAddMany.Members.Count);
 
             var familyRemoveMany = familyAddMany.RemoveMembers(familyAdd1More.Members);
-            Assert.Equal(1, familyRemoveMany.Members.Count);
+            Assert.Single(familyRemoveMany.Members);
 
             var familyCleared = familyAddMany.RemoveMembers();
-            Assert.Equal(0, familyCleared.Members.Count);
+            Assert.Empty(familyCleared.Members);
         }
     }
 }

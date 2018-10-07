@@ -570,13 +570,13 @@
                    .WithBody(SyntaxFactory.Block(
                        // return this.greenNode?.GetHashCode() ?? 0;
                        SyntaxFactory.ReturnStatement(SyntaxFactory.BinaryExpression(
-                           SyntaxKind.CoalesceExpression,
-                           SyntaxFactory.InvocationExpression(
-                               SyntaxFactory.ConditionalAccessExpression(
-                                   Syntax.ThisDot(GreenNodeFieldName),
-                                   SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(nameof(GetHashCode)))),
-                               SyntaxFactory.ArgumentList()),
-                           SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))))));
+                            SyntaxKind.CoalesceExpression,
+                            SyntaxFactory.ConditionalAccessExpression(
+                                Syntax.ThisDot(GreenNodeFieldName),
+                            SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberBindingExpression(
+                                        SyntaxFactory.IdentifierName(nameof(GetHashCode))))),
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))))));
             }
 
             protected MethodDeclarationSyntax CreateEqualsRootedStructMethod()

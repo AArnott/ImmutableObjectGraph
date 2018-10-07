@@ -25,9 +25,9 @@
             this.data = this.attributeData.NamedArguments.ToImmutableDictionary(kv => kv.Key, kv => kv.Value);
         }
 
-        public Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(MemberDeclarationSyntax applyTo, Document document, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
+        public Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
-            Requires.NotNull(applyTo, nameof(applyTo));
+            Requires.NotNull(context, nameof(context));
 
             var options = new CodeGen.Options(this.attributeData)
             {
@@ -38,7 +38,7 @@
                 DefineWithMethodsPerProperty = this.GetBoolData(nameof(GenerateImmutableAttribute.DefineWithMethodsPerProperty)),
             };
 
-            return CodeGen.GenerateAsync((ClassDeclarationSyntax)applyTo, document, progress, options, cancellationToken);
+            return CodeGen.GenerateAsync((ClassDeclarationSyntax)context.ProcessingNode, context.SemanticModel, progress, options, cancellationToken);
         }
 
         private bool GetBoolData(string name)

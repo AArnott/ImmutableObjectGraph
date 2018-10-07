@@ -23,8 +23,8 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var tree = this.NewTree("Some tree");
             var newChild = this.NewTree(Caption);
             var newTree = tree.AddChildren(newChild);
-            Assert.Equal(0, tree.Children.Count);
-            Assert.Equal(1, newTree.Children.Count);
+            Assert.Empty(tree.Children);
+            Assert.Single(newTree.Children);
             Assert.Same(newChild, newTree.Children[0]);
         }
 
@@ -45,10 +45,10 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             tree = tree.AddChildren(child);
             var newChild = this.NewTree(Caption);
             var newTree = tree.AddDescendent(newChild, child);
-            Assert.Equal(1, tree.Children.Count);
-            Assert.Equal(1, newTree.Children.Count);
-            Assert.Equal(0, tree.Children[0].Children.Count);
-            Assert.Equal(1, newTree.Children[0].Children.Count);
+            Assert.Single(tree.Children);
+            Assert.Single(newTree.Children);
+            Assert.Empty(tree.Children[0].Children);
+            Assert.Single(newTree.Children[0].Children);
             Assert.Same(newChild, newTree.Children[0].Children[0]);
             Assert.Equal(tree.Children[0].Caption, newTree.Children[0].Caption);
         }
@@ -59,8 +59,8 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var child = this.NewNode();
             var tree = this.NewTree("Some tree", new[] { child });
             var newTree = tree.RemoveChildren(child);
-            Assert.Equal(1, tree.Children.Count);
-            Assert.Equal(0, newTree.Children.Count);
+            Assert.Single(tree.Children);
+            Assert.Empty(newTree.Children);
         }
 
         [Fact]
@@ -71,10 +71,10 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var grandchild = this.NewTree(Caption);
             tree = tree.AddChildren(child).AddDescendent(grandchild, child);
             var newTree = tree.RemoveDescendent(grandchild);
-            Assert.Equal(1, tree.Children.Count);
-            Assert.Equal(1, newTree.Children.Count);
-            Assert.Equal(1, tree.Children[0].Children.Count);
-            Assert.Equal(0, newTree.Children[0].Children.Count);
+            Assert.Single(tree.Children);
+            Assert.Single(newTree.Children);
+            Assert.Single(tree.Children[0].Children);
+            Assert.Empty(newTree.Children[0].Children);
         }
 
         [Fact]
@@ -84,8 +84,8 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var tree = this.NewTree("Some tree", child);
             var newChild = child.WithCaption(ModifiedCaption);
             var newTree = tree.ReplaceDescendent(child, newChild);
-            Assert.Equal(1, tree.Children.Count);
-            Assert.Equal(1, newTree.Children.Count);
+            Assert.Single(tree.Children);
+            Assert.Single(newTree.Children);
             Assert.Equal(child.Identity, newChild.Identity);
             Assert.Same(child, tree.Children[0]);
             Assert.Same(newChild, newTree.Children[0]);
@@ -100,8 +100,8 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             tree = tree.AddChildren(child).AddDescendent(grandchild, child);
             var newGrandchild = grandchild.WithCaption(ModifiedCaption);
             var newTree = tree.ReplaceDescendent(grandchild, newGrandchild);
-            Assert.Equal(1, tree.Children[0].Children.Count);
-            Assert.Equal(1, newTree.Children[0].Children.Count);
+            Assert.Single(tree.Children[0].Children);
+            Assert.Single(newTree.Children[0].Children);
             Assert.Equal(grandchild.Identity, newGrandchild.Identity);
             Assert.Same(grandchild, tree.Children[0].Children[0]);
             Assert.Same(newGrandchild, newTree.Children[0].Children[0]);
@@ -116,7 +116,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var newChild = child.WithCaption(ModifiedCaption);
             var tree3 = tree2.ReplaceDescendent(child, newChild);
             var tree4 = tree3.RemoveChild(child);
-            Assert.Equal(0, tree4.Children.Count);
+            Assert.Empty(tree4.Children);
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var newChild = child.WithCaption(ModifiedCaption);
             var tree3 = tree2.ReplaceDescendent(child, newChild);
             var tree4 = tree3.RemoveChildren(new[] { child });
-            Assert.Equal(0, tree4.Children.Count);
+            Assert.Empty(tree4.Children);
         }
 
         [Fact]
@@ -140,7 +140,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             var newChild = child.WithCaption(ModifiedCaption);
             var tree3 = tree2.ReplaceDescendent(child, newChild);
             var tree4 = tree3.RemoveDescendent(child);
-            Assert.Equal(0, tree4.Children.Count);
+            Assert.Empty(tree4.Children);
         }
 
         [Fact]
@@ -164,7 +164,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             treeRevisions.Add(head = head.ReplaceDescendent(node1a, node1b = node1a.WithCapabilities("node1b")));
 
             var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions.First(), (ProjectTree)treeRevisions.Last()).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Added, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
             Assert.Equal(differences[0].Identity, node1b.Identity); // The added node in history should be identity-equal to the most recent node.
@@ -182,7 +182,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             treeRevisions.Add(head = head.RemoveChildren(node1b));
 
             var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions[1], (ProjectTree)treeRevisions.Last()).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Removed, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
             Assert.Equal(differences[0].Identity, node1b.Identity); // The added node in history should be identity-equal to the most recent node.
@@ -200,7 +200,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             treeRevisions.Add(head = head.RemoveDescendent(node1b));
 
             var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions.First(), (ProjectTree)treeRevisions.Last()).ToList();
-            Assert.Equal(0, differences.Count);
+            Assert.Empty(differences);
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             treeRevisions.Add(head = head.ReplaceDescendent(node1a, node1b = node1a.WithCaption("node1b")));
 
             var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions[1], (ProjectTree)treeRevisions.Last()).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Replaced, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.Caption, differences[0].Changes);
         }
@@ -241,7 +241,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             treeRevisions.Add(head = head.RemoveDescendent(greatX2grandChild2));
 
             var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions.First(), (ProjectTree)treeRevisions.Last()).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Added, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
             Assert.Equal(differences[0].Identity, child.Identity); // The added node in history should be identity-equal to the most recent node.
@@ -264,7 +264,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
 
             // Verify that from beginning to very end, still only one change is reported.
             var differences = ProjectTree.GetDelta(treeRevisions[0], treeRevisions.Last()).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Added, differences[0].Kind);
             Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
         }
@@ -291,7 +291,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             treeRevisions.Add(head = head.RemoveChildren(child));
 
             var differences = ProjectTree.GetDelta(originalTree, head).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Removed, differences[0].Kind);
             Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
         }
@@ -321,13 +321,13 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
 
             // Verify that up to when the subtree was added, only one change is reported.
             var differences = ProjectTree.GetDelta(originalTree, treeRevisions[1]).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Added, differences[0].Kind);
             Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
 
             // Verify that from beginning to very end, still only one change is reported.
             differences = ProjectTree.GetDelta(originalTree, head).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Added, differences[0].Kind);
             Assert.Equal(differences[0].Identity, child.Identity); // Expected the removed node to be the child node
         }
@@ -358,10 +358,10 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
             treeRevisions.Add(head = head.RemoveDescendent(child));
 
             var differences = ProjectTree.GetDelta((ProjectTree)treeRevisions.First(), (ProjectTree)treeRevisions.Last()).ToList();
-            Assert.Equal(0, differences.Count);
+            Assert.Empty(differences);
 
             differences = ProjectTree.GetDelta((ProjectTree)treeRevisions[3], (ProjectTree)treeRevisions.Last()).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Removed, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.None, differences[0].Changes);
             Assert.Equal(differences[0].Identity, child.Identity); // The added node in history should be identity-equal to the most recent node.
@@ -384,23 +384,23 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
 
             // span the visible: true -> false change
             var differences = ProjectTree.GetDelta(treeRevisions[1], treeRevisions[2]).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Replaced, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.Visible, differences[0].Changes);
 
             // span the visible: true -> false -> true change
             differences = ProjectTree.GetDelta(treeRevisions[1], treeRevisions[3]).ToList();
-            Assert.Equal(0, differences.Count);
+            Assert.Empty(differences);
 
             // span the visible: true -> false+capabilities change.
             differences = ProjectTree.GetDelta(treeRevisions[3], treeRevisions[4]).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Replaced, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.Capabilities | ProjectTreeChangedProperties.Visible, differences[0].Changes);
 
             // span the visible: false -> true -> false+capabilities change.
             differences = ProjectTree.GetDelta(treeRevisions[2], treeRevisions[4]).ToList();
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Replaced, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.Capabilities, differences[0].Changes);
         }
@@ -425,7 +425,7 @@ namespace ImmutableObjectGraph.Generation.Tests.TestSources
 
             // The point of this test is however to verify that if a given node changes multiple times along a tree's history
             // that each changed property is only reported once, rather than once each time the node changes at all.
-            Assert.Equal(1, differences.Count);
+            Assert.Single(differences);
             Assert.Equal(ChangeKind.Replaced, differences[0].Kind);
             Assert.Equal(ProjectTreeChangedProperties.Visible | ProjectTreeChangedProperties.Capabilities, differences[0].Changes);
         }

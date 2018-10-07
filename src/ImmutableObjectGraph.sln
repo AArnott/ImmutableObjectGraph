@@ -1,32 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmutableObjectGraph", "ImmutableObjectGraph\ImmutableObjectGraph.csproj", "{63930555-500F-4E7B-9F24-3D5C3D4F0573}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B370D792-CACB-47AD-BD16-801120F94515}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\appveyor.yml = ..\appveyor.yml
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		global.json = global.json
 		..\LICENSE.txt = ..\LICENSE.txt
 		NuGet.Config = NuGet.Config
 		..\README.md = ..\README.md
 		version.json = version.json
 	EndProjectSection
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Core.NuGet", "ImmutableObjectGraph.Core.NuGet\ImmutableObjectGraph.Core.NuGet.nuproj", "{BC4943CF-CA4C-4D24-96AA-7712061526E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmutableObjectGraph.Generation.Tests", "ImmutableObjectGraph.Generation.Tests\ImmutableObjectGraph.Generation.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Tests", "ImmutableObjectGraph.Generation.Tests\ImmutableObjectGraph.Generation.Tests.csproj", "{480D7D29-47EB-4110-A365-1246B49687D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmutableObjectGraph.Generation", "ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ImmutableObjectGraph.Generation.NuGet", "ImmutableObjectGraph.Generation.NuGet\ImmutableObjectGraph.Generation.NuGet.nuproj", "{C2529293-7A03-4E3A-B96A-59A6D70D3B86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoslynDemo", "RoslynDemo\RoslynDemo.csproj", "{07DCAAF3-0825-499C-85C5-7D8B23230BBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation", "ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj", "{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynDemo", "RoslynDemo\RoslynDemo.csproj", "{07DCAAF3-0825-499C-85C5-7D8B23230BBE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableObjectGraph.Generation.Attributes", "ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj", "{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmutableObjectGraph.Generation.Attributes", "ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj", "{7B6DD09E-BD82-4B88-A10D-6D5606519ECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,18 +37,10 @@ Global
 		{63930555-500F-4E7B-9F24-3D5C3D4F0573}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63930555-500F-4E7B-9F24-3D5C3D4F0573}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63930555-500F-4E7B-9F24-3D5C3D4F0573}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC4943CF-CA4C-4D24-96AA-7712061526E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{480D7D29-47EB-4110-A365-1246B49687D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2529293-7A03-4E3A-B96A-59A6D70D3B86}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C4C18BA-15EF-4D4D-9547-A2EE1E47ACE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,5 +56,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72000F80-488D-45BC-91CE-75ED06C92E6C}
 	EndGlobalSection
 EndGlobal

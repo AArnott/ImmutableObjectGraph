@@ -43,6 +43,7 @@ local.properties
 *.sln.ide
 UpgradeLog*htm
 .vs/
+launchSettings.json
 
 # Build results
 [Dd]ebug/
@@ -66,6 +67,7 @@ UpgradeLog*htm
 .builds
 *.dotCover
 *.log
+*.binlog
 
 packages/
 *.nuget.props
