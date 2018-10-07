@@ -266,6 +266,7 @@
                     this.innerMembers.Add(
                         SyntaxFactory.MethodDeclaration(Syntax.ImmutableStackOf(this.applyTo.RecursiveType.TypeSyntax), GetSpineMethodName.Identifier)
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddAttributeLists(PureAttributeList)
                             .AddParameterListParameters(SyntaxFactory.Parameter(descendentParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                             .WithBody(SyntaxFactory.Block(
                                 SyntaxFactory.ReturnStatement(
@@ -283,6 +284,7 @@
                         SyntaxFactory.MethodDeclaration(Syntax.ImmutableStackOf(this.applyTo.RecursiveType.TypeSyntax), GetSpineMethodName.Identifier)
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                             .AddParameterListParameters(SyntaxFactory.Parameter(identityParameter.Identifier).WithType(IdentityFieldTypeSyntax))
+                            .AddAttributeLists(PureAttributeList)
                             .WithBody(SyntaxFactory.Block(
                                 SyntaxFactory.ReturnStatement(
                                     SyntaxFactory.InvocationExpression(
@@ -399,6 +401,7 @@
                 return SyntaxFactory.MethodDeclaration(this.applyTo.RecursiveType.TypeSyntax, FindMethodName.Identifier)
                     .AddParameterListParameters(RequiredIdentityParameter)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithBody(SyntaxFactory.Block(
                         // return this.Find<TRecursiveParent, TRecursiveType>(identity);
                         SyntaxFactory.ReturnStatement(

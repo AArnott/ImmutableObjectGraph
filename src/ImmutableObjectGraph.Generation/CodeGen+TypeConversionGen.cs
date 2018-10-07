@@ -121,6 +121,7 @@
                     ancestorType,
                     GetToTypeMethodName(this.generator.applyToMetaType.Ancestor.TypeSymbol.Name).Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithBody(SyntaxFactory.Block(
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
@@ -227,6 +228,7 @@
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(this.generator.CreateParameterList(fieldsBeyond, ParameterStyle.OptionalOrRequired))
                     .WithBody(SyntaxFactory.Block(body));
             }
@@ -240,6 +242,7 @@
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.OverrideKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(
                         this.generator.CreateParameterList(derivedType.GetFieldsBeyond(ancestor), ParameterStyle.OptionalOrRequired))
                     .WithBody(SyntaxFactory.Block(

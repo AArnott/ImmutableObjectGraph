@@ -87,6 +87,7 @@
                     BuilderTypeName,
                     ToBuilderMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
                         SyntaxFactory.ObjectCreationExpression(
                             BuilderTypeName,
@@ -110,6 +111,7 @@
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
                         SyntaxFactory.ObjectCreationExpression(
                             BuilderTypeName,
@@ -378,6 +380,7 @@
                     SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier),
                     ToImmutableMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithBody(body);
 
                 if (this.generator.applyToMetaType.HasAncestor)

@@ -59,6 +59,7 @@
                 var descendentParam = SyntaxFactory.IdentifierName("descendent");
                 return SyntaxFactory.MethodDeclaration(this.applyTo.RecursiveParent.TypeSyntax, GetParentMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(SyntaxFactory.Parameter(descendentParam.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(
                         // return this.GetParent<TRecursiveParent, TRecursiveType>(descendent);
@@ -136,6 +137,7 @@
                             this.applyTo.RecursiveType.TypeSyntax),
                         nameof(IRecursiveParent.GetParentedNode))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     //.WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                     .AddParameterListParameters(RequiredIdentityParameter)
                     .WithBody(SyntaxFactory.Block(

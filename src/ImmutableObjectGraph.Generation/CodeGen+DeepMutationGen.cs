@@ -55,6 +55,7 @@
                     GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
                     AddDescendentMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(valueParameterName.Identifier).WithType(this.generator.applyToMetaType.RecursiveType.TypeSyntax),
                         SyntaxFactory.Parameter(parentParameterName.Identifier).WithType(this.generator.applyToMetaType.RecursiveParent.TypeSyntax))
@@ -129,6 +130,7 @@
                     this.applyTo.TypeSyntax,
                     RemoveDescendentMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(valueParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(
@@ -208,6 +210,7 @@
                     this.applyTo.TypeSyntax,
                     ReplaceDescendentMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(updatedNodeParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(
@@ -255,6 +258,7 @@
                     this.applyTo.TypeSyntax,
                     ReplaceDescendentMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(currentParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax),
                         SyntaxFactory.Parameter(replacementParameter.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))

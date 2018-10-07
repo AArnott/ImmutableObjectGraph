@@ -50,6 +50,9 @@
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.ParseName(typeof(DebuggerBrowsableState).FullName),
                     SyntaxFactory.IdentifierName(nameof(DebuggerBrowsableState.Never)))))));
+        private static readonly AttributeSyntax PureAttribute = SyntaxFactory.Attribute(
+            SyntaxFactory.ParseName(typeof(System.Diagnostics.Contracts.PureAttribute).FullName));
+        private static readonly AttributeListSyntax PureAttributeList = SyntaxFactory.AttributeList().AddAttributes(PureAttribute);
         private static readonly ThrowStatementSyntax ThrowNotImplementedException = SyntaxFactory.ThrowStatement(
             SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeof(NotImplementedException).FullName), SyntaxFactory.ArgumentList(), null));
         private static readonly ArgumentSyntax DoNotSkipValidationArgument = SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression));
@@ -504,6 +507,7 @@
                     SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                     GetGenerationalMethodName(WithMethodName, fieldsGroup.Key).Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.Optional))
                     .WithBody(SyntaxFactory.Block(
                         SyntaxFactory.ReturnStatement(
@@ -662,6 +666,7 @@
                     .WithModifiers(SyntaxFactory.TokenList(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.OptionalOrRequired))
                     .WithBody(body);
 

@@ -168,7 +168,8 @@
                 var method = SyntaxFactory.MethodDeclaration(
                     GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
                     name)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList);
 
                 if (!field.IsLocallyDefined)
                 {

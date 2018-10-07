@@ -136,6 +136,7 @@
                 // public RootedRecursiveParent Root { get; }
                 var property = SyntaxFactory.PropertyDeclaration(GetRootedTypeSyntax(this.applyTo), AsRootPropertyName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithExpressionBody(
                         SyntaxFactory.ArrowExpressionClause(
                             // => new RootedRecursiveParent(this, this);
@@ -160,6 +161,7 @@
                 // public RootedTemplateType WithRoot(TRecursiveParent root)
                 var method = SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), WithRootMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(SyntaxFactory.Parameter(rootParam.Identifier).WithType(this.applyTo.RecursiveParent.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(
                         // var spine = root.GetSpine(this);
@@ -514,6 +516,7 @@
 
                 return SyntaxFactory.MethodDeclaration(this.typeName, WithMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.Optional))
                     .WithBody(SyntaxFactory.Block(
                         // this.ThrowIfDefault();
@@ -629,6 +632,7 @@
 
                 return SyntaxFactory.MethodDeclaration(this.typeName, CreateMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(this.generator.CreateParameterList(this.applyTo.AllFields, ParameterStyle.OptionalOrRequired))
                     .WithBody(SyntaxFactory.Block(
                         SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(varType).AddVariables(
@@ -645,6 +649,7 @@
                 // public RootedRecursiveType Find(uint identity)
                 return SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily), SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.Find)))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax))
                     .WithBody(SyntaxFactory.Block(
@@ -664,6 +669,7 @@
                 var valueParameter = SyntaxFactory.IdentifierName("value");
                 return SyntaxFactory.MethodDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)), SyntaxFactory.Identifier(nameof(RecursiveTypeExtensions.TryFind)))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(IdentityParameterName.Identifier).WithType(IdentityFieldTypeSyntax),
                         SyntaxFactory.Parameter(valueParameter.Identifier).WithType(GetRootedTypeSyntax(this.applyTo.RecursiveTypeFromFamily)).AddModifiers(SyntaxFactory.Token(SyntaxKind.OutKeyword)))
@@ -901,6 +907,7 @@
                     SyntaxFactory.MethodDeclaration(GetRootedTypeSyntax(this.applyTo), DefineWithMethodsPerPropertyGen.WithPropertyMethodPrefix + field.NameAsProperty)
                     .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(field.TypeSyntax))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithBody(SyntaxFactory.Block(
                         CallThrowIfDefaultMethod,
                         // var mutatedLeaf = this.greenNode.With<#= field.NamePascalCase #>(value);
@@ -932,6 +939,7 @@
                         GetRootedTypeSyntax(targetType.type),
                         TypeConversionGen.GetToTypeMethodName(targetType.type.TypeSymbol.Name).Identifier)
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddAttributeLists(PureAttributeList)
                         .WithParameterList(this.generator.CreateParameterList(targetType.type.GetFieldsBeyond(targetType.CommonAncestor), ParameterStyle.OptionalOrRequired))
                         .WithBody(SyntaxFactory.Block(
                             // var newGreenNode = this.greenNode.To<#= targetType.TypeName #>(<# WriteArguments(familyType.GetFieldsBeyond(commonAncestor), ArgSource.Argument); #>);
@@ -987,6 +995,7 @@
                     GetRootedTypeSyntax(this.applyTo),
                     methodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(methodParameters)
                     .WithBody(SyntaxFactory.Block(
                         CallThrowIfDefaultMethod,
@@ -1015,6 +1024,7 @@
                     GetRootedTypeSyntax(this.applyTo),
                     SyntaxFactory.Identifier(verb + term))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .WithBody(SyntaxFactory.Block(
                         CallThrowIfDefaultMethod,
                         // var mutatedLeaf = this.greenNode.Verb<#= plural #>(values);
@@ -1084,6 +1094,7 @@
                                 returnType,
                                 SyntaxFactory.Identifier("Add" + singular))
                                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                                .AddAttributeLists(PureAttributeList)
                                 .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.RecursiveTypeFromFamily.TypeSyntax))
                                 .WithBody(SyntaxFactory.Block(
                                     CallThrowIfDefaultMethod,
@@ -1129,6 +1140,7 @@
                             GetRootedTypeSyntax(this.applyTo),
                             SyntaxFactory.Identifier("Remove" + plural))
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddAttributeLists(PureAttributeList)
                             .WithParameterList(SyntaxFactory.ParameterList())
                             .WithBody(SyntaxFactory.Block(
                                 CallThrowIfDefaultMethod,
@@ -1184,6 +1196,7 @@
                     Syntax.IReadOnlyListOf(diffTypeName),
                     ChangesSinceMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(
                         SyntaxFactory.Parameter(priorVersionParam.Identifier).WithType(GetRootedTypeSyntax(this.applyTo)))
                     .WithBody(SyntaxFactory.Block(

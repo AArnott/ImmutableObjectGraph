@@ -45,6 +45,7 @@
                         .WithAdditionalAnnotations()
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddAttributeLists(PureAttributeList)
                         .AddParameterListParameters(
                             SyntaxFactory.Parameter(valueParameterName.Identifier)
                                 .WithType(GetFullyQualifiedSymbolName(field.Type)))
@@ -81,6 +82,7 @@
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.NewKeyword),
                             SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddAttributeLists(PureAttributeList)
                         .AddParameterListParameters(
                             SyntaxFactory.Parameter(valueParameterName.Identifier)
                                 .WithType(GetFullyQualifiedSymbolName(field.Type)))

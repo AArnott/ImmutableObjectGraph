@@ -6,5 +6,6 @@
     <PackageReference Include="Validation" />
     <PackageReference Include="CodeGeneration.Roslyn.Attributes" />
     <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="System.Diagnostics.Contracts" />
   </ItemGroup>
 </Project>

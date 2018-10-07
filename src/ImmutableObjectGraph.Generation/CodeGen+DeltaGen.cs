@@ -186,6 +186,7 @@
                             .AddModifiers(
                                 SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                            .AddAttributeLists(PureAttributeList)
                             .AddParameterListParameters(
                                 SyntaxFactory.Parameter(beforeParam.Identifier).WithType(this.applyTo.TypeSyntax),
                                 SyntaxFactory.Parameter(afterParam.Identifier).WithType(this.applyTo.TypeSyntax),
@@ -204,6 +205,7 @@
                             .AddModifiers(
                                 SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                            .AddAttributeLists(PureAttributeList)
                             .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.TypeSyntax))
                             .WithBody(SyntaxFactory.Block(
                                 // return new DiffGram(null, value, ChangeKind.Added, default(<#= enumTypeName #>));
@@ -219,6 +221,7 @@
                             .AddModifiers(
                                 SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                            .AddAttributeLists(PureAttributeList)
                             .AddParameterListParameters(SyntaxFactory.Parameter(valueParam.Identifier).WithType(this.applyTo.TypeSyntax))
                             .WithBody(SyntaxFactory.Block(
                                 // return new DiffGram(value, null, ChangeKind.Removed, default(<#= enumTypeName #>));
