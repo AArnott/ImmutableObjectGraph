@@ -43,6 +43,7 @@ local.properties
 *.sln.ide
 UpgradeLog*htm
 .vs/
+launchSettings.json
 
 # Build results
 [Dd]ebug/
