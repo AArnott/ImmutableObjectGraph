@@ -62,13 +62,17 @@
                     .AddAttributeLists(PureAttributeList)
                     .AddParameterListParameters(SyntaxFactory.Parameter(descendentParam.Identifier).WithType(this.applyTo.RecursiveType.TypeSyntax))
                     .WithBody(SyntaxFactory.Block(
-                        // return this.GetParent<TRecursiveParent, TRecursiveType>(descendent);
+                        // return ImmutableObjectGraph.RecursiveTypeExtensions.GetParent<TRecursiveParent, TRecursiveType>(this, descendent);
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
                                     SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetParent))
                                         .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)))
-                                .AddArgumentListArguments(SyntaxFactory.Argument(descendentParam)))));
+                                .AddArgumentListArguments(
+                                    SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                                    SyntaxFactory.Argument(descendentParam)))));
             }
 
             private void ImplementIEnumerableInterfaces()
@@ -129,25 +133,32 @@
                     .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                     .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
-                // public ParentedRecursiveType<TRecursiveParent, TRecursiveType> GetParentedNode(uint identity)
+                // public ImmutableObjectGraph.ParentedRecursiveType<TRecursiveParent, TRecursiveType> GetParentedNode(uint identity)
                 this.innerMembers.Add(
                     SyntaxFactory.MethodDeclaration(
-                        SyntaxFactory.GenericName(nameof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)).AddTypeArgumentListArguments(
-                            this.applyTo.RecursiveParent.TypeSyntax,
-                            this.applyTo.RecursiveType.TypeSyntax),
+                        SyntaxFactory.QualifiedName(
+                            SyntaxFactory.IdentifierName(nameof(ImmutableObjectGraph)),
+                            SyntaxFactory.GenericName(nameof(ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType>)).AddTypeArgumentListArguments(
+                                this.applyTo.RecursiveParent.TypeSyntax,
+                                this.applyTo.RecursiveType.TypeSyntax)),
                         nameof(IRecursiveParent.GetParentedNode))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAttributeLists(PureAttributeList)
                     //.WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParent))))
                     .AddParameterListParameters(RequiredIdentityParameter)
                     .WithBody(SyntaxFactory.Block(
-                        // return this.GetParentedNode<TRecursiveParent, TRecursiveType>(identity);
+                        // return ImmutableObjectGraph.RecursiveTypeExtensions.GetParentedNode<TRecursiveParent, TRecursiveType>(this, identity);
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetParentedNode)).AddTypeArgumentListArguments(
-                                    this.applyTo.RecursiveParent.TypeSyntax,
-                                    this.applyTo.RecursiveType.TypeSyntax)))
-                                .AddArgumentListArguments(SyntaxFactory.Argument(IdentityParameterName))))));
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
+                                    SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetParentedNode)).AddTypeArgumentListArguments(
+                                        this.applyTo.RecursiveParent.TypeSyntax,
+                                        this.applyTo.RecursiveType.TypeSyntax)))
+                                .AddArgumentListArguments(
+                                    SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                                    SyntaxFactory.Argument(IdentityParameterName))))));
 
                 // ParentedRecursiveType<IRecursiveParent<IRecursiveType>, IRecursiveType> IRecursiveParent.GetParentedNode(<#= templateType.RequiredIdentityField.TypeName #> identity) {
                 var parentedVar = SyntaxFactory.IdentifierName("parented");
@@ -194,7 +205,7 @@
                 this.innerMembers.Add(SyntaxFactory.PropertyDeclaration(
                     Syntax.IReadOnlyListOf(Syntax.GetTypeSyntax(typeof(IRecursiveType))),
                     nameof(IRecursiveParentWithOrderedChildren.Children))
-                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(SyntaxFactory.IdentifierName(nameof(IRecursiveParentWithOrderedChildren))))
+                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithOrderedChildren))))
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(Syntax.ThisDot(SyntaxFactory.IdentifierName(this.generator.applyToMetaType.RecursiveField.Name))))
                     .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                     .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
@@ -204,7 +215,7 @@
                 this.innerMembers.Add(SyntaxFactory.MethodDeclaration(
                     SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)),
                     nameof(IRecursiveParentWithOrderedChildren.IndexOf))
-                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(SyntaxFactory.IdentifierName(nameof(IRecursiveParentWithOrderedChildren))))
+                    .WithExplicitInterfaceSpecifier(SyntaxFactory.ExplicitInterfaceSpecifier(Syntax.GetTypeSyntax(typeof(IRecursiveParentWithOrderedChildren))))
                     .AddParameterListParameters(SyntaxFactory.Parameter(valueParameterName.Identifier).WithType(Syntax.GetTypeSyntax(typeof(IRecursiveType))))
                     .WithBody(SyntaxFactory.Block(
                         // return this.Children.IndexOf((<#= templateType.RecursiveType.TypeName #>)value);

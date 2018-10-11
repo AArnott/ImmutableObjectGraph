@@ -15,8 +15,8 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
     using Validation;
-    using LookupTableHelper = RecursiveTypeExtensions.LookupTable<IRecursiveType, IRecursiveParentWithLookupTable<IRecursiveType>>;
     using CollectionExtensions = ImmutableObjectGraph.CollectionExtensions;
+    using LookupTableHelper = RecursiveTypeExtensions.LookupTable<IRecursiveType, IRecursiveParentWithLookupTable<IRecursiveType>>;
 
     public partial class CodeGen
     {
@@ -260,7 +260,7 @@
                         .AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(DebuggerBrowsableNeverAttribute))));
 
                     // public System.Collections.Immutable.ImmutableStack<TRecursiveType> GetSpine(TRecursiveType descendent) {
-                    // 	return this.GetSpine<TRecursiveParent, TRecursiveType>(descendent);
+                    // 	return ImmutableObjectGraph.RecursiveTypeExtensions.GetSpine<TRecursiveParent, TRecursiveType>(this, descendent);
                     // }
                     var descendentParameter = SyntaxFactory.IdentifierName("descendent");
                     this.innerMembers.Add(
@@ -271,13 +271,17 @@
                             .WithBody(SyntaxFactory.Block(
                                 SyntaxFactory.ReturnStatement(
                                     SyntaxFactory.InvocationExpression(
-                                        Syntax.ThisDot(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
                                             SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetSpine))
-                                                .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)),
-                                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(descendentParameter))))))));
+                                                .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)))
+                                    .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                                        SyntaxFactory.Argument(descendentParameter))))));
 
                     // public System.Collections.Immutable.ImmutableStack<TRecursiveType> GetSpine(uint identity) {
-                    // 	return this.GetSpine<TRecursiveParent, TRecursiveType>(identity);
+                    // 	return ImmutableObjectGraph.RecursiveTypeExtensions.GetSpine<TRecursiveParent, TRecursiveType>(this, identity);
                     // }
                     var identityParameter = SyntaxFactory.IdentifierName("identity");
                     this.innerMembers.Add(
@@ -288,10 +292,14 @@
                             .WithBody(SyntaxFactory.Block(
                                 SyntaxFactory.ReturnStatement(
                                     SyntaxFactory.InvocationExpression(
-                                        Syntax.ThisDot(
+                                        SyntaxFactory.MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
                                             SyntaxFactory.GenericName(nameof(RecursiveTypeExtensions.GetSpine))
-                                                .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)),
-                                        SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(identityParameter))))))));
+                                                .AddTypeArgumentListArguments(this.applyTo.RecursiveParent.TypeSyntax, this.applyTo.RecursiveType.TypeSyntax)))
+                                    .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                                        SyntaxFactory.Argument(identityParameter))))));
 
                     this.innerMembers.Add(this.CreateFindMethod());
                 }
@@ -403,14 +411,18 @@
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAttributeLists(PureAttributeList)
                     .WithBody(SyntaxFactory.Block(
-                        // return this.Find<TRecursiveParent, TRecursiveType>(identity);
+                        // return ImmutableObjectGraph.RecursiveTypeExtensions.Find<TRecursiveParent, TRecursiveType>(this, identity);
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.InvocationExpression(
-                                Syntax.ThisDot(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
                                     SyntaxFactory.GenericName(FindMethodName.Identifier).AddTypeArgumentListArguments(
                                         this.applyTo.RecursiveParent.TypeSyntax,
                                         this.applyTo.RecursiveType.TypeSyntax)))
-                                .AddArgumentListArguments(SyntaxFactory.Argument(IdentityParameterName)))));
+                                .AddArgumentListArguments(
+                                    SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                                    SyntaxFactory.Argument(IdentityParameterName)))));
             }
 
             protected MemberAccessExpressionSyntax GetLookupTableHelperMember(string memberName)

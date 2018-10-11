@@ -1,10 +1,8 @@
-﻿namespace ImmutableObjectGraph.Generation.Tests.TestSources
+﻿namespace TestSources // Don't use ImmutableObjectGraph namespace so that we're testing that we fully qualify type names.
 {
-    using System.Collections.Immutable;
-
-    [GenerateImmutable]
+    [ImmutableObjectGraph.Generation.GenerateImmutable]
     partial class Node
     {
-        readonly ImmutableArray<Node> children;
+        readonly System.Collections.Immutable.ImmutableArray<Node> children;
     }
 }

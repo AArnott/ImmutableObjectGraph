@@ -183,15 +183,20 @@
                             .AddVariables(SyntaxFactory.VariableDeclarator(newSpineVar.Identifier).WithInitializer(SyntaxFactory.EqualsValueClause(
                                 SyntaxFactory.InvocationExpression(Syntax.CreateImmutableStack(this.applyTo.RecursiveType.TypeSyntax))
                                     .AddArgumentListArguments(SyntaxFactory.Argument(newParentVar)))))),
-                        // return (TRecursiveParent)this.ReplaceDescendent(spine, newSpine, spineIncludesDeletedElement: true).Peek();
+                        // return (TRecursiveParent)ImmutableObjectGraph.RecursiveTypeExtensions.ReplaceDescendent(this, spine, newSpine, spineIncludesDeletedElement: true).Peek();
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.CastExpression(
                                 this.applyTo.RecursiveParent.TypeSyntax,
                                 SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.MemberAccessExpression(
                                         SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.InvocationExpression(Syntax.ThisDot(ReplaceDescendentMethodName))
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
+                                                ReplaceDescendentMethodName))
                                             .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
                                                 SyntaxFactory.Argument(spineVar),
                                                 SyntaxFactory.Argument(newSpineVar),
                                                 SyntaxFactory.Argument(SyntaxFactory.NameColon("spineIncludesDeletedElement"), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))
@@ -229,15 +234,20 @@
                                 SyntaxFactory.ThrowStatement(
                                     SyntaxFactory.ObjectCreationExpression(Syntax.GetTypeSyntax(typeof(ArgumentException))).AddArgumentListArguments(
                                         SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("Old value not found."))))))),
-                        // return (TemplateType)this.ReplaceDescendent(spine, ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
+                        // return (TemplateType)ImmutableObjectGraph.RecursiveTypeExtensions.ReplaceDescendent(this, spine, ImmutableStack.Create(updatedNode), spineIncludesDeletedElement: false).Peek();
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.CastExpression(
                                 this.applyTo.TypeSyntax,
                                 SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.MemberAccessExpression(
                                         SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.InvocationExpression(Syntax.ThisDot(ReplaceDescendentMethodName))
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
+                                                ReplaceDescendentMethodName))
                                             .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
                                                 SyntaxFactory.Argument(spineVar),
                                                 SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(Syntax.CreateImmutableStack()).AddArgumentListArguments(
                                                     SyntaxFactory.Argument(updatedNodeParameter))),
@@ -278,15 +288,20 @@
                                 SyntaxFactory.ThrowStatement(
                                     SyntaxFactory.ObjectCreationExpression(Syntax.GetTypeSyntax(typeof(ArgumentException))).AddArgumentListArguments(
                                         SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("Old value not found."))))))),
-                        // return (TemplateType)this.ReplaceDescendent(spine, ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
+                        // return (TemplateType)ImmutableObjectGraph.RecursiveTypeExtensions.ReplaceDescendent(this, spine, ImmutableStack.Create(replacement), spineIncludesDeletedElement: false).Peek();
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.CastExpression(
                                 this.applyTo.TypeSyntax,
                                 SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.MemberAccessExpression(
                                         SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.InvocationExpression(Syntax.ThisDot(ReplaceDescendentMethodName))
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                Syntax.GetTypeSyntax(typeof(RecursiveTypeExtensions)),
+                                                ReplaceDescendentMethodName))
                                             .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
                                                 SyntaxFactory.Argument(spineVar),
                                                 SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(Syntax.CreateImmutableStack()).AddArgumentListArguments(
                                                     SyntaxFactory.Argument(replacementParameter))),
