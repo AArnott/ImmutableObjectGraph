@@ -1,8 +1,9 @@
 trigger:
   branches:
-    include: ["master"]
+    include:
+    - master
   paths:
-    exclude: ["doc", "*.md", ".appveyor.yml", ".travis.yml"]
+    exclude: ["doc", "*.md"]
 
 variables:
 #  TreatWarningsAsErrors: true
@@ -12,13 +13,18 @@ variables:
 
 jobs:
 - job: Windows
-  pool: Hosted VS2017
+  pool: Hosted Windows 2019 with VS2019
   steps:
   - script: |
       dotnet tool install --tool-path . nbgv
       .\nbgv cloud -p src
     displayName: Set build number
     condition: ne(variables['system.pullrequest.isfork'], true)
+
+  - task: UseDotNet@2
+    displayName: Install .NET Core SDK
+    inputs:
+      version: 2.2.401
 
   - script: dotnet --info
     displayName: Show dotnet SDK info
@@ -35,7 +41,7 @@ jobs:
   # Use VSBuild on Windows so GitLink will work (it fails on dotnet build)
   - task: VSBuild@1
     inputs:
-      vsVersion: 15.0
+      vsVersion: "16.0"
       msbuildArgs: /t:build,pack /m /v:m /bl:"$(Build.ArtifactStagingDirectory)/build_logs/msbuild.binlog"
       platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)

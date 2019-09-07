@@ -1,7 +1,7 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>ImmutableObjectGraph.Generation</RootNamespace>
-    <TargetFrameworks>netstandard1.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>The runtime components behind the types generated with the ImmutableObjectGraph.Generation package.</Description>
 
     <!-- This gets included in ImmutableObjectGraph.Generation -->
