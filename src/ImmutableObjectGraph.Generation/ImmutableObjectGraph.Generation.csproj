@@ -36,6 +36,7 @@
     <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" PrivateAssets="none" />
     <PackageReference Include="System.Diagnostics.Contracts" PrivateAssets="all" />
+    <PackageReference Include="Validation" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" />

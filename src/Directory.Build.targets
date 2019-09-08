@@ -1,13 +1,14 @@
 <Project>
   <PropertyGroup>
-    <CodeGenerationRoslynVersion>0.4.88</CodeGenerationRoslynVersion>
+    <CodeGenerationRoslynVersion>0.6.1</CodeGenerationRoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Update="CodeGeneration.Roslyn.Attributes" Version="$(CodeGenerationRoslynVersion)" />
     <PackageReference Update="CodeGeneration.Roslyn.BuildTime" Version="$(CodeGenerationRoslynVersion)" />
     <PackageReference Update="CodeGeneration.Roslyn" Version="$(CodeGenerationRoslynVersion)" />
+    <PackageReference Update="CodeGeneration.Roslyn.Engine" Version="$(CodeGenerationRoslynVersion)" />
     <PackageReference Update="Microsoft.Build" Version="14.3.0" />
-    <PackageReference Update="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.9.0" />
+    <PackageReference Update="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.1.0" />
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Update="System.Collections.Immutable" Version="1.5.0" />
     <PackageReference Update="System.Diagnostics.Contracts" Version="4.3.0" />
