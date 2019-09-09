@@ -36,8 +36,7 @@
             var workspace = new AdhocWorkspace();
             var project = workspace.CurrentSolution.AddProject("test", "test", "C#")
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .AddMetadataReferences(GetReferences("Profile78"))
-                .AddMetadataReference(MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0").Location))
+                .AddMetadataReferences(GetNetStandard20References())
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(GenerateImmutableAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttributeAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(Optional).Assembly.Location))
@@ -337,10 +336,11 @@
             return builder.ToString();
         }
 
-        private static IEnumerable<MetadataReference> GetReferences(string profile)
+        private static IEnumerable<MetadataReference> GetNetStandard20References()
         {
-            string profileDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile", profile);
-            foreach (string assembly in Directory.GetFiles(profileDirectory, "*.dll"))
+            string nugetPackageRoot = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ?? Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\.nuget\packages");
+            string netstandardRoot = Path.Combine(nugetPackageRoot, @"netstandard.library\2.0.3\build\netstandard2.0\ref");
+            foreach (string assembly in Directory.GetFiles(netstandardRoot, "*.dll"))
             {
                 yield return MetadataReference.CreateFromFile(assembly);
             }
