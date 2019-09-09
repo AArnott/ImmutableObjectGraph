@@ -501,6 +501,12 @@
                             .AddArguments(SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), NoneToken, SkipValidationParameterName))));
             }
 
+            ctor = ctor.WithLeadingTrivia(
+                SyntaxFactory.ParseLeadingTrivia($"/// <summary>Initializes a new instance of the <see cref=\"{this.applyTo.Identifier}\" /> class.</summary>")
+                .AddRange(SyntaxFactory.ParseLeadingTrivia($"/// <param name=\"{RequiredIdentityParameter.Identifier}\">An identity for this instance.</param>"))
+                .AddRange(CreateParameterDocList(this.applyToMetaType.AllFields, ParameterStyle.Required))
+                .AddRange(SyntaxFactory.ParseLeadingTrivia($"/// <param name=\"{SkipValidationParameterName.Identifier}\">A value indicating whether to skip validation in this instance.</param>\r\n")));
+
             return ctor;
         }
 
@@ -508,11 +514,14 @@
         {
             foreach (var fieldsGroup in this.applyToMetaType.AllFieldsByGeneration)
             {
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia($"/// <summary>Initializes a clone of this <see cref=\"{this.applyTo.Identifier}\" /> with some properties changed.</summary>")
+                    .AddRange(CreateParameterDocList(this.applyToMetaType.AllFields, ParameterStyle.Optional));
+
                 var method = SyntaxFactory.MethodDeclaration(
                     SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                     GetGenerationalMethodName(WithMethodName, fieldsGroup.Key).Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddAttributeLists(PureAttributeList)
+                    .AddAttributeLists(PureAttributeList.WithLeadingTrivia(xmlDocComments))
                     .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.Optional))
                     .WithBody(SyntaxFactory.Block(
                         SyntaxFactory.ReturnStatement(
@@ -665,13 +674,16 @@
                         SyntaxFactory.ReturnStatement(DefaultInstanceFieldName));
                 }
 
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia($"/// <summary>Initializes a new instance of the <see cref=\"{this.applyTo.Identifier}\" /> class.</summary>")
+                    .AddRange(CreateParameterDocList(this.applyToMetaType.AllFields, ParameterStyle.Required));
+
                 var method = SyntaxFactory.MethodDeclaration(
                     SyntaxFactory.IdentifierName(applyTo.Identifier),
                     GetGenerationalMethodName(CreateMethodName, fieldsGroup.Key).Identifier)
                     .WithModifiers(SyntaxFactory.TokenList(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
-                    .AddAttributeLists(PureAttributeList)
+                    .AddAttributeLists(PureAttributeList.WithLeadingTrivia(xmlDocComments))
                     .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.OptionalOrRequired))
                     .WithBody(body);
 
@@ -782,6 +794,19 @@
                     yield return new KeyValuePair<FieldDeclarationSyntax, VariableDeclaratorSyntax>(field, variable);
                 }
             }
+        }
+
+        private SyntaxTriviaList CreateParameterDocList(IEnumerable<MetaField> fields, ParameterStyle style, bool usePascalCasing = false)
+        {
+            if (style == ParameterStyle.OptionalOrRequired)
+            {
+                fields = SortRequiredFieldsFirst(fields);
+            }
+
+            // NOTE: we end with \r\n so that the first attribute on the member receiving these trivia isn't included in the comment
+            // This regrettably makes each comment spaced with an extra line between them, but I don't know how to make it work both ways.
+            return SyntaxFactory.TriviaList(
+                fields.SelectMany(f => SyntaxFactory.ParseLeadingTrivia($"/// <param name=\"{(usePascalCasing ? f.NameAsProperty : f.NameAsField).Identifier}\">The value for the <see cref=\"{f.NameAsProperty}\" /> property.</param>\n\n")));
         }
 
         private ParameterListSyntax CreateParameterList(IEnumerable<MetaField> fields, ParameterStyle style, bool usePascalCasing = false)
