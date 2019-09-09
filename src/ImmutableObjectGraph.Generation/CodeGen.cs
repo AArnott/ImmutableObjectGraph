@@ -4,6 +4,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.ComponentModel;
     using System.Data.Entity.Design.PluralizationServices;
     using System.Diagnostics;
     using System.Globalization;
@@ -58,6 +59,7 @@
             SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeof(NotImplementedException).FullName), SyntaxFactory.ArgumentList(), null));
         private static readonly ArgumentSyntax DoNotSkipValidationArgument = SyntaxFactory.Argument(SyntaxFactory.NameColon(SkipValidationParameterName), NoneToken, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression));
         private static readonly AttributeSyntax ObsoletePublicCtor = SyntaxFactory.Attribute(Syntax.GetTypeSyntax(typeof(ObsoleteAttribute))).AddArgumentListArguments(SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("This constructor for use with deserializers only. Use the static Create factory method instead."))));
+        private static readonly AttributeSyntax EditorBrowsableNeverPublicCtor = SyntaxFactory.Attribute(Syntax.GetTypeSyntax(typeof(EditorBrowsableAttribute))).AddArgumentListArguments(SyntaxFactory.AttributeArgument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.GetTypeSyntax(typeof(EditorBrowsableState)), SyntaxFactory.IdentifierName(nameof(EditorBrowsableState.Never)))));
         private static ImmutableHashSet<INamedTypeSymbol> CheckedTypes = ImmutableHashSet<INamedTypeSymbol>.Empty;
 
         private readonly ClassDeclarationSyntax applyTo;
@@ -427,7 +429,9 @@
                 var ctor = SyntaxFactory.ConstructorDeclaration(this.applyTo.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .WithParameterList(this.CreateParameterList(this.applyToMetaType.AllFields, ParameterStyle.Required, usePascalCasing: true))
-                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(ObsoletePublicCtor))
+                    .AddAttributeLists(
+                        SyntaxFactory.AttributeList().AddAttributes(ObsoletePublicCtor),
+                        SyntaxFactory.AttributeList().AddAttributes(EditorBrowsableNeverPublicCtor))
                     .WithInitializer(SyntaxFactory.ConstructorInitializer(
                         SyntaxKind.ThisConstructorInitializer,
                         thisArguments))
