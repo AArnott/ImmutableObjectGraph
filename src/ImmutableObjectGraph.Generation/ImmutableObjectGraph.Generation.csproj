@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>ImmutableObjectGraph.Generation</RootNamespace>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>MSBuild-based code generator to transform simple mutable type definitions into fully functional immutable types with persistent characteristics.</Description>
 
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -36,6 +36,7 @@
     <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" PrivateAssets="none" />
     <PackageReference Include="System.Diagnostics.Contracts" PrivateAssets="all" />
+    <PackageReference Include="Validation" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" />

@@ -8,6 +8,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using ImmutableObjectGraph.Generation.Roslyn;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;

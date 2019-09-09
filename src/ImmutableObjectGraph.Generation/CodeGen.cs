@@ -12,6 +12,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using global::CodeGeneration.Roslyn;
+    using ImmutableObjectGraph.Generation.Roslyn;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;

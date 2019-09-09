@@ -10,7 +10,7 @@ namespace ImmutableObjectGraph.Generation.Roslyn
     using System.Threading;
     using Microsoft.CodeAnalysis;
 
-    internal class DeclarationComputer
+    public class DeclarationComputer
     {
         internal static DeclarationInfo GetDeclarationInfo(SemanticModel model, SyntaxNode node, bool getSymbol, IEnumerable<SyntaxNode> executableCodeBlocks, CancellationToken cancellationToken)
         {

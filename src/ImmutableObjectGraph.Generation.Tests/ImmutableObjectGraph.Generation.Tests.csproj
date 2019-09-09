@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
-
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <TargetFrameworks>net472</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="TestSources\AbstractClassMidTypeHierarchyWithRequiredField.cs">
@@ -82,10 +79,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" />
+    <PackageReference Include="Validation" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
+    <PackageReference Include="CodeGeneration.Roslyn.Engine" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" />
