@@ -83,6 +83,8 @@
 
             protected MethodDeclarationSyntax CreateToBuilderMethod()
             {
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia("/// <summary>Creates a mutable copy of this instance.</summary>\n\n");
+
                 var method = SyntaxFactory.MethodDeclaration(
                     BuilderTypeName,
                     ToBuilderMethodName.Identifier)
@@ -93,7 +95,8 @@
                             BuilderTypeName,
                             SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(SyntaxFactory.ThisExpression()))),
                             null)))
-                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    .WithLeadingTrivia(xmlDocComments);
 
                 if (this.generator.applyToMetaType.HasAncestor)
                 {
@@ -105,6 +108,8 @@
 
             protected MethodDeclarationSyntax CreateCreateBuilderMethod()
             {
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia($"/// <summary>Initializes a new instance of the <see cref=\"{BuilderTypeName.Identifier}\" /> class.</summary>\n\n");
+
                 var method = SyntaxFactory.MethodDeclaration(
                     BuilderTypeName,
                     CreateBuilderMethodName.Identifier)
@@ -112,6 +117,7 @@
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                     .AddAttributeLists(PureAttributeList)
+                    .WithLeadingTrivia(xmlDocComments)
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
                         SyntaxFactory.ObjectCreationExpression(
                             BuilderTypeName,

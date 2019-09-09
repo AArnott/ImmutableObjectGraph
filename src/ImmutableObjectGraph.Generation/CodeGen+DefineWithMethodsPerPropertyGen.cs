@@ -39,6 +39,8 @@
 
                 foreach (var field in this.generator.applyToMetaType.LocalFields)
                 {
+                    var xmlDocComments = SyntaxFactory.ParseLeadingTrivia($"/// <summary>Initializes a clone of this <see cref=\"{GetFullyQualifiedSymbolName(this.generator.applyToSymbol)}\" /> with a new value for <see cref=\"{field.NameAsProperty}\" />.</summary>\n\n");
+
                     var withPropertyMethod = SyntaxFactory.MethodDeclaration(
                         GetFullyQualifiedSymbolName(this.generator.applyToSymbol),
                         WithPropertyMethodPrefix + field.Name.ToPascalCase())
@@ -49,6 +51,7 @@
                         .AddParameterListParameters(
                             SyntaxFactory.Parameter(valueParameterName.Identifier)
                                 .WithType(GetFullyQualifiedSymbolName(field.Type)))
+                        .WithLeadingTrivia(xmlDocComments)
                         .WithBody(SyntaxFactory.Block(
                             SyntaxFactory.IfStatement(
                                 SyntaxFactory.BinaryExpression(

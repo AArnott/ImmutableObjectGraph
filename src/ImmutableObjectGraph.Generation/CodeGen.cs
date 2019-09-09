@@ -419,6 +419,9 @@
         {
             if (!this.isAbstract)
             {
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia($"/// <summary>Initializes a new instance of the <see cref=\"{this.applyTo.Identifier}\" /> class for deserializers.</summary>")
+                    .AddRange(CreateParameterDocList(this.applyToMetaType.AllFields, ParameterStyle.Required, usePascalCasing: true));
+
                 // This constructor takes the value of each and every property
                 // (by PropertyName not fieldName). No extra parameters, and no Optional<T> wrappers.
                 // This is intended to support deserialization or perhaps one day, the new C# `with`
@@ -435,6 +438,7 @@
                     .WithInitializer(SyntaxFactory.ConstructorInitializer(
                         SyntaxKind.ThisConstructorInitializer,
                         thisArguments))
+                    .WithLeadingTrivia(xmlDocComments)
                     .WithBody(SyntaxFactory.Block());
 
                 yield return ctor;
@@ -521,8 +525,9 @@
                     SyntaxFactory.IdentifierName(this.applyTo.Identifier),
                     GetGenerationalMethodName(WithMethodName, fieldsGroup.Key).Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddAttributeLists(PureAttributeList.WithLeadingTrivia(xmlDocComments))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.Optional))
+                    .WithLeadingTrivia(xmlDocComments)
                     .WithBody(SyntaxFactory.Block(
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.CastExpression(
@@ -683,8 +688,9 @@
                     .WithModifiers(SyntaxFactory.TokenList(
                         SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
-                    .AddAttributeLists(PureAttributeList.WithLeadingTrivia(xmlDocComments))
+                    .AddAttributeLists(PureAttributeList)
                     .WithParameterList(CreateParameterList(fieldsGroup, ParameterStyle.OptionalOrRequired))
+                    .WithLeadingTrivia(xmlDocComments)
                     .WithBody(body);
 
                 if (this.applyToMetaType.Ancestors.Any(a => !a.TypeSymbol.IsAbstract && a.AllFieldsByGeneration.FirstOrDefault(g => g.Key == fieldsGroup.Key)?.Count() == fieldsGroup.Count()))
@@ -806,7 +812,7 @@
             // NOTE: we end with \r\n so that the first attribute on the member receiving these trivia isn't included in the comment
             // This regrettably makes each comment spaced with an extra line between them, but I don't know how to make it work both ways.
             return SyntaxFactory.TriviaList(
-                fields.SelectMany(f => SyntaxFactory.ParseLeadingTrivia($"/// <param name=\"{(usePascalCasing ? f.NameAsProperty : f.NameAsField).Identifier}\">The value for the <see cref=\"{f.NameAsProperty}\" /> property.</param>\n\n")));
+                fields.SelectMany(f => SyntaxFactory.ParseLeadingTrivia($"/// <param name=\"{(usePascalCasing ? f.NameAsProperty : f.NameAsField).Identifier}\">The value for the <see cref=\"{f.NameAsProperty.Identifier}\" /> property.</param>\n\n")));
         }
 
         private ParameterListSyntax CreateParameterList(IEnumerable<MetaField> fields, ParameterStyle style, bool usePascalCasing = false)
