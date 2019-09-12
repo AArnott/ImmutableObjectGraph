@@ -1322,24 +1322,9 @@
                 }
             }
 
-            public bool ChildrenAreSorted
-            {
-                get
-                {
-                    // Not very precise, but it does the job for now.
-                    return this.RecursiveParent.RecursiveField.Type.Name == nameof(ImmutableSortedSet<int>);
-                }
-            }
+            public bool ChildrenAreSorted => this.RecursiveParent.RecursiveField.IsCollectionSorted;
 
-            public bool ChildrenAreOrdered
-            {
-                get
-                {
-                    // Not very precise, but it does the job for now.
-                    var namedType = this.RecursiveParent.RecursiveField.Type as INamedTypeSymbol;
-                    return namedType != null && namedType.AllInterfaces.Any(iface => iface.Name == nameof(IReadOnlyList<int>));
-                }
-            }
+            public bool ChildrenAreOrdered => this.RecursiveParent.RecursiveField.IsCollectionOrdered;
 
             public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor)
             {
@@ -1467,6 +1452,35 @@
             public bool IsCollection => IsCollectionType(this.Symbol.Type);
 
             public bool IsDictionary => IsDictionaryType(this.Symbol.Type);
+
+            /// <summary>
+            /// Gets a value indicating whether the elements in the collection have a defined order.
+            /// This may be because it is sorted, or because it is documented to retain the order
+            /// in which the elements were inserted (e.g. a list).
+            /// </summary>
+            public bool IsCollectionOrdered
+            {
+                get
+                {
+                    if (this.IsCollection)
+                    {
+                        // Not very precise, but it does the job for now.
+                        var namedType = this.Type as INamedTypeSymbol;
+                        return namedType?.AllInterfaces.Any(iface => iface.Name == nameof(IReadOnlyList<int>)) ?? false;
+                    }
+
+                    return false;
+                }
+            }
+
+            public bool IsCollectionSorted
+            {
+                get
+                {
+                    // Not very precise, but it does the job for now.
+                    return this.Type.Name == nameof(ImmutableSortedSet<int>);
+                }
+            }
 
             public MetaType DeclaringType
             {

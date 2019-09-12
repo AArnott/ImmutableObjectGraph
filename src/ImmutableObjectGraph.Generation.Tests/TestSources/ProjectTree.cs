@@ -2,13 +2,13 @@
 {
     using System.Collections.Immutable;
 
-    public interface IRule { }
+    interface IRule { }
 
-    public interface IProjectPropertiesContext { }
+    interface IProjectPropertiesContext { }
 
-    public interface IPropertySheet { }
+    interface IPropertySheet { }
 
-    public class ProjectPropertiesContext : IProjectPropertiesContext
+    class ProjectPropertiesContext : IProjectPropertiesContext
     {
     }
 
@@ -18,12 +18,12 @@
         [Required]
         readonly string caption;
         readonly string filePath;
-        readonly System.Drawing.Image icon;
-        readonly System.Drawing.Image expandedIcon;
+        readonly string iconMoniker;
+        readonly string expandedIconMoniker;
         readonly bool visible;
         readonly IRule browseObjectProperties;
         readonly ImmutableHashSet<string> capabilities;
-        readonly ImmutableSortedSet<ProjectTree> children;
+        readonly ImmutableList<ProjectTree> children;
     }
 
     [GenerateImmutable(DefineInterface = true, GenerateBuilder = true, DefineWithMethodsPerProperty = true, DefineRootedStruct = true, Delta = true)]
