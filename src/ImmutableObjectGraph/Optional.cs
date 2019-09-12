@@ -1,4 +1,6 @@
-﻿namespace ImmutableObjectGraph
+﻿using System.Runtime.InteropServices.WindowsRuntime;
+
+namespace ImmutableObjectGraph
 {
 	using System.Diagnostics;
 
@@ -7,5 +9,7 @@
 		public static Optional<T> For<T>(T value) {
 			return value;
 		}
+        
+        public static Optional<T> Missing<T>()=>new Optional<T>();
 	}
 }

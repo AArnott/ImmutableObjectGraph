@@ -117,6 +117,13 @@
         }
 
         [Fact]
+        public async Task OneScalarFieldWithBuilder_HasCopyIntoMethod()
+        {
+            var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");
+            Assert.True(result.DeclaredMethods.Any(m => m.Name == "CopyInto" && m.Parameters.Length == 1 && !m.IsStatic));
+        }
+
+        [Fact]
         public async Task OneScalarFieldWithBuilder_BuilderHasMutableProperties()
         {
             var result = await this.GenerateFromStreamAsync("OneScalarFieldWithBuilder");

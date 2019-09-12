@@ -73,12 +73,234 @@
                         .AddBaseListTypes(SyntaxFactory.SimpleBaseType(INotifyPropertyChanged));
                     builderMembers.Add(this.CreatePropertyChangedEvent());
                     builderMembers.Add(this.CreateOnPropertyChangedMethod());
+                    builderMembers.Add(this.CreateCopyIntoMethod());
                 }
 
                 builderType = builderType
                     .WithMembers(SyntaxFactory.List(builderMembers));
 
                 this.innerMembers.Add(builderType);
+            }
+            public static string FirstCharToUpper(string input)
+            {
+                if (String.IsNullOrEmpty(input))
+                    throw new ArgumentException("ARGH!");
+                return input.First().ToString().ToUpper() + String.Join("", input.Skip(1));
+            }
+            protected MethodDeclarationSyntax CreateCopyIntoMethod()
+            {
+
+                var assignments = this.generator.applyToMetaType.LocalFields
+                    .Select
+                    (field => AssignmentFromOther(field)).ToArray();
+
+                return SyntaxFactory.MethodDeclaration
+                    (
+                        SyntaxFactory.PredefinedType
+                            (
+                                SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                        SyntaxFactory.Identifier("CopyInto"))
+                    .WithModifiers
+                    (
+                        SyntaxFactory.TokenList
+                            (
+                                SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                    .WithParameterList
+                    (
+                        SyntaxFactory.ParameterList
+                            (
+                                SyntaxFactory.SingletonSeparatedList
+                                    (
+                                        SyntaxFactory.Parameter
+                                            (
+                                                SyntaxFactory.Identifier("other"))
+                                            .WithType
+                                            (
+                                                SyntaxFactory.IdentifierName((this.generator.applyTo.Identifier))))))
+                    .WithBody
+                    (
+                        SyntaxFactory.Block
+                            (assignments));
+            }
+
+            private static StatementSyntax AssignmentFromOther(MetaField field)
+            {
+                return field.IsGeneratedImmutableType ? (StatementSyntax) CopyIntoAssignment(field) : SyntaxFactory.ExpressionStatement(SimpleAssignmentFromOther(field));
+            }
+
+            private static StatementSyntax CopyIntoAssignment(MetaField field)
+            {
+                var capFieldName = FirstCharToUpper(field.Name);
+
+                return SyntaxFactory.IfStatement
+                    (
+                        SyntaxFactory.MemberAccessExpression
+                            (
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                SyntaxFactory.MemberAccessExpression
+                                    (
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.ThisExpression(),
+                                        SyntaxFactory.IdentifierName(field.Name)),
+                                SyntaxFactory.IdentifierName("IsDefined")),
+                        SyntaxFactory.Block
+                            (
+                                SyntaxFactory.SingletonList<StatementSyntax>
+                                    (
+                                        SyntaxFactory.ExpressionStatement
+                                            (
+                                                SyntaxFactory.InvocationExpression
+                                                    (
+                                                        SyntaxFactory.MemberAccessExpression
+                                                            (
+                                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                                SyntaxFactory.MemberAccessExpression
+                                                                    (
+                                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                                        SyntaxFactory.ThisExpression(),
+                                                                        SyntaxFactory.IdentifierName(capFieldName)),
+                                                                SyntaxFactory.IdentifierName("CopyInto")))
+                                                    .WithArgumentList
+                                                    (
+                                                        SyntaxFactory.ArgumentList
+                                                            (
+                                                                SyntaxFactory.SingletonSeparatedList<ArgumentSyntax>
+                                                                    (
+                                                                        SyntaxFactory.Argument
+                                                                            (
+                                                                                SyntaxFactory.MemberAccessExpression
+                                                                                    (
+                                                                                        SyntaxKind
+                                                                                            .SimpleMemberAccessExpression,
+                                                                                        SyntaxFactory.IdentifierName
+                                                                                            ("other"),
+                                                                                        SyntaxFactory.IdentifierName
+                                                                                            (capFieldName))))))))))
+                    .WithElse
+                    (
+                         SyntaxFactory.ElseClause(
+                            SyntaxFactory.Block(
+                                SyntaxFactory.LocalDeclarationStatement(
+                                    SyntaxFactory.VariableDeclaration(
+                                        SyntaxFactory.IdentifierName("var"))
+                                    .WithVariables(
+                                        SyntaxFactory.SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                            SyntaxFactory.VariableDeclarator(
+                                                SyntaxFactory.Identifier("builder"))
+                                            .WithInitializer(
+                                                SyntaxFactory.EqualsValueClause(
+                                                    SyntaxFactory.ConditionalAccessExpression(
+                                                        SyntaxFactory.IdentifierName("other"),
+                                                        SyntaxFactory.ConditionalAccessExpression(
+                                                            SyntaxFactory.MemberBindingExpression(
+                                                                SyntaxFactory.IdentifierName(capFieldName)),
+                                                            SyntaxFactory.InvocationExpression(
+                                                                SyntaxFactory.MemberBindingExpression(
+                                                                    SyntaxFactory.IdentifierName("ToBuilder")))))))))),
+                                        SyntaxFactory.IfStatement
+                                            (
+                                                SyntaxFactory.BinaryExpression
+                                                    (
+                                                        SyntaxKind.NotEqualsExpression,
+                                                        SyntaxFactory.IdentifierName("builder"),
+                                                        SyntaxFactory.LiteralExpression
+                                                            (
+                                                                SyntaxKind.NullLiteralExpression)),
+                                                SyntaxFactory.ExpressionStatement
+                                                    (
+                                                        SyntaxFactory.AssignmentExpression
+                                                            (
+                                                                SyntaxKind.SimpleAssignmentExpression,
+                                                                SyntaxFactory.MemberAccessExpression
+                                                                    (
+                                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                                        SyntaxFactory.ThisExpression(),
+                                                                        SyntaxFactory.IdentifierName(field.Name)),
+                                                                SyntaxFactory.InvocationExpression
+                                                                    (
+                                                                        SyntaxFactory.MemberAccessExpression
+                                                                            (
+                                                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                                                SyntaxFactory.MemberAccessExpression
+                                                                                    (
+                                                                                        SyntaxKind
+                                                                                            .SimpleMemberAccessExpression,
+                                                                                        SyntaxFactory.IdentifierName
+                                                                                            ("ImmutableObjectGraph"),
+                                                                                        SyntaxFactory.IdentifierName
+                                                                                            ("Optional")),
+                                                                                SyntaxFactory.IdentifierName("For")))
+                                                                    .WithArgumentList
+                                                                    (
+                                                                        SyntaxFactory.ArgumentList
+                                                                            (
+                                                                                SyntaxFactory
+                                                                                    .SingletonSeparatedList(
+                                                                                        SyntaxFactory.Argument
+                                                                                            (
+                                                                                                SyntaxFactory
+                                                                                                    .IdentifierName
+                                                                                                    ("builder"))))))))
+                                            .WithElse
+                                            (
+                                                SyntaxFactory.ElseClause
+                                                    (
+                                                        SyntaxFactory.ExpressionStatement
+                                                            (
+                                                                SyntaxFactory.AssignmentExpression
+                                                                    (
+                                                                        SyntaxKind.SimpleAssignmentExpression,
+                                                                        SyntaxFactory.MemberAccessExpression
+                                                                            (
+                                                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                                                SyntaxFactory.ThisExpression(),
+                                                                                SyntaxFactory.IdentifierName(field.Name)),
+                                                                        SyntaxFactory.ObjectCreationExpression
+                                                                            (
+                                                                                SyntaxFactory.QualifiedName
+                                                                                    (
+                                                                                        SyntaxFactory.IdentifierName
+                                                                                            ("ImmutableObjectGraph"),
+                                                                                        SyntaxFactory.GenericName
+                                                                                            (
+                                                                                                SyntaxFactory.Identifier
+                                                                                                    ("Optional"))
+                                                                                            .WithTypeArgumentList
+                                                                                            (
+                                                                                                SyntaxFactory
+                                                                                                    .TypeArgumentList
+                                                                                                    (
+                                                                                                        SyntaxFactory
+                                                                                                            .SingletonSeparatedList
+                                                                                                            <TypeSyntax>
+                                                                                                            (
+                                                                                                                SyntaxFactory
+                                                                                                                    .IdentifierName
+                                                                                                                    (field.Type.Name + ""
+                                                                                                                     +
+                                                                                                                     ".Builder"))))))
+                                                                            .WithArgumentList
+                                                                            (
+                                                                                SyntaxFactory.ArgumentList()))))))))
+                    .NormalizeWhitespace();
+
+            }
+
+            private static ExpressionSyntax SimpleAssignmentFromOther(MetaField field)
+            {
+                return (ExpressionSyntax) SyntaxFactory.AssignmentExpression
+                    (
+                        SyntaxKind.SimpleAssignmentExpression,
+                        SyntaxFactory.MemberAccessExpression
+                            (
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                SyntaxFactory.ThisExpression(),
+                                SyntaxFactory.IdentifierName(field.Name)),
+                        SyntaxFactory.MemberAccessExpression
+                            (
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                SyntaxFactory.IdentifierName("other"),
+                                SyntaxFactory.IdentifierName(field.Name)));
             }
 
             protected MethodDeclarationSyntax CreateToBuilderMethod()
@@ -102,6 +324,7 @@
 
                 return method;
             }
+
 
             protected MethodDeclarationSyntax CreateCreateBuilderMethod()
             {

@@ -25,6 +25,7 @@ namespace RoslynDemo
             messageBuilder.Author.Name = "And again, myself";
             messageBuilder.Author.Email = "oh@so.mutable";
             messageBuilder.To.Add(i);
+            messageBuilder.CopyInto(message);
 
             var updatedMessage = messageBuilder.ToImmutable();
         }
