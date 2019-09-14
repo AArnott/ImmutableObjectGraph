@@ -75,8 +75,10 @@
                     builderMembers.Add(this.CreateOnPropertyChangedMethod());
                 }
 
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia($"/// <summary>A mutable version of the <see cref=\"{this.generator.applyToTypeName}\" /> class.</summary>\n\n");
                 builderType = builderType
-                    .WithMembers(SyntaxFactory.List(builderMembers));
+                    .WithMembers(SyntaxFactory.List(builderMembers))
+                    .WithLeadingTrivia(xmlDocComments);
 
                 this.innerMembers.Add(builderType);
             }
@@ -255,10 +257,13 @@
                                 setterSignificantBlock)) :
                         setterSignificantBlock;
 
+                    var xmldocComment = field.Symbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().Parent?.Parent?.GetLeadingTrivia()
+                        .FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)) ?? default(SyntaxTrivia);
                     var property = SyntaxFactory.PropertyDeclaration(
                         this.GetPropertyTypeForBuilder(field),
                         field.Name.ToPascalCase())
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .WithLeadingTrivia(xmldocComment)
                         .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[]
                         {
                             SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, getterBlock),
@@ -289,14 +294,18 @@
             protected EventFieldDeclarationSyntax CreatePropertyChangedEvent()
             {
                 var handler = SyntaxFactory.ParseTypeName("System.ComponentModel.PropertyChangedEventHandler");
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia("/// <summary>Occurs when a property has changed.</summary>\n\n");
+
                 return SyntaxFactory.EventFieldDeclaration(
                     SyntaxFactory.VariableDeclaration(handler)
                         .AddVariables(SyntaxFactory.VariableDeclarator(nameof(System.ComponentModel.INotifyPropertyChanged.PropertyChanged))))
-                        .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
+                        .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                    .WithLeadingTrivia(xmlDocComments);
             }
 
             protected MethodDeclarationSyntax CreateOnPropertyChangedMethod()
             {
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia("/// <summary>Raises the <see cref=\"PropertyChanged\" /> event.</summary>\n\n");
                 var callerMemberName = SyntaxFactory.ParseName("System.Runtime.CompilerServices.CallerMemberNameAttribute");
                 var propertyNameParameterName = SyntaxFactory.IdentifierName("propertyName");
                 var evt = SyntaxFactory.MemberAccessExpression(
@@ -328,6 +337,7 @@
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.ProtectedKeyword),
                         SyntaxFactory.Token(SyntaxKind.VirtualKeyword))
+                    .WithLeadingTrivia(xmlDocComments)
                     .WithBody(body);
             }
 
@@ -381,12 +391,15 @@
                 body = body.AddStatements(
                     SyntaxFactory.ReturnStatement(returnExpression));
 
+                var xmlDocComments = SyntaxFactory.ParseLeadingTrivia($"/// <summary>Creates an immutable <see cref=\"{this.generator.applyToTypeName}\" /> based on this instance.</summary>\n\n");
+
                 // public TemplateType ToImmutable() { ... }
                 var method = SyntaxFactory.MethodDeclaration(
                     SyntaxFactory.IdentifierName(this.generator.applyTo.Identifier),
                     ToImmutableMethodName.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                     .AddAttributeLists(PureAttributeList)
+                    .WithLeadingTrivia(xmlDocComments)
                     .WithBody(body);
 
                 if (this.generator.applyToMetaType.HasAncestor)

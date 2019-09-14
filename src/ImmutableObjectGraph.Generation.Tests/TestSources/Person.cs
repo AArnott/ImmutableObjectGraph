@@ -26,8 +26,15 @@
     [GenerateImmutable(DefineWithMethodsPerProperty = true, GenerateBuilder = true)]
     partial class Person
     {
+        /// <summary>
+        /// The person's name.
+        /// </summary>
         [Required]
         readonly string name;
+
+        /// <summary>
+        /// The person's age.
+        /// </summary>
         readonly int age;
         readonly Watch watch;
     }
