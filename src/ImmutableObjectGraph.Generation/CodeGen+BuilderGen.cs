@@ -257,13 +257,12 @@
                                 setterSignificantBlock)) :
                         setterSignificantBlock;
 
-                    var xmldocComment = field.Symbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().Parent?.Parent?.GetLeadingTrivia()
-                        .FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)) ?? default(SyntaxTrivia);
+                    var xmldocComments = Utilities.ConvertFieldSummaryToProperty(field.DeclarationSyntax, hasSetter: true);
                     var property = SyntaxFactory.PropertyDeclaration(
                         this.GetPropertyTypeForBuilder(field),
                         field.Name.ToPascalCase())
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                        .WithLeadingTrivia(xmldocComment)
+                        .WithLeadingTrivia(xmldocComments)
                         .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new AccessorDeclarationSyntax[]
                         {
                             SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, getterBlock),

@@ -216,7 +216,7 @@
 
         private static PropertyDeclarationSyntax CreatePropertyForField(FieldDeclarationSyntax field, VariableDeclaratorSyntax variable)
         {
-            var xmldocComment = field.GetLeadingTrivia().FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+            var xmldocComments = Utilities.ConvertFieldSummaryToProperty(field);
 
             var property = SyntaxFactory.PropertyDeclaration(field.Declaration.Type, variable.Identifier.ValueText.ToPascalCase())
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
@@ -225,7 +225,7 @@
                         // => this.fieldName
                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(), SyntaxFactory.IdentifierName(variable.Identifier))))
                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
-                .WithLeadingTrivia(xmldocComment); // TODO: modify the <summary> to translate "Some description" to "Gets some description."
+                .WithLeadingTrivia(xmldocComments);
             return property;
         }
 
@@ -812,7 +812,7 @@
             // NOTE: we end with \r\n so that the first attribute on the member receiving these trivia isn't included in the comment
             // This regrettably makes each comment spaced with an extra line between them, but I don't know how to make it work both ways.
             return SyntaxFactory.TriviaList(
-                fields.SelectMany(f => SyntaxFactory.ParseLeadingTrivia($"/// <param name=\"{(usePascalCasing ? f.NameAsProperty : f.NameAsField).Identifier}\">The value for the <see cref=\"{f.NameAsProperty.Identifier}\" /> property.</param>\n\n")));
+                fields.SelectMany(f => SyntaxFactory.ParseLeadingTrivia($"/// <param name=\"{(usePascalCasing ? f.NameAsProperty : f.NameAsField).Identifier}\">{Utilities.GetFieldSummary(f.DeclarationSyntax)}</param>\n\n")));
         }
 
         private ParameterListSyntax CreateParameterList(IEnumerable<MetaField> fields, ParameterStyle style, bool usePascalCasing = false)
@@ -1482,6 +1482,8 @@
             public ITypeSymbol Type => this.Symbol?.Type;
 
             public TypeSyntax TypeSyntax => GetFullyQualifiedSymbolName(this.Type);
+
+            public FieldDeclarationSyntax DeclarationSyntax => this.Symbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().Parent?.Parent as FieldDeclarationSyntax;
 
             public bool IsGeneratedImmutableType => !this.TypeAsGeneratedImmutable.IsDefault;
 
