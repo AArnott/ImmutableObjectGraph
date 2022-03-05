@@ -11,7 +11,6 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using global::CodeGeneration.Roslyn;
     using ImmutableObjectGraph.Generation.Roslyn;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -262,7 +261,7 @@
 
             var equalityOperators = from method in symbol.GetMembers().OfType<IMethodSymbol>()
                                     where method.MethodKind == MethodKind.BuiltinOperator || method.MethodKind == MethodKind.UserDefinedOperator
-                                    where method.Parameters.Length == 2 && method.Parameters.All(p => p.Type.Equals(symbol))
+                                    where method.Parameters.Length == 2 && method.Parameters.All(p => p.Type.Equals(symbol, SymbolEqualityComparer.Default))
                                     where method.Name == "op_Equality"
                                     select method;
             return equalityOperators.Any();
@@ -1240,9 +1239,9 @@
 
                     var that = this;
                     return from type in this.generator.TypesInInputDocument
-                           where type != that.TypeSymbol
+                           where !SymbolEqualityComparer.Default.Equals(type, that.TypeSymbol)
                            let metaType = new MetaType(that.generator, type)
-                           where metaType.Ancestors.Any(a => a.TypeSymbol == that.TypeSymbol)
+                           where metaType.Ancestors.Any(a => SymbolEqualityComparer.Default.Equals(a.TypeSymbol, that.TypeSymbol))
                            select metaType;
                 }
             }
@@ -1252,7 +1251,7 @@
                 get
                 {
                     var allowedElementTypes = this.ThisTypeAndAncestors;
-                    var matches = this.LocalFields.Where(f => f.IsCollection && !f.IsDefinitelyNotRecursive && allowedElementTypes.Any(t => t.TypeSymbol.Equals(f.ElementType))).ToList();
+                    var matches = this.LocalFields.Where(f => f.IsCollection && !f.IsDefinitelyNotRecursive && allowedElementTypes.Any(t => t.TypeSymbol.Equals(f.ElementType, SymbolEqualityComparer.Default))).ToList();
                     return matches.Count == 1 ? matches.First() : default(MetaField);
                 }
             }
@@ -1343,7 +1342,7 @@
 
             public IEnumerable<MetaField> GetFieldsBeyond(MetaType ancestor)
             {
-                if (ancestor.TypeSymbol == this.TypeSymbol)
+                if (SymbolEqualityComparer.Default.Equals(ancestor.TypeSymbol, this.TypeSymbol))
                 {
                     return ImmutableList.Create<MetaField>();
                 }
@@ -1359,7 +1358,7 @@
                     return false;
                 }
 
-                return type == this.TypeSymbol
+                return SymbolEqualityComparer.Default.Equals(type, this.TypeSymbol)
                     || this.IsAssignableFrom(type.BaseType);
             }
 
@@ -1407,12 +1406,12 @@
             public bool Equals(MetaType other)
             {
                 return this.generator == other.generator
-                    && this.TypeSymbol == other.TypeSymbol;
+                    && SymbolEqualityComparer.Default.Equals(this.TypeSymbol, other.TypeSymbol);
             }
 
             public override int GetHashCode()
             {
-                return this.TypeSymbol?.GetHashCode() ?? 0;
+                return SymbolEqualityComparer.Default.GetHashCode(this.TypeSymbol);
             }
 
             private MetaType FindMetaType(INamedTypeSymbol type)
@@ -1475,7 +1474,7 @@
 
             public bool IsRecursiveCollection
             {
-                get { return this.IsCollection && !this.DeclaringType.RecursiveType.IsDefault && this.ElementType == this.DeclaringType.RecursiveType.TypeSymbol; }
+                get { return this.IsCollection && !this.DeclaringType.RecursiveType.IsDefault && SymbolEqualityComparer.Default.Equals(this.ElementType, this.DeclaringType.RecursiveType.TypeSymbol); }
             }
 
             public bool IsDefinitelyNotRecursive => IsAttributeApplied<NotRecursiveAttribute>(this.Symbol);
@@ -1486,7 +1485,7 @@
             /// </summary>
             public bool IsLocallyDefined
             {
-                get { return this.Symbol.ContainingType == this.metaType.Generator.applyToSymbol; }
+                get { return SymbolEqualityComparer.Default.Equals(this.Symbol.ContainingType, this.metaType.Generator.applyToSymbol); }
             }
 
             public IFieldSymbol Symbol { get; }
@@ -1514,7 +1513,7 @@
                 }
 
                 var that = this;
-                return type == this.Symbol.Type
+                return SymbolEqualityComparer.Default.Equals(type, this.Symbol.Type)
                     || this.IsAssignableFrom(type.BaseType)
                     || type.Interfaces.Any(i => that.IsAssignableFrom(i));
             }

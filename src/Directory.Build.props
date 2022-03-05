@@ -12,7 +12,7 @@
     <Authors>Andrew Arnott</Authors>
     <Owners>Andrew Arnott</Owners>
     <PackageProjectUrl>https://github.com/aarnott/immutableobjectgraph</PackageProjectUrl>
-    <LicenseUrl>https://raw.githubusercontent.com/AArnott/ImmutableObjectGraph/$GitCommitIdShort$/LICENSE.txt</LicenseUrl>
+    <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <Copyright>Copyright © Andrew Arnott</Copyright>
     <PackageTags>immutable</PackageTags>
   </PropertyGroup>
@@ -23,9 +23,4 @@
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
   </ItemGroup>
-  <Target Name="SetNuSpecProperties" BeforeTargets="GenerateNuspec" DependsOnTargets="GetBuildVersion">
-    <PropertyGroup>
-      <PackageLicenseUrl>https://raw.githubusercontent.com/aarnott/ImmutableObjectGraph/$(GitCommitIdShort)/LICENSE.txt</PackageLicenseUrl>
-    </PropertyGroup>
-  </Target>
 </Project>

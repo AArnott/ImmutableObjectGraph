@@ -4,23 +4,17 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>MSBuild-based code generator to transform simple mutable type definitions into fully functional immutable types with persistent characteristics.</Description>
 
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-
-    <GenerateNuspecDependsOn>$(GenerateNuspecDependsOn);SetNuSpecPropertiesForHost</GenerateNuspecDependsOn>
-    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
+    
   <ItemGroup>
     <Compile Update="DiagnosticsStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DiagnosticsStrings.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="build/**" Pack="true" PackagePath="build\%(RecursiveDir)" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="DiagnosticsStrings.resx">
@@ -33,29 +27,47 @@
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Diagnostics.Contracts" PrivateAssets="all" />
-    <PackageReference Include="Validation" PrivateAssets="all" />
-  </ItemGroup>
-  <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" />
+    <PackageReference Include="Validation" PrivateAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CG.Pluralization">
       <HintPath>..\..\lib\netstandard1.0\CG.Pluralization.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
+  <ItemGroup>
+    <None Include="Readme.txt" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <Target Name="PackBuildOutputs" DependsOnTargets="ResolveProjectReferences;SatelliteDllsProjectOutputGroup;SatelliteDllsProjectOutputGroupDependencies;DebugSymbolsProjectOutputGroup">
     <ItemGroup>
-      <TfmSpecificPackageFile Include="$(TargetPath)" PackagePath="tools\" />
-      <!--<TfmSpecificPackageFile Include="@(DebugSymbolsProjectOutputGroupOutput)" PackagePath="tools\" />-->
-      <TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupOutput->'%(FinalOutputPath)')" PackagePath="tools\%(SatelliteDllsProjectOutputGroupOutput.Culture)\" />
+      <!-- Build output -->
+      <TfmSpecificPackageFile Include="$(TargetPath)" PackagePath="analyzers\dotnet\cs" />
+      <!-- Project references -->
+      <TfmSpecificPackageFile Include="%(_ResolvedProjectReferencePaths.Identity)" PackagePath="analyzers\dotnet\cs\" />
+      <TfmSpecificPackageFile Include="%(_ResolvedProjectReferencePaths.Identity)" PackagePath="lib\netstandard2.0\" Condition="'%(Filename)' == 'ImmutableObjectGraph.Generation.Attributes'" />
+      <!-- Package references -->
+      <TfmSpecificPackageFile Include="$(PkgValidation)\lib\netstandard2.0\Validation.dll" PackagePath="analyzers\dotnet\cs" />
+      <!-- Manual references -->
+      <TfmSpecificPackageFile Include="..\..\lib\netstandard1.0\CG.Pluralization.dll" PackagePath="analyzers\dotnet\cs" />
+
+      <!-- Not sure about these - doesn't make any difference -->
+      <!--<TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupDependency)" PackagePath="analyzers\dotnet\cs\%(SatelliteDllsProjectOutputGroupDependency.DestinationSubDirectory)" Condition=" '%(SatelliteDllsProjectOutputGroupDependency.DestinationSubDirectory)' != '' " />-->
+      <!--<TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupOutput->'%(FinalOutputPath)')" PackagePath="analyzers\dotnet\cs\%(SatelliteDllsProjectOutputGroupOutput.Culture)\" />-->
+      <!--<TfmSpecificPackageFile Include="@(DebugSymbolsProjectOutputGroupOutput)" PackagePath="analyzers\dotnet\cs\" />-->
     </ItemGroup>
   </Target>
-  <Target Name="SetNuSpecPropertiesForHost" DependsOnTargets="SetNuSpecProperties">
-    <PropertyGroup>
-      <NuspecProperties>id=$(PackageId);version=$(NuGetPackageVersion);authors=$(Authors);copyright=$(Copyright);tags=$(PackageTags);requireLicenseAcceptance=$(PackageRequireLicenseAcceptance);licenseUrl=$(PackageLicenseUrl);description=$(Description);CodeGenerationRoslynVersion=$(CodeGenerationRoslynVersion);Configuration=$(Configuration);OutDir=$(OutDir)</NuspecProperties>
-    </PropertyGroup>
+  <!-- See https://github.com/dotnet/roslyn/issues/47275 -->
+  <Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(OutputPath)\ImmutableObjectGraph.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="$(OutputPath)\ImmutableObjectGraph.Generation.Attributes.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="..\..\lib\netstandard1.0\CG.Pluralization.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="$(PkgValidation)\lib\netstandard2.0\Validation.dll" IncludeRuntimeDependency="false" />
+    </ItemGroup>
   </Target>
 </Project>
