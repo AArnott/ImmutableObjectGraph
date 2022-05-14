@@ -12,19 +12,17 @@
     <tags>$PackageTags$</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="CodeGeneration.Roslyn.BuildTime" version="$CodeGenerationRoslynVersion$" />
         <dependency id="ImmutableObjectGraph" version="$version$" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="$OutDir$ImmutableObjectGraph.dll" target="tools\" />
-    <file src="$OutDir$ImmutableObjectGraph.Generation.dll" target="tools\" />
-    <file src="$OutDir$ImmutableObjectGraph.Generation.Attributes.dll" target="tools\" />
-    <file src="$OutDir$ImmutableObjectGraph.Generation.deps.json" target="tools\" />
-    <file src="..\..\lib\netstandard1.0\CG.Pluralization.dll" target="tools\" />
+    <file src="$OutDir$ImmutableObjectGraph.dll" target="analyzers\dotnet\cs\" />
+    <file src="$OutDir$ImmutableObjectGraph.Generation.dll" target="analyzers\dotnet\cs\" />
+    <file src="$OutDir$ImmutableObjectGraph.Generation.Attributes.dll" target="analyzers\dotnet\cs\" />
+    <file src="$OutDir$ImmutableObjectGraph.Generation.deps.json" target="analyzers\dotnet\cs\" />
+    <file src="..\..\lib\netstandard1.0\CG.Pluralization.dll" target="analyzers\dotnet\cs\" />
     <file src="Readme.txt" target="Readme.txt" />
-    <file src="build\*" target="build\" />
     <file src="..\..\bin\ImmutableObjectGraph.Generation.Attributes\$Configuration$\netstandard2.0\ImmutableObjectGraph.Generation.Attributes.dll" target="lib\netstandard2.0\" />
   </files>
 </package>

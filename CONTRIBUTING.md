@@ -7,20 +7,20 @@ This project is actively developed using the following software.
 It is highly recommended that anyone contributing to this library use the same
 software.
 
-1. [Visual Studio 2017][VS].
+1. [Visual Studio 2022][VS].
 
 All other dependencies are acquired via NuGet.
 
 ## Building
 
 Everything in the repo may be built via building the solution file
-either from Visual Studio 2017 or the command line:
+either from Visual Studio 2022 or the command line:
 
     msbuild /restore src\ImmutableObjectGraph.sln /t:pack
 
 ## Testing
 
-The Visual Studio 2017 Test Explorer will list and execute all tests.
+The Visual Studio 2022 Test Explorer will list and execute all tests.
 
 ## Pull requests
 

@@ -4,7 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Validation" PrivateAssets="compile" />
-    <PackageReference Include="CodeGeneration.Roslyn.Attributes" />
     <PackageReference Include="System.Collections.Immutable" />
     <PackageReference Include="System.Diagnostics.Contracts" />
   </ItemGroup>

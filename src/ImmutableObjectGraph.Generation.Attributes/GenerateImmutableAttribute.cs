@@ -2,11 +2,9 @@
 {
     using System;
     using System.Diagnostics;
-    using global::CodeGeneration.Roslyn;
 
     [AttributeUsage(AttributeTargets.Class)]
     [Conditional("CodeGeneration")]
-    [CodeGenerationAttribute("ImmutableObjectGraph.Generation.CodeGenerator, ImmutableObjectGraph.Generation, Version=" + ThisAssembly.AssemblyVersion + ", Culture=neutral, PublicKeyToken=" + ThisAssembly.PublicKeyToken)]
     public class GenerateImmutableAttribute : Attribute
     {
         public GenerateImmutableAttribute()

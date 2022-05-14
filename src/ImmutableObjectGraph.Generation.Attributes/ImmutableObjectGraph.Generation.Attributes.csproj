@@ -10,6 +10,5 @@
   <ItemGroup>
     <PackageReference Include="Validation" PrivateAssets="compile" />
     <PackageReference Include="System.Collections.Immutable" />
-    <PackageReference Include="CodeGeneration.Roslyn.Attributes" />
   </ItemGroup>
 </Project>
