@@ -9,8 +9,6 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using CodeGeneration.Roslyn.Engine;
-    using global::CodeGeneration.Roslyn;
     using ImmutableObjectGraph.Generation.Roslyn;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -38,7 +36,6 @@
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddMetadataReferences(GetNetStandard20References())
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(GenerateImmutableAttribute).Assembly.Location))
-                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(CodeGenerationAttributeAttribute).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(Optional).Assembly.Location))
                 .AddMetadataReference(MetadataReference.CreateFromFile(typeof(ImmutableArray).Assembly.Location));
             var inputDocument = project.AddDocument("input.cs", string.Empty);
@@ -265,40 +262,49 @@
         {
             var solution = this.solution.WithDocumentText(this.inputDocumentId, inputSource);
             var inputDocument = solution.GetDocument(this.inputDocumentId);
-            var generatorDiagnostics = new List<Diagnostic>();
-            var progress = new SynchronousProgress<Diagnostic>(generatorDiagnostics.Add);
             var inputCompilation = (CSharpCompilation)await inputDocument.Project.GetCompilationAsync();
-            var inputSyntaxTree = await inputDocument.GetSyntaxTreeAsync();
-            var outputSyntaxTree = await DocumentTransform.TransformAsync(inputCompilation, inputSyntaxTree, null, Assembly.Load, progress);
-            var outputDocument = inputDocument.Project
-                .AddDocument("output.cs", outputSyntaxTree.GetRoot());
+            var driver = CSharpGeneratorDriver.Create(new CodeGenerator());
+            var runResult = driver.RunGenerators(inputCompilation).GetRunResult();
+            var generatorDiagnostics = runResult.Diagnostics;
+            var project = inputDocument.Project;
 
-            // Make sure the result compiles without errors or warnings.
-            var compilation = await outputDocument.Project.GetCompilationAsync();
-            var compilationDiagnostics = compilation.GetDiagnostics();
-
-            SourceText outputDocumentText = await outputDocument.GetTextAsync();
-            this.logger.WriteLine("{0}", outputDocumentText);
-
-            // Verify all line endings are consistent (otherwise VS can bug the heck out of the user if they have the generated file open).
-            string firstLineEnding = null;
-            foreach (var line in outputDocumentText.Lines)
+            var i = 0;
+            var syntaxTrees = ImmutableArray.CreateBuilder<SyntaxTree>();
+            foreach (var t in runResult.GeneratedTrees)
             {
-                string actualNewLine = line.Text.GetSubText(TextSpan.FromBounds(line.End, line.EndIncludingLineBreak)).ToString();
-                if (firstLineEnding == null)
+                var document = project.AddDocument($"output{i++}.cs", t.GetRoot());
+
+                SourceText outputDocumentText = await document.GetTextAsync();
+                this.logger.WriteLine("{0}", outputDocumentText);
+
+                // Verify all line endings are consistent (otherwise VS can bug the heck out of the user if they have the generated file open).
+                string firstLineEnding = null;
+                foreach (var line in outputDocumentText.Lines)
                 {
-                    firstLineEnding = actualNewLine;
+                    string actualNewLine = line.Text.GetSubText(TextSpan.FromBounds(line.End, line.EndIncludingLineBreak)).ToString();
+                    if (firstLineEnding == null)
+                    {
+                        firstLineEnding = actualNewLine;
+                    }
+                    else if (actualNewLine != firstLineEnding && actualNewLine.Length > 0)
+                    {
+                        string expected = EscapeLineEndingCharacters(firstLineEnding);
+                        string actual = EscapeLineEndingCharacters(actualNewLine);
+                        Assert.True(false, $"Expected line ending characters '{expected}' but found '{actual}' on line {line.LineNumber + 1}.\nContent: {line}");
+                    }
                 }
-                else if (actualNewLine != firstLineEnding && actualNewLine.Length > 0)
-                {
-                    string expected = EscapeLineEndingCharacters(firstLineEnding);
-                    string actual = EscapeLineEndingCharacters(actualNewLine);
-                    Assert.True(false, $"Expected line ending characters '{expected}' but found '{actual}' on line {line.LineNumber + 1}.\nContent: {line}");
-                }
+
+                var syntaxTree = await document.GetSyntaxTreeAsync();
+                syntaxTrees.Add(syntaxTree);
+
+                project = document.Project;
             }
 
-            var semanticModel = await outputDocument.GetSemanticModelAsync();
-            var result = new GenerationResult(outputDocument, semanticModel, generatorDiagnostics, compilationDiagnostics);
+            // Make sure the result compiles without errors or warnings.
+            var compilation = await project.GetCompilationAsync();
+            var compilationDiagnostics = compilation.GetDiagnostics();
+
+            var result = new GenerationResult(compilation, syntaxTrees.ToImmutable(), generatorDiagnostics, compilationDiagnostics);
 
             foreach (var diagnostic in generatorDiagnostics)
             {
@@ -338,32 +344,39 @@
 
         private static IEnumerable<MetadataReference> GetNetStandard20References()
         {
-            string nugetPackageRoot = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ?? Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\.nuget\packages");
-            string netstandardRoot = Path.Combine(nugetPackageRoot, @"netstandard.library\2.0.3\build\netstandard2.0\ref");
-            foreach (string assembly in Directory.GetFiles(netstandardRoot, "*.dll"))
+            var nugetPackageRoot = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ?? Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\.nuget\packages");
+            foreach (var dir in Directory.GetDirectories(Path.Combine(nugetPackageRoot, "netstandard.library"), "2.*"))
             {
-                yield return MetadataReference.CreateFromFile(assembly);
+                var netstandardRoot = Path.Combine(dir, @"build\netstandard2.0\ref");
+                foreach (string assembly in Directory.GetFiles(netstandardRoot, "*.dll"))
+                {
+                    yield return MetadataReference.CreateFromFile(assembly);
+                }
+                break;
             }
         }
 
         protected class GenerationResult
         {
             public GenerationResult(
-                Document document,
-                SemanticModel semanticModel,
+                Compilation compilation,
+                ImmutableArray<SyntaxTree> syntaxTrees,
                 IReadOnlyList<Diagnostic> generatorDiagnostics,
                 IReadOnlyList<Diagnostic> compilationDiagnostics)
             {
-                this.Document = document;
-                this.SemanticModel = semanticModel;
-                this.Declarations = CSharpDeclarationComputer.GetDeclarationsInSpan(semanticModel, TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), true, CancellationToken.None);
+                this.Compilation = compilation;
+                this.SyntaxTrees = syntaxTrees;
+                this.SemanticModels = syntaxTrees.Select(s => compilation.GetSemanticModel(s)).ToImmutableArray();
+                this.Declarations = SemanticModels.SelectMany(semanticModel => CSharpDeclarationComputer.GetDeclarationsInSpan(semanticModel, TextSpan.FromBounds(0, semanticModel.SyntaxTree.Length), true, CancellationToken.None)).ToImmutableArray();
                 this.GeneratorDiagnostics = generatorDiagnostics;
                 this.CompilationDiagnostics = compilationDiagnostics;
             }
 
-            public Document Document { get; private set; }
+            public Compilation Compilation { get; }
 
-            public SemanticModel SemanticModel { get; private set; }
+            public ImmutableArray<SemanticModel> SemanticModels { get; private set; }
+
+            public ImmutableArray<SyntaxTree> SyntaxTrees { get; }
 
             internal ImmutableArray<DeclarationInfo> Declarations { get; private set; }
 

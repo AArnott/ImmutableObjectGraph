@@ -1,62 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net472</TargetFrameworks>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Update="TestSources\AbstractClassMidTypeHierarchyWithRequiredField.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
     <EmbeddedResource Include="TestSources\AlmostRecursive.cs" />
     <EmbeddedResource Include="TestSources\ByteArray.cs" />
     <EmbeddedResource Include="TestSources\HierarchyLevels.cs" />
     <EmbeddedResource Include="TestSources\IgnoreField.cs" />
     <EmbeddedResource Include="TestSources\ImmutableArray.cs" />
     <EmbeddedResource Include="TestSources\RootedStruct_Without_WithMethodsPerProperty.cs" />
-    <Compile Update="TestSources\Generations.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
     <EmbeddedResource Include="TestSources\DefineRootedStruct_NotApplicable.cs" />
-    <Compile Update="TestSources\ImmutableDictionaryHelpers.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\ImmutableWithComplexStructField.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\MSBuild.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\Nested.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\NonRecursive.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\ProjectTree.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\RequiresAndHierarchy.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\Sealed.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\TreeNode.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
     <EmbeddedResource Include="TestSources\UsingImmutableObjectGraph.cs" />
-    <Compile Update="TestSources\XmlNode.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
     <EmbeddedResource Include="TestSources\OneImmutableFieldToAnotherWithOneScalarField.cs" />
-    <Compile Update="TestSources\FileSystem.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\AbstractClassFamilies.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\DeepHierarchy.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
     <EmbeddedResource Include="TestSources\OneScalarFieldAndEmptyDerived.cs" />
     <EmbeddedResource Include="TestSources\NoFieldsAndNoFieldsDerived.cs" />
     <EmbeddedResource Include="TestSources\NoFieldsAndOneScalarFieldDerived.cs" />
@@ -65,12 +21,6 @@
     <EmbeddedResource Include="TestSources\ClassDerivesFromAnotherWithFields.cs" />
     <EmbeddedResource Include="TestSources\OneScalarFieldWithBuilder.cs" />
     <EmbeddedResource Include="TestSources\OneScalarField.cs" />
-    <Compile Update="TestSources\Person.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
-    <Compile Update="TestSources\Empty.cs">
-      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
-    </Compile>
     <Compile Remove="@(EmbeddedResource)" />
     <Compile Remove="TestSources\AlmostRecursive.cs" />
     <Compile Remove="TestSources\HierarchyLevels.cs" />
@@ -84,15 +34,10 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="CodeGeneration.Roslyn" PrivateAssets="all" />
-    <PackageReference Include="CodeGeneration.Roslyn.Engine" PrivateAssets="all" />
-  </ItemGroup>
-  <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImmutableObjectGraph.Generation.Attributes\ImmutableObjectGraph.Generation.Attributes.csproj" />
-    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj" />
+    <ProjectReference Include="..\ImmutableObjectGraph.Generation\ImmutableObjectGraph.Generation.csproj" OutputItemType="Analyzer" />
     <ProjectReference Include="..\ImmutableObjectGraph\ImmutableObjectGraph.csproj" />
   </ItemGroup>
 </Project>
